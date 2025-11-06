@@ -89,8 +89,8 @@ export default function HomePage() {
             <div className="w-6 h-6 bg-bla-lime rounded-md flex items-center justify-center">
               <Quote className="w-3.5 h-3.5 text-bla-dark" />
             </div>
-            <span className="text-lg font-semibold">
-              <span className="font-loopy-sans">blabla</span>build
+            <span className="text-lg font-semibold flex items-end leading-none gap-1">
+              <span className="font-loopy-sans text-xl tracking-normal font-light leading-none">BlaBla</span><span className="leading-none">build</span>
             </span>
           </div>
           
@@ -260,8 +260,8 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div>
-              <h3 className="text-lg font-bold mb-1">
-                <span className="font-loopy-sans">blabla</span>build
+              <h3 className="text-lg font-bold mb-1 flex items-end justify-center md:justify-start leading-none gap-1">
+                <span className="font-loopy-sans text-xl tracking-normal font-light leading-none">BlaBla</span><span className="leading-none">build</span>
               </h3>
               <p className="text-xs text-gray-500">Connect → Co-Create → Build → Scale</p>
             </div>
