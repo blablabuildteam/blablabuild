@@ -10,11 +10,6 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  // Check if already authenticated on mount
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
   const checkAuth = async () => {
     try {
       const response = await fetch('/api/auth/check');
@@ -29,6 +24,12 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
       setIsLoading(false);
     }
   };
+
+  // Check if already authenticated on mount
+  useEffect(() => {
+    checkAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -3,10 +3,17 @@ import { Resend } from 'resend';
 import { supabaseAdmin } from '@/lib/supabase';
 import { formatCurrency } from '@/lib/utils';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+// Initialize Resend only when needed
+const getResendClient = () => {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    return null;
+  }
+  return new Resend(apiKey);
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,8 +48,9 @@ export async function POST(req: NextRequest) {
     // Generate email HTML
     const emailHtml = generateEmailHtml(ideas, email);
 
-    // Send email via Resend
-    if (process.env.RESEND_API_KEY) {
+    // Send email via Resend if configured
+    const resend = getResendClient();
+    if (resend) {
       await resend.emails.send({
         from: 'blablabuild <hello@blablabuild.com>',
         to: email,
@@ -64,6 +72,8 @@ export async function POST(req: NextRequest) {
           <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/sessions/${sessionId}">Bekijk volledige sessie</a></p>
         `,
       });
+    } else {
+      console.warn('Resend API key not configured - email sending skipped');
     }
 
     // Update session with email
