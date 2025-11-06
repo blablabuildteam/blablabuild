@@ -123,11 +123,9 @@ export class ConversationOrchestrator {
   }
 
   private async handleInit(): Promise<ChatResponse> {
-    const message = `Hey! 👋 Welkom bij blablabuild. Ik help je graag om te ontdekken hoe AI en automatisering jouw bedrijf kunnen versterken.
+    const message = `Welkom bij blablabuild. Ik help je graag om te ontdekken hoe AI en automatisering jouw bedrijf kunnen versterken.
 
-Om een goed beeld te krijgen, stel ik je een paar vragen. Dit duurt ongeveer 3-5 minuten.
-
-Laten we beginnen: **Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?**`;
+Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
 
     this.state.currentStep = 'collecting';
 
@@ -206,15 +204,15 @@ Laten we beginnen: **Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou 
 
     this.state.currentStep = 'complete';
 
-    const message = `Super! Op basis van wat je verteld hebt, heb ik **${ideas.length} concrete ideeën** voor je bedrijf uitgewerkt.
+    const message = `Super! Op basis van wat je verteld hebt, heb ik ${ideas.length} concrete ideeën voor je bedrijf uitgewerkt.
 
 Deze combineren ${this.state.slots.maturity ? 
   `jouw huidige maturiteit (Data: ${this.state.slots.maturity.data}/5, Tech: ${this.state.slots.maturity.tech}/5)` : 
   'jouw huidige situatie'} met haalbare quick wins.
 
-**Wil je de volledige analyse per email ontvangen?** Dan stuur ik je een gedetailleerd overzicht met kostenschattingen, stappenplannen en voorbeelden.
+Wil je de volledige analyse per email ontvangen? Dan stuur ik je een gedetailleerd overzicht met kostenschattingen, stappenplannen en voorbeelden.
 
-Wat is je **email adres**?`;
+Wat is je email adres?`;
 
     return {
       message,
@@ -239,11 +237,11 @@ Wat is je **email adres**?`;
       // TODO: Send email with ideas
 
       return {
-        message: `Perfect! Ik stuur de analyse binnen 5 minuten naar **${email}**.
+        message: `Perfect! Ik stuur de analyse binnen 5 minuten naar ${email}.
 
 Een van ons (Daniel, Kevin of Xennith) neemt binnenkort persoonlijk contact met je op om de mogelijkheden door te spreken.
 
-Tot snel! 🚀`,
+Tot snel!`,
         sessionId: this.state.sessionId,
         step: 'complete',
         complete: true,
@@ -323,27 +321,42 @@ Geef antwoord in JSON formaat met alleen de velden die je met zekerheid kunt bep
     }
 
     if (!slots.pain_points || slots.pain_points.length === 0) {
-      return '**Welke 3 grootste pijnpunten** ervaar je momenteel binnen je marketing- en verkoopprocessen?';
+      return 'Welke 3 grootste pijnpunten ervaar je momenteel binnen je marketing- en verkoopprocessen?';
     }
 
     if (slots.score_lead_gen === undefined) {
-      return `Op een schaal van 1 tot 10, hoe zou je de **efficiëntie van deze processen** beoordelen?\n\n• Leadgeneratie (via website/campagnes)\n• Conversie van leads naar klanten\n• Data-analyse & rapportering\n\nGeef per proces een cijfer tussen 1-10.`;
+      return `Op een schaal van 1 tot 10, hoe zou je de efficiëntie van deze processen beoordelen?
+
+• Leadgeneratie (via website/campagnes)
+• Conversie van leads naar klanten
+• Data-analyse & rapportering
+
+Geef per proces een cijfer tussen 1-10.`;
     }
 
     if (!slots.manual_hours) {
-      return '**Hoeveel tijd per week** wordt er gemiddeld besteed aan handmatige taken die geautomatiseerd zouden kunnen worden?\n\na) Minder dan 5 uur\nb) 5-10 uur\nc) 10-20 uur\nd) Meer dan 20 uur';
+      return 'Hoeveel tijd per week wordt er gemiddeld besteed aan handmatige taken die geautomatiseerd zouden kunnen worden?
+
+a) Minder dan 5 uur
+b) 5-10 uur
+c) 10-20 uur
+d) Meer dan 20 uur';
     }
 
     if (!slots.data_integration) {
-      return '**Hoe toegankelijk en geïntegreerd** is jullie data uit verschillende systemen?\n\na) Zeer goed - alles is gekoppeld\nb) Redelijk - sommige systemen zijn gekoppeld\nc) Slecht - data zit versnipperd in silos';
+      return 'Hoe toegankelijk en geïntegreerd is jullie data uit verschillende systemen?
+
+a) Zeer goed - alles is gekoppeld
+b) Redelijk - sommige systemen zijn gekoppeld
+c) Slecht - data zit versnipperd in silos';
     }
 
     if (!slots.goal_short_term) {
-      return '**Wat is jullie belangrijkste bedrijfsdoelstelling** voor de komende 3 maanden?';
+      return 'Wat is jullie belangrijkste bedrijfsdoelstelling voor de komende 3 maanden?';
     }
 
     if (!slots.goal_long_term) {
-      return 'En op de langere termijn: **wat is jullie strategische doel voor komend jaar**?';
+      return 'En op de langere termijn: wat is jullie strategische doel voor komend jaar?';
     }
 
     // All required information collected

@@ -227,31 +227,43 @@ export default function AIWidget() {
                   transition={{ delay: 0.3 }}
                   className="space-y-4"
                 >
-                  {/* Question Balloon - blabla style */}
-                  <motion.div 
-                    whileHover={{ y: -2 }}
-                    className="relative"
-                  >
-                    <div className="bg-white rounded-2xl border-2 border-gray-100 p-6 shadow-sm relative">
-                      {/* Small tail/pointer */}
-                      <div className="absolute -left-2 top-6 w-3 h-3 bg-white border-l-2 border-b-2 border-gray-100 rotate-45" />
-                      
-                      {/* Quote mark decoration */}
-                      <div className="flex items-start gap-3">
-                        <motion.div
-                          initial={{ rotate: 0 }}
-                          animate={{ rotate: [0, -5, 0] }}
-                          transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                          className="flex-shrink-0 mt-1"
-                        >
-                          <Quote className="w-5 h-5 text-bla-lime/40" />
-                        </motion.div>
-                        <p className="text-sm leading-relaxed text-gray-800 whitespace-pre-wrap">
-                          {currentQuestion}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
+                  {/* Question Balloons - blabla style (multiple bubbles for conversation) */}
+                  <div className="space-y-3">
+                    {currentQuestion.split('\n\n').filter(q => q.trim()).map((part, idx) => (
+                      <motion.div 
+                        key={idx}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.2 }}
+                        whileHover={{ y: -2 }}
+                        className="relative"
+                      >
+                        <div className="bg-white rounded-2xl border-2 border-gray-100 p-5 shadow-sm relative">
+                          {/* Small tail/pointer - only on first balloon */}
+                          {idx === 0 && (
+                            <div className="absolute -left-2 top-5 w-3 h-3 bg-white border-l-2 border-b-2 border-gray-100 rotate-45" />
+                          )}
+                          
+                          {/* Quote mark decoration - only on first balloon */}
+                          <div className="flex items-start gap-3">
+                            {idx === 0 && (
+                              <motion.div
+                                initial={{ rotate: 0 }}
+                                animate={{ rotate: [0, -5, 0] }}
+                                transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                                className="flex-shrink-0 mt-0.5"
+                              >
+                                <Quote className="w-4 h-4 text-bla-lime/40" />
+                              </motion.div>
+                            )}
+                            <p className={`text-sm leading-relaxed text-gray-800 whitespace-pre-wrap ${idx === 0 ? '' : 'ml-7'}`}>
+                              {part}
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
 
                   {/* Input Area */}
                   <motion.div

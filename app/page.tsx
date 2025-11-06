@@ -15,6 +15,7 @@ import {
   Lightbulb,
   Rocket,
   Clock,
+  Quote,
 } from 'lucide-react';
 import { initAnalytics, trackEvent } from '@/lib/analytics';
 
@@ -80,13 +81,13 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="h-screen overflow-y-scroll snap-y snap-mandatory">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-bla-lime rounded-md flex items-center justify-center">
-              <Sparkles className="w-3.5 h-3.5 text-bla-dark" />
+              <Quote className="w-3.5 h-3.5 text-bla-dark" />
             </div>
             <span className="text-lg font-semibold">blablabuild</span>
           </div>
@@ -105,7 +106,7 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-24 pb-16 px-4">
+      <section className="min-h-screen snap-start flex items-center justify-center px-4">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -138,8 +139,8 @@ export default function HomePage() {
       </section>
 
       {/* Approach Section */}
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-5xl mx-auto px-4">
+      <section className="min-h-screen snap-start flex items-center justify-center bg-gray-50 px-4">
+        <div className="max-w-5xl mx-auto w-full">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold mb-2">Onze Aanpak</h2>
             <p className="text-sm text-gray-600">Van eerste contact tot schaalbare impact</p>
@@ -168,8 +169,8 @@ export default function HomePage() {
       </section>
 
       {/* Founders Section */}
-      <section className="py-12 bg-white">
-        <div className="max-w-5xl mx-auto px-4">
+      <section className="min-h-screen snap-start flex items-center justify-center bg-white px-4">
+        <div className="max-w-5xl mx-auto w-full">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold mb-1">
               The <span className="text-bla-lime">Three Faces</span> of GenAI Friction
@@ -209,8 +210,8 @@ export default function HomePage() {
       </section>
 
       {/* Use Cases Section */}
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-5xl mx-auto px-4">
+      <section className="min-h-screen snap-start flex items-center justify-center bg-gray-50 px-4">
+        <div className="max-w-5xl mx-auto w-full">
           <div className="text-center mb-6">
             <h2 className="text-2xl md:text-3xl font-bold mb-1">Use Cases</h2>
             <p className="text-sm text-gray-600">Van lead kwalificatie tot predictive analytics</p>
@@ -233,8 +234,8 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 bg-white">
-        <div className="max-w-3xl mx-auto px-4 text-center">
+      <section className="min-h-screen snap-start flex items-center justify-center bg-white px-4">
+        <div className="max-w-3xl mx-auto w-full text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-3">Klaar om te starten?</h2>
           <p className="text-sm text-gray-600 mb-6">
             Beantwoord 7 vragen en ontvang binnen 5 minuten een gepersonaliseerde AI-analyse.
