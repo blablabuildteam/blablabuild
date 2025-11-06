@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'loopy-sans': ['var(--font-loopy-sans)', 'sans-serif'],
+      },
       colors: {
         // Minimal white OpenAI-inspired with neon lime accent
         bla: {
