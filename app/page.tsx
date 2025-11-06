@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowRight, 
   Zap, 
@@ -20,6 +20,8 @@ import {
 import { initAnalytics, trackEvent } from '@/lib/analytics';
 
 export default function HomePage() {
+  const [currentOutcome, setCurrentOutcome] = useState(0);
+
   useEffect(() => {
     initAnalytics();
     trackEvent('page_view', { page: 'home' });
@@ -32,6 +34,14 @@ export default function HomePage() {
     { icon: Zap, text: 'Elimineer', highlight: 'wrijving', after: 'in je processen' },
     { icon: Database, text: 'Centraliseer je', highlight: 'data', after: 'voor betere inzichten' },
   ];
+
+  // Cycle through outcomes every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentOutcome((prev) => (prev + 1) % outcomes.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [outcomes.length]);
 
   const founders = [
     {
@@ -115,27 +125,49 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-              Complexity In
-              <span className="text-bla-lime"> True Flow Out</span>
+            <h1 className="text-4xl md:text-5xl font-bold mb-8 leading-tight max-w-4xl mx-auto">
+              We transformeren bedrijfscomplexiteit naar meetbare resultaten met AI en automatisering
             </h1>
             
-            <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-3xl mx-auto">
-              We transformeren bedrijfscomplexiteit naar meetbare resultaten met AI en automatisering.
-            </p>
-
-            {/* Outcome tickets */}
-            <div className="flex flex-wrap gap-4 justify-center max-w-4xl mx-auto">
-              {outcomes.map((outcome, idx) => (
-                <div
-                  key={outcome.highlight}
-                  className="px-5 py-3 bg-white border border-gray-200 rounded-lg inline-flex items-center gap-3 text-sm text-gray-700 hover:border-bla-lime transition-all"
+            {/* Animated outcome subtitle */}
+            <div className="relative h-16 md:h-20 flex items-center justify-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentOutcome}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5 }}
+                  className="absolute inset-0 flex items-center justify-center"
                 >
-                  <outcome.icon className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                  <span>
-                    {outcome.text} <span className="font-semibold text-gray-900">{outcome.highlight}</span> {outcome.after}
-                  </span>
-                </div>
+                  <div className="px-6 py-4 bg-white border border-gray-200 rounded-xl inline-flex items-center gap-4 text-base md:text-lg text-gray-700">
+                    {(() => {
+                      const Icon = outcomes[currentOutcome].icon;
+                      return <Icon className="w-6 h-6 text-gray-400 flex-shrink-0" />;
+                    })()}
+                    <span>
+                      {outcomes[currentOutcome].text}{' '}
+                      <span className="font-bold text-gray-900">
+                        {outcomes[currentOutcome].highlight}
+                      </span>{' '}
+                      {outcomes[currentOutcome].after}
+                    </span>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Progress indicators */}
+            <div className="flex gap-2 justify-center mt-8">
+              {outcomes.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentOutcome(idx)}
+                  className={`h-1.5 rounded-full transition-all ${
+                    idx === currentOutcome ? 'w-8 bg-bla-lime' : 'w-1.5 bg-gray-300'
+                  }`}
+                  aria-label={`Go to outcome ${idx + 1}`}
+                />
               ))}
             </div>
           </motion.div>
