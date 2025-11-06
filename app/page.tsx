@@ -300,10 +300,10 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="min-h-screen snap-start flex items-center justify-center bg-white px-4">
-        <div className="max-w-4xl mx-auto w-full text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Klaar om te starten?</h2>
-          <p className="text-base text-gray-600 mb-8">
+      <section className="snap-start flex items-center justify-center bg-white px-4 py-20">
+        <div className="max-w-3xl mx-auto w-full text-center">
+          <h2 className="text-2xl md:text-3xl font-bold mb-3">Klaar om te starten?</h2>
+          <p className="text-sm text-gray-600 mb-6">
             Beantwoord 7 vragen en ontvang binnen 5 minuten een gepersonaliseerde AI-analyse.
           </p>
           <button
@@ -311,27 +311,27 @@ export default function HomePage() {
               trackEvent('cta_bottom_clicked');
               document.getElementById('ai-widget-trigger')?.click();
             }}
-            className="px-8 py-3 bg-bla-lime hover:bg-bla-lime/90 text-bla-dark rounded-full text-base font-semibold transition-all inline-flex items-center gap-2"
+            className="px-6 py-2.5 bg-bla-lime hover:bg-bla-lime/90 text-bla-dark rounded-full text-sm font-semibold transition-all inline-flex items-center gap-2"
           >
             Start je gratis analyse
-            <Target className="w-5 h-5" />
+            <Target className="w-4 h-4" />
           </button>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="snap-start bg-gray-50 border-t border-gray-200 py-8 min-h-[200px] flex items-center">
+      <footer className="snap-start bg-gray-900 border-t border-gray-800 py-8 min-h-[200px] flex items-center">
         <div className="max-w-5xl mx-auto px-4 w-full">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div>
               <h3 className="text-lg font-bold mb-1 flex items-end justify-center md:justify-start leading-none gap-1">
-                <span className="font-loopy-sans text-xl tracking-normal font-light leading-none">BlaBla</span><span className="leading-none">build</span>
+                <span className="font-loopy-sans text-xl tracking-normal font-light leading-none text-white">BlaBla</span><span className="leading-none text-white">build</span>
               </h3>
-              <p className="text-xs text-gray-500">Connect → Co-Create → Build → Scale</p>
+              <p className="text-xs text-gray-400">Connect → Co-Create → Build → Scale</p>
             </div>
             <div>
-              <p className="text-xs text-gray-500">© 2025 blablabuild</p>
-              <a href="mailto:hello@blablabuild.com" className="text-xs text-gray-700 hover:text-bla-lime">
+              <p className="text-xs text-gray-400">© 2025 blablabuild</p>
+              <a href="mailto:hello@blablabuild.com" className="text-xs text-gray-300 hover:text-bla-lime transition-colors">
                 hello@blablabuild.com
               </a>
             </div>
