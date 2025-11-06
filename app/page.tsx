@@ -143,29 +143,36 @@ export default function HomePage() {
       {/* Approach Section */}
       <section className="min-h-screen snap-start flex items-center justify-center bg-gray-50 px-4">
         <div className="max-w-6xl mx-auto w-full">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">Onze Aanpak</h2>
-            <p className="text-base text-gray-600">Van eerste contact tot schaalbare impact</p>
+          <div className="text-center mb-20">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="w-2 h-2 bg-bla-lime rounded-full animate-pulse"></div>
+              <p className="text-xs uppercase tracking-wider text-gray-600">VAN EERSTE CONTACT TOT SCHAALBARE IMPACT</p>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold">A lean process</h2>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-4">
-            {[
-              { step: '01', title: 'Connect', label: 'bla', description: 'AI intake voor directe inzichten.', icon: Users },
-              { step: '02', title: 'Co-Create', label: 'bla', description: 'Workshop-gedreven verdieping.', icon: Lightbulb },
-              { step: '03', title: 'build', label: '', description: 'Actionable pilot met impact.', icon: Rocket },
-              { step: '04', title: 'Scale', label: '', description: 'Groei bij succesvolle KPIs.', icon: TrendingUp },
-            ].map((phase, idx) => (
-              <div key={phase.title} className="bg-white p-6 rounded-xl border border-gray-200 hover:border-bla-lime transition-all">
-                <div className="flex items-center gap-2 mb-3">
-                  <phase.icon className="w-5 h-5 text-gray-400" />
-                  <span className="text-sm text-gray-400">{phase.step}</span>
+          <div className="max-w-4xl mx-auto">
+            {/* Connected circles */}
+            <div className="relative flex justify-between items-center mb-16">
+              {/* Connecting lines */}
+              <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-300 -translate-y-1/2 z-0"></div>
+              <div className="absolute top-1/2 left-1/3 w-1/3 h-0.5 bg-gray-300 translate-y-20 rounded-full z-0"></div>
+              
+              {[
+                { title: 'CONNECT', subtitle: 'bla', description: 'AI intake voor directe inzichten' },
+                { title: 'CO-CREATE', subtitle: 'bla', description: 'Workshop-gedreven verdieping' },
+                { title: 'BUILD', subtitle: '', description: 'Actionable pilot met impact' },
+                { title: 'SCALE', subtitle: '', description: 'Groei bij succesvolle KPIs' },
+              ].map((phase, idx) => (
+                <div key={phase.title} className="flex flex-col items-center z-10 relative">
+                  <div className="w-32 h-32 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center mb-4 hover:border-bla-lime transition-all">
+                    <span className="text-sm font-bold text-gray-700">{phase.title}</span>
+                  </div>
+                  <p className="text-xs text-gray-600 text-center max-w-[120px]">{phase.description}</p>
+                  {phase.subtitle && <span className="text-xs text-bla-lime mt-1">({phase.subtitle})</span>}
                 </div>
-                <h3 className="text-lg font-bold mb-2">
-                  {phase.title}{phase.label && <span className="text-bla-lime"> ({phase.label})</span>}
-                </h3>
-                <p className="text-sm text-gray-600">{phase.description}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -174,10 +181,13 @@ export default function HomePage() {
       <section className="min-h-screen snap-start flex items-center justify-center bg-white px-4">
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="w-2 h-2 bg-bla-lime rounded-full animate-pulse"></div>
+              <p className="text-xs uppercase tracking-wider text-gray-600">INNOVATION → BUSINESS TRANSFORMATION</p>
+            </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-2">
               The <span className="text-bla-lime">Three Faces</span> of GenAI Friction
             </h2>
-            <p className="text-base text-gray-600">Innovation → Business Transformation</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -215,7 +225,10 @@ export default function HomePage() {
       <section className="min-h-screen snap-start flex items-center justify-center bg-gray-50 px-4">
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-left mb-16">
-            <p className="text-xs uppercase tracking-wider text-gray-500 mb-4">WAT WE BOUWEN</p>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-2 h-2 bg-bla-lime rounded-full animate-pulse"></div>
+              <p className="text-xs uppercase tracking-wider text-gray-600">WAT WE BOUWEN</p>
+            </div>
             <h2 className="text-4xl md:text-5xl font-bold">
               Proven in<br />practice
             </h2>
