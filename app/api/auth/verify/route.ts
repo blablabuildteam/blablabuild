@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       });
 
       // Set cookie that expires in 7 days
-      response.cookies.set(AUTH_COOKIE_NAME, AUTH_TOKEN, {
+      response.cookies.set(AUTH_COOKIE_NAME, AUTH_TOKEN as string, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
