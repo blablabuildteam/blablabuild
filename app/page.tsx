@@ -26,11 +26,11 @@ export default function HomePage() {
   }, []);
 
   const outcomes = [
-    { icon: Clock, label: 'Time saved' },
-    { icon: DollarSign, label: 'Cost savings' },
-    { icon: TrendingUp, label: 'Sales growth' },
-    { icon: Zap, label: 'Less friction' },
-    { icon: Database, label: 'Centralised data' },
+    { icon: Clock, text: 'Bespaar kostbare', highlight: 'tijd', after: 'met slimme automatisering' },
+    { icon: DollarSign, text: 'Reduceer operationele', highlight: 'kosten', after: 'met AI-gedreven efficiency' },
+    { icon: TrendingUp, text: 'Verhoog je', highlight: 'omzet', after: 'door data-driven beslissingen' },
+    { icon: Zap, text: 'Elimineer', highlight: 'wrijving', after: 'in je processen' },
+    { icon: Database, text: 'Centraliseer je', highlight: 'data', after: 'voor betere inzichten' },
   ];
 
   const founders = [
@@ -124,15 +124,17 @@ export default function HomePage() {
               We transformeren bedrijfscomplexiteit naar meetbare resultaten met AI en automatisering.
             </p>
 
-            {/* Outcome badges */}
-            <div className="flex flex-wrap gap-3 justify-center">
+            {/* Outcome tickets */}
+            <div className="flex flex-wrap gap-4 justify-center max-w-4xl mx-auto">
               {outcomes.map((outcome, idx) => (
                 <div
-                  key={outcome.label}
-                  className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-full inline-flex items-center gap-2 text-sm font-medium text-gray-600"
+                  key={outcome.highlight}
+                  className="px-5 py-3 bg-white border border-gray-200 rounded-lg inline-flex items-center gap-3 text-sm text-gray-700 hover:border-bla-lime transition-all"
                 >
-                  <outcome.icon className="w-4 h-4" />
-                  {outcome.label}
+                  <outcome.icon className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                  <span>
+                    {outcome.text} <span className="font-semibold text-gray-900">{outcome.highlight}</span> {outcome.after}
+                  </span>
                 </div>
               ))}
             </div>
@@ -232,9 +234,9 @@ export default function HomePage() {
         </div>
 
         {/* Horizontal scrolling carousel */}
-        <div className="overflow-x-auto scrollbar-hide -mx-6">
-          <div className="flex gap-6 min-w-max pb-4">
-            <div className="w-6 flex-shrink-0"></div>
+        <div className="overflow-x-auto scrollbar-hide">
+          <div className="flex gap-6 min-w-max pb-4 pl-6">
+            <div className="w-0 flex-shrink-0"></div>
             <div className="space-y-4 w-80 flex-shrink-0">
               <div className="h-64 bg-white rounded-xl border border-gray-200 flex items-center justify-center">
                 <Database className="w-24 h-24 text-gray-300" />
@@ -294,7 +296,7 @@ export default function HomePage() {
                 Voorspel trends, identificeer kansen en optimaliseer je business decisions met data-driven inzichten.
               </p>
             </div>
-            <div className="w-6 flex-shrink-0"></div>
+            <div className="w-0 flex-shrink-0"></div>
           </div>
         </div>
       </section>
