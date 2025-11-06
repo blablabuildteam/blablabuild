@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
-const SITE_PASSWORD = process.env.SITE_PASSWORD || 'trump';
+const SITE_PASSWORD = process.env.SITE_PASSWORD;
 const AUTH_COOKIE_NAME = 'site_auth';
-const AUTH_TOKEN = process.env.AUTH_TOKEN || 'blabla_authenticated_2024';
+const AUTH_TOKEN = process.env.AUTH_TOKEN;
+
+if (!SITE_PASSWORD || !AUTH_TOKEN) {
+  throw new Error('Missing required environment variables: SITE_PASSWORD or AUTH_TOKEN');
+}
 
 export async function POST(req: NextRequest) {
   try {

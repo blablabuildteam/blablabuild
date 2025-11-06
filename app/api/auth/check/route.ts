@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
 const AUTH_COOKIE_NAME = 'site_auth';
-const AUTH_TOKEN = process.env.AUTH_TOKEN || 'blabla_authenticated_2024';
+const AUTH_TOKEN = process.env.AUTH_TOKEN;
+
+if (!AUTH_TOKEN) {
+  throw new Error('Missing required environment variable: AUTH_TOKEN');
+}
 
 export async function GET(req: NextRequest) {
   try {
