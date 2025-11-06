@@ -144,9 +144,9 @@ export default function HomePage() {
       <section className="min-h-screen snap-start flex items-center justify-center bg-gray-50 px-4">
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-20">
-            <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-full mb-4">
               <div className="w-2 h-2 bg-bla-lime rounded-full animate-pulse"></div>
-              <p className="text-xs uppercase tracking-wider text-gray-600">VAN EERSTE CONTACT TOT SCHAALBARE IMPACT</p>
+              <p className="text-xs uppercase tracking-wider text-gray-300">VAN EERSTE CONTACT TOT SCHAALBARE IMPACT</p>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold">A lean process</h2>
           </div>
@@ -154,10 +154,6 @@ export default function HomePage() {
           <div className="max-w-4xl mx-auto">
             {/* Connected circles */}
             <div className="relative flex justify-between items-center mb-16">
-              {/* Connecting lines */}
-              <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-300 -translate-y-1/2 z-0"></div>
-              <div className="absolute top-1/2 left-1/3 w-1/3 h-0.5 bg-gray-300 translate-y-20 rounded-full z-0"></div>
-              
               {[
                 { title: 'CONNECT', subtitle: 'bla', description: 'AI intake voor directe inzichten' },
                 { title: 'CO-CREATE', subtitle: 'bla', description: 'Workshop-gedreven verdieping' },
@@ -181,9 +177,9 @@ export default function HomePage() {
       <section className="min-h-screen snap-start flex items-center justify-center bg-white px-4">
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-full mb-4">
               <div className="w-2 h-2 bg-bla-lime rounded-full animate-pulse"></div>
-              <p className="text-xs uppercase tracking-wider text-gray-600">INNOVATION → BUSINESS TRANSFORMATION</p>
+              <p className="text-xs uppercase tracking-wider text-gray-300">INNOVATION → BUSINESS TRANSFORMATION</p>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-2">
               The <span className="text-bla-lime">Three Faces</span> of GenAI Friction
@@ -222,20 +218,23 @@ export default function HomePage() {
       </section>
 
       {/* Use Cases Section */}
-      <section className="min-h-screen snap-start flex items-center justify-center bg-gray-50 px-4">
-        <div className="max-w-6xl mx-auto w-full">
-          <div className="text-left mb-16">
-            <div className="flex items-center gap-2 mb-4">
+      <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 py-20">
+        <div className="max-w-6xl mx-auto w-full px-4 mb-16">
+          <div className="text-left">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-full mb-4">
               <div className="w-2 h-2 bg-bla-lime rounded-full animate-pulse"></div>
-              <p className="text-xs uppercase tracking-wider text-gray-600">WAT WE BOUWEN</p>
+              <p className="text-xs uppercase tracking-wider text-gray-300">WAT WE BOUWEN</p>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold">
               Proven in<br />practice
             </h2>
           </div>
+        </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="space-y-4">
+        {/* Horizontal scrolling carousel */}
+        <div className="overflow-x-auto scrollbar-hide">
+          <div className="flex gap-6 px-4 md:px-8 min-w-max pb-4">
+            <div className="space-y-4 w-80 flex-shrink-0">
               <div className="h-64 bg-white rounded-xl border border-gray-200 flex items-center justify-center">
                 <Database className="w-24 h-24 text-gray-300" />
               </div>
@@ -245,7 +244,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 w-80 flex-shrink-0">
               <div className="h-64 bg-white rounded-xl border border-gray-200 flex items-center justify-center">
                 <Zap className="w-24 h-24 text-gray-300" />
               </div>
@@ -255,13 +254,43 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 w-80 flex-shrink-0">
               <div className="h-64 bg-white rounded-xl border border-gray-200 flex items-center justify-center">
                 <TrendingUp className="w-24 h-24 text-gray-300" />
               </div>
               <h3 className="text-xs uppercase tracking-wider font-medium">SCHAALBARE GROEI</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
                 Gebouwd voor enterprise scale. Onze oplossingen groeien mee - on demand, in the loop, altijd aan het verbeteren.
+              </p>
+            </div>
+
+            <div className="space-y-4 w-80 flex-shrink-0">
+              <div className="h-64 bg-white rounded-xl border border-gray-200 flex items-center justify-center">
+                <Sparkles className="w-24 h-24 text-gray-300" />
+              </div>
+              <h3 className="text-xs uppercase tracking-wider font-medium">AI LEAD QUALIFICATION</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Automatische lead scoring en kwalificatie. Jouw sales team focust op de beste kansen, AI doet de rest.
+              </p>
+            </div>
+
+            <div className="space-y-4 w-80 flex-shrink-0">
+              <div className="h-64 bg-white rounded-xl border border-gray-200 flex items-center justify-center">
+                <Target className="w-24 h-24 text-gray-300" />
+              </div>
+              <h3 className="text-xs uppercase tracking-wider font-medium">CONTENT AUTOMATION</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Van e-mail campagnes tot product descriptions. Consistente, on-brand content op schaal.
+              </p>
+            </div>
+
+            <div className="space-y-4 w-80 flex-shrink-0">
+              <div className="h-64 bg-white rounded-xl border border-gray-200 flex items-center justify-center">
+                <DollarSign className="w-24 h-24 text-gray-300" />
+              </div>
+              <h3 className="text-xs uppercase tracking-wider font-medium">PREDICTIVE ANALYTICS</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Voorspel trends, identificeer kansen en optimaliseer je business decisions met data-driven inzichten.
               </p>
             </div>
           </div>
