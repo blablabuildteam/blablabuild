@@ -144,16 +144,16 @@ export default function HomePage() {
       <section className="min-h-screen snap-start flex items-center justify-center bg-gray-50 px-4">
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-20">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-full mb-4">
-              <div className="w-2 h-2 bg-bla-lime rounded-full animate-pulse"></div>
-              <p className="text-xs uppercase tracking-wider text-gray-300">VAN EERSTE CONTACT TOT SCHAALBARE IMPACT</p>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-bla-lime/20 rounded-full mb-4">
+              <div className="w-1.5 h-1.5 bg-bla-lime rounded-full animate-pulse"></div>
+              <p className="text-[10px] uppercase tracking-wider text-gray-900 font-medium">VAN EERSTE CONTACT TOT SCHAALBARE IMPACT</p>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold">A lean process</h2>
           </div>
 
           <div className="max-w-4xl mx-auto">
-            {/* Connected circles */}
-            <div className="relative flex justify-between items-center mb-16">
+            {/* Connected circles - horizontal on desktop, vertical on mobile */}
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-8 md:gap-0 mb-16">
               {[
                 { title: 'CONNECT', subtitle: 'bla', description: 'AI intake voor directe inzichten' },
                 { title: 'CO-CREATE', subtitle: 'bla', description: 'Workshop-gedreven verdieping' },
@@ -177,9 +177,9 @@ export default function HomePage() {
       <section className="min-h-screen snap-start flex items-center justify-center bg-white px-4">
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-full mb-4">
-              <div className="w-2 h-2 bg-bla-lime rounded-full animate-pulse"></div>
-              <p className="text-xs uppercase tracking-wider text-gray-300">INNOVATION → BUSINESS TRANSFORMATION</p>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-bla-lime/20 rounded-full mb-4">
+              <div className="w-1.5 h-1.5 bg-bla-lime rounded-full animate-pulse"></div>
+              <p className="text-[10px] uppercase tracking-wider text-gray-900 font-medium">INNOVATION → BUSINESS TRANSFORMATION</p>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-2">
               The <span className="text-bla-lime">Three Faces</span> of GenAI Friction
@@ -221,9 +221,9 @@ export default function HomePage() {
       <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 py-20">
         <div className="max-w-6xl mx-auto w-full px-4 mb-16">
           <div className="text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-full mb-4">
-              <div className="w-2 h-2 bg-bla-lime rounded-full animate-pulse"></div>
-              <p className="text-xs uppercase tracking-wider text-gray-300">WAT WE BOUWEN</p>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-bla-lime/20 rounded-full mb-4">
+              <div className="w-1.5 h-1.5 bg-bla-lime rounded-full animate-pulse"></div>
+              <p className="text-[10px] uppercase tracking-wider text-gray-900 font-medium">WAT WE BOUWEN</p>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold">
               Proven in<br />practice
@@ -233,7 +233,8 @@ export default function HomePage() {
 
         {/* Horizontal scrolling carousel */}
         <div className="overflow-x-auto scrollbar-hide">
-          <div className="flex gap-6 px-4 md:px-8 min-w-max pb-4">
+          <div className="flex gap-6 min-w-max pb-4">
+            <div className="w-4 flex-shrink-0"></div>
             <div className="space-y-4 w-80 flex-shrink-0">
               <div className="h-64 bg-white rounded-xl border border-gray-200 flex items-center justify-center">
                 <Database className="w-24 h-24 text-gray-300" />
@@ -293,6 +294,7 @@ export default function HomePage() {
                 Voorspel trends, identificeer kansen en optimaliseer je business decisions met data-driven inzichten.
               </p>
             </div>
+            <div className="w-4 flex-shrink-0"></div>
           </div>
         </div>
       </section>
