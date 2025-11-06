@@ -126,7 +126,7 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-4xl md:text-5xl font-bold mb-8 leading-tight max-w-4xl mx-auto">
-              We transformeren bedrijfscomplexiteit naar meetbare resultaten met AI en automatisering
+              Van complexiteit naar resultaten
             </h1>
             
             {/* Animated outcome subtitle */}
