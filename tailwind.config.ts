@@ -9,17 +9,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Minimal white OpenAI-inspired with neon lime accent
         bla: {
-          lime: "#c4f000",
-          dark: "#0a0a0a",
-          gray: "#f5f5f5",
-          olive: "#6b7c1f",
+          lime: "#c4f000",      // Bright neon lime (from branding)
+          dark: "#0a0a0a",      // Deep black
+          gray: "#f9fafb",      // Light gray backgrounds
+          "gray-light": "#f3f4f6",
+          border: "#e5e7eb",    // Light borders
         },
       },
       animation: {
         "fade-in": "fadeIn 0.3s ease-in",
         "slide-up": "slideUp 0.4s ease-out",
         "scale-in": "scaleIn 0.2s ease-out",
+        "slide-left": "slideLeft 0.4s ease-out",
       },
       keyframes: {
         fadeIn: {
@@ -33,6 +36,10 @@ const config: Config = {
         scaleIn: {
           "0%": { transform: "scale(0.95)", opacity: "0" },
           "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        slideLeft: {
+          "0%": { transform: "translateX(100%)" },
+          "100%": { transform: "translateX(0)" },
         },
       },
     },

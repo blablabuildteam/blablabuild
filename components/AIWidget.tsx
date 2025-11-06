@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Sparkles, Loader2 } from 'lucide-react';
+import { X, Send, Sparkles, Loader2, ChevronRight } from 'lucide-react';
 import { ChatResponse } from '@/lib/types';
 import { trackWidgetEvent } from '@/lib/analytics';
 
@@ -14,22 +14,14 @@ interface Message {
 
 export default function AIWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const [currentQuestion, setCurrentQuestion] = useState<string>('');
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const initializeSession = async () => {
     try {
@@ -45,6 +37,7 @@ export default function AIWidget() {
 
       const data: ChatResponse = await response.json();
       setSessionId(data.sessionId);
+      setCurrentQuestion(data.message);
       setMessages([{ role: 'assistant', content: data.message, timestamp: new Date() }]);
       setProgress(data.progress || 0);
     } catch (error) {
@@ -59,20 +52,16 @@ export default function AIWidget() {
     if (!sessionId) {
       await initializeSession();
     }
-
-    // Show minimized view first
+    
+    // Auto-focus input
     setTimeout(() => {
-      setIsMinimized(false);
-    }, 300);
+      inputRef.current?.focus();
+    }, 400);
   };
 
   const handleClose = () => {
-    setIsMinimized(true);
+    setIsOpen(false);
     trackWidgetEvent(sessionId || 'unknown', 'closed');
-    
-    setTimeout(() => {
-      setIsOpen(false);
-    }, 300);
   };
 
   const sendMessage = async () => {
@@ -103,6 +92,7 @@ export default function AIWidget() {
         setSessionId(data.sessionId);
       }
 
+      setCurrentQuestion(data.message);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
         content: data.message, 
@@ -117,13 +107,13 @@ export default function AIWidget() {
       }
     } catch (error) {
       console.error('Error sending message:', error);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'Sorry, er ging iets mis. Probeer het opnieuw.', 
-        timestamp: new Date() 
-      }]);
+      setCurrentQuestion('Sorry, er ging iets mis. Probeer het opnieuw.');
     } finally {
       setIsLoading(false);
+      // Auto-focus for next question
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
   };
 
@@ -134,156 +124,184 @@ export default function AIWidget() {
     }
   };
 
+  // Hidden trigger button (activated by CTA buttons)
+  useEffect(() => {
+    const trigger = document.createElement('button');
+    trigger.id = 'ai-widget-trigger';
+    trigger.style.display = 'none';
+    trigger.onclick = handleOpen;
+    document.body.appendChild(trigger);
+
+    return () => {
+      trigger.remove();
+    };
+  }, [sessionId]);
+
   return (
     <>
-      {/* Floating button */}
-      <AnimatePresence>
-        {!isOpen && (
-          <motion.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            onClick={handleOpen}
-            className="fixed bottom-6 right-6 w-16 h-16 bg-bla-lime rounded-full shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center group z-50"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Sparkles className="w-7 h-7 text-bla-dark group-hover:rotate-12 transition-transform" />
-          </motion.button>
-        )}
-      </AnimatePresence>
-
-      {/* Widget container */}
+      {/* Overlay */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ 
-              opacity: 1, 
-              y: 0, 
-              scale: 1,
-              width: isMinimized ? '400px' : '450px',
-              height: isMinimized ? '120px' : '650px',
-            }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="fixed bottom-6 right-6 bg-white rounded-2xl shadow-2xl overflow-hidden z-50 flex flex-col"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleClose}
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Drawer Module */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            className="fixed top-0 right-0 h-full w-full md:w-[600px] bg-white shadow-2xl z-50 flex flex-col"
           >
             {/* Header */}
-            <div className="bg-bla-lime p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-bla-dark rounded-full flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-bla-lime" />
+            <div className="border-b border-bla-border bg-white">
+              <div className="p-6 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-bla-lime rounded-xl flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-bla-dark" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold">AI Intake Analyse</h2>
+                    <p className="text-sm text-gray-600">
+                      {isComplete ? 'Analyse compleet ✓' : `${progress}% voltooid`}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-bold text-bla-dark">blablabuild AI</h3>
-                  <p className="text-xs text-bla-olive">
-                    {isComplete ? 'Voltooid! ✓' : `${progress}% compleet`}
-                  </p>
-                </div>
+                <button
+                  onClick={handleClose}
+                  className="w-10 h-10 hover:bg-bla-gray rounded-full flex items-center justify-center transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-600" />
+                </button>
               </div>
-              <button
-                onClick={handleClose}
-                className="w-8 h-8 hover:bg-bla-dark/10 rounded-full flex items-center justify-center transition-colors"
-              >
-                <X className="w-5 h-5 text-bla-dark" />
-              </button>
+
+              {/* Progress bar */}
+              {!isComplete && (
+                <div className="h-1 bg-bla-gray">
+                  <motion.div
+                    className="h-full bg-bla-lime"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.5 }}
+                  />
+                </div>
+              )}
             </div>
 
-            {/* Progress bar */}
-            {!isComplete && (
-              <div className="h-1 bg-gray-200">
+            {/* Content Area - Module Style */}
+            <div className="flex-1 overflow-y-auto p-6 bg-bla-gray">
+              {/* Current Question Module */}
+              {currentQuestion && !isComplete && (
                 <motion.div
-                  className="h-full bg-bla-olive"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.5 }}
-                />
-              </div>
-            )}
-
-            {/* Messages */}
-            {!isMinimized && (
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-                {messages.map((message, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-[85%] p-3 rounded-2xl ${
-                        message.role === 'user'
-                          ? 'bg-bla-dark text-white'
-                          : 'bg-white text-gray-800 shadow-sm'
-                      }`}
-                    >
-                      <p className="text-sm whitespace-pre-wrap leading-relaxed">
-                        {message.content}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded-2xl border border-bla-border p-8 mb-6 shadow-sm"
+                >
+                  <div className="flex items-start gap-3 mb-6">
+                    <div className="w-8 h-8 bg-bla-lime/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                      <Sparkles className="w-4 h-4 text-bla-lime" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-gray-900 text-lg leading-relaxed whitespace-pre-wrap">
+                        {currentQuestion}
                       </p>
                     </div>
-                  </motion.div>
-                ))}
-                
-                {isLoading && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="flex justify-start"
-                  >
-                    <div className="bg-white p-3 rounded-2xl shadow-sm">
-                      <Loader2 className="w-5 h-5 text-bla-olive animate-spin" />
+                  </div>
+
+                  {/* Input Area */}
+                  <div className="space-y-3">
+                    <textarea
+                      ref={inputRef}
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Type je antwoord hier..."
+                      rows={4}
+                      className="w-full px-4 py-3 border border-bla-border rounded-xl focus:outline-none focus:ring-2 focus:ring-bla-lime focus:border-transparent resize-none text-gray-900 placeholder-gray-400"
+                      disabled={isLoading}
+                    />
+                    <div className="flex justify-end">
+                      <button
+                        onClick={sendMessage}
+                        disabled={!input.trim() || isLoading}
+                        className="px-6 py-3 bg-bla-lime hover:bg-bla-lime/90 text-bla-dark rounded-full font-semibold transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Verwerken...
+                          </>
+                        ) : (
+                          <>
+                            Volgende
+                            <ChevronRight className="w-4 h-4" />
+                          </>
+                        )}
+                      </button>
                     </div>
-                  </motion.div>
-                )}
-                
-                <div ref={messagesEndRef} />
-              </div>
-            )}
+                  </div>
+                </motion.div>
+              )}
 
-            {/* Input */}
-            {!isMinimized && !isComplete && (
-              <div className="p-4 bg-white border-t border-gray-200">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="Type je antwoord..."
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime focus:border-transparent"
-                    disabled={isLoading}
-                  />
-                  <button
-                    onClick={sendMessage}
-                    disabled={!input.trim() || isLoading}
-                    className="w-12 h-12 bg-bla-dark text-white rounded-full flex items-center justify-center hover:bg-bla-dark/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <Send className="w-5 h-5" />
-                  </button>
+              {/* Previous Q&A */}
+              {messages.length > 1 && (
+                <div className="space-y-4">
+                  <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Jouw antwoorden</p>
+                  {messages.slice(0, -1).reverse().map((message, idx) => (
+                    message.role === 'user' && (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="bg-white rounded-xl border border-bla-border p-4"
+                      >
+                        <p className="text-sm text-gray-900">{message.content}</p>
+                      </div>
+                    )
+                  ))}
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Minimized view */}
-            {isMinimized && messages.length > 0 && (
-              <div className="p-4 flex items-center gap-3 cursor-pointer" onClick={() => setIsMinimized(false)}>
-                <div className="flex-1">
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {messages[messages.length - 1].content}
+              {/* Complete state */}
+              {isComplete && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-white rounded-2xl border-2 border-bla-lime p-8 text-center"
+                >
+                  <div className="w-16 h-16 bg-bla-lime rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Sparkles className="w-8 h-8 text-bla-dark" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4">Analyse Voltooid!</h3>
+                  <p className="text-gray-600 mb-6">
+                    {currentQuestion}
                   </p>
-                </div>
-                <div className="text-bla-lime">
-                  <MessageCircle className="w-6 h-6" />
-                </div>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Footer Info */}
+            <div className="p-6 border-t border-bla-border bg-white">
+              <div className="flex items-center justify-between text-sm text-gray-500">
+                <span>Powered by blablabuild AI</span>
+                <span className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-bla-lime rounded-full" />
+                  Secure & Private
+                </span>
               </div>
-            )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
     </>
   );
 }
-

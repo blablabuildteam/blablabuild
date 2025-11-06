@@ -335,7 +335,7 @@ Geef antwoord in JSON formaat met alleen de velden die je met zekerheid kunt bep
     }
 
     if (!slots.data_integration) {
-      return '**Hoe toegankelijk en geïntegreerd** is jullie data uit verschillende systemen?\n\na) Zeer goed - alles is gekoppeld\nb) Redelijk - sommige systemen zijn gekoppeld\nc) Slecht - data zit versnipperd in silo's';
+      return '**Hoe toegankelijk en geïntegreerd** is jullie data uit verschillende systemen?\n\na) Zeer goed - alles is gekoppeld\nb) Redelijk - sommige systemen zijn gekoppeld\nc) Slecht - data zit versnipperd in silos';
     }
 
     if (!slots.goal_short_term) {
