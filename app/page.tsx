@@ -256,8 +256,8 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-50 border-t border-gray-200 py-8">
-        <div className="max-w-5xl mx-auto px-4">
+      <footer className="snap-start bg-gray-50 border-t border-gray-200 py-8 min-h-[200px] flex items-center">
+        <div className="max-w-5xl mx-auto px-4 w-full">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div>
               <h3 className="text-lg font-bold mb-1 flex items-end justify-center md:justify-start leading-none gap-1">
