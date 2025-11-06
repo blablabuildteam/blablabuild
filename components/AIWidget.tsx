@@ -227,16 +227,29 @@ export default function AIWidget() {
                   transition={{ delay: 0.3 }}
                   className="space-y-4"
                 >
-                  {/* Question Card */}
+                  {/* Question Balloon - blabla style */}
                   <motion.div 
-                    whileHover={{ scale: 1.01 }}
-                    className="bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-100 p-5 shadow-sm"
+                    whileHover={{ y: -2 }}
+                    className="relative"
                   >
-                    <div className="flex items-start gap-2 mb-3">
-                      <div className="w-1 h-1 bg-bla-lime rounded-full mt-2" />
-                      <p className="text-sm leading-relaxed text-gray-800 whitespace-pre-wrap">
-                        {currentQuestion}
-                      </p>
+                    <div className="bg-white rounded-2xl border-2 border-gray-100 p-6 shadow-sm relative">
+                      {/* Small tail/pointer */}
+                      <div className="absolute -left-2 top-6 w-3 h-3 bg-white border-l-2 border-b-2 border-gray-100 rotate-45" />
+                      
+                      {/* Quote mark decoration */}
+                      <div className="flex items-start gap-3">
+                        <motion.div
+                          initial={{ rotate: 0 }}
+                          animate={{ rotate: [0, -5, 0] }}
+                          transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                          className="flex-shrink-0 mt-1"
+                        >
+                          <Quote className="w-5 h-5 text-bla-lime/40" />
+                        </motion.div>
+                        <p className="text-sm leading-relaxed text-gray-800 whitespace-pre-wrap">
+                          {currentQuestion}
+                        </p>
+                      </div>
                     </div>
                   </motion.div>
 
@@ -352,38 +365,43 @@ export default function AIWidget() {
                 </motion.div>
               )}
 
-              {/* Complete State */}
+              {/* Complete State - Final balloon */}
               {isComplete && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ type: 'spring', damping: 20 }}
-                  className="bg-gradient-to-br from-white to-gray-50 rounded-xl border-2 border-bla-lime/20 p-8 text-center"
+                  className="relative"
                 >
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.2, type: 'spring', damping: 15 }}
-                    className="w-16 h-16 bg-bla-lime rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"
-                  >
-                    <Quote className="w-8 h-8 text-bla-dark" />
-                  </motion.div>
-                  <motion.h3
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="text-xl font-bold mb-3 text-gray-900"
-                  >
-                    Analyse Compleet
-                  </motion.h3>
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4 }}
-                    className="text-sm text-gray-600 leading-relaxed"
-                  >
-                    {currentQuestion}
-                  </motion.p>
+                  <div className="bg-white rounded-2xl border-2 border-bla-lime p-8 text-center shadow-lg relative">
+                    {/* Decorative tail */}
+                    <div className="absolute -left-2 top-8 w-4 h-4 bg-white border-l-2 border-b-2 border-bla-lime rotate-45" />
+                    
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.2, type: 'spring', damping: 15 }}
+                      className="w-16 h-16 bg-bla-lime rounded-full flex items-center justify-center mx-auto mb-4 shadow-md"
+                    >
+                      <Quote className="w-8 h-8 text-bla-dark" />
+                    </motion.div>
+                    <motion.h3
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="text-xl font-bold mb-3 text-gray-900"
+                    >
+                      Analyse Compleet
+                    </motion.h3>
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.4 }}
+                      className="text-sm text-gray-600 leading-relaxed"
+                    >
+                      {currentQuestion}
+                    </motion.p>
+                  </div>
                 </motion.div>
               )}
             </div>
