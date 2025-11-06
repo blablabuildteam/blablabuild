@@ -22,9 +22,9 @@ while IFS='=' read -r key value || [ -n "$key" ]; do
     # Remove any quotes from the value
     value=$(echo "$value" | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//")
     
-    # Skip if already added (NEXT_PUBLIC_SITE_PASSWORD)
+    # Skip deprecated variables
     if [ "$key" == "NEXT_PUBLIC_SITE_PASSWORD" ]; then
-        echo "⏭️  Skipping $key (already added)"
+        echo "⏭️  Skipping deprecated $key (use SITE_PASSWORD instead)"
         continue
     fi
     

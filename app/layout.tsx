@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Inter, Fredoka } from "next/font/google";
+import { Inter, Caveat } from "next/font/google";
 import "./globals.css";
 import AIWidget from "@/components/AIWidget";
 import PasswordGate from "@/components/PasswordGate";
 
 const inter = Inter({ subsets: ["latin"] });
 
-// Fredoka font for playful "blabla" logo
-const loopySans = Fredoka({ 
+// Caveat font for playful loopy "blabla" logo
+const loopySans = Caveat({ 
   weight: "400",
   subsets: ["latin"],
   variable: '--font-loopy-sans',
