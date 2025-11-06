@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Loader2, ChevronRight } from 'lucide-react';
+import { X, Loader2, ChevronRight, Quote, Check } from 'lucide-react';
 import { ChatResponse } from '@/lib/types';
 import { trackWidgetEvent } from '@/lib/analytics';
 
@@ -134,6 +134,8 @@ export default function AIWidget() {
     };
   }, []);
 
+  const questionNumber = Math.min(Math.floor(progress / 14), 7);
+
   return (
     <>
       <AnimatePresence>
@@ -143,7 +145,7 @@ export default function AIWidget() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/10 backdrop-blur-[2px] z-40"
           />
         )}
       </AnimatePresence>
@@ -154,131 +156,257 @@ export default function AIWidget() {
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed top-0 right-0 h-full w-full md:w-[480px] bg-white shadow-2xl z-50 flex flex-col"
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed top-0 right-0 h-full w-full md:w-[500px] bg-white shadow-2xl z-50 flex flex-col"
           >
-            <div className="border-b border-gray-200 bg-white">
-              <div className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 bg-bla-lime rounded-lg flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-bla-dark" />
-                  </div>
+            {/* Header */}
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="border-b border-gray-100 bg-white"
+            >
+              <div className="p-5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <motion.div 
+                    whileHover={{ rotate: 15, scale: 1.1 }}
+                    className="w-9 h-9 bg-gradient-to-br from-bla-lime to-bla-lime/80 rounded-lg flex items-center justify-center shadow-sm"
+                  >
+                    <Quote className="w-5 h-5 text-bla-dark" />
+                  </motion.div>
                   <div>
-                    <h2 className="text-base font-semibold">AI Intake</h2>
-                    <p className="text-xs text-gray-500">
-                      {isComplete ? 'Compleet' : `${progress}%`}
-                    </p>
+                    <h2 className="text-base font-semibold text-gray-900">AI Intake</h2>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500">
+                        Vraag {questionNumber} van 7
+                      </span>
+                      <div className="flex gap-0.5">
+                        {[...Array(7)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: i * 0.05 }}
+                            className={`w-1 h-1 rounded-full ${
+                              i < questionNumber ? 'bg-bla-lime' : 'bg-gray-200'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={handleClose}
-                  className="w-8 h-8 hover:bg-gray-100 rounded-lg flex items-center justify-center transition-colors"
+                  className="w-8 h-8 hover:bg-gray-50 rounded-lg flex items-center justify-center transition-colors"
                 >
-                  <X className="w-4 h-4 text-gray-600" />
-                </button>
+                  <X className="w-4 h-4 text-gray-400" />
+                </motion.button>
               </div>
 
               {!isComplete && (
-                <div className="h-0.5 bg-gray-100">
+                <div className="h-0.5 bg-gray-50 overflow-hidden">
                   <motion.div
-                    className="h-full bg-bla-lime"
+                    className="h-full bg-gradient-to-r from-bla-lime via-bla-lime/80 to-bla-lime"
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ duration: 0.6, ease: 'easeOut' }}
                   />
                 </div>
               )}
-            </div>
+            </motion.div>
 
-            <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+            {/* Content Area */}
+            <div className="flex-1 overflow-y-auto p-5">
               {currentQuestion && !isComplete && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-xl border border-gray-200 p-5 mb-4"
+                  transition={{ delay: 0.3 }}
+                  className="space-y-4"
                 >
-                  <div className="mb-4">
-                    <p className="text-gray-900 text-sm leading-relaxed whitespace-pre-wrap">
-                      {currentQuestion}
-                    </p>
-                  </div>
+                  {/* Question Card */}
+                  <motion.div 
+                    whileHover={{ scale: 1.01 }}
+                    className="bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-100 p-5 shadow-sm"
+                  >
+                    <div className="flex items-start gap-2 mb-3">
+                      <div className="w-1 h-1 bg-bla-lime rounded-full mt-2" />
+                      <p className="text-sm leading-relaxed text-gray-800 whitespace-pre-wrap">
+                        {currentQuestion}
+                      </p>
+                    </div>
+                  </motion.div>
 
-                  <div className="space-y-2">
-                    <textarea
-                      ref={inputRef}
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Type je antwoord..."
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-bla-lime focus:border-bla-lime resize-none text-sm text-gray-900 placeholder-gray-400"
-                      disabled={isLoading}
-                    />
-                    <div className="flex justify-end">
+                  {/* Input Area */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="space-y-3"
+                  >
+                    <div className="relative">
+                      <textarea
+                        ref={inputRef}
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        placeholder="Type je antwoord..."
+                        rows={4}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bla-lime/50 focus:border-bla-lime transition-all resize-none text-sm text-gray-900 placeholder-gray-400 bg-white"
+                        disabled={isLoading}
+                      />
+                      {input.length > 0 && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute bottom-3 right-3 text-xs text-gray-400"
+                        >
+                          {input.length} chars
+                        </motion.div>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
                       <button
+                        type="button"
+                        onClick={() => setInput('')}
+                        className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                        Wis
+                      </button>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={sendMessage}
                         disabled={!input.trim() || isLoading}
-                        className="px-4 py-2 bg-bla-lime hover:bg-bla-lime/90 text-bla-dark rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="group px-5 py-2.5 bg-bla-lime hover:bg-bla-lime/90 text-bla-dark rounded-lg text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm relative overflow-hidden"
                       >
                         {isLoading ? (
                           <>
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <Loader2 className="w-4 h-4 animate-spin" />
                             <span>Verwerken</span>
                           </>
                         ) : (
                           <>
                             <span>Volgende</span>
-                            <ChevronRight className="w-3.5 h-3.5" />
+                            <motion.div
+                              animate={{ x: [0, 3, 0] }}
+                              transition={{ repeat: Infinity, duration: 1.5 }}
+                            >
+                              <ChevronRight className="w-4 h-4" />
+                            </motion.div>
                           </>
                         )}
-                      </button>
+                      </motion.button>
                     </div>
+                  </motion.div>
+                </motion.div>
+              )}
+
+              {/* Previous Answers */}
+              {messages.length > 1 && !isComplete && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="mt-6 space-y-3"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="h-px flex-1 bg-gray-200" />
+                    <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Jouw antwoorden
+                    </span>
+                    <div className="h-px flex-1 bg-gray-200" />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    {messages.slice(0, -1).reverse().map((message, idx) => (
+                      message.role === 'user' && (
+                        <motion.div
+                          key={idx}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.1 }}
+                          whileHover={{ x: 2 }}
+                          className="group bg-white rounded-lg border border-gray-100 p-3 hover:border-gray-200 transition-all cursor-default"
+                        >
+                          <div className="flex items-start gap-2">
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="w-4 h-4 bg-bla-lime/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                            >
+                              <Check className="w-2.5 h-2.5 text-bla-lime" />
+                            </motion.div>
+                            <p className="text-xs text-gray-700 leading-relaxed flex-1">
+                              {message.content}
+                            </p>
+                          </div>
+                        </motion.div>
+                      )
+                    ))}
                   </div>
                 </motion.div>
               )}
 
-              {messages.length > 1 && (
-                <div className="space-y-2">
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Jouw antwoorden</p>
-                  {messages.slice(0, -1).reverse().map((message, idx) => (
-                    message.role === 'user' && (
-                      <div
-                        key={idx}
-                        className="bg-white rounded-lg border border-gray-200 p-3"
-                      >
-                        <p className="text-xs text-gray-700">{message.content}</p>
-                      </div>
-                    )
-                  ))}
-                </div>
-              )}
-
+              {/* Complete State */}
               {isComplete && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-white rounded-xl border border-bla-lime p-5 text-center"
+                  transition={{ type: 'spring', damping: 20 }}
+                  className="bg-gradient-to-br from-white to-gray-50 rounded-xl border-2 border-bla-lime/20 p-8 text-center"
                 >
-                  <div className="w-12 h-12 bg-bla-lime rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Sparkles className="w-6 h-6 text-bla-dark" />
-                  </div>
-                  <h3 className="text-lg font-bold mb-2">Analyse Voltooid!</h3>
-                  <p className="text-sm text-gray-600">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2, type: 'spring', damping: 15 }}
+                    className="w-16 h-16 bg-bla-lime rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"
+                  >
+                    <Quote className="w-8 h-8 text-bla-dark" />
+                  </motion.div>
+                  <motion.h3
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-xl font-bold mb-3 text-gray-900"
+                  >
+                    Analyse Compleet
+                  </motion.h3>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="text-sm text-gray-600 leading-relaxed"
+                  >
                     {currentQuestion}
-                  </p>
+                  </motion.p>
                 </motion.div>
               )}
             </div>
 
-            <div className="p-3 border-t border-gray-200 bg-white">
-              <div className="flex items-center justify-between text-xs text-gray-500">
-                <span>blablabuild AI</span>
-                <span className="flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 bg-bla-lime rounded-full" />
-                  Secure
-                </span>
+            {/* Footer */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="p-4 border-t border-gray-100 bg-gray-50"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                    className="w-1.5 h-1.5 bg-bla-lime rounded-full"
+                  />
+                  <span className="text-xs text-gray-500">blablabuild AI</span>
+                </div>
+                <span className="text-xs text-gray-400">Secure & Private</span>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
