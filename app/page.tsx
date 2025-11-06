@@ -266,69 +266,93 @@ export default function HomePage() {
         </div>
 
         {/* Horizontal scrolling carousel */}
-        <div className="overflow-x-auto scrollbar-hide">
-          <div className="flex gap-6 min-w-max pb-4 pl-6">
-            <div className="w-0 flex-shrink-0"></div>
-            <div className="space-y-4 w-80 flex-shrink-0">
-              <div className="h-64 bg-white rounded-xl border border-gray-200 flex items-center justify-center">
-                <Database className="w-24 h-24 text-gray-300" />
+        <div className="overflow-x-auto scrollbar-hide snap-x snap-mandatory">
+          <div className="flex gap-6 min-w-max pb-4">
+            <div className="w-6 md:w-[calc((100vw-320px-1250px)/2+24px)] flex-shrink-0"></div>
+            <motion.div 
+              className="space-y-4 w-80 flex-shrink-0 snap-center"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
+                <Database className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
               </div>
               <h3 className="text-xs uppercase tracking-wider font-medium">DATA-GEDREVEN INZICHTEN</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
                 Van lead scoring tot predictive analytics. We bouwen systemen die leren, evolueren en direct ROI leveren met jouw data.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="space-y-4 w-80 flex-shrink-0">
-              <div className="h-64 bg-white rounded-xl border border-gray-200 flex items-center justify-center">
-                <Zap className="w-24 h-24 text-gray-300" />
+            <motion.div 
+              className="space-y-4 w-80 flex-shrink-0 snap-center"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
+                <Zap className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
               </div>
               <h3 className="text-xs uppercase tracking-wider font-medium">EMBEDDED AI-WORKFLOWS</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
                 Geen black boxes. We integreren AI naadloos in jouw bestaande processen - fast, accurate en volledig onder controle.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="space-y-4 w-80 flex-shrink-0">
-              <div className="h-64 bg-white rounded-xl border border-gray-200 flex items-center justify-center">
-                <TrendingUp className="w-24 h-24 text-gray-300" />
+            <motion.div 
+              className="space-y-4 w-80 flex-shrink-0 snap-center"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
+                <TrendingUp className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
               </div>
               <h3 className="text-xs uppercase tracking-wider font-medium">SCHAALBARE GROEI</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
                 Gebouwd voor enterprise scale. Onze oplossingen groeien mee - on demand, in the loop, altijd aan het verbeteren.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="space-y-4 w-80 flex-shrink-0">
-              <div className="h-64 bg-white rounded-xl border border-gray-200 flex items-center justify-center">
-                <Sparkles className="w-24 h-24 text-gray-300" />
+            <motion.div 
+              className="space-y-4 w-80 flex-shrink-0 snap-center"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
+                <Sparkles className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
               </div>
               <h3 className="text-xs uppercase tracking-wider font-medium">AI LEAD QUALIFICATION</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
                 Automatische lead scoring en kwalificatie. Jouw sales team focust op de beste kansen, AI doet de rest.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="space-y-4 w-80 flex-shrink-0">
-              <div className="h-64 bg-white rounded-xl border border-gray-200 flex items-center justify-center">
-                <Target className="w-24 h-24 text-gray-300" />
+            <motion.div 
+              className="space-y-4 w-80 flex-shrink-0 snap-center"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
+                <Target className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
               </div>
               <h3 className="text-xs uppercase tracking-wider font-medium">CONTENT AUTOMATION</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
                 Van e-mail campagnes tot product descriptions. Consistente, on-brand content op schaal.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="space-y-4 w-80 flex-shrink-0">
-              <div className="h-64 bg-white rounded-xl border border-gray-200 flex items-center justify-center">
-                <DollarSign className="w-24 h-24 text-gray-300" />
+            <motion.div 
+              className="space-y-4 w-80 flex-shrink-0 snap-center"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
+                <DollarSign className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
               </div>
               <h3 className="text-xs uppercase tracking-wider font-medium">PREDICTIVE ANALYTICS</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
                 Voorspel trends, identificeer kansen en optimaliseer je business decisions met data-driven inzichten.
               </p>
-            </div>
-            <div className="w-0 flex-shrink-0"></div>
+            </motion.div>
+            <div className="w-6 md:w-[calc((100vw-320px-1250px)/2+24px)] flex-shrink-0"></div>
           </div>
         </div>
       </section>
