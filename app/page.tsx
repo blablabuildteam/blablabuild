@@ -84,7 +84,7 @@ export default function HomePage() {
     <div className="h-screen overflow-y-scroll snap-y snap-mandatory">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-20 py-3 flex items-center justify-between">
+        <div className="mx-auto px-6 py-3 flex items-center justify-between" style={{ maxWidth: '1450px' }}>
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-bla-lime rounded-md flex items-center justify-center">
               <Quote className="w-3.5 h-3.5 text-bla-dark" />
@@ -108,8 +108,8 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="min-h-screen snap-start flex items-center justify-center px-20 py-12 md:py-16">
-        <div className="max-w-6xl mx-auto text-center">
+      <section className="min-h-screen snap-start flex items-center justify-center px-6 py-12 md:py-16">
+        <div className="mx-auto text-center w-full" style={{ maxWidth: '1450px' }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -141,8 +141,8 @@ export default function HomePage() {
       </section>
 
       {/* Approach Section */}
-      <section className="min-h-screen snap-start flex items-center justify-center bg-gray-50 px-20 py-16 md:py-20 lg:py-24">
-        <div className="max-w-7xl mx-auto w-full">
+      <section className="min-h-screen snap-start flex items-center justify-center bg-gray-50 px-6 py-16 md:py-20 lg:py-24">
+        <div className="mx-auto w-full" style={{ maxWidth: '1450px' }}>
           <div className="text-center mb-12 md:mb-16 lg:mb-20">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-bla-lime/20 rounded-full mb-4">
               <div className="w-1.5 h-1.5 bg-bla-lime rounded-full animate-pulse"></div>
@@ -151,7 +151,7 @@ export default function HomePage() {
             <h2 className="text-3xl md:text-4xl font-bold">A lean process</h2>
           </div>
 
-          <div className="max-w-5xl mx-auto">
+          <div className="mx-auto" style={{ maxWidth: '1200px' }}>
             {/* Connected circles - horizontal on desktop, vertical on mobile */}
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-8 md:gap-4 lg:gap-0">
               {[
@@ -174,8 +174,8 @@ export default function HomePage() {
       </section>
 
       {/* Founders Section */}
-      <section className="min-h-screen snap-start flex items-center justify-center bg-white px-20 py-16 md:py-20 lg:py-24">
-        <div className="max-w-7xl mx-auto w-full">
+      <section className="min-h-screen snap-start flex items-center justify-center bg-white px-6 py-16 md:py-20 lg:py-24">
+        <div className="mx-auto w-full" style={{ maxWidth: '1450px' }}>
           <div className="text-center mb-10 md:mb-12 lg:mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-bla-lime/20 rounded-full mb-4">
               <div className="w-1.5 h-1.5 bg-bla-lime rounded-full animate-pulse"></div>
@@ -219,7 +219,7 @@ export default function HomePage() {
 
       {/* Use Cases Section */}
       <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 py-16 md:py-20 lg:py-24">
-        <div className="max-w-7xl mx-auto w-full px-20 mb-12 md:mb-16">
+        <div className="mx-auto w-full px-6 mb-12 md:mb-16" style={{ maxWidth: '1450px' }}>
           <div className="text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-bla-lime/20 rounded-full mb-4">
               <div className="w-1.5 h-1.5 bg-bla-lime rounded-full animate-pulse"></div>
@@ -232,9 +232,9 @@ export default function HomePage() {
         </div>
 
         {/* Horizontal scrolling carousel */}
-        <div className="overflow-x-auto scrollbar-hide">
+        <div className="overflow-x-auto scrollbar-hide -mx-6">
           <div className="flex gap-6 min-w-max pb-4">
-            <div className="w-20 flex-shrink-0"></div>
+            <div className="w-6 flex-shrink-0"></div>
             <div className="space-y-4 w-80 flex-shrink-0">
               <div className="h-64 bg-white rounded-xl border border-gray-200 flex items-center justify-center">
                 <Database className="w-24 h-24 text-gray-300" />
@@ -294,14 +294,14 @@ export default function HomePage() {
                 Voorspel trends, identificeer kansen en optimaliseer je business decisions met data-driven inzichten.
               </p>
             </div>
-            <div className="w-20 flex-shrink-0"></div>
+            <div className="w-6 flex-shrink-0"></div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="snap-start flex items-center justify-center bg-white px-20 py-12 md:py-16 lg:py-20">
-        <div className="max-w-4xl mx-auto w-full text-center">
+      <section className="snap-start flex items-center justify-center bg-white px-6 py-12 md:py-16 lg:py-20">
+        <div className="mx-auto w-full text-center" style={{ maxWidth: '1450px' }}>
           <h2 className="text-2xl md:text-3xl font-bold mb-3">Klaar om te starten?</h2>
           <p className="text-sm text-gray-600 mb-6">
             Beantwoord 7 vragen en ontvang binnen 5 minuten een gepersonaliseerde AI-analyse.
@@ -321,7 +321,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="snap-start bg-gray-900 border-t border-gray-800 py-10 md:py-12 lg:py-16 flex items-center">
-        <div className="max-w-7xl mx-auto px-20 w-full">
+        <div className="mx-auto px-6 w-full" style={{ maxWidth: '1450px' }}>
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div>
               <h3 className="text-lg font-bold mb-1 flex items-end justify-center md:justify-start leading-none gap-1">
