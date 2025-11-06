@@ -335,20 +335,20 @@ Geef per proces een cijfer tussen 1-10.`;
     }
 
     if (!slots.manual_hours) {
-      return 'Hoeveel tijd per week wordt er gemiddeld besteed aan handmatige taken die geautomatiseerd zouden kunnen worden?
+      return `Hoeveel tijd per week wordt er gemiddeld besteed aan handmatige taken die geautomatiseerd zouden kunnen worden?
 
 a) Minder dan 5 uur
 b) 5-10 uur
 c) 10-20 uur
-d) Meer dan 20 uur';
+d) Meer dan 20 uur`;
     }
 
     if (!slots.data_integration) {
-      return 'Hoe toegankelijk en geïntegreerd is jullie data uit verschillende systemen?
+      return `Hoe toegankelijk en geïntegreerd is jullie data uit verschillende systemen?
 
 a) Zeer goed - alles is gekoppeld
 b) Redelijk - sommige systemen zijn gekoppeld
-c) Slecht - data zit versnipperd in silos';
+c) Slecht - data zit versnipperd in silos`;
     }
 
     if (!slots.goal_short_term) {
