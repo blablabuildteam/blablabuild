@@ -179,7 +179,7 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
     const ideasWithCosts = await Promise.all(
       ideas.map(async (idea) => {
         const cost = await estimateCosts(idea, this.state.slots);
-        return { ...idea, ...cost };
+        return { ...idea, ...cost } as Idea;
       })
     );
 
