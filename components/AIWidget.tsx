@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Sparkles, Loader2, ChevronRight } from 'lucide-react';
+import { X, Sparkles, Loader2, ChevronRight } from 'lucide-react';
 import { ChatResponse } from '@/lib/types';
 import { trackWidgetEvent } from '@/lib/analytics';
 
@@ -53,7 +53,6 @@ export default function AIWidget() {
       await initializeSession();
     }
     
-    // Auto-focus input
     setTimeout(() => {
       inputRef.current?.focus();
     }, 400);
@@ -110,7 +109,6 @@ export default function AIWidget() {
       setCurrentQuestion('Sorry, er ging iets mis. Probeer het opnieuw.');
     } finally {
       setIsLoading(false);
-      // Auto-focus for next question
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
@@ -124,22 +122,20 @@ export default function AIWidget() {
     }
   };
 
-  // Hidden trigger button (activated by CTA buttons)
   useEffect(() => {
     const trigger = document.createElement('button');
     trigger.id = 'ai-widget-trigger';
     trigger.style.display = 'none';
-    trigger.onclick = handleOpen;
+    trigger.onclick = () => handleOpen();
     document.body.appendChild(trigger);
 
     return () => {
       trigger.remove();
     };
-  }, [sessionId]);
+  }, []);
 
   return (
     <>
-      {/* Overlay */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -152,7 +148,6 @@ export default function AIWidget() {
         )}
       </AnimatePresence>
 
-      {/* Drawer Module */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -160,33 +155,31 @@ export default function AIWidget() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed top-0 right-0 h-full w-full md:w-[600px] bg-white shadow-2xl z-50 flex flex-col"
+            className="fixed top-0 right-0 h-full w-full md:w-[480px] bg-white shadow-2xl z-50 flex flex-col"
           >
-            {/* Header */}
-            <div className="border-b border-bla-border bg-white">
-              <div className="p-6 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-bla-lime rounded-xl flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-bla-dark" />
+            <div className="border-b border-gray-200 bg-white">
+              <div className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 bg-bla-lime rounded-lg flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-bla-dark" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold">AI Intake Analyse</h2>
-                    <p className="text-sm text-gray-600">
-                      {isComplete ? 'Analyse compleet ✓' : `${progress}% voltooid`}
+                    <h2 className="text-base font-semibold">AI Intake</h2>
+                    <p className="text-xs text-gray-500">
+                      {isComplete ? 'Compleet' : `${progress}%`}
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={handleClose}
-                  className="w-10 h-10 hover:bg-bla-gray rounded-full flex items-center justify-center transition-colors"
+                  className="w-8 h-8 hover:bg-gray-100 rounded-lg flex items-center justify-center transition-colors"
                 >
-                  <X className="w-5 h-5 text-gray-600" />
+                  <X className="w-4 h-4 text-gray-600" />
                 </button>
               </div>
 
-              {/* Progress bar */}
               {!isComplete && (
-                <div className="h-1 bg-bla-gray">
+                <div className="h-0.5 bg-gray-100">
                   <motion.div
                     className="h-full bg-bla-lime"
                     initial={{ width: 0 }}
@@ -197,53 +190,45 @@ export default function AIWidget() {
               )}
             </div>
 
-            {/* Content Area - Module Style */}
-            <div className="flex-1 overflow-y-auto p-6 bg-bla-gray">
-              {/* Current Question Module */}
+            <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
               {currentQuestion && !isComplete && (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-2xl border border-bla-border p-8 mb-6 shadow-sm"
+                  className="bg-white rounded-xl border border-gray-200 p-5 mb-4"
                 >
-                  <div className="flex items-start gap-3 mb-6">
-                    <div className="w-8 h-8 bg-bla-lime/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                      <Sparkles className="w-4 h-4 text-bla-lime" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-gray-900 text-lg leading-relaxed whitespace-pre-wrap">
-                        {currentQuestion}
-                      </p>
-                    </div>
+                  <div className="mb-4">
+                    <p className="text-gray-900 text-sm leading-relaxed whitespace-pre-wrap">
+                      {currentQuestion}
+                    </p>
                   </div>
 
-                  {/* Input Area */}
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <textarea
                       ref={inputRef}
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      placeholder="Type je antwoord hier..."
-                      rows={4}
-                      className="w-full px-4 py-3 border border-bla-border rounded-xl focus:outline-none focus:ring-2 focus:ring-bla-lime focus:border-transparent resize-none text-gray-900 placeholder-gray-400"
+                      placeholder="Type je antwoord..."
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-bla-lime focus:border-bla-lime resize-none text-sm text-gray-900 placeholder-gray-400"
                       disabled={isLoading}
                     />
                     <div className="flex justify-end">
                       <button
                         onClick={sendMessage}
                         disabled={!input.trim() || isLoading}
-                        className="px-6 py-3 bg-bla-lime hover:bg-bla-lime/90 text-bla-dark rounded-full font-semibold transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+                        className="px-4 py-2 bg-bla-lime hover:bg-bla-lime/90 text-bla-dark rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {isLoading ? (
                           <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Verwerken...
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <span>Verwerken</span>
                           </>
                         ) : (
                           <>
-                            Volgende
-                            <ChevronRight className="w-4 h-4" />
+                            <span>Volgende</span>
+                            <ChevronRight className="w-3.5 h-3.5" />
                           </>
                         )}
                       </button>
@@ -252,50 +237,45 @@ export default function AIWidget() {
                 </motion.div>
               )}
 
-              {/* Previous Q&A */}
               {messages.length > 1 && (
-                <div className="space-y-4">
-                  <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Jouw antwoorden</p>
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Jouw antwoorden</p>
                   {messages.slice(0, -1).reverse().map((message, idx) => (
                     message.role === 'user' && (
-                      <motion.div
+                      <div
                         key={idx}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="bg-white rounded-xl border border-bla-border p-4"
+                        className="bg-white rounded-lg border border-gray-200 p-3"
                       >
-                        <p className="text-sm text-gray-900">{message.content}</p>
+                        <p className="text-xs text-gray-700">{message.content}</p>
                       </div>
                     )
                   ))}
                 </div>
               )}
 
-              {/* Complete state */}
               {isComplete && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-white rounded-2xl border-2 border-bla-lime p-8 text-center"
+                  className="bg-white rounded-xl border border-bla-lime p-5 text-center"
                 >
-                  <div className="w-16 h-16 bg-bla-lime rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Sparkles className="w-8 h-8 text-bla-dark" />
+                  <div className="w-12 h-12 bg-bla-lime rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Sparkles className="w-6 h-6 text-bla-dark" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4">Analyse Voltooid!</h3>
-                  <p className="text-gray-600 mb-6">
+                  <h3 className="text-lg font-bold mb-2">Analyse Voltooid!</h3>
+                  <p className="text-sm text-gray-600">
                     {currentQuestion}
                   </p>
                 </motion.div>
               )}
             </div>
 
-            {/* Footer Info */}
-            <div className="p-6 border-t border-bla-border bg-white">
-              <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>Powered by blablabuild AI</span>
-                <span className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-bla-lime rounded-full" />
-                  Secure & Private
+            <div className="p-3 border-t border-gray-200 bg-white">
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <span>blablabuild AI</span>
+                <span className="flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 bg-bla-lime rounded-full" />
+                  Secure
                 </span>
               </div>
             </div>
