@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { ConversationState, Slots, Idea, ChatResponse } from './types';
 import { supabaseAdmin } from './supabase';
-import { sanitizeText, calculateProgress } from './utils';
+import { sanitizeText, calculateProgress, getApiKey, isOpenRouter } from './utils';
 import { scoreMaturity } from './scoring';
 import { generateIdeas } from './ideation';
 import { estimateCosts } from './costing';
@@ -12,11 +12,11 @@ import './agents'; // Initialize agents
 // Use OpenRouter for better pricing and model access
 // Compatible with OpenAI SDK - just change baseURL
 const openai = new OpenAI({
-  apiKey: process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY,
-  baseURL: process.env.OPENROUTER_API_KEY 
+  apiKey: getApiKey(),
+  baseURL: isOpenRouter() 
     ? 'https://openrouter.ai/api/v1'
     : 'https://api.openai.com/v1',
-  defaultHeaders: process.env.OPENROUTER_API_KEY ? {
+  defaultHeaders: isOpenRouter() ? {
     'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
     'X-Title': 'blablabuild',
   } : {},

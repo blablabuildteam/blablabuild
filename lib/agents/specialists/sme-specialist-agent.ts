@@ -3,15 +3,16 @@
  * Industry-specific expert that provides domain knowledge and best practices
  */
 
+import { getApiKey, isOpenRouter } from './utils';
 import OpenAI from 'openai';
 import { Agent, AgentContext, AgentResponse, AgentRole } from '../agent-registry';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY,
-  baseURL: process.env.OPENROUTER_API_KEY 
+  apiKey: getApiKey(),
+  baseURL: isOpenRouter() 
     ? 'https://openrouter.ai/api/v1'
     : 'https://api.openai.com/v1',
-  defaultHeaders: process.env.OPENROUTER_API_KEY ? {
+  defaultHeaders: isOpenRouter() ? {
     'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
     'X-Title': 'blablabuild',
   } : {},
@@ -51,7 +52,7 @@ Gebruik je diepgaande kennis van de ${industry} sector om praktisch, relevant ad
 
     try {
       const completion = await openai.chat.completions.create({
-        model: process.env.OPENROUTER_API_KEY ? 'openai/gpt-4o' : 'gpt-4o',
+        model: isOpenRouter() ? 'openai/gpt-4o' : 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Geef ${industry}-specifieke inzichten en best practices.` },
@@ -128,7 +129,7 @@ Gebruik je diepgaande kennis van de ${industry} sector om praktisch, relevant ad
         metadata: {
           ...result,
           industry,
-          model: process.env.OPENROUTER_API_KEY ? 'openai/gpt-4o' : 'gpt-4o',
+          model: isOpenRouter() ? 'openai/gpt-4o' : 'gpt-4o',
         },
       };
     } catch (error) {

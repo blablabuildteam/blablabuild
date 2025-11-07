@@ -3,16 +3,17 @@
  * Generates creative AI/automation ideas based on user context
  */
 
+import { getApiKey, isOpenRouter } from './utils';
 import OpenAI from 'openai';
 import { Agent, AgentContext, AgentResponse, AgentRole } from './agent-registry';
 import { Idea } from '@/lib/types';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY,
-  baseURL: process.env.OPENROUTER_API_KEY 
+  apiKey: getApiKey(),
+  baseURL: isOpenRouter() 
     ? 'https://openrouter.ai/api/v1'
     : 'https://api.openai.com/v1',
-  defaultHeaders: process.env.OPENROUTER_API_KEY ? {
+  defaultHeaders: isOpenRouter() ? {
     'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
     'X-Title': 'blablabuild',
   } : {},
@@ -54,7 +55,7 @@ Voor elk idee, geef:
 
     try {
       const completion = await openai.chat.completions.create({
-        model: process.env.OPENROUTER_API_KEY ? 'openai/gpt-4o' : 'gpt-4o',
+        model: isOpenRouter() ? 'openai/gpt-4o' : 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: 'Genereer 3 op maat gemaakte AI/automatisering ideeën voor dit bedrijf.' },
@@ -112,7 +113,7 @@ Voor elk idee, geef:
         reasoning: result.rationale,
         metadata: {
           ideas: result.ideas,
-          model: process.env.OPENROUTER_API_KEY ? 'openai/gpt-4o' : 'gpt-4o',
+          model: isOpenRouter() ? 'openai/gpt-4o' : 'gpt-4o',
           tokensUsed: completion.usage?.total_tokens,
         },
       };

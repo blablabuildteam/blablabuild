@@ -55,3 +55,18 @@ export function estimateReadingTime(text: string): number {
   return Math.ceil(words / wordsPerMinute);
 }
 
+/**
+ * Get OpenAI/OpenRouter API key, trimming any whitespace/newlines
+ */
+export function getApiKey(): string | undefined {
+  const key = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY;
+  return key ? key.trim() : undefined;
+}
+
+/**
+ * Check if OpenRouter is being used
+ */
+export function isOpenRouter(): boolean {
+  return !!process.env.OPENROUTER_API_KEY;
+}
+
