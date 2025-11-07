@@ -62,14 +62,18 @@ export async function POST(req: NextRequest) {
     });
 
     // Track message event
-    await supabaseAdmin.from('events').insert({
-      session_id: newSessionId,
-      type: 'message_sent',
-      payload: { 
-        message_length: message.length,
-        step: response.step,
-      },
-    }).catch(err => console.error('Error tracking event:', err));
+    try {
+      await supabaseAdmin.from('events').insert({
+        session_id: newSessionId,
+        type: 'message_sent',
+        payload: { 
+          message_length: message.length,
+          step: response.step,
+        },
+      });
+    } catch (err) {
+      console.error('Error tracking event:', err);
+    }
 
     console.log('📤 Sending response to client');
     return NextResponse.json(response);
