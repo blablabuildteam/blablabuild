@@ -318,26 +318,6 @@ export default function AIWidget() {
                   </motion.div>
                   <div>
                     <h2 className="text-base font-light text-bla-text-light tracking-wide">AI Intake</h2>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-xs font-extralight text-bla-text-muted">
-                        Vraag {questionNumber} van 7
-                      </span>
-                      <div className="flex gap-0.5">
-                        {[...Array(7)].map((_, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            transition={{ delay: i * 0.05, type: 'spring', stiffness: 200 }}
-                            className={`w-1 h-1 rounded-full transition-all duration-300 ${
-                              i < questionNumber 
-                                ? 'bg-bla-lime shadow-[0_0_4px_rgba(196,240,0,0.5)]' 
-                                : 'bg-bla-charcoal-border'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    </div>
                   </div>
                 </div>
                 <motion.button
@@ -355,9 +335,9 @@ export default function AIWidget() {
                 <div className="px-5 pb-3">
                   <div className="flex items-center justify-between relative">
                     {/* Connection lines */}
-                    <div className="absolute top-4 left-0 right-0 h-px bg-bla-charcoal-border -z-10" />
+                    <div className="absolute top-6 left-0 right-0 h-0.5 bg-bla-charcoal-border -z-10" />
                     <motion.div
-                      className="absolute top-4 left-0 h-px bg-gradient-to-r from-bla-lime/60 via-bla-lime/40 to-transparent -z-10"
+                      className="absolute top-6 left-0 h-0.5 bg-gradient-to-r from-bla-lime/60 via-bla-lime/40 to-transparent -z-10"
                       initial={{ width: 0 }}
                       animate={{ 
                         width: `${(getCurrentStepIndex() / (processSteps.length - 1)) * 100}%` 
@@ -366,7 +346,7 @@ export default function AIWidget() {
                     />
                     {/* Animated glow effect */}
                     <motion.div
-                      className="absolute top-4 left-0 h-px bg-bla-lime/30 blur-sm -z-10"
+                      className="absolute top-6 left-0 h-0.5 bg-bla-lime/30 blur-sm -z-10"
                       initial={{ width: 0 }}
                       animate={{ 
                         width: `${(getCurrentStepIndex() / (processSteps.length - 1)) * 100}%` 
@@ -385,13 +365,13 @@ export default function AIWidget() {
                           initial={{ scale: 0, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
                           transition={{ delay: index * 0.1, type: 'spring', stiffness: 200 }}
-                          className="flex flex-col items-center gap-1.5 relative z-10"
+                          className="flex flex-col items-center gap-2 relative z-10"
                         >
                           <motion.div
-                            className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
+                            className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
                               isActive 
-                                ? 'bg-bla-charcoal-light border border-bla-lime/30 text-bla-lime' 
-                                : 'bg-bla-charcoal-border border border-bla-charcoal-border text-bla-text-muted'
+                                ? 'bg-bla-charcoal-light border-2 border-bla-lime/30 text-bla-lime' 
+                                : 'bg-bla-charcoal-border border-2 border-bla-charcoal-border text-bla-text-muted'
                             }`}
                             animate={isCurrent ? { 
                               scale: [1, 1.1, 1],
@@ -403,9 +383,9 @@ export default function AIWidget() {
                               ease: 'easeInOut'
                             }}
                           >
-                            <Icon className="w-3.5 h-3.5" />
+                            <Icon className="w-6 h-6" />
                           </motion.div>
-                          <span className={`text-[9px] font-extralight transition-colors duration-300 ${
+                          <span className={`text-xs font-light transition-colors duration-300 ${
                             isActive ? 'text-bla-text-light' : 'text-bla-text-muted'
                           }`}>
                             {step.label}
@@ -473,40 +453,19 @@ export default function AIWidget() {
                     </div>
                   )}
                   
-                  {/* Question Balloons - blabla style (multiple bubbles for conversation) */}
-                  <div className="space-y-3">
+                  {/* Question Display - Clean, form-like style */}
+                  <div className="space-y-4">
                     {currentQuestion.split('\n\n').filter(q => q.trim()).map((part, idx) => (
-                        <motion.div 
-                        key={`${currentQuestion.substring(0, 30)}-${idx}`} // Unique key per question part
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.1, type: 'spring', stiffness: 100 }}
-                        whileHover={{ y: -2, transition: { duration: 0.2 } }}
-                        className="relative"
+                      <motion.div 
+                        key={`${currentQuestion.substring(0, 30)}-${idx}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.05, duration: 0.3 }}
+                        className="bg-bla-charcoal-light rounded-2xl border border-bla-charcoal-border p-6 backdrop-blur-sm"
                       >
-                        <div className="bg-bla-charcoal-light rounded-3xl border border-bla-charcoal-border p-5 relative backdrop-blur-sm">
-                          {/* Small tail/pointer - only on first balloon */}
-                          {idx === 0 && (
-                            <div className="absolute -left-2 top-5 w-3 h-3 bg-bla-charcoal-light border-l border-b border-bla-charcoal-border rotate-45" />
-                          )}
-                          
-                          {/* Quote mark decoration - only on first balloon */}
-                          <div className="flex items-start gap-3">
-                            {idx === 0 && (
-                              <motion.div
-                                initial={{ rotate: 0 }}
-                                animate={{ rotate: [0, -5, 0] }}
-                                transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                                className="flex-shrink-0 mt-0.5"
-                              >
-                                <QuoteIcon className="w-4 h-4 text-bla-lime/40" />
-                              </motion.div>
-                            )}
-                            <p className={`text-sm font-light leading-relaxed text-bla-text-light whitespace-pre-wrap ${idx === 0 ? '' : 'ml-7'}`}>
-                              {part}
-                            </p>
-                          </div>
-                        </div>
+                        <p className="text-base font-light leading-relaxed text-bla-text-light whitespace-pre-wrap">
+                          {part}
+                        </p>
                       </motion.div>
                     ))}
                   </div>
@@ -524,7 +483,7 @@ export default function AIWidget() {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        placeholder="Type je antwoord..."
+                        placeholder="Je antwoord..."
                         rows={4}
                         className="w-full px-4 py-3 border border-bla-charcoal-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 focus:border-bla-lime/50 transition-all resize-none text-sm font-light text-bla-text-light placeholder-bla-text-muted bg-bla-charcoal-light backdrop-blur-sm"
                         disabled={isLoading}
@@ -580,22 +539,14 @@ export default function AIWidget() {
                 </motion.div>
               )}
 
-              {/* Previous Answers */}
+              {/* Previous Answers - Minimal display */}
               {messages.length > 1 && !isComplete && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
-                  className="mt-6 space-y-3"
+                  className="mt-4 space-y-2"
                 >
-                  <div className="flex items-center gap-2">
-                    <div className="h-px flex-1 bg-bla-charcoal-border" />
-                    <span className="text-xs font-extralight text-bla-text-muted uppercase tracking-wider">
-                      Jouw antwoorden
-                    </span>
-                    <div className="h-px flex-1 bg-bla-charcoal-border" />
-                  </div>
-                  
                   <div className="space-y-2">
                     {messages.slice(0, -1).reverse().map((message, idx) => (
                       message.role === 'user' && (
