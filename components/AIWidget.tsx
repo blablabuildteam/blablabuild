@@ -138,14 +138,17 @@ export default function AIWidget() {
       }
       
       console.log('✅ Message is valid, setting state...');
-      setCurrentQuestion(data.message);
-      console.log('✅ setCurrentQuestion called with:', data.message.substring(0, 50));
       
-      setQuestionKey(prev => {
-        const newKey = prev + 1;
-        console.log('🔑 New questionKey:', newKey, '(was:', prev, ')');
-        return newKey;
-      });
+      // Force state update by clearing first, then setting
+      setCurrentQuestion('');
+      setQuestionKey(prev => prev + 1);
+      
+      // Use setTimeout to ensure React processes the clear first
+      setTimeout(() => {
+        console.log('🔄 Setting new question after clear');
+        setCurrentQuestion(data.message);
+        setQuestionKey(prev => prev + 1);
+      }, 10);
       
       setActiveAgents(data.activeAgents || []);
       setMessages(prev => [...prev, { 

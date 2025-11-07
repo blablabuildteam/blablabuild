@@ -245,7 +245,22 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
         this.addTrace(`Generating follow-up question (${userMessages}/${MIN_QUESTIONS} questions asked)`);
         
         // Generate contextual follow-up based on what we've learned
-        if (this.state.slots.pain_points && this.state.slots.pain_points.length > 0) {
+        // First question should be based on the user's first answer
+        if (userMessages === 1 && userMessage) {
+          // First question - make it contextual to their answer
+          const userAnswer = userMessage.toLowerCase();
+          
+          if (userAnswer.includes('rooster') || userAnswer.includes('schedule') || userAnswer.includes('planning')) {
+            nextQuestion = `Je noemde roosters maken. Kun je me vertellen hoeveel tijd je hier nu per week aan besteedt, en wat de grootste uitdagingen zijn?`;
+          } else if (userAnswer.includes('tijd') || userAnswer.includes('time') || userAnswer.includes('uren')) {
+            nextQuestion = `Je geeft aan tijd te verliezen. Op welke specifieke taken of processen gaat nu de meeste tijd verloren?`;
+          } else if (userAnswer.includes('proces') || userAnswer.includes('process') || userAnswer.includes('werkflow')) {
+            nextQuestion = `Je noemde werkprocessen. Kun je een voorbeeld geven van een proces dat je graag zou willen automatiseren?`;
+          } else {
+            // Generic but contextual
+            nextQuestion = `Je noemde "${userMessage.substring(0, 50)}". Kun je me meer vertellen over hoe dit nu precies werkt en wat de grootste uitdagingen zijn?`;
+          }
+        } else if (this.state.slots.pain_points && this.state.slots.pain_points.length > 0) {
           const painPoint = Array.isArray(this.state.slots.pain_points) 
             ? this.state.slots.pain_points[0] 
             : this.state.slots.pain_points;
