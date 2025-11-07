@@ -267,7 +267,7 @@ export default function HomePage() {
 
         {/* Horizontal scrolling carousel */}
         <div className="overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-          <div className="flex gap-6 min-w-max pb-4">
+          <div className="flex gap-6 min-w-max pb-4 pl-6">
             <motion.div 
               className="space-y-4 w-80 flex-shrink-0 snap-center"
               whileHover={{ scale: 1.02 }}
