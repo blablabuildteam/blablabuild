@@ -10,6 +10,8 @@ const config: Config = {
     extend: {
       fontFamily: {
         'loopy-sans': ['Meldina', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        thin: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
         // Dark charcoal theme with subtle accents
@@ -25,10 +27,6 @@ const config: Config = {
           "text-light": "#e5e5e5", // Light text on dark
           "text-muted": "#999999", // Muted text
         },
-      },
-      fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        thin: ['Inter', 'system-ui', 'sans-serif'],
       },
       fontWeight: {
         thin: '100',
