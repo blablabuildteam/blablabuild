@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, ChevronRight, Quote, Check } from 'lucide-react';
+import { X, Loader2, ChevronRight, Quote, Check, Sparkles, MessageSquare, Brain, Lightbulb, CheckCircle2 } from 'lucide-react';
 import { ChatResponse } from '@/lib/types';
 import { trackWidgetEvent } from '@/lib/analytics';
 
@@ -23,6 +23,7 @@ export default function AIWidget() {
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [activeAgents, setActiveAgents] = useState<string[]>([]);
   const [questionKey, setQuestionKey] = useState(0); // Counter to force re-render
+  const [currentStep, setCurrentStep] = useState<string>('init');
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -57,6 +58,9 @@ export default function AIWidget() {
       setCurrentQuestion(data.message);
       setMessages([{ role: 'assistant', content: data.message, timestamp: new Date() }]);
       setProgress(data.progress || 0);
+      if (data.step) {
+        setCurrentStep(data.step);
+      }
     } catch (error) {
       console.error('Error initializing session:', error);
     }
@@ -127,6 +131,11 @@ export default function AIWidget() {
         console.log('🆕 New session ID set:', data.sessionId);
       }
 
+      // Update current step from response
+      if (data.step) {
+        setCurrentStep(data.step);
+      }
+
       console.log('💬 Setting current question:', data.message);
       console.log('🔑 Current questionKey before:', questionKey);
       console.log('🔍 Current questionKey state value:', questionKey);
@@ -169,6 +178,7 @@ export default function AIWidget() {
       
       if (data.complete) {
         setIsComplete(true);
+        setCurrentStep('complete');
         trackWidgetEvent(data.sessionId, 'conversation_complete');
       }
     } catch (error) {
@@ -210,6 +220,21 @@ export default function AIWidget() {
   }, []);
 
   const questionNumber = Math.min(Math.floor(progress / 14), 7);
+
+  // Process steps configuration
+  const processSteps = [
+    { id: 'init', label: 'Start', icon: Sparkles, color: 'bg-bla-lime' },
+    { id: 'collecting', label: 'Vragen', icon: MessageSquare, color: 'bg-blue-500' },
+    { id: 'scoring', label: 'Analyseren', icon: Brain, color: 'bg-purple-500' },
+    { id: 'ideating', label: 'Ideeën', icon: Lightbulb, color: 'bg-yellow-500' },
+    { id: 'complete', label: 'Klaar', icon: CheckCircle2, color: 'bg-green-500' },
+  ];
+
+  const getCurrentStepIndex = () => {
+    const index = processSteps.findIndex(step => step.id === currentStep);
+    // If step not found, default to collecting (most common state)
+    return index >= 0 ? index : 1;
+  };
 
   // Helper to get short agent names for display
   const getShortAgentName = (name: string): string => {
@@ -298,6 +323,68 @@ export default function AIWidget() {
                 </motion.button>
               </div>
 
+              {/* Process Steps Indicator */}
+              {!isComplete && (
+                <div className="px-5 pb-3">
+                  <div className="flex items-center justify-between relative">
+                    {/* Connection lines */}
+                    <div className="absolute top-4 left-0 right-0 h-0.5 bg-gray-100 -z-10" />
+                    <motion.div
+                      className="absolute top-4 left-0 h-0.5 bg-gradient-to-r from-bla-lime to-blue-500 -z-10"
+                      initial={{ width: 0 }}
+                      animate={{ 
+                        width: `${(getCurrentStepIndex() / (processSteps.length - 1)) * 100}%` 
+                      }}
+                      transition={{ duration: 0.6, ease: 'easeOut' }}
+                    />
+                    
+                    {processSteps.map((step, index) => {
+                      const Icon = step.icon;
+                      const isActive = index <= getCurrentStepIndex();
+                      const isCurrent = step.id === currentStep;
+                      
+                      return (
+                        <motion.div
+                          key={step.id}
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="flex flex-col items-center gap-1.5 relative z-10"
+                        >
+                          <motion.div
+                            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                              isActive 
+                                ? `${step.color} text-white shadow-md` 
+                                : 'bg-gray-100 text-gray-400'
+                            }`}
+                            animate={isCurrent ? { 
+                              scale: [1, 1.15, 1],
+                              boxShadow: isCurrent ? [
+                                '0 0 0 0 rgba(196, 240, 0, 0.4)',
+                                '0 0 0 4px rgba(196, 240, 0, 0)',
+                                '0 0 0 0 rgba(196, 240, 0, 0)'
+                              ] : undefined
+                            } : {}}
+                            transition={{ 
+                              duration: isCurrent ? 2 : 0.3,
+                              repeat: isCurrent ? Infinity : 0
+                            }}
+                          >
+                            <Icon className="w-4 h-4" />
+                          </motion.div>
+                          <span className={`text-[9px] font-medium transition-colors ${
+                            isActive ? 'text-gray-700' : 'text-gray-400'
+                          }`}>
+                            {step.label}
+                          </span>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Progress Bar */}
               {!isComplete && (
                 <div className="h-0.5 bg-gray-50 overflow-hidden">
                   <motion.div
