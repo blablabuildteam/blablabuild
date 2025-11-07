@@ -86,6 +86,12 @@ export default function AIWidget() {
         }),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('API Error:', response.status, errorData);
+        throw new Error(errorData.error || `API error: ${response.status}`);
+      }
+
       const data: ChatResponse = await response.json();
       
       if (!sessionId) {
@@ -108,7 +114,13 @@ export default function AIWidget() {
       }
     } catch (error) {
       console.error('Error sending message:', error);
-      setCurrentQuestion('Sorry, er ging iets mis. Probeer het opnieuw.');
+      const errorMessage = error instanceof Error ? error.message : 'Er ging iets mis. Probeer het opnieuw.';
+      setCurrentQuestion(`Sorry, ${errorMessage}`);
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: `Sorry, ${errorMessage}`, 
+        timestamp: new Date() 
+      }]);
     } finally {
       setIsLoading(false);
       setTimeout(() => {

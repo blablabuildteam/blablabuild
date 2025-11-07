@@ -152,11 +152,16 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
     if (previousMessage && previousMessage.role === 'assistant' && userMessage) {
       const slotsBefore = Object.keys(this.state.slots).length;
       
-      // Use agents to extract data + traditional extraction
-      const agentResult = await this.agentCoordinator.extractDataFromMessage(this.state, userMessage);
-      activeAgentNames = agentResult.activeAgentNames || [];
-      const { activeAgentNames: _, ...agentData } = agentResult;
-      Object.assign(this.state.slots, agentData);
+      try {
+        // Use agents to extract data + traditional extraction
+        const agentResult = await this.agentCoordinator.extractDataFromMessage(this.state, userMessage);
+        activeAgentNames = agentResult.activeAgentNames || [];
+        const { activeAgentNames: _, ...agentData } = agentResult;
+        Object.assign(this.state.slots, agentData);
+      } catch (err) {
+        console.error('Error extracting data with agents:', err);
+        // Continue with traditional extraction
+      }
       
       await this.extractSlots(userMessage);
       
@@ -178,9 +183,20 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
     }
 
     // Get best next question from agents
-    const agentQuestionResult = await this.agentCoordinator.getBestQuestion(this.state, userMessage);
-    const nextQuestion = agentQuestionResult.question || await this.getNextQuestion();
-    activeAgentNames = [...new Set([...activeAgentNames, ...(agentQuestionResult.activeAgentNames || [])])];
+    let nextQuestion: string | null = null;
+    try {
+      const agentQuestionResult = await this.agentCoordinator.getBestQuestion(this.state, userMessage);
+      nextQuestion = agentQuestionResult.question;
+      activeAgentNames = [...new Set([...activeAgentNames, ...(agentQuestionResult.activeAgentNames || [])])];
+    } catch (err) {
+      console.error('Error getting question from agents:', err);
+      // Fallback to traditional question generation
+    }
+
+    // Fallback to traditional question if agents didn't provide one
+    if (!nextQuestion) {
+      nextQuestion = await this.getNextQuestion();
+    }
 
     if (!nextQuestion) {
       // We have enough information, move to scoring
