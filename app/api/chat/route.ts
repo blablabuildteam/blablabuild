@@ -21,6 +21,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validate sessionId format if provided (must start with 'session_' or be UUID)
+    if (sessionId && typeof sessionId === 'string') {
+      const isValidSessionId = sessionId.startsWith('session_') || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId);
+      if (!isValidSessionId) {
+        console.error('❌ Invalid session ID format:', sessionId);
+        return NextResponse.json(
+          { error: 'Invalid session ID format' },
+          { status: 400 }
+        );
+      }
+    }
+
     // Initialize or load orchestrator
     let orchestrator: ConversationOrchestrator;
     let newSessionId = sessionId;

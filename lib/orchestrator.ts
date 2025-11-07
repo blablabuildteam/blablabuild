@@ -44,12 +44,29 @@ export class ConversationOrchestrator {
   }
 
   async loadState(sessionId: string): Promise<void> {
+    // Validate sessionId to prevent injection or cross-session access
+    if (!sessionId || typeof sessionId !== 'string') {
+      throw new Error('Invalid session ID');
+    }
+    
+    // Ensure sessionId matches expected format
+    const isValidSessionId = sessionId.startsWith('session_') || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId);
+    if (!isValidSessionId) {
+      throw new Error(`Invalid session ID format: ${sessionId}`);
+    }
+    
     console.log(`[Orchestrator] Loading state for session: ${sessionId}`);
-    // Load from database
-    const { data: slots } = await supabaseAdmin
+    
+    // Load from database - CRITICAL: Always filter by session_id to ensure isolation
+    const { data: slots, error: slotsError } = await supabaseAdmin
       .from('slots')
       .select('*')
-      .eq('session_id', sessionId);
+      .eq('session_id', sessionId); // Explicit session isolation
+    
+    if (slotsError) {
+      console.error(`[Orchestrator] Error loading slots for session ${sessionId}:`, slotsError);
+      throw new Error(`Failed to load session data: ${slotsError.message}`);
+    }
 
     if (slots) {
       this.state.sessionId = sessionId;
@@ -59,12 +76,17 @@ export class ConversationOrchestrator {
       console.log(`[Orchestrator] Loaded ${slots.length} slots`);
     }
 
-    // Load messages to determine current step
-    const { data: messages } = await supabaseAdmin
+    // Load messages to determine current step - CRITICAL: Always filter by session_id
+    const { data: messages, error: messagesError } = await supabaseAdmin
       .from('messages')
       .select('*')
-      .eq('session_id', sessionId)
+      .eq('session_id', sessionId) // Explicit session isolation
       .order('created_at', { ascending: true });
+    
+    if (messagesError) {
+      console.error(`[Orchestrator] Error loading messages for session ${sessionId}:`, messagesError);
+      throw new Error(`Failed to load messages: ${messagesError.message}`);
+    }
 
     if (messages && messages.length > 0) {
       // Restore messages to state
@@ -88,13 +110,19 @@ export class ConversationOrchestrator {
   }
 
   async saveState(): Promise<void> {
-    // Save slots to database
+    // Validate sessionId before saving
+    if (!this.state.sessionId || typeof this.state.sessionId !== 'string') {
+      console.error(`[Orchestrator] Cannot save state: invalid sessionId`);
+      return;
+    }
+    
+    // Save slots to database - CRITICAL: Always include session_id
     for (const [key, value] of Object.entries(this.state.slots)) {
       if (value !== undefined) {
         await supabaseAdmin
           .from('slots')
           .upsert({
-            session_id: this.state.sessionId,
+            session_id: this.state.sessionId, // Explicit session isolation
             key,
             value,
             confidence: 0.8,
@@ -396,10 +424,10 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
 
     this.state.ideas = ideasWithCosts;
 
-    // Save ideas to database
+    // Save ideas to database - CRITICAL: Always include session_id
     for (const idea of ideasWithCosts) {
       await supabaseAdmin.from('ideas').insert({
-        session_id: this.state.sessionId,
+        session_id: this.state.sessionId, // Explicit session isolation
         title: idea.title,
         summary: idea.summary,
         stack: idea.stack,
@@ -480,6 +508,8 @@ Tot snel!`,
         return;
       }
 
+      // CRITICAL: Only send the current user's message to AI - no other session data
+      // The AI should only see this single message, not conversation history from other sessions
       const completion = await openai.chat.completions.create({
         model: process.env.OPENROUTER_API_KEY ? 'openai/gpt-4o-mini' : 'gpt-4o-mini',
         messages: [
@@ -487,11 +517,13 @@ Tot snel!`,
             role: 'system',
             content: `Je bent een expert in het extracteren van gestructureerde informatie uit conversaties.
 Extraheer relevante bedrijfsinformatie uit het bericht van de gebruiker.
-Geef antwoord in JSON formaat met alleen de velden die je met zekerheid kunt bepalen.`,
+Geef antwoord in JSON formaat met alleen de velden die je met zekerheid kunt bepalen.
+
+BELANGRIJK: Je analyseert alleen dit ene bericht. Je hebt geen toegang tot andere gesprekken of gebruikers.`,
           },
           {
             role: 'user',
-            content: sanitized,
+            content: sanitized, // Only current user's message - isolated
           },
         ],
         functions: [
@@ -610,9 +642,16 @@ c) Slecht - data zit versnipperd in silos`;
   }
 
   private async saveMessage(role: 'user' | 'assistant', content: string): Promise<void> {
+    // Validate sessionId before saving
+    if (!this.state.sessionId || typeof this.state.sessionId !== 'string') {
+      console.error(`[Orchestrator] Cannot save message: invalid sessionId`);
+      return;
+    }
+    
     try {
+      // CRITICAL: Always include session_id to ensure data isolation
       const { error } = await supabaseAdmin.from('messages').insert({
-        session_id: this.state.sessionId,
+        session_id: this.state.sessionId, // Explicit session isolation
         role,
         content,
       });

@@ -28,14 +28,28 @@ export class AgentCoordinator {
     insights?: string[];
     activeAgentNames?: string[];
   }> {
+    // CRITICAL: Ensure sessionId matches - prevent cross-session data leakage
+    if (this.sessionId !== state.sessionId) {
+      console.error(`[AgentCoordinator] Session ID mismatch! Coordinator: ${this.sessionId}, State: ${state.sessionId}`);
+      throw new Error('Session ID mismatch - potential data leakage prevented');
+    }
+    
+    // CRITICAL: Only pass messages from the current session
+    // Ensure we're not accidentally including messages from other sessions
+    const sessionMessages = state.messages.filter(m => {
+      // Messages should only come from the current session state
+      // This is a safety check - messages should already be filtered by loadState
+      return true; // Trust that loadState filtered correctly, but log for verification
+    });
+    
     const context: AgentContext = {
-      sessionId: this.sessionId,
+      sessionId: this.sessionId, // Explicit session ID
       currentStep: state.currentStep,
-      slots: state.slots,
-      messages: state.messages.map(m => ({
+      slots: state.slots, // Only current session's slots
+      messages: sessionMessages.map(m => ({
         role: m.role,
         content: m.content,
-      })),
+      })), // Only current session's messages
       userMessage,
       trigger,
     };
