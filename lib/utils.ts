@@ -37,7 +37,11 @@ export function calculateProgress(slots: any): number {
   ];
   
   const filled = requiredSlots.filter(slot => slots[slot] !== undefined && slots[slot] !== null);
-  return Math.round((filled.length / requiredSlots.length) * 100);
+  const baseProgress = Math.round((filled.length / requiredSlots.length) * 100);
+  
+  // Cap progress at 70% until we have enough information
+  // This prevents premature completion
+  return Math.min(baseProgress, 70);
 }
 
 export function formatCurrency(amount: number, locale: string = 'nl-NL'): string {

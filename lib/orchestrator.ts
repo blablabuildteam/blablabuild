@@ -235,6 +235,30 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
       nextQuestion = await this.getNextQuestion();
     }
 
+    // If no question from traditional method, generate a follow-up based on what we know
+    if (!nextQuestion) {
+      const userMessages = this.state.messages.filter(m => m.role === 'user').length;
+      const MIN_QUESTIONS = 5;
+      
+      // If we haven't asked enough questions yet, generate a follow-up
+      if (userMessages < MIN_QUESTIONS) {
+        this.addTrace(`Generating follow-up question (${userMessages}/${MIN_QUESTIONS} questions asked)`);
+        
+        // Generate contextual follow-up based on what we've learned
+        if (this.state.slots.pain_points && this.state.slots.pain_points.length > 0) {
+          const painPoint = Array.isArray(this.state.slots.pain_points) 
+            ? this.state.slots.pain_points[0] 
+            : this.state.slots.pain_points;
+          
+          nextQuestion = `Je noemde "${painPoint}". Kun je me meer vertellen over hoe dit nu precies werkt en wat de grootste uitdagingen zijn?`;
+        } else if (this.state.slots.goal) {
+          nextQuestion = `Je doel is "${this.state.slots.goal}". Wat zou je helpen om dit sneller te bereiken?`;
+        } else {
+          nextQuestion = `Kun je me meer vertellen over je huidige werkprocessen? Wat kost je nu de meeste tijd?`;
+        }
+      }
+    }
+
     if (!nextQuestion) {
       // We have enough information, move to scoring
       this.state.currentStep = 'scoring';
@@ -519,15 +543,25 @@ c) Slecht - data zit versnipperd in silos`;
       return 'collecting';
     }
 
+    // Count user messages (questions answered)
+    const userMessages = this.state.messages.filter(m => m.role === 'user').length;
+    const MIN_QUESTIONS = 5; // Minimum questions before moving to scoring
+    
+    // Stay in collecting until we have at least MIN_QUESTIONS user responses
+    if (this.state.currentStep === 'collecting' && userMessages < MIN_QUESTIONS) {
+      this.addTrace(`determineNextStep: Only ${userMessages} questions answered, need ${MIN_QUESTIONS}, staying in collecting`);
+      return 'collecting';
+    }
+
     // Check if we should move from collecting to scoring
     const progress = calculateProgress(this.state.slots);
-    if (progress >= 80 && this.state.currentStep === 'collecting') {
-      this.addTrace(`determineNextStep: Progress ${progress}%, moving to scoring`);
+    if (progress >= 80 && this.state.currentStep === 'collecting' && userMessages >= MIN_QUESTIONS) {
+      this.addTrace(`determineNextStep: Progress ${progress}%, ${userMessages} questions answered, moving to scoring`);
       return 'scoring';
     }
 
     // Otherwise, stay in current step
-    this.addTrace(`determineNextStep: Staying in ${this.state.currentStep}`);
+    this.addTrace(`determineNextStep: Staying in ${this.state.currentStep} (progress: ${progress}%, questions: ${userMessages})`);
     return this.state.currentStep;
   }
 
