@@ -464,20 +464,28 @@ c) Slecht - data zit versnipperd in silos`;
   }
 
   private determineNextStep(): ConversationState['currentStep'] {
+    // If no messages yet, start with init
     if (this.state.messages.length === 0) {
       return 'init';
     }
 
+    // If already complete, stay complete
     if (this.state.currentStep === 'complete') {
       return 'complete';
     }
 
+    // If we're in init and have messages, move to collecting
+    if (this.state.currentStep === 'init') {
+      return 'collecting';
+    }
+
+    // Check if we should move from collecting to scoring
     const progress = calculateProgress(this.state.slots);
-    
     if (progress >= 80 && this.state.currentStep === 'collecting') {
       return 'scoring';
     }
 
+    // Otherwise, stay in current step
     return this.state.currentStep;
   }
 
