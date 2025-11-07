@@ -3,20 +3,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Close01, 
-  Loading01, 
-  ArrowRight01, 
-  Quote01, 
-  CheckmarkCircle01, 
-  Sparkles01, 
-  Message01, 
-  Brain01, 
-  Lightbulb01, 
-  Building01, 
-  Mail01, 
-  Phone01, 
-  User01, 
-  File01 
+  Cancel01Icon as CloseIcon, 
+  CursorLoading01Icon as LoadingIcon, 
+  ArrowRight01Icon as ArrowRightIcon, 
+  QuoteDownIcon as QuoteIcon, 
+  CheckmarkCircle01Icon as CheckmarkCircleIcon, 
+  SparklesIcon, 
+  Message01Icon as MessageIcon, 
+  AiBrain01Icon as BrainIcon, 
+  BulbIcon as LightbulbIcon, 
+  Building01Icon as BuildingIcon, 
+  AiMail01Icon as MailIcon, 
+  AiPhone01Icon as PhoneIcon, 
+  AiUserIcon as UserIcon, 
+  File01Icon as FileIcon 
 } from 'hugeicons-react';
 import { ChatResponse } from '@/lib/types';
 import { trackWidgetEvent } from '@/lib/analytics';
@@ -248,11 +248,11 @@ export default function AIWidget() {
 
   // Process steps configuration
   const processSteps = [
-    { id: 'init', label: 'Start', icon: Sparkles01, color: 'bg-bla-lime' },
-    { id: 'collecting', label: 'Vragen', icon: Message01, color: 'bg-blue-500' },
-    { id: 'scoring', label: 'Analyseren', icon: Brain01, color: 'bg-purple-500' },
-    { id: 'ideating', label: 'Ideeën', icon: Lightbulb01, color: 'bg-yellow-500' },
-    { id: 'complete', label: 'Klaar', icon: CheckmarkCircle01, color: 'bg-green-500' },
+    { id: 'init', label: 'Start', icon: SparklesIcon, color: 'bg-bla-lime' },
+    { id: 'collecting', label: 'Vragen', icon: MessageIcon, color: 'bg-blue-500' },
+    { id: 'scoring', label: 'Analyseren', icon: BrainIcon, color: 'bg-purple-500' },
+    { id: 'ideating', label: 'Ideeën', icon: LightbulbIcon, color: 'bg-yellow-500' },
+    { id: 'complete', label: 'Klaar', icon: CheckmarkCircleIcon, color: 'bg-green-500' },
   ];
 
   const getCurrentStepIndex = () => {
@@ -314,7 +314,7 @@ export default function AIWidget() {
                     whileHover={{ rotate: 15, scale: 1.1 }}
                     className="w-9 h-9 bg-gradient-to-br from-bla-lime/20 to-bla-lime/10 rounded-full flex items-center justify-center border border-bla-lime/20 backdrop-blur-sm"
                   >
-                    <Quote01 className="w-5 h-5 text-bla-lime" />
+                    <QuoteIcon className="w-5 h-5 text-bla-lime" />
                   </motion.div>
                   <div>
                     <h2 className="text-base font-light text-bla-text-light tracking-wide">AI Intake</h2>
@@ -346,7 +346,7 @@ export default function AIWidget() {
                   onClick={handleClose}
                   className="w-8 h-8 hover:bg-bla-charcoal-light rounded-full flex items-center justify-center transition-all duration-200"
                 >
-                  <Close01 className="w-4 h-4 text-bla-text-muted hover:text-bla-text-light transition-colors" />
+                  <CloseIcon className="w-4 h-4 text-bla-text-muted hover:text-bla-text-light transition-colors" />
                 </motion.button>
               </div>
 
@@ -499,7 +499,7 @@ export default function AIWidget() {
                                 transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
                                 className="flex-shrink-0 mt-0.5"
                               >
-                                <Quote01 className="w-4 h-4 text-bla-lime/40" />
+                                <QuoteIcon className="w-4 h-4 text-bla-lime/40" />
                               </motion.div>
                             )}
                             <p className={`text-sm font-light leading-relaxed text-bla-text-light whitespace-pre-wrap ${idx === 0 ? '' : 'ml-7'}`}>
@@ -560,7 +560,7 @@ export default function AIWidget() {
                       >
                         {isLoading ? (
                           <>
-                            <Loading01 className="w-4 h-4 animate-spin" />
+                            <LoadingIcon className="w-4 h-4 animate-spin" />
                             <span>Verwerken</span>
                           </>
                         ) : (
@@ -570,7 +570,7 @@ export default function AIWidget() {
                               animate={{ x: [0, 3, 0] }}
                               transition={{ repeat: Infinity, duration: 1.5 }}
                             >
-                              <ArrowRight01 className="w-4 h-4" />
+                              <ArrowRightIcon className="w-4 h-4" />
                             </motion.div>
                           </>
                         )}
@@ -613,7 +613,7 @@ export default function AIWidget() {
                               animate={{ scale: 1 }}
                               className="w-4 h-4 bg-bla-lime/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border border-bla-lime/20"
                             >
-                              <CheckmarkCircle01 className="w-2.5 h-2.5 text-bla-lime" />
+                              <CheckmarkCircleIcon className="w-2.5 h-2.5 text-bla-lime" />
                             </motion.div>
                             <p className="text-xs font-light text-bla-text-light leading-relaxed flex-1">
                               {message.content}
@@ -646,7 +646,7 @@ export default function AIWidget() {
                       transition={{ delay: 0.2, type: 'spring', damping: 15 }}
                       className="w-16 h-16 bg-bla-lime/20 border border-bla-lime/30 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md backdrop-blur-sm"
                     >
-                      <CheckmarkCircle01 className="w-8 h-8 text-bla-lime" />
+                      <CheckmarkCircleIcon className="w-8 h-8 text-bla-lime" />
                     </motion.div>
                     <motion.h3
                       initial={{ opacity: 0, y: 10 }}
@@ -674,7 +674,7 @@ export default function AIWidget() {
                     className="bg-bla-charcoal-light rounded-2xl border border-bla-charcoal-border p-5 space-y-4 backdrop-blur-sm"
                   >
                     <div className="flex items-center gap-2 mb-4">
-                      <Building01 className="w-4 h-4 text-bla-text-muted" />
+                      <BuildingIcon className="w-4 h-4 text-bla-text-muted" />
                       <h4 className="text-sm font-light text-bla-text-light">Jouw gegevens</h4>
                     </div>
 
@@ -682,7 +682,7 @@ export default function AIWidget() {
                       {/* Email - Required */}
                       <div>
                         <label className="flex items-center gap-2 text-xs font-extralight text-bla-text-muted mb-1.5">
-                          <Mail01 className="w-3.5 h-3.5" />
+                          <MailIcon className="w-3.5 h-3.5" />
                           Email adres <span className="text-red-400">*</span>
                         </label>
                         <input
@@ -698,7 +698,7 @@ export default function AIWidget() {
                       {/* Company Name */}
                       <div>
                         <label className="flex items-center gap-2 text-xs font-extralight text-bla-text-muted mb-1.5">
-                          <Building01 className="w-3.5 h-3.5" />
+                          <BuildingIcon className="w-3.5 h-3.5" />
                           Bedrijfsnaam
                         </label>
                         <input
@@ -714,7 +714,7 @@ export default function AIWidget() {
                       {/* Phone */}
                       <div>
                         <label className="flex items-center gap-2 text-xs font-extralight text-bla-text-muted mb-1.5">
-                          <Phone01 className="w-3.5 h-3.5" />
+                          <PhoneIcon className="w-3.5 h-3.5" />
                           Telefoonnummer
                         </label>
                         <input
@@ -730,7 +730,7 @@ export default function AIWidget() {
                       {/* Role */}
                       <div>
                         <label className="flex items-center gap-2 text-xs font-extralight text-bla-text-muted mb-1.5">
-                          <User01 className="w-3.5 h-3.5" />
+                          <UserIcon className="w-3.5 h-3.5" />
                           Functie
                         </label>
                         <input
@@ -746,7 +746,7 @@ export default function AIWidget() {
                       {/* Notes */}
                       <div>
                         <label className="flex items-center gap-2 text-xs font-extralight text-bla-text-muted mb-1.5">
-                          <File01 className="w-3.5 h-3.5" />
+                          <FileIcon className="w-3.5 h-3.5" />
                           Extra opmerkingen (optioneel)
                         </label>
                         <textarea
@@ -841,7 +841,7 @@ Tot snel!`);
                       transition={{ delay: 0.2, type: 'spring', damping: 15 }}
                       className="w-16 h-16 bg-bla-lime/20 border border-bla-lime/30 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md backdrop-blur-sm"
                     >
-                      <CheckmarkCircle01 className="w-8 h-8 text-bla-lime" />
+                      <CheckmarkCircleIcon className="w-8 h-8 text-bla-lime" />
                     </motion.div>
                     <motion.h3
                       initial={{ opacity: 0, y: 10 }}
