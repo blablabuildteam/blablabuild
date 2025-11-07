@@ -3,7 +3,7 @@
  * Expert in user interface, user experience, and design best practices
  */
 
-import { getApiKey, isOpenRouter } from './utils';
+import { getApiKey, isOpenRouter } from '../../utils';
 import OpenAI from 'openai';
 import { Agent, AgentContext, AgentResponse, AgentRole } from '../agent-registry';
 

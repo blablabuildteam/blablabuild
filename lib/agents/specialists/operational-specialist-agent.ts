@@ -3,7 +3,7 @@
  * Expert in business operations, process optimization, and workflow automation
  */
 
-import { getApiKey, isOpenRouter } from './utils';
+import { getApiKey, isOpenRouter } from '../../utils';
 import OpenAI from 'openai';
 import { Agent, AgentContext, AgentResponse, AgentRole } from '../agent-registry';
 

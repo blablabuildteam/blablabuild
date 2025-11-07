@@ -3,7 +3,7 @@
  * Expert in task management, project planning, and workflow orchestration
  */
 
-import { getApiKey, isOpenRouter } from './utils';
+import { getApiKey, isOpenRouter } from '../../utils';
 import OpenAI from 'openai';
 import { Agent, AgentContext, AgentResponse, AgentRole } from '../agent-registry';
 

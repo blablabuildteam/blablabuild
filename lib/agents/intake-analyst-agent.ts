@@ -3,7 +3,7 @@
  * Analyzes user responses and asks intelligent follow-up questions
  */
 
-import { getApiKey, isOpenRouter } from './utils';
+import { getApiKey, isOpenRouter } from '../utils';
 import OpenAI from 'openai';
 import { Agent, AgentContext, AgentResponse, AgentRole } from './agent-registry';
 

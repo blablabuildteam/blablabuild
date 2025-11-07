@@ -3,7 +3,7 @@
  * Generates creative AI/automation ideas based on user context
  */
 
-import { getApiKey, isOpenRouter } from './utils';
+import { getApiKey, isOpenRouter } from '../utils';
 import OpenAI from 'openai';
 import { Agent, AgentContext, AgentResponse, AgentRole } from './agent-registry';
 import { Idea } from '@/lib/types';
