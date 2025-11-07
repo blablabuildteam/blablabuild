@@ -22,6 +22,7 @@ export default function AIWidget() {
   const [isComplete, setIsComplete] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [activeAgents, setActiveAgents] = useState<string[]>([]);
+  const [questionKey, setQuestionKey] = useState(0); // Counter to force re-render
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -115,6 +116,7 @@ export default function AIWidget() {
 
       console.log('💬 Setting current question:', data.message);
       setCurrentQuestion(data.message);
+      setQuestionKey(prev => prev + 1); // Increment to force re-render
       setActiveAgents(data.activeAgents || []);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
@@ -277,7 +279,7 @@ export default function AIWidget() {
             <div ref={contentRef} className="flex-1 overflow-y-auto p-5">
               {currentQuestion && !isComplete && (
                 <motion.div
-                  key={`question-${currentQuestion.substring(0, 50)}-${Date.now()}`} // Force re-animation on question change
+                  key={`question-${questionKey}`} // Use counter for reliable re-render
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
