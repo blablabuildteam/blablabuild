@@ -91,10 +91,10 @@ PostHog tracking for:
 
 ### 10. **Documentation**
 Comprehensive guides:
-- ✅ README.md - Full technical docs
-- ✅ SETUP.md - Step-by-step setup guide
-- ✅ FEATURES.md - Feature breakdown
-- ✅ PROJECT_SUMMARY.md - This file!
+- ✅ README.md - Full technical docs (root)
+- ✅ docs/getting-started/SETUP.md - Step-by-step setup guide
+- ✅ docs/project/FEATURES.md - Feature breakdown
+- ✅ docs/project/PROJECT_SUMMARY.md - This file!
 - ✅ Inline code comments
 
 ---
@@ -186,10 +186,17 @@ blablabuild/
 │       └── init-db.sql           # Quick DB setup
 │
 └── 📚 Documentation
-    ├── README.md                 # Main documentation
-    ├── SETUP.md                  # Setup guide
-    ├── FEATURES.md               # Feature list
-    └── PROJECT_SUMMARY.md        # This file
+    ├── README.md                 # Main documentation (root)
+    ├── docs/getting-started/
+    │   ├── SETUP.md              # Setup guide
+    │   └── QUICKSTART.md         # Quick start
+    ├── docs/project/
+    │   ├── FEATURES.md           # Feature list
+    │   └── PROJECT_SUMMARY.md    # This file
+    ├── docs/guides/
+    │   └── TESTING_GUIDE.md      # Testing guide
+    └── docs/api/
+        └── API_OVERVIEW.md        # API docs
 ```
 
 ---
@@ -255,7 +262,7 @@ npm run dev
    - Click sparkle button in bottom-right
    - Start conversation!
 
-**See SETUP.md for detailed instructions**
+**See [`../getting-started/SETUP.md`](../getting-started/SETUP.md) for detailed instructions**
 
 ---
 
@@ -385,8 +392,8 @@ Based on your business-model.png:
 
 Questions? Issues?
 - 📖 Check README.md for details
-- 🚀 See SETUP.md for step-by-step guide
-- ✨ Review FEATURES.md for capabilities
+- 🚀 See [`../getting-started/SETUP.md`](../getting-started/SETUP.md) for step-by-step guide
+- ✨ Review [`FEATURES.md`](FEATURES.md) for capabilities
 - 💬 Contact: hello@blablabuild.com
 
 ---
@@ -398,8 +405,8 @@ From your images:
 - ✅ **business-model.png**: Investment → One-Off → Growth → Performance → Venture
 - ✅ **owners.png**: Daniel, Kevin, Xennith profiles
 - ✅ **outcomes-solutions.png**: Time saved, Cost savings, Sales growth, etc.
-- ✅ **intake.md**: All intake questions implemented
-- ✅ **architecture.md**: Technical architecture followed
+- ✅ **Original intake questions**: All intake questions implemented
+- ✅ **Original architecture**: Technical architecture followed
 
 ---
 

@@ -50,6 +50,22 @@ blablabuild/
 - **Analytics**: PostHog
 - **Deployment**: Vercel
 
+## 📚 Documentation
+
+All documentation is organized in the [`docs/`](docs/) folder:
+
+- **Getting Started**: [`docs/getting-started/START_HERE.md`](docs/getting-started/START_HERE.md) - Start here!
+- **Quick Start**: [`docs/getting-started/QUICKSTART.md`](docs/getting-started/QUICKSTART.md) - Get running in 5 minutes
+- **Setup Guide**: [`docs/getting-started/SETUP.md`](docs/getting-started/SETUP.md) - Detailed setup
+- **Project Overview**: [`docs/project/PROJECT_SUMMARY.md`](docs/project/PROJECT_SUMMARY.md) - What was built
+- **Features**: [`docs/project/FEATURES.md`](docs/project/FEATURES.md) - All features
+- **API Docs**: [`docs/api/API_OVERVIEW.md`](docs/api/API_OVERVIEW.md) - API reference
+- **Testing**: [`docs/guides/TESTING_GUIDE.md`](docs/guides/TESTING_GUIDE.md) - Testing guide
+- **Agents**: [`docs/agents/AGENT_SYSTEM_COMPLETE.md`](docs/agents/AGENT_SYSTEM_COMPLETE.md) - Agent system
+- **Deployment**: [`docs/deployment/DEPLOYMENT_CHECKLIST.md`](docs/deployment/DEPLOYMENT_CHECKLIST.md) - Deployment guide
+
+See [`docs/README.md`](docs/README.md) for complete documentation index.
+
 ## 📦 Installation
 
 1. **Clone and install dependencies**:

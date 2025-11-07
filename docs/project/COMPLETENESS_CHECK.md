@@ -17,7 +17,7 @@
 
 ## 📊 Reference Files Integration Check
 
-### ✅ architecture.md
+### ✅ Original Architecture Reference
 - [x] Slot-driven conversation - Implemented in `lib/orchestrator.ts`
 - [x] LangGraph-like state machine - `init → collecting → scoring → ideating → complete`
 - [x] Maturity scoring (org, data, tech, ops) - `lib/scoring.ts`
@@ -27,7 +27,7 @@
 - [x] Analytics integration - PostHog in `lib/analytics.ts`
 - [x] Email delivery - Resend in `app/api/email/route.ts`
 
-### ✅ intake.md
+### ✅ Original Intake Questions Reference
 - [x] All questions mapped to slots:
   - [x] "Als je bedrijf opnieuw zou inrichten..." - ✅ Open first question
   - [x] "3 grootste pijnpunten" - ✅ `pain_points` slot
@@ -173,16 +173,15 @@
 - [x] lib/db/seed.sql
 - [x] scripts/init-db.sql
 
-### Documentation (7/7) ✅
-- [x] README.md
-- [x] SETUP.md
-- [x] QUICKSTART.md
-- [x] PROJECT_SUMMARY.md
-- [x] FEATURES.md
-- [x] FILES_CREATED.md
-- [x] COMPLETENESS_CHECK.md (this file)
+### Documentation (6/6) ✅
+- [x] README.md (root)
+- [x] docs/getting-started/SETUP.md
+- [x] docs/getting-started/QUICKSTART.md
+- [x] docs/project/PROJECT_SUMMARY.md
+- [x] docs/project/FEATURES.md
+- [x] docs/project/COMPLETENESS_CHECK.md (this file)
 
-**Total: 32/32 files ✅**
+**Total: 31/31 files ✅**
 
 ---
 

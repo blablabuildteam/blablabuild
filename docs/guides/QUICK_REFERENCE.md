@@ -131,9 +131,8 @@ POST /api/analytics     # Create A/B test
 - `app/api/analytics/route.ts` - Analytics API
 
 ### Documentation
-- `TESTING_GUIDE.md` - Complete guide
-- `WIDGET_TESTING_SUMMARY.md` - Summary
-- `QUICK_REFERENCE.md` - This file
+- [`TESTING_GUIDE.md`](TESTING_GUIDE.md) - Complete guide
+- [`QUICK_REFERENCE.md`](QUICK_REFERENCE.md) - This file
 
 ### Configuration
 - `jest.config.js` - Jest config
@@ -182,9 +181,8 @@ psql -h $SUPABASE_URL -U postgres -d your-db -f lib/db/reinforcement-schema.sql
 ```
 
 ### Need help?
-- Read `TESTING_GUIDE.md` for detailed info
-- Check `__tests__/README.md` for test details
-- See `WIDGET_TESTING_SUMMARY.md` for complete summary
+- Read [`TESTING_GUIDE.md`](TESTING_GUIDE.md) for detailed info
+- Check [`../../__tests__/README.md`](../../__tests__/README.md) for test details
 
 ---
 
@@ -226,7 +224,6 @@ psql -h $SUPABASE_URL -U postgres -d your-db -f lib/db/reinforcement-schema.sql
 **Your widget is now self-improving! 🎉**
 
 For detailed info, see:
-- `TESTING_GUIDE.md` - Complete testing guide
-- `WIDGET_TESTING_SUMMARY.md` - Detailed summary
-- `__tests__/README.md` - Test documentation
+- [`TESTING_GUIDE.md`](TESTING_GUIDE.md) - Complete testing guide
+- [`../../__tests__/README.md`](../../__tests__/README.md) - Test documentation
 

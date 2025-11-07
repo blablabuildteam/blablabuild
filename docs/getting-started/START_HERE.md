@@ -24,54 +24,54 @@ A **production-ready** AI intake widget + landing page that:
 Read these in order based on what you need:
 
 ### 1️⃣ Want to Get Running Fast? (5 minutes)
-👉 **Read**: `QUICKSTART.md`
+👉 **Read**: [`QUICKSTART.md`](QUICKSTART.md)
 - Step-by-step checklist
 - Copy-paste commands
 - Success criteria
 
 ### 2️⃣ Want Detailed Setup Instructions?
-👉 **Read**: `SETUP.md`
+👉 **Read**: [`SETUP.md`](SETUP.md)
 - Comprehensive setup guide
 - Troubleshooting section
 - Production deployment
 
 ### 3️⃣ Want to Understand What Was Built?
-👉 **Read**: `PROJECT_SUMMARY.md`
+👉 **Read**: [`../project/PROJECT_SUMMARY.md`](../project/PROJECT_SUMMARY.md)
 - Complete overview
 - Architecture diagrams
 - Feature breakdown
 - User flow walkthrough
 
 ### 4️⃣ Want Technical Details?
-👉 **Read**: `README.md`
+👉 **Read**: [`../../README.md`](../../README.md)
 - Full technical documentation
 - API specifications
 - Database schema
 - Development guide
 
 ### 5️⃣ Want to See All Features?
-👉 **Read**: `FEATURES.md`
+👉 **Read**: [`../project/FEATURES.md`](../project/FEATURES.md)
 - Complete feature list
 - Technical deep-dives
 - Future roadmap
 
 ### 6️⃣ Want to Check Completeness?
-👉 **Read**: `COMPLETENESS_CHECK.md`
+👉 **Read**: [`../project/COMPLETENESS_CHECK.md`](../project/COMPLETENESS_CHECK.md)
 - What's done vs. what's missing
 - Suggestions for improvement
 - Pre-launch checklist
 
 ### 7️⃣ Want to Plan Next Steps?
-👉 **Read**: `ROADMAP.md`
+👉 **Read**: [`../project/ROADMAP.md`](../project/ROADMAP.md)
 - Phase-by-phase plan
 - OKRs and metrics
 - Feature backlog
 
-### 8️⃣ Want File Reference?
-👉 **Read**: `FILES_CREATED.md`
-- All 32 files explained
-- Where to find things
-- Quick reference
+### 8️⃣ Want Testing & Agent Info?
+👉 **Read**: [`../guides/TESTING_GUIDE.md`](../guides/TESTING_GUIDE.md) and [`../agents/AGENT_SYSTEM_COMPLETE.md`](../agents/AGENT_SYSTEM_COMPLETE.md)
+- Testing framework
+- Agent system documentation
+- Quick reference commands
 
 ---
 
@@ -113,9 +113,9 @@ npm run dev
 
 ### Path C: "I Want to Understand First" (1 hour)
 
-1. Read `PROJECT_SUMMARY.md`
-2. Read `FEATURES.md`
-3. Skim through `README.md`
+1. Read [`../project/PROJECT_SUMMARY.md`](../project/PROJECT_SUMMARY.md)
+2. Read [`../project/FEATURES.md`](../project/FEATURES.md)
+3. Skim through [`../../README.md`](../../README.md)
 4. Then follow **Path A**
 
 ---
@@ -312,7 +312,7 @@ Based on analysis, here are the **highest-value improvements**:
 
 ### Something Not Working?
 
-1. **Check**: `SETUP.md` troubleshooting section
+1. **Check**: [`SETUP.md`](SETUP.md) troubleshooting section
 2. **Check**: Browser console (F12) for errors
 3. **Check**: Terminal for error messages
 4. **Check**: Supabase dashboard for database issues
@@ -340,7 +340,7 @@ Here's what to do in your first hour with the project:
 
 **Minutes 0-15: Read**
 - ✅ This file (START_HERE.md)
-- ✅ Skim PROJECT_SUMMARY.md
+- ✅ Skim [`../project/PROJECT_SUMMARY.md`](../project/PROJECT_SUMMARY.md)
 
 **Minutes 15-30: Setup**
 - ✅ Run `npm install`
@@ -371,7 +371,7 @@ Everything you need is here. The system is:
 - ✅ **Tested**: Code works, no linter errors
 - ✅ **Scalable**: Built for growth
 
-**Next step**: Open `QUICKSTART.md` and get it running!
+**Next step**: Open [`QUICKSTART.md`](QUICKSTART.md) and get it running!
 
 ---
 
@@ -381,7 +381,7 @@ Questions? Issues? Want to share progress?
 
 - 📧 Email: hello@blablabuild.com
 - 💬 Check the docs (you have 8 comprehensive guides!)
-- 🐛 Issues? Check `COMPLETENESS_CHECK.md` known limitations
+- 🐛 Issues? Check [`../project/COMPLETENESS_CHECK.md`](../project/COMPLETENESS_CHECK.md) known limitations
 
 ---
 

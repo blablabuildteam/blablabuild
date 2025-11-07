@@ -159,17 +159,17 @@ If all checkboxes are ticked, you're ready to go! 🚀
 
 ## 📚 Learn More
 
-- **Full Setup Guide**: `SETUP.md`
-- **Technical Docs**: `README.md`
-- **Features**: `FEATURES.md`
-- **Architecture**: `architecture.md`
+- **Full Setup Guide**: [`SETUP.md`](SETUP.md)
+- **Technical Docs**: [`../../README.md`](../../README.md)
+- **Features**: [`../project/FEATURES.md`](../project/FEATURES.md)
+- **Project Summary**: [`../project/PROJECT_SUMMARY.md`](../project/PROJECT_SUMMARY.md)
 
 ---
 
 ## 💬 Need Help?
 
 Check these in order:
-1. `SETUP.md` - detailed setup instructions
+1. [`SETUP.md`](SETUP.md) - detailed setup instructions
 2. Browser console (F12) - check for error messages
 3. Terminal - look for error logs
 4. Supabase dashboard - verify tables exist
