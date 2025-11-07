@@ -291,7 +291,7 @@ export default function AIWidget() {
 
             {/* Content Area */}
             <div ref={contentRef} className="flex-1 overflow-y-auto p-5">
-              {currentQuestion && !isComplete ? (
+              {currentQuestion && !isComplete && (
                 <motion.div
                   key={`question-${questionKey}`} // Use counter for reliable re-render
                   initial={{ opacity: 0, y: 20 }}
