@@ -21,6 +21,7 @@ export default function AIWidget() {
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
+  const [activeAgents, setActiveAgents] = useState<string[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const initializeSession = async () => {
@@ -92,6 +93,7 @@ export default function AIWidget() {
       }
 
       setCurrentQuestion(data.message);
+      setActiveAgents(data.activeAgents || []);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
         content: data.message, 
@@ -135,6 +137,23 @@ export default function AIWidget() {
   }, []);
 
   const questionNumber = Math.min(Math.floor(progress / 14), 7);
+
+  // Helper to get short agent names for display
+  const getShortAgentName = (name: string): string => {
+    const shortNames: Record<string, string> = {
+      'Intake Analyst': 'Intake',
+      'Business Consultant': 'Business',
+      'Question Optimizer': 'Optimizer',
+      'Idea Generator': 'Ideas',
+      'Insight Synthesizer': 'Insights',
+      'UI/UX Specialist': 'UI/UX',
+      'Operational Specialist': 'Ops',
+      'Task Specialist': 'Tasks',
+      'Tech Specialist': 'Tech',
+      'SME Specialist': 'SME',
+    };
+    return shortNames[name] || name.split(' ')[0];
+  };
 
   return (
     <>
@@ -434,7 +453,38 @@ export default function AIWidget() {
                   />
                   <span className="text-xs text-gray-500">blablabuild AI</span>
                 </div>
-                <span className="text-xs text-gray-400">Secure & Private</span>
+                <div className="flex items-center gap-3">
+                  {activeAgents.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, x: 10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="flex items-center gap-1.5"
+                    >
+                      <span className="text-[10px] text-gray-400 uppercase tracking-wider">
+                        Active:
+                      </span>
+                      <div className="flex items-center gap-1">
+                        {activeAgents.slice(0, 2).map((agent, idx) => (
+                          <motion.span
+                            key={agent}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: idx * 0.1 }}
+                            className="px-1.5 py-0.5 bg-bla-lime/10 text-[10px] text-gray-600 rounded font-medium"
+                          >
+                            {getShortAgentName(agent)}
+                          </motion.span>
+                        ))}
+                        {activeAgents.length > 2 && (
+                          <span className="text-[10px] text-gray-400">
+                            +{activeAgents.length - 2}
+                          </span>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                  <span className="text-xs text-gray-400">Secure & Private</span>
+                </div>
               </div>
             </motion.div>
           </motion.div>

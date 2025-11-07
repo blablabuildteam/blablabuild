@@ -147,11 +147,15 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
     
     // Track answer quality from previous question
     const previousMessage = this.state.messages[this.state.messages.length - 3];
+    let activeAgentNames: string[] = [];
+    
     if (previousMessage && previousMessage.role === 'assistant' && userMessage) {
       const slotsBefore = Object.keys(this.state.slots).length;
       
       // Use agents to extract data + traditional extraction
-      const agentData = await this.agentCoordinator.extractDataFromMessage(this.state, userMessage);
+      const agentResult = await this.agentCoordinator.extractDataFromMessage(this.state, userMessage);
+      activeAgentNames = agentResult.activeAgentNames || [];
+      const { activeAgentNames: _, ...agentData } = agentResult;
       Object.assign(this.state.slots, agentData);
       
       await this.extractSlots(userMessage);
@@ -174,8 +178,9 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
     }
 
     // Get best next question from agents
-    const agentQuestion = await this.agentCoordinator.getBestQuestion(this.state, userMessage);
-    const nextQuestion = agentQuestion || await this.getNextQuestion();
+    const agentQuestionResult = await this.agentCoordinator.getBestQuestion(this.state, userMessage);
+    const nextQuestion = agentQuestionResult.question || await this.getNextQuestion();
+    activeAgentNames = [...new Set([...activeAgentNames, ...(agentQuestionResult.activeAgentNames || [])])];
 
     if (!nextQuestion) {
       // We have enough information, move to scoring
@@ -199,6 +204,7 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
       sessionId: this.state.sessionId,
       step: 'collecting',
       progress,
+      activeAgents: activeAgentNames.length > 0 ? activeAgentNames : undefined,
     };
   }
 
@@ -217,6 +223,18 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
 
     // Use agents for idea generation
     const agentIdeas = await this.agentCoordinator.getIdeas(this.state);
+    
+    // Get active agents for ideation
+    const { agentRegistry } = await import('./agents/agent-registry');
+    const ideationContext = {
+      sessionId: this.state.sessionId,
+      currentStep: this.state.currentStep,
+      slots: this.state.slots,
+      messages: this.state.messages.map(m => ({ role: m.role, content: m.content })),
+      trigger: 'on_ideation' as const,
+    };
+    const ideationAgents = await agentRegistry.getActiveAgents(ideationContext);
+    const activeAgentNames = ideationAgents.map(a => a.name);
     
     // Fallback to traditional if agents didn't produce ideas
     let ideas = agentIdeas;
@@ -272,6 +290,7 @@ Wat is je email adres?`;
       step: 'complete',
       progress: 100,
       ideas: ideasWithCosts,
+      activeAgents: activeAgentNames.length > 0 ? activeAgentNames : undefined,
     };
   }
 

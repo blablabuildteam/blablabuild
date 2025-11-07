@@ -26,6 +26,7 @@ export class AgentCoordinator {
     bestQuestion?: string;
     extractedData?: Partial<Slots>;
     insights?: string[];
+    activeAgentNames?: string[];
   }> {
     const context: AgentContext = {
       sessionId: this.sessionId,
@@ -39,6 +40,10 @@ export class AgentCoordinator {
       trigger,
     };
 
+    // Get active agents (before execution to know which ones will run)
+    const activeAgents = await agentRegistry.getActiveAgents(context);
+    const activeAgentNames = activeAgents.map(a => a.name);
+
     // Execute agents with budget limits
     const responses = await agentRegistry.executeAgents(context, {
       limit: 3, // Max 3 agents per trigger
@@ -49,23 +54,33 @@ export class AgentCoordinator {
     await this.logAgentExecution(trigger, responses);
 
     // Combine results
-    return this.combineAgentResults(responses);
+    const results = this.combineAgentResults(responses);
+    return {
+      ...results,
+      activeAgentNames,
+    };
   }
 
   /**
    * Get the best next question from agents
    */
-  async getBestQuestion(state: ConversationState, userMessage?: string): Promise<string | null> {
+  async getBestQuestion(state: ConversationState, userMessage?: string): Promise<{
+    question: string | null;
+    activeAgentNames?: string[];
+  }> {
     const result = await this.executeForTrigger('on_user_message', state, userMessage);
     
     // Prefer question from QuestionOptimizerAgent, fallback to IntakeAnalystAgent
     const questionOptimizer = result.responses.find(r => r.agent === 'question-optimizer');
     const intakeAnalyst = result.responses.find(r => r.agent === 'intake-analyst');
     
-    return result.bestQuestion || 
-           questionOptimizer?.nextQuestion || 
-           intakeAnalyst?.nextQuestion || 
-           null;
+    return {
+      question: result.bestQuestion || 
+               questionOptimizer?.nextQuestion || 
+               intakeAnalyst?.nextQuestion || 
+               null,
+      activeAgentNames: result.activeAgentNames,
+    };
   }
 
   /**
@@ -101,7 +116,7 @@ export class AgentCoordinator {
   async extractDataFromMessage(
     state: ConversationState,
     userMessage: string
-  ): Promise<Partial<Slots>> {
+  ): Promise<Partial<Slots> & { activeAgentNames?: string[] }> {
     const result = await this.executeForTrigger('on_user_message', state, userMessage);
     
     // Combine extracted data from all agents
@@ -113,7 +128,10 @@ export class AgentCoordinator {
       }
     }
     
-    return extractedData;
+    return {
+      ...extractedData,
+      activeAgentNames: result.activeAgentNames,
+    };
   }
 
   /**

@@ -99,6 +99,7 @@ export interface ChatResponse {
   progress?: number;
   ideas?: Idea[];
   complete?: boolean;
+  activeAgents?: string[]; // Agent names that are currently active
 }
 
 // Database types
