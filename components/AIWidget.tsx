@@ -29,7 +29,16 @@ export default function AIWidget() {
   // Debug: Log when currentQuestion changes
   useEffect(() => {
     console.log('🔄 currentQuestion changed:', currentQuestion?.substring(0, 50));
-  }, [currentQuestion]);
+    console.log('🔄 currentQuestion length:', currentQuestion?.length);
+    console.log('🔄 currentQuestion truthy?', !!currentQuestion);
+    console.log('🔄 isComplete:', isComplete);
+    console.log('🔄 Should show question?', currentQuestion && !isComplete);
+  }, [currentQuestion, isComplete]);
+  
+  // Debug: Log when questionKey changes
+  useEffect(() => {
+    console.log('🔑 questionKey changed to:', questionKey);
+  }, [questionKey]);
 
   const initializeSession = async () => {
     try {
@@ -110,6 +119,8 @@ export default function AIWidget() {
       console.log('✅ API Response data:', data);
       console.log('📝 Full message:', data.message);
       console.log('📏 Message length:', data.message?.length);
+      console.log('🔍 Message type:', typeof data.message);
+      console.log('🔍 Message truthy?', !!data.message);
       
       if (!sessionId) {
         setSessionId(data.sessionId);
@@ -118,6 +129,7 @@ export default function AIWidget() {
 
       console.log('💬 Setting current question:', data.message);
       console.log('🔑 Current questionKey before:', questionKey);
+      console.log('🔍 Current questionKey state value:', questionKey);
       
       // Ensure we have a valid message
       if (!data.message || data.message.trim() === '') {
@@ -125,18 +137,24 @@ export default function AIWidget() {
         throw new Error('Received empty message from server');
       }
       
+      console.log('✅ Message is valid, setting state...');
       setCurrentQuestion(data.message);
+      console.log('✅ setCurrentQuestion called with:', data.message.substring(0, 50));
+      
       setQuestionKey(prev => {
         const newKey = prev + 1;
-        console.log('🔑 New questionKey:', newKey);
+        console.log('🔑 New questionKey:', newKey, '(was:', prev, ')');
         return newKey;
       });
+      
       setActiveAgents(data.activeAgents || []);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
         content: data.message, 
         timestamp: new Date() 
       }]);
+      
+      console.log('✅ All state updates queued');
 
       setProgress(data.progress || progress);
       console.log('📊 Progress updated:', data.progress || progress);
