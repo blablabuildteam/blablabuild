@@ -268,7 +268,6 @@ export default function HomePage() {
         {/* Horizontal scrolling carousel */}
         <div className="overflow-x-auto scrollbar-hide snap-x snap-mandatory">
           <div className="flex gap-6 min-w-max pb-4">
-            <div className="w-6 md:w-[calc((100vw-320px-1250px)/2+24px)] flex-shrink-0"></div>
             <motion.div 
               className="space-y-4 w-80 flex-shrink-0 snap-center"
               whileHover={{ scale: 1.02 }}
@@ -352,7 +351,7 @@ export default function HomePage() {
                 Voorspel trends, identificeer kansen en optimaliseer je business decisions met data-driven inzichten.
               </p>
             </motion.div>
-            <div className="w-6 md:w-[calc((100vw-320px-1250px)/2+24px)] flex-shrink-0"></div>
+            <div className="w-6 flex-shrink-0"></div>
           </div>
         </div>
       </section>
