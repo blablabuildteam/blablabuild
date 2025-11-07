@@ -808,13 +808,13 @@ Tot snel!`);
                     >
                       {isSubmittingLead ? (
                         <>
-                          <Loading01 className="w-4 h-4 animate-spin" />
+                          <LoadingIcon className="w-4 h-4 animate-spin" />
                           <span>Verzenden...</span>
                         </>
                       ) : (
                         <>
                           <span>Verstuur & Ontvang Analyse</span>
-                          <ArrowRight01 className="w-4 h-4" />
+                          <ArrowRightIcon className="w-4 h-4" />
                         </>
                       )}
                     </motion.button>
