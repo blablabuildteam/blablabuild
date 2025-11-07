@@ -268,11 +268,26 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
     // If no question from traditional method, generate a follow-up based on what we know
     if (!nextQuestion) {
       const userMessages = this.state.messages.filter(m => m.role === 'user').length;
+      const assistantMessages = this.state.messages.filter(m => m.role === 'assistant').map(m => m.content.toLowerCase());
       const MIN_QUESTIONS = 5;
+      
+      // Helper to check if we've already asked something similar
+      const hasAskedSimilar = (keywords: string[]): boolean => {
+        return assistantMessages.some(msg => 
+          keywords.some(keyword => msg.includes(keyword.toLowerCase()))
+        );
+      };
       
       // If we haven't asked enough questions yet, generate a follow-up
       if (userMessages < MIN_QUESTIONS) {
         this.addTrace(`Generating follow-up question (${userMessages}/${MIN_QUESTIONS} questions asked)`);
+        
+        // Get all previous user answers to build context
+        const previousAnswers = this.state.messages
+          .filter(m => m.role === 'user')
+          .map(m => m.content)
+          .join(' ')
+          .toLowerCase();
         
         // Generate contextual follow-up based on what we've learned
         // First question should be based on the user's first answer
@@ -280,14 +295,17 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
           // First question - make it contextual to their answer
           const userAnswer = userMessage.toLowerCase();
           
-          if (userAnswer.includes('rooster') || userAnswer.includes('schedule') || userAnswer.includes('planning')) {
+          if ((userAnswer.includes('rooster') || userAnswer.includes('schedule') || userAnswer.includes('planning')) && 
+              !hasAskedSimilar(['rooster', 'planning', 'tijd'])) {
             nextQuestion = `Je noemde roosters maken. Kun je me vertellen hoeveel tijd je hier nu per week aan besteedt, en wat de grootste uitdagingen zijn?`;
-          } else if (userAnswer.includes('tijd') || userAnswer.includes('time') || userAnswer.includes('uren')) {
+          } else if ((userAnswer.includes('tijd') || userAnswer.includes('time') || userAnswer.includes('uren')) && 
+                     !hasAskedSimilar(['tijd', 'uren', 'verloren'])) {
             nextQuestion = `Je geeft aan tijd te verliezen. Op welke specifieke taken of processen gaat nu de meeste tijd verloren?`;
-          } else if (userAnswer.includes('proces') || userAnswer.includes('process') || userAnswer.includes('werkflow')) {
+          } else if ((userAnswer.includes('proces') || userAnswer.includes('process') || userAnswer.includes('werkflow')) && 
+                     !hasAskedSimilar(['proces', 'automatiseren'])) {
             nextQuestion = `Je noemde werkprocessen. Kun je een voorbeeld geven van een proces dat je graag zou willen automatiseren?`;
-          } else {
-            // Generic but contextual
+          } else if (!hasAskedSimilar(['meer vertellen', 'uitdagingen', 'hoe werkt'])) {
+            // Generic but contextual - only if we haven't asked something similar
             nextQuestion = `Je noemde "${userMessage.substring(0, 50)}". Kun je me meer vertellen over hoe dit nu precies werkt en wat de grootste uitdagingen zijn?`;
           }
         } else if (this.state.slots.pain_points && this.state.slots.pain_points.length > 0) {
@@ -295,10 +313,13 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
             ? this.state.slots.pain_points[0] 
             : this.state.slots.pain_points;
           
-          nextQuestion = `Je noemde "${painPoint}". Kun je me meer vertellen over hoe dit nu precies werkt en wat de grootste uitdagingen zijn?`;
-        } else if (this.state.slots.goal) {
+          if (!hasAskedSimilar([painPoint.toLowerCase().substring(0, 20)])) {
+            nextQuestion = `Je noemde "${painPoint}". Kun je me meer vertellen over hoe dit nu precies werkt en wat de grootste uitdagingen zijn?`;
+          }
+        } else if (this.state.slots.goal && !hasAskedSimilar(['doel', 'bereiken', 'helpen'])) {
           nextQuestion = `Je doel is "${this.state.slots.goal}". Wat zou je helpen om dit sneller te bereiken?`;
-        } else {
+        } else if (!hasAskedSimilar(['werkprocessen', 'meeste tijd', 'kost tijd'])) {
+          // Only ask if we haven't asked about processes/time yet
           nextQuestion = `Kun je me meer vertellen over je huidige werkprocessen? Wat kost je nu de meeste tijd?`;
         }
       }
@@ -515,6 +536,18 @@ Geef antwoord in JSON formaat met alleen de velden die je met zekerheid kunt bep
 
   private async getNextQuestion(): Promise<string | null> {
     const slots = this.state.slots;
+    
+    // Get all assistant messages to avoid repeating questions
+    const assistantMessages = this.state.messages
+      .filter(m => m.role === 'assistant')
+      .map(m => m.content.toLowerCase());
+    
+    // Helper to check if we've already asked a similar question
+    const hasAskedQuestion = (keywords: string[]): boolean => {
+      return assistantMessages.some(msg => 
+        keywords.some(keyword => msg.includes(keyword.toLowerCase()))
+      );
+    };
 
     // Question flow based on missing information
     if (!slots.industry && !slots.goal) {
@@ -522,42 +555,54 @@ Geef antwoord in JSON formaat met alleen de velden die je met zekerheid kunt bep
     }
 
     if (!slots.pain_points || slots.pain_points.length === 0) {
-      return 'Welke 3 grootste pijnpunten ervaar je momenteel binnen je marketing- en verkoopprocessen?';
+      if (!hasAskedQuestion(['pijnpunten', 'uitdagingen', 'problemen'])) {
+        return 'Welke 3 grootste pijnpunten ervaar je momenteel binnen je marketing- en verkoopprocessen?';
+      }
     }
 
     if (slots.score_lead_gen === undefined) {
-      return `Op een schaal van 1 tot 10, hoe zou je de efficiëntie van deze processen beoordelen?
+      if (!hasAskedQuestion(['schaal', 'cijfer', 'efficiëntie', 'beoordelen', '1 tot 10'])) {
+        return `Op een schaal van 1 tot 10, hoe zou je de efficiëntie van deze processen beoordelen?
 
 • Leadgeneratie (via website/campagnes)
 • Conversie van leads naar klanten
 • Data-analyse & rapportering
 
 Geef per proces een cijfer tussen 1-10.`;
+      }
     }
 
     if (!slots.manual_hours) {
-      return `Hoeveel tijd per week wordt er gemiddeld besteed aan handmatige taken die geautomatiseerd zouden kunnen worden?
+      if (!hasAskedQuestion(['tijd', 'uren', 'handmatige taken', 'geautomatiseerd'])) {
+        return `Hoeveel tijd per week wordt er gemiddeld besteed aan handmatige taken die geautomatiseerd zouden kunnen worden?
 
 a) Minder dan 5 uur
 b) 5-10 uur
 c) 10-20 uur
 d) Meer dan 20 uur`;
+      }
     }
 
     if (!slots.data_integration) {
-      return `Hoe toegankelijk en geïntegreerd is jullie data uit verschillende systemen?
+      if (!hasAskedQuestion(['data', 'geïntegreerd', 'gekoppeld', 'silos'])) {
+        return `Hoe toegankelijk en geïntegreerd is jullie data uit verschillende systemen?
 
 a) Zeer goed - alles is gekoppeld
 b) Redelijk - sommige systemen zijn gekoppeld
 c) Slecht - data zit versnipperd in silos`;
+      }
     }
 
     if (!slots.goal_short_term) {
-      return 'Wat is jullie belangrijkste bedrijfsdoelstelling voor de komende 3 maanden?';
+      if (!hasAskedQuestion(['doelstelling', 'doel', '3 maanden', 'korte termijn'])) {
+        return 'Wat is jullie belangrijkste bedrijfsdoelstelling voor de komende 3 maanden?';
+      }
     }
 
     if (!slots.goal_long_term) {
-      return 'En op de langere termijn: wat is jullie strategische doel voor komend jaar?';
+      if (!hasAskedQuestion(['langere termijn', 'strategisch', 'komend jaar', 'lange termijn'])) {
+        return 'En op de langere termijn: wat is jullie strategische doel voor komend jaar?';
+      }
     }
 
     // All required information collected
