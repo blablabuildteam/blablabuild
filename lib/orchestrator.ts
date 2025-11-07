@@ -372,9 +372,7 @@ Deze combineren ${this.state.slots.maturity ?
   `jouw huidige maturiteit (Data: ${this.state.slots.maturity.data}/5, Tech: ${this.state.slots.maturity.tech}/5)` : 
   'jouw huidige situatie'} met haalbare quick wins.
 
-Wil je de volledige analyse per email ontvangen? Dan stuur ik je een gedetailleerd overzicht met kostenschattingen, stappenplannen en voorbeelden.
-
-Wat is je email adres?`;
+Laat hieronder je gegevens achter zodat we je de volledige analyse kunnen sturen met kostenschattingen, stappenplannen en voorbeelden.`;
 
     return {
       message,

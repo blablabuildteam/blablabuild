@@ -12,14 +12,28 @@ const config: Config = {
         'loopy-sans': ['Meldina', 'sans-serif'],
       },
       colors: {
-        // Minimal white OpenAI-inspired with neon lime accent
+        // Dark charcoal theme with subtle accents
         bla: {
-          lime: "#c4f000",      // Bright neon lime (from branding)
+          lime: "#c4f000",      // Bright lime accent
           dark: "#0a0a0a",      // Deep black
+          charcoal: "#1a1a1a",  // Dark charcoal background
+          "charcoal-light": "#2a2a2a", // Lighter charcoal
+          "charcoal-border": "#333333", // Border color
           gray: "#f9fafb",      // Light gray backgrounds
           "gray-light": "#f3f4f6",
           border: "#e5e7eb",    // Light borders
+          "text-light": "#e5e5e5", // Light text on dark
+          "text-muted": "#999999", // Muted text
         },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        thin: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      fontWeight: {
+        thin: '100',
+        extralight: '200',
+        light: '300',
       },
       animation: {
         "fade-in": "fadeIn 0.3s ease-in",

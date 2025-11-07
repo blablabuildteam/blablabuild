@@ -33,6 +33,18 @@ export async function POST(req: NextRequest) {
       .eq('id', sessionId)
       .single();
 
+    // Get lead information from slots
+    const { data: slots } = await supabaseAdmin
+      .from('slots')
+      .select('*')
+      .eq('session_id', sessionId)
+      .in('key', ['company_name', 'phone', 'role']);
+
+    const leadInfo: any = {};
+    slots?.forEach((slot: any) => {
+      leadInfo[slot.key] = slot.value;
+    });
+
     const { data: ideas } = await supabaseAdmin
       .from('ideas')
       .select('*')
@@ -58,14 +70,17 @@ export async function POST(req: NextRequest) {
         html: emailHtml,
       });
 
-      // Send internal notification
+      // Send internal notification with lead info
       await resend.emails.send({
         from: 'blablabuild <hello@blablabuild.com>',
         to: 'daniel@blablabuild.com',
-        subject: `Nieuwe lead: ${email}`,
+        subject: `Nieuwe lead: ${leadInfo.company_name || email}`,
         html: `
-          <h2>Nieuwe lead via widget!</h2>
+          <h2>Nieuwe lead via widget! 🎉</h2>
           <p><strong>Email:</strong> ${email}</p>
+          ${leadInfo.company_name ? `<p><strong>Bedrijf:</strong> ${leadInfo.company_name}</p>` : ''}
+          ${leadInfo.phone ? `<p><strong>Telefoon:</strong> ${leadInfo.phone}</p>` : ''}
+          ${leadInfo.role ? `<p><strong>Functie:</strong> ${leadInfo.role}</p>` : ''}
           <p><strong>Session ID:</strong> ${sessionId}</p>
           <p><strong>Ideeën:</strong> ${ideas.length}</p>
           <hr>
