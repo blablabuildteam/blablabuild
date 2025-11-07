@@ -7,10 +7,14 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
+  console.log('📨 POST /api/chat - Request received');
   try {
-    const { message, sessionId } = await req.json();
+    const body = await req.json();
+    console.log('📦 Request body:', { message: body.message?.substring(0, 50), sessionId: body.sessionId });
+    const { message, sessionId } = body;
 
     if (!message || typeof message !== 'string') {
+      console.error('❌ Invalid message:', message);
       return NextResponse.json(
         { error: 'Message is required' },
         { status: 400 }
@@ -22,10 +26,12 @@ export async function POST(req: NextRequest) {
     let newSessionId = sessionId;
 
     if (sessionId) {
+      console.log('🔄 Loading existing session:', sessionId);
       // Load existing session
       orchestrator = new ConversationOrchestrator(sessionId);
       await orchestrator.loadState(sessionId);
     } else {
+      console.log('🆕 Creating new session');
       // Create new session
       newSessionId = `session_${nanoid()}`;
       orchestrator = new ConversationOrchestrator(newSessionId);
@@ -45,8 +51,15 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    console.log('🤖 Processing message with orchestrator...');
     // Process the message
     const response = await orchestrator.processMessage(message);
+    console.log('✅ Orchestrator response:', { 
+      message: response.message?.substring(0, 50), 
+      step: response.step,
+      progress: response.progress,
+      hasActiveAgents: !!response.activeAgents 
+    });
 
     // Track message event
     await supabaseAdmin.from('events').insert({
@@ -56,11 +69,13 @@ export async function POST(req: NextRequest) {
         message_length: message.length,
         step: response.step,
       },
-    });
+    }).catch(err => console.error('Error tracking event:', err));
 
+    console.log('📤 Sending response to client');
     return NextResponse.json(response);
   } catch (error: any) {
-    console.error('Error in chat API:', error);
+    console.error('❌ Error in chat API:', error);
+    console.error('Error stack:', error.stack);
     return NextResponse.json(
       { error: error.message || 'Internal server error' },
       { status: 500 }

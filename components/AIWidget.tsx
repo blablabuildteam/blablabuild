@@ -65,9 +65,13 @@ export default function AIWidget() {
   };
 
   const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading) {
+      console.log('sendMessage blocked:', { hasInput: !!input.trim(), isLoading });
+      return;
+    }
 
     const userMessage = input.trim();
+    console.log('📤 Sending message:', userMessage, 'Session:', sessionId);
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMessage, timestamp: new Date() }]);
     setIsLoading(true);
@@ -77,6 +81,7 @@ export default function AIWidget() {
     });
 
     try {
+      console.log('🌐 Calling API /api/chat with:', { message: userMessage, sessionId });
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -86,18 +91,23 @@ export default function AIWidget() {
         }),
       });
 
+      console.log('📥 API Response status:', response.status, response.ok);
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('API Error:', response.status, errorData);
+        console.error('❌ API Error:', response.status, errorData);
         throw new Error(errorData.error || `API error: ${response.status}`);
       }
 
       const data: ChatResponse = await response.json();
+      console.log('✅ API Response data:', data);
       
       if (!sessionId) {
         setSessionId(data.sessionId);
+        console.log('🆕 New session ID set:', data.sessionId);
       }
 
+      console.log('💬 Setting current question:', data.message);
       setCurrentQuestion(data.message);
       setActiveAgents(data.activeAgents || []);
       setMessages(prev => [...prev, { 
@@ -107,14 +117,16 @@ export default function AIWidget() {
       }]);
 
       setProgress(data.progress || progress);
+      console.log('📊 Progress updated:', data.progress || progress);
       
       if (data.complete) {
         setIsComplete(true);
         trackWidgetEvent(data.sessionId, 'conversation_complete');
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('❌ Error sending message:', error);
       const errorMessage = error instanceof Error ? error.message : 'Er ging iets mis. Probeer het opnieuw.';
+      console.log('⚠️ Setting error message:', errorMessage);
       setCurrentQuestion(`Sorry, ${errorMessage}`);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
@@ -122,6 +134,7 @@ export default function AIWidget() {
         timestamp: new Date() 
       }]);
     } finally {
+      console.log('🏁 sendMessage complete, setting isLoading to false');
       setIsLoading(false);
       setTimeout(() => {
         inputRef.current?.focus();
@@ -336,7 +349,10 @@ export default function AIWidget() {
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={sendMessage}
+                        onClick={() => {
+                          console.log('🔘 Volgende button clicked', { input: input.trim(), isLoading });
+                          sendMessage();
+                        }}
                         disabled={!input.trim() || isLoading}
                         className="group px-5 py-2.5 bg-bla-lime hover:bg-bla-lime/90 text-bla-dark rounded-lg text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm relative overflow-hidden"
                       >
