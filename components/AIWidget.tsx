@@ -23,6 +23,12 @@ export default function AIWidget() {
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [activeAgents, setActiveAgents] = useState<string[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Debug: Log when currentQuestion changes
+  useEffect(() => {
+    console.log('🔄 currentQuestion changed:', currentQuestion?.substring(0, 50));
+  }, [currentQuestion]);
 
   const initializeSession = async () => {
     try {
@@ -118,6 +124,11 @@ export default function AIWidget() {
 
       setProgress(data.progress || progress);
       console.log('📊 Progress updated:', data.progress || progress);
+      
+      // Scroll to top to show new question
+      setTimeout(() => {
+        contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
       
       if (data.complete) {
         setIsComplete(true);
@@ -263,10 +274,10 @@ export default function AIWidget() {
             </motion.div>
 
             {/* Content Area */}
-            <div className="flex-1 overflow-y-auto p-5">
+            <div ref={contentRef} className="flex-1 overflow-y-auto p-5">
               {currentQuestion && !isComplete && (
                 <motion.div
-                  key={currentQuestion.substring(0, 50)} // Force re-animation on question change
+                  key={`question-${currentQuestion.substring(0, 50)}-${Date.now()}`} // Force re-animation on question change
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
