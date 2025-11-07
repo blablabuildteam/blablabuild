@@ -161,8 +161,8 @@ Focus op praktische, implementeerbare verbeteringen die direct impact hebben.`;
 Industry: ${slots.industry || 'Unknown'}
 Manual hours/week: ${slots.manual_hours || 'Unknown'}
 Pain points: ${slots.pain_points?.join(', ') || 'None specified'}
-Team size: ${slots.team_size || 'Unknown'}
 Data integration: ${slots.data_integration || 'Unknown'}
+Maturity: ${slots.maturity ? `Tech ${slots.maturity.tech}/5, Data ${slots.maturity.data}/5` : 'Unknown'}
     `.trim();
   }
 }

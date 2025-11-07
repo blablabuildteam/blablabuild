@@ -130,8 +130,8 @@ Industry: ${slots.industry || 'Unknown'}
 Business Goal: ${slots.goal || 'Not specified'}
 Pain Points: ${slots.pain_points?.join(', ') || 'None specified'}
 Current Tools: ${this.formatTools(slots)}
-Team Size: ${slots.team_size || 'Unknown'}
-Revenue Stage: ${slots.revenue || 'Not disclosed'}
+Budget: ${slots.budget_band || 'Not disclosed'}
+Timeline: ${slots.timeline || 'Not specified'}
     `.trim();
   }
 

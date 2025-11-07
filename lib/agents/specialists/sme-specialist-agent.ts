@@ -159,7 +159,7 @@ Industry: ${slots.industry || 'General business'}
 Company Goal: ${slots.goal || 'Not specified'}
 Pain Points: ${slots.pain_points?.join(', ') || 'Not specified'}
 Current State: ${slots.data_integration || 'Unknown'}
-Team Size: ${slots.team_size || 'Unknown'}
+Maturity: ${slots.maturity ? `Tech ${slots.maturity.tech}/5, Data ${slots.maturity.data}/5` : 'Unknown'}
     `.trim();
   }
 }

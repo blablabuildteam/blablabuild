@@ -10,9 +10,6 @@ import * as path from 'path';
 // Load .env.local
 dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
 
-// Set test environment variables
-process.env.NODE_ENV = 'test';
-
 // Increase timeout for integration tests
 jest.setTimeout(30000);
 
