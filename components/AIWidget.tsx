@@ -108,6 +108,8 @@ export default function AIWidget() {
 
       const data: ChatResponse = await response.json();
       console.log('✅ API Response data:', data);
+      console.log('📝 Full message:', data.message);
+      console.log('📏 Message length:', data.message?.length);
       
       if (!sessionId) {
         setSessionId(data.sessionId);
@@ -115,8 +117,20 @@ export default function AIWidget() {
       }
 
       console.log('💬 Setting current question:', data.message);
+      console.log('🔑 Current questionKey before:', questionKey);
+      
+      // Ensure we have a valid message
+      if (!data.message || data.message.trim() === '') {
+        console.error('❌ Empty message received!', data);
+        throw new Error('Received empty message from server');
+      }
+      
       setCurrentQuestion(data.message);
-      setQuestionKey(prev => prev + 1); // Increment to force re-render
+      setQuestionKey(prev => {
+        const newKey = prev + 1;
+        console.log('🔑 New questionKey:', newKey);
+        return newKey;
+      });
       setActiveAgents(data.activeAgents || []);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
@@ -277,7 +291,7 @@ export default function AIWidget() {
 
             {/* Content Area */}
             <div ref={contentRef} className="flex-1 overflow-y-auto p-5">
-              {currentQuestion && !isComplete && (
+              {currentQuestion && !isComplete ? (
                 <motion.div
                   key={`question-${questionKey}`} // Use counter for reliable re-render
                   initial={{ opacity: 0, y: 20 }}
@@ -285,6 +299,13 @@ export default function AIWidget() {
                   transition={{ duration: 0.3 }}
                   className="space-y-4"
                 >
+                  {/* Debug info */}
+                  {process.env.NODE_ENV === 'development' && (
+                    <div className="text-xs text-gray-400 mb-2">
+                      Question #{questionKey}: {currentQuestion.substring(0, 30)}...
+                    </div>
+                  )}
+                  
                   {/* Question Balloons - blabla style (multiple bubbles for conversation) */}
                   <div className="space-y-3">
                     {currentQuestion.split('\n\n').filter(q => q.trim()).map((part, idx) => (
