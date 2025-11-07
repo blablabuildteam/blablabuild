@@ -113,7 +113,7 @@ export class ConversationOrchestrator {
       timestamp: new Date(),
     });
 
-    // Save message to DB
+    // Save message to DB (critical - must happen before processing)
     await this.saveMessage('user', userMessage);
 
     // Determine next step
@@ -125,33 +125,44 @@ export class ConversationOrchestrator {
 
     let response: ChatResponse;
 
-    switch (nextStep) {
-      case 'init':
-        this.addTrace('Handling init step');
-        response = await this.handleInit();
-        break;
-      case 'collecting':
-        this.addTrace('Handling collecting step');
-        response = await this.handleCollecting(userMessage);
-        break;
-      case 'scoring':
-        this.addTrace('Handling scoring step');
-        response = await this.handleScoring();
-        break;
-      case 'ideating':
-        this.addTrace('Handling ideating step');
-        response = await this.handleIdeating();
-        break;
-      case 'complete':
-        this.addTrace('Handling complete step');
-        response = await this.handleComplete();
-        break;
-      default:
-        this.addTrace(`Unknown step ${nextStep}, defaulting to collecting`);
-        response = await this.handleCollecting(userMessage);
+    try {
+      switch (nextStep) {
+        case 'init':
+          this.addTrace('Handling init step');
+          response = await this.handleInit();
+          break;
+        case 'collecting':
+          this.addTrace('Handling collecting step');
+          response = await this.handleCollecting(userMessage);
+          break;
+        case 'scoring':
+          this.addTrace('Handling scoring step');
+          response = await this.handleScoring();
+          break;
+        case 'ideating':
+          this.addTrace('Handling ideating step');
+          response = await this.handleIdeating();
+          break;
+        case 'complete':
+          this.addTrace('Handling complete step');
+          response = await this.handleComplete();
+          break;
+        default:
+          this.addTrace(`Unknown step ${nextStep}, defaulting to collecting`);
+          response = await this.handleCollecting(userMessage);
+      }
+    } catch (err: any) {
+      console.error('[Orchestrator] Error processing message:', err);
+      // Provide fallback response if processing fails
+      response = {
+        message: 'Sorry, er ging iets mis. Kun je je vraag anders formuleren?',
+        sessionId: this.state.sessionId,
+        step: this.state.currentStep,
+        progress: calculateProgress(this.state.slots),
+      };
     }
 
-    // Save assistant message
+    // Save assistant message (critical - must happen even if processing had errors)
     await this.saveMessage('assistant', response.message);
     this.state.messages.push({
       role: 'assistant',
@@ -159,7 +170,13 @@ export class ConversationOrchestrator {
       timestamp: new Date(),
     });
 
-    await this.saveState();
+    // Save state (slots, etc.)
+    try {
+      await this.saveState();
+    } catch (err) {
+      console.error('[Orchestrator] Error saving state:', err);
+      // Continue - state save is less critical than message save
+    }
 
     return response;
   }
@@ -195,12 +212,19 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
         activeAgentNames = agentResult.activeAgentNames || [];
         const { activeAgentNames: _, ...agentData } = agentResult;
         Object.assign(this.state.slots, agentData);
-      } catch (err) {
-        console.error('Error extracting data with agents:', err);
+      } catch (err: any) {
+        console.error('[Orchestrator] Error extracting data with agents:', err);
+        this.addTrace(`Agent extraction error: ${err.message || err}`);
         // Continue with traditional extraction
       }
       
-      await this.extractSlots(userMessage);
+      // Try traditional extraction (may fail if API key is missing, but that's OK)
+      try {
+        await this.extractSlots(userMessage);
+      } catch (err: any) {
+        console.error('[Orchestrator] Error in extractSlots:', err);
+        // Continue - extraction is optional
+      }
       
       const slotsAfter = Object.keys(this.state.slots).length;
       const slotsExtracted = slotsAfter - slotsBefore;
@@ -216,7 +240,12 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
       ).catch(err => console.error('Error tracking answer quality:', err));
     } else {
       // Extract information from user message
-      await this.extractSlots(userMessage);
+      try {
+        await this.extractSlots(userMessage);
+      } catch (err: any) {
+        console.error('[Orchestrator] Error in extractSlots (else branch):', err);
+        // Continue - extraction is optional
+      }
     }
 
     // Get best next question from agents
@@ -225,8 +254,9 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
       const agentQuestionResult = await this.agentCoordinator.getBestQuestion(this.state, userMessage);
       nextQuestion = agentQuestionResult.question;
       activeAgentNames = [...new Set([...activeAgentNames, ...(agentQuestionResult.activeAgentNames || [])])];
-    } catch (err) {
-      console.error('Error getting question from agents:', err);
+    } catch (err: any) {
+      console.error('[Orchestrator] Error getting question from agents:', err);
+      this.addTrace(`Agent question error: ${err.message || err}`);
       // Fallback to traditional question generation
     }
 
@@ -421,6 +451,14 @@ Tot snel!`,
     const sanitized = sanitizeText(userMessage);
 
     try {
+      // Check if API key is available
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        console.warn('[Orchestrator] No API key found, skipping slot extraction');
+        this.addTrace('Warning: No API key, skipping AI extraction');
+        return;
+      }
+
       const completion = await openai.chat.completions.create({
         model: process.env.OPENROUTER_API_KEY ? 'openai/gpt-4o-mini' : 'gpt-4o-mini',
         messages: [
@@ -467,9 +505,11 @@ Geef antwoord in JSON formaat met alleen de velden die je met zekerheid kunt bep
         this.state.slots = { ...this.state.slots, ...extracted };
         this.addTrace(`Extracted slots: ${Object.keys(extracted).join(', ')}`);
       }
-    } catch (error) {
-      console.error('Error extracting slots:', error);
-      this.addTrace(`Error extracting slots: ${error}`);
+    } catch (error: any) {
+      console.error('[Orchestrator] Error extracting slots:', error);
+      this.addTrace(`Error extracting slots: ${error.message || error}`);
+      // Continue processing even if extraction fails - don't block conversation
+      // The conversation can continue without AI extraction
     }
   }
 
@@ -525,11 +565,23 @@ c) Slecht - data zit versnipperd in silos`;
   }
 
   private async saveMessage(role: 'user' | 'assistant', content: string): Promise<void> {
-    await supabaseAdmin.from('messages').insert({
-      session_id: this.state.sessionId,
-      role,
-      content,
-    });
+    try {
+      const { error } = await supabaseAdmin.from('messages').insert({
+        session_id: this.state.sessionId,
+        role,
+        content,
+      });
+      
+      if (error) {
+        console.error(`[Orchestrator] Error saving ${role} message:`, error);
+        // Don't throw - continue processing even if save fails
+      } else {
+        console.log(`[Orchestrator] ✅ Saved ${role} message (${content.substring(0, 50)}...)`);
+      }
+    } catch (err) {
+      console.error(`[Orchestrator] Exception saving ${role} message:`, err);
+      // Don't throw - continue processing even if save fails
+    }
   }
 
   private addTrace(message: string): void {
