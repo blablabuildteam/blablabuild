@@ -70,3 +70,21 @@ export function isOpenRouter(): boolean {
   return !!process.env.OPENROUTER_API_KEY;
 }
 
+/**
+ * Get the app URL for OpenRouter headers, with fallback
+ */
+export function getAppUrl(): string {
+  // Try NEXT_PUBLIC_APP_URL first
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL.trim();
+  }
+  
+  // Try Vercel URL
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  
+  // Fallback to a valid default
+  return 'https://blablabuild.com';
+}
+

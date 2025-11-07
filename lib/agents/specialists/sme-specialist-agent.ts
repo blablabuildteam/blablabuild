@@ -3,7 +3,7 @@
  * Industry-specific expert that provides domain knowledge and best practices
  */
 
-import { getApiKey, isOpenRouter } from '../../utils';
+import { getApiKey, isOpenRouter, getAppUrl } from '../../utils';
 import OpenAI from 'openai';
 import { Agent, AgentContext, AgentResponse, AgentRole } from '../agent-registry';
 
@@ -13,7 +13,7 @@ const openai = new OpenAI({
     ? 'https://openrouter.ai/api/v1'
     : 'https://api.openai.com/v1',
   defaultHeaders: isOpenRouter() ? {
-    'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+    'HTTP-Referer': getAppUrl(),
     'X-Title': 'blablabuild',
   } : {},
 });
