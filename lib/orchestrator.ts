@@ -44,6 +44,7 @@ export class ConversationOrchestrator {
   }
 
   async loadState(sessionId: string): Promise<void> {
+    console.log(`[Orchestrator] Loading state for session: ${sessionId}`);
     // Load from database
     const { data: slots } = await supabaseAdmin
       .from('slots')
@@ -55,6 +56,34 @@ export class ConversationOrchestrator {
       slots.forEach((slot: any) => {
         this.state.slots[slot.key as keyof Slots] = slot.value;
       });
+      console.log(`[Orchestrator] Loaded ${slots.length} slots`);
+    }
+
+    // Load messages to determine current step
+    const { data: messages } = await supabaseAdmin
+      .from('messages')
+      .select('*')
+      .eq('session_id', sessionId)
+      .order('created_at', { ascending: true });
+
+    if (messages && messages.length > 0) {
+      // Restore messages to state
+      this.state.messages = messages.map((msg: any) => ({
+        role: msg.role,
+        content: msg.content,
+        timestamp: new Date(msg.created_at),
+      }));
+      console.log(`[Orchestrator] Loaded ${messages.length} messages`);
+      
+      // Determine step based on messages
+      // If we have assistant messages, we're past init
+      const hasAssistantMessage = messages.some((m: any) => m.role === 'assistant');
+      if (hasAssistantMessage) {
+        this.state.currentStep = 'collecting';
+        console.log(`[Orchestrator] Set currentStep to collecting based on loaded messages`);
+      }
+    } else {
+      console.log(`[Orchestrator] No messages found, keeping init step`);
     }
   }
 
@@ -88,7 +117,9 @@ export class ConversationOrchestrator {
     await this.saveMessage('user', userMessage);
 
     // Determine next step
+    this.addTrace(`Before determineNextStep: currentStep=${this.state.currentStep}, messages.length=${this.state.messages.length}`);
     const nextStep = this.determineNextStep();
+    this.addTrace(`After determineNextStep: nextStep=${nextStep}`);
     this.state.currentStep = nextStep;
     this.addTrace(`Current step: ${nextStep}`);
 
@@ -96,21 +127,27 @@ export class ConversationOrchestrator {
 
     switch (nextStep) {
       case 'init':
+        this.addTrace('Handling init step');
         response = await this.handleInit();
         break;
       case 'collecting':
+        this.addTrace('Handling collecting step');
         response = await this.handleCollecting(userMessage);
         break;
       case 'scoring':
+        this.addTrace('Handling scoring step');
         response = await this.handleScoring();
         break;
       case 'ideating':
+        this.addTrace('Handling ideating step');
         response = await this.handleIdeating();
         break;
       case 'complete':
+        this.addTrace('Handling complete step');
         response = await this.handleComplete();
         break;
       default:
+        this.addTrace(`Unknown step ${nextStep}, defaulting to collecting`);
         response = await this.handleCollecting(userMessage);
     }
 
@@ -466,26 +503,31 @@ c) Slecht - data zit versnipperd in silos`;
   private determineNextStep(): ConversationState['currentStep'] {
     // If no messages yet, start with init
     if (this.state.messages.length === 0) {
+      this.addTrace('determineNextStep: No messages, returning init');
       return 'init';
     }
 
     // If already complete, stay complete
     if (this.state.currentStep === 'complete') {
+      this.addTrace('determineNextStep: Already complete, staying complete');
       return 'complete';
     }
 
     // If we're in init and have messages, move to collecting
     if (this.state.currentStep === 'init') {
+      this.addTrace(`determineNextStep: In init with ${this.state.messages.length} messages, moving to collecting`);
       return 'collecting';
     }
 
     // Check if we should move from collecting to scoring
     const progress = calculateProgress(this.state.slots);
     if (progress >= 80 && this.state.currentStep === 'collecting') {
+      this.addTrace(`determineNextStep: Progress ${progress}%, moving to scoring`);
       return 'scoring';
     }
 
     // Otherwise, stay in current step
+    this.addTrace(`determineNextStep: Staying in ${this.state.currentStep}`);
     return this.state.currentStep;
   }
 
