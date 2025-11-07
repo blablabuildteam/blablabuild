@@ -266,19 +266,20 @@ export default function AIWidget() {
             <div className="flex-1 overflow-y-auto p-5">
               {currentQuestion && !isComplete && (
                 <motion.div
+                  key={currentQuestion.substring(0, 50)} // Force re-animation on question change
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
+                  transition={{ duration: 0.3 }}
                   className="space-y-4"
                 >
                   {/* Question Balloons - blabla style (multiple bubbles for conversation) */}
                   <div className="space-y-3">
                     {currentQuestion.split('\n\n').filter(q => q.trim()).map((part, idx) => (
                       <motion.div 
-                        key={idx}
+                        key={`${currentQuestion.substring(0, 30)}-${idx}`} // Unique key per question part
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.2 }}
+                        transition={{ delay: idx * 0.1 }}
                         whileHover={{ y: -2 }}
                         className="relative"
                       >
