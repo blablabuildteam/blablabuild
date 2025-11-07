@@ -5,6 +5,9 @@ import { sanitizeText, calculateProgress } from './utils';
 import { scoreMaturity } from './scoring';
 import { generateIdeas } from './ideation';
 import { estimateCosts } from './costing';
+import { ReinforcementLearning } from './reinforcement';
+import { AgentCoordinator } from './agents/agent-coordinator';
+import './agents'; // Initialize agents
 
 // Use OpenRouter for better pricing and model access
 // Compatible with OpenAI SDK - just change baseURL
@@ -26,6 +29,7 @@ interface OrchestratorContext {
 
 export class ConversationOrchestrator {
   private state: ConversationState;
+  private agentCoordinator: AgentCoordinator;
 
   constructor(sessionId?: string) {
     this.state = {
@@ -36,6 +40,7 @@ export class ConversationOrchestrator {
       ideas: [],
       trace: [],
     };
+    this.agentCoordinator = new AgentCoordinator(this.state.sessionId);
   }
 
   async loadState(sessionId: string): Promise<void> {
@@ -138,11 +143,39 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
   }
 
   private async handleCollecting(userMessage: string): Promise<ChatResponse> {
-    // Extract information from user message
-    await this.extractSlots(userMessage);
+    this.addTrace('🤖 Activating agents for collecting phase...');
+    
+    // Track answer quality from previous question
+    const previousMessage = this.state.messages[this.state.messages.length - 3];
+    if (previousMessage && previousMessage.role === 'assistant' && userMessage) {
+      const slotsBefore = Object.keys(this.state.slots).length;
+      
+      // Use agents to extract data + traditional extraction
+      const agentData = await this.agentCoordinator.extractDataFromMessage(this.state, userMessage);
+      Object.assign(this.state.slots, agentData);
+      
+      await this.extractSlots(userMessage);
+      
+      const slotsAfter = Object.keys(this.state.slots).length;
+      const slotsExtracted = slotsAfter - slotsBefore;
+      const useful = slotsExtracted > 0 || userMessage.length > 20;
+      
+      // Track for RL
+      await ReinforcementLearning.trackAnswerQuality(
+        this.state.sessionId,
+        previousMessage.content,
+        userMessage,
+        slotsExtracted,
+        useful
+      ).catch(err => console.error('Error tracking answer quality:', err));
+    } else {
+      // Extract information from user message
+      await this.extractSlots(userMessage);
+    }
 
-    // Determine what to ask next
-    const nextQuestion = await this.getNextQuestion();
+    // Get best next question from agents
+    const agentQuestion = await this.agentCoordinator.getBestQuestion(this.state, userMessage);
+    const nextQuestion = agentQuestion || await this.getNextQuestion();
 
     if (!nextQuestion) {
       // We have enough information, move to scoring
@@ -150,7 +183,16 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
       return this.handleScoring();
     }
 
+    // Track question being asked
+    await ReinforcementLearning.trackQuestionAsked(
+      this.state.sessionId,
+      nextQuestion,
+      'collecting'
+    ).catch(err => console.error('Error tracking question:', err));
+
     const progress = calculateProgress(this.state.slots);
+
+    this.addTrace(`✅ Agent-optimized question generated`);
 
     return {
       message: nextQuestion,
@@ -171,9 +213,17 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
   }
 
   private async handleIdeating(): Promise<ChatResponse> {
-    this.addTrace('Generating ideas');
+    this.addTrace('🤖 Activating idea generation agents...');
 
-    const ideas = await generateIdeas(this.state.slots);
+    // Use agents for idea generation
+    const agentIdeas = await this.agentCoordinator.getIdeas(this.state);
+    
+    // Fallback to traditional if agents didn't produce ideas
+    let ideas = agentIdeas;
+    if (!ideas || ideas.length === 0) {
+      this.addTrace('Using traditional idea generation as fallback');
+      ideas = await generateIdeas(this.state.slots);
+    }
     
     // Estimate costs for each idea
     const ideasWithCosts = await Promise.all(
@@ -203,6 +253,8 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
     }
 
     this.state.currentStep = 'complete';
+
+    this.addTrace(`✅ Generated ${ideas.length} agent-powered ideas`);
 
     const message = `Super! Op basis van wat je verteld hebt, heb ik ${ideas.length} concrete ideeën voor je bedrijf uitgewerkt.
 
