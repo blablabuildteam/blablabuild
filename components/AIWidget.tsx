@@ -36,6 +36,7 @@ export default function AIWidget() {
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
+  const [questionOptions, setQuestionOptions] = useState<string[]>([]); // Multiple choice options
   const [activeAgents, setActiveAgents] = useState<string[]>([]);
   const [questionKey, setQuestionKey] = useState(0); // Counter to force re-render
   const [currentStep, setCurrentStep] = useState<string>('init');
@@ -147,8 +148,7 @@ export default function AIWidget() {
       console.log('✅ API Response data:', data);
       console.log('📝 Full message:', data.message);
       console.log('📏 Message length:', data.message?.length);
-      console.log('🔍 Message type:', typeof data.message);
-      console.log('🔍 Message truthy?', !!data.message);
+      console.log('🔍 Options:', data.options);
       
       if (!sessionId) {
         setSessionId(data.sessionId);
@@ -174,6 +174,7 @@ export default function AIWidget() {
       
       // Force state update by clearing first, then setting
       setCurrentQuestion('');
+      setQuestionOptions(data.options || []);
       setQuestionKey(prev => prev + 1);
       
       // Use setTimeout to ensure React processes the clear first
@@ -477,13 +478,47 @@ export default function AIWidget() {
                     transition={{ delay: 0.4 }}
                     className="space-y-3"
                   >
+                    {/* Multiple Choice Options */}
+                    {questionOptions && questionOptions.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="space-y-2"
+                      >
+                        <p className="text-xs font-extralight text-bla-text-muted mb-2">
+                          Kies een optie of typ je eigen antwoord:
+                        </p>
+                        <div className="grid grid-cols-1 gap-2">
+                          {questionOptions.map((option, idx) => (
+                            <motion.button
+                              key={idx}
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              onClick={() => {
+                                setInput(option);
+                                // Use setTimeout to ensure state is updated before sending
+                                setTimeout(() => {
+                                  sendMessage();
+                                }, 50);
+                              }}
+                              disabled={isLoading}
+                              className="w-full px-4 py-3 text-left bg-bla-charcoal-light hover:bg-bla-charcoal border border-bla-charcoal-border hover:border-bla-lime/50 rounded-xl text-sm font-light text-bla-text-light transition-all disabled:opacity-40 disabled:cursor-not-allowed backdrop-blur-sm"
+                            >
+                              {option}
+                            </motion.button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                    
                     <div className="relative">
                       <textarea
                         ref={inputRef}
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        placeholder="Je antwoord..."
+                        placeholder={questionOptions && questionOptions.length > 0 ? "Of typ je eigen antwoord..." : "Je antwoord..."}
                         rows={4}
                         className="w-full px-4 py-3 border border-bla-charcoal-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 focus:border-bla-lime/50 transition-all resize-none text-sm font-light text-bla-text-light placeholder-bla-text-muted bg-bla-charcoal-light backdrop-blur-sm"
                         disabled={isLoading}

@@ -80,6 +80,7 @@ export class AgentCoordinator {
    */
   async getBestQuestion(state: ConversationState, userMessage?: string): Promise<{
     question: string | null;
+    options?: string[];
     activeAgentNames?: string[];
   }> {
     const result = await this.executeForTrigger('on_user_message', state, userMessage);
@@ -93,6 +94,7 @@ export class AgentCoordinator {
                questionOptimizer?.nextQuestion || 
                intakeAnalyst?.nextQuestion || 
                null,
+      options: questionOptimizer?.options || intakeAnalyst?.options,
       activeAgentNames: result.activeAgentNames,
     };
   }

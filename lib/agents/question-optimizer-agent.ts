@@ -46,6 +46,14 @@ Creëer de PERFECT vervolgvraag die:
 4. De gebruiker aanzet tot nadenken
 5. Specifiek genoeg is voor actie
 
+BELANGRIJK: Gebruik multiple choice opties (2-4 opties) wanneer mogelijk om het antwoord te versnellen:
+- Ja/Nee vragen → ["Ja", "Nee", "Weet ik niet"]
+- Tijdsbesteding → ["Minder dan 5 uur", "5-10 uur", "10-20 uur", "Meer dan 20 uur"]
+- Tool gebruik → ["Ja, we gebruiken X", "Nee, niet gebruikt", "We overwegen het"]
+- Schaal vragen → ["1-3", "4-6", "7-8", "9-10"]
+
+Laat opties leeg voor open vragen waar vrije tekst nodig is.
+
 Geef ook 2-3 alternatieve formuleringen.`;
 
     try {
@@ -66,6 +74,12 @@ Geef ook 2-3 alternatieve formuleringen.`;
                 primaryQuestion: {
                   type: 'string',
                   description: 'The best question to ask next',
+                },
+                options: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Optional: 2-4 multiple choice options to speed up the answer. Use when appropriate (e.g., yes/no, time ranges, tool usage). Leave empty for open-ended questions.',
+                  maxItems: 4,
                 },
                 alternatives: {
                   type: 'array',
@@ -103,10 +117,12 @@ Geef ook 2-3 alternatieve formuleringen.`;
         confidence: 0.9,
         suggestions: result.alternatives || [],
         nextQuestion: result.primaryQuestion,
+        options: result.options || [], // Multiple choice options
         reasoning: result.reasoning,
         metadata: {
           expectedInsights: result.expectedInsights,
           model: 'gpt-4o-mini',
+          hasOptions: !!(result.options && result.options.length > 0),
         },
       };
     } catch (error) {

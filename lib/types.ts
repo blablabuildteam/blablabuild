@@ -100,6 +100,7 @@ export interface ChatResponse {
   ideas?: Idea[];
   complete?: boolean;
   activeAgents?: string[]; // Agent names that are currently active
+  options?: string[]; // Multiple choice options for faster answers
 }
 
 // Database types

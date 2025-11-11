@@ -46,6 +46,7 @@ export interface AgentResponse {
   confidence: number;
   suggestions?: string[];
   nextQuestion?: string;
+  options?: string[]; // Multiple choice options for faster answers
   extractedData?: Partial<Slots>;
   reasoning?: string;
   metadata?: Record<string, any>;

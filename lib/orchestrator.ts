@@ -299,9 +299,11 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
 
     // Get best next question from agents
     let nextQuestion: string | null = null;
+    let questionOptions: string[] | undefined = undefined;
     try {
       const agentQuestionResult = await this.agentCoordinator.getBestQuestion(this.state, userMessage);
       nextQuestion = agentQuestionResult.question;
+      questionOptions = agentQuestionResult.options;
       activeAgentNames = [...new Set([...activeAgentNames, ...(agentQuestionResult.activeAgentNames || [])])];
     } catch (err: any) {
       console.error('[Orchestrator] Error getting question from agents:', err);
@@ -423,6 +425,7 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
       step: 'collecting',
       progress,
       activeAgents: activeAgentNames.length > 0 ? activeAgentNames : undefined,
+      options: questionOptions, // Multiple choice options
     };
   }
 
