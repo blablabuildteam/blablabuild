@@ -13,7 +13,8 @@
     "test:coverage": "jest --coverage",
     "test:verbose": "jest --verbose",
     "cleanup": "tsx __tests__/cleanup.ts",
-    "test:full": "./__tests__/run-tests.sh"
+    "test:full": "./__tests__/run-tests.sh",
+    "test:dynamic": "tsx scripts/test-dynamic.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
