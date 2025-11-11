@@ -384,6 +384,20 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
 
     if (!nextQuestion) {
       // We have enough information, move to scoring
+      // But first check if we've asked too many questions
+      const userMessages = this.state.messages.filter(m => m.role === 'user').length;
+      const MAX_QUESTIONS = 10;
+      
+      if (userMessages >= MAX_QUESTIONS) {
+        const { logger } = await import('./logger');
+        logger.warn('Conversation too long - forcing completion (no question generated)', {
+          sessionId: this.state.sessionId,
+          userMessageCount: userMessages,
+          maxQuestions: MAX_QUESTIONS,
+          endpoint: '/api/chat',
+        });
+      }
+      
       this.state.currentStep = 'scoring';
       return this.handleScoring();
     }
@@ -420,6 +434,20 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
 
   private async handleIdeating(): Promise<ChatResponse> {
     this.addTrace('🤖 Activating idea generation agents...');
+    
+    // Check if conversation was too long before ideating
+    const userMessages = this.state.messages.filter(m => m.role === 'user').length;
+    const MAX_QUESTIONS = 10;
+    
+    if (userMessages >= MAX_QUESTIONS) {
+      const { logger } = await import('./logger');
+      logger.warn('Conversation too long - reached ideating phase with too many questions', {
+        sessionId: this.state.sessionId,
+        userMessageCount: userMessages,
+        maxQuestions: MAX_QUESTIONS,
+        endpoint: '/api/chat',
+      });
+    }
 
     // Use agents for idea generation
     const agentIdeas = await this.agentCoordinator.getIdeas(this.state);
