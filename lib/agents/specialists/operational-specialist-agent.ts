@@ -61,55 +61,58 @@ Focus op praktische, implementeerbare verbeteringen die direct impact hebben.`;
           { role: 'system', content: systemPrompt },
           { role: 'user', content: 'Analyseer operationele efficiëntie en geef verbeteradvies.' },
         ],
-        functions: [{
-          name: 'operational_analysis',
-          description: 'Analyze operations and provide optimization recommendations',
-          parameters: {
-            type: 'object',
-            properties: {
-              processBottlenecks: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Identified process bottlenecks',
-              },
-              automationOpportunities: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Processes that can be automated',
-              },
-              efficiencyGains: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    improvement: { type: 'string' },
-                    timeSaved: { type: 'string' },
-                    priority: { type: 'string', enum: ['high', 'medium', 'low'] },
+        tools: [{
+          type: 'function',
+          function: {
+            name: 'operational_analysis',
+            description: 'Analyze operations and provide optimization recommendations',
+            parameters: {
+              type: 'object',
+              properties: {
+                processBottlenecks: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Identified process bottlenecks',
+                },
+                automationOpportunities: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Processes that can be automated',
+                },
+                efficiencyGains: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      improvement: { type: 'string' },
+                      timeSaved: { type: 'string' },
+                      priority: { type: 'string', enum: ['high', 'medium', 'low'] },
+                    },
                   },
                 },
+                resourceOptimization: {
+                  type: 'string',
+                  description: 'Resource allocation recommendations',
+                },
+                scalabilityInsights: {
+                  type: 'string',
+                  description: 'How to scale operations',
+                },
               },
-              resourceOptimization: {
-                type: 'string',
-                description: 'Resource allocation recommendations',
-              },
-              scalabilityInsights: {
-                type: 'string',
-                description: 'How to scale operations',
-              },
+              required: ['processBottlenecks', 'automationOpportunities', 'efficiencyGains'],
             },
-            required: ['processBottlenecks', 'automationOpportunities', 'efficiencyGains'],
           },
         }],
-        function_call: { name: 'operational_analysis' },
+        tool_choice: { type: 'function', function: { name: 'operational_analysis' } },
         temperature: 0.7,
       });
 
-      const functionCall = completion.choices[0]?.message?.function_call;
-      if (!functionCall?.arguments) {
-        throw new Error('No function call response');
+      const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
+      if (!toolCall?.function?.arguments) {
+        throw new Error('No tool call response');
       }
 
-      const result = JSON.parse(functionCall.arguments);
+      const result = JSON.parse(toolCall.function.arguments);
 
       // Calculate total time savings
       const totalTimeSaved = result.efficiencyGains

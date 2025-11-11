@@ -1,19 +1,7 @@
-import { getApiKey, isOpenRouter, getAppUrl } from './utils';
+import { getApiKey, isOpenRouter, getAppUrl, hasApiKey, createOpenAIClient } from './utils';
 import OpenAI from 'openai';
 import { Slots, Idea } from './types';
 import { calculateImpactScore } from './scoring';
-
-// Use OpenRouter for better pricing and model access
-const openai = new OpenAI({
-  apiKey: getApiKey(),
-  baseURL: isOpenRouter() 
-    ? 'https://openrouter.ai/api/v1'
-    : 'https://api.openai.com/v1',
-  defaultHeaders: isOpenRouter() ? {
-    'HTTP-Referer': getAppUrl(),
-    'X-Title': 'blablabuild',
-  } : {},
-});
 
 // Playbook templates based on common patterns
 const PLAYBOOKS = [
@@ -92,6 +80,10 @@ export async function generateIdeas(slots: Partial<Slots>): Promise<Partial<Idea
 
   for (const playbook of selectedPlaybooks) {
     try {
+      if (!hasApiKey()) {
+        throw new Error('API key not configured');
+      }
+      const openai = createOpenAIClient();
       const completion = await openai.chat.completions.create({
         model: isOpenRouter() ? 'openai/gpt-4o-mini' : 'gpt-4o-mini',
         messages: [
@@ -123,36 +115,39 @@ Klant informatie:
 Genereer een concreet idee in JSON formaat.`,
           },
         ],
-        functions: [
+        tools: [
           {
-            name: 'generate_idea',
-            description: 'Generate a concrete AI/automation idea',
-            parameters: {
-              type: 'object',
-              properties: {
-                title: { type: 'string', description: 'Catchy title for the idea' },
-                summary: { type: 'string', description: 'Detailed description (2-3 paragraphs) of the solution, benefits, and implementation approach' },
-                impact: { 
-                  type: 'string', 
-                  enum: ['Low', 'Medium', 'High', 'Very High'],
-                  description: 'Expected business impact'
+            type: 'function',
+            function: {
+              name: 'generate_idea',
+              description: 'Generate a concrete AI/automation idea',
+              parameters: {
+                type: 'object',
+                properties: {
+                  title: { type: 'string', description: 'Catchy title for the idea' },
+                  summary: { type: 'string', description: 'Detailed description (2-3 paragraphs) of the solution, benefits, and implementation approach' },
+                  impact: { 
+                    type: 'string', 
+                    enum: ['Low', 'Medium', 'High', 'Very High'],
+                    description: 'Expected business impact'
+                  },
+                  risks: { 
+                    type: 'array', 
+                    items: { type: 'string' },
+                    description: 'Key risks and how to mitigate them'
+                  },
                 },
-                risks: { 
-                  type: 'array', 
-                  items: { type: 'string' },
-                  description: 'Key risks and how to mitigate them'
-                },
+                required: ['title', 'summary', 'impact', 'risks'],
               },
-              required: ['title', 'summary', 'impact', 'risks'],
             },
           },
         ],
-        function_call: { name: 'generate_idea' },
+        tool_choice: { type: 'function', function: { name: 'generate_idea' } },
       });
 
-      const functionCall = completion.choices[0]?.message?.function_call;
-      if (functionCall && functionCall.arguments) {
-        const generated = JSON.parse(functionCall.arguments);
+      const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
+      if (toolCall && toolCall.function?.arguments) {
+        const generated = JSON.parse(toolCall.function.arguments);
         
         ideas.push({
           title: generated.title,

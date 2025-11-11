@@ -4,7 +4,7 @@ CREATE EXTENSION IF NOT EXISTS "vector";
 
 -- Sessions table
 CREATE TABLE sessions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id VARCHAR(255) PRIMARY KEY,
   started_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   completed_at TIMESTAMP WITH TIME ZONE,
   locale VARCHAR(10) DEFAULT 'en',
@@ -20,7 +20,7 @@ CREATE TABLE sessions (
 -- Messages table
 CREATE TABLE messages (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
+  session_id VARCHAR(255) REFERENCES sessions(id) ON DELETE CASCADE,
   role VARCHAR(50) NOT NULL CHECK (role IN ('user', 'assistant', 'system')),
   content TEXT NOT NULL,
   tool_calls JSONB,
@@ -31,7 +31,7 @@ CREATE TABLE messages (
 -- Slots table (extracted information)
 CREATE TABLE slots (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
+  session_id VARCHAR(255) REFERENCES sessions(id) ON DELETE CASCADE,
   key VARCHAR(100) NOT NULL,
   value JSONB NOT NULL,
   confidence NUMERIC(3,2) DEFAULT 0.5,
@@ -43,7 +43,7 @@ CREATE TABLE slots (
 -- Ideas table
 CREATE TABLE ideas (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
+  session_id VARCHAR(255) REFERENCES sessions(id) ON DELETE CASCADE,
   title VARCHAR(255) NOT NULL,
   summary TEXT,
   stack JSONB,
@@ -60,9 +60,23 @@ CREATE TABLE ideas (
 -- Events table (analytics)
 CREATE TABLE events (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
+  session_id VARCHAR(255) REFERENCES sessions(id) ON DELETE CASCADE,
   type VARCHAR(100) NOT NULL,
   payload JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Logs table (application debugging logs - shareable with contributors)
+CREATE TABLE logs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  level VARCHAR(20) NOT NULL CHECK (level IN ('info', 'warn', 'error', 'debug')),
+  message TEXT NOT NULL,
+  context JSONB,
+  session_id VARCHAR(255) REFERENCES sessions(id) ON DELETE SET NULL,
+  endpoint VARCHAR(255),
+  user_agent TEXT,
+  ip_address INET,
+  stack_trace TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -89,6 +103,10 @@ CREATE INDEX idx_events_session ON events(session_id);
 CREATE INDEX idx_events_type ON events(type);
 CREATE INDEX idx_catalog_kind ON catalog(kind);
 CREATE INDEX idx_catalog_embedding ON catalog USING ivfflat (embedding vector_cosine_ops);
+CREATE INDEX idx_logs_level ON logs(level);
+CREATE INDEX idx_logs_created_at ON logs(created_at DESC);
+CREATE INDEX idx_logs_session ON logs(session_id);
+CREATE INDEX idx_logs_endpoint ON logs(endpoint);
 
 -- Update timestamp function
 CREATE OR REPLACE FUNCTION update_updated_at_column()

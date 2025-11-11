@@ -55,68 +55,71 @@ Maak het specifiek en direct toepasbaar.`;
           { role: 'system', content: systemPrompt },
           { role: 'user', content: 'Maak een praktische implementatie roadmap met concrete taken.' },
         ],
-        functions: [{
-          name: 'create_task_roadmap',
-          description: 'Create implementation roadmap with tasks',
-          parameters: {
-            type: 'object',
-            properties: {
-              phases: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    name: { type: 'string' },
-                    duration: { type: 'string' },
-                    tasks: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: {
-                          task: { type: 'string' },
-                          priority: { type: 'string', enum: ['must', 'should', 'could'] },
-                          estimate: { type: 'string' },
-                          owner: { type: 'string' },
+        tools: [{
+          type: 'function',
+          function: {
+            name: 'create_task_roadmap',
+            description: 'Create implementation roadmap with tasks',
+            parameters: {
+              type: 'object',
+              properties: {
+                phases: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      name: { type: 'string' },
+                      duration: { type: 'string' },
+                      tasks: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          properties: {
+                            task: { type: 'string' },
+                            priority: { type: 'string', enum: ['must', 'should', 'could'] },
+                            estimate: { type: 'string' },
+                            owner: { type: 'string' },
+                          },
                         },
                       },
                     },
                   },
                 },
-              },
-              firstSteps: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Immediate actionable first steps',
-              },
-              dependencies: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Critical dependencies to address',
-              },
-              milestones: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    milestone: { type: 'string' },
-                    timeline: { type: 'string' },
+                firstSteps: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Immediate actionable first steps',
+                },
+                dependencies: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Critical dependencies to address',
+                },
+                milestones: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      milestone: { type: 'string' },
+                      timeline: { type: 'string' },
+                    },
                   },
                 },
               },
+              required: ['phases', 'firstSteps', 'milestones'],
             },
-            required: ['phases', 'firstSteps', 'milestones'],
           },
         }],
-        function_call: { name: 'create_task_roadmap' },
+        tool_choice: { type: 'function', function: { name: 'create_task_roadmap' } },
         temperature: 0.7,
       });
 
-      const functionCall = completion.choices[0]?.message?.function_call;
-      if (!functionCall?.arguments) {
-        throw new Error('No function call response');
+      const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
+      if (!toolCall?.function?.arguments) {
+        throw new Error('No tool call response');
       }
 
-      const result = JSON.parse(functionCall.arguments);
+      const result = JSON.parse(toolCall.function.arguments);
 
       return {
         agent: this.role,

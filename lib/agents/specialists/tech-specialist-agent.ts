@@ -56,61 +56,64 @@ Focus op praktische, bewezen technologieën die passen bij het maturiteitsniveau
           { role: 'system', content: systemPrompt },
           { role: 'user', content: 'Geef technisch advies en tech stack aanbevelingen.' },
         ],
-        functions: [{
-          name: 'tech_analysis',
-          description: 'Technical analysis and recommendations',
-          parameters: {
-            type: 'object',
-            properties: {
-              recommendedStack: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    technology: { type: 'string' },
-                    purpose: { type: 'string' },
-                    maturityFit: { type: 'string', enum: ['beginner', 'intermediate', 'advanced'] },
-                    cost: { type: 'string' },
+        tools: [{
+          type: 'function',
+          function: {
+            name: 'tech_analysis',
+            description: 'Technical analysis and recommendations',
+            parameters: {
+              type: 'object',
+              properties: {
+                recommendedStack: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      technology: { type: 'string' },
+                      purpose: { type: 'string' },
+                      maturityFit: { type: 'string', enum: ['beginner', 'intermediate', 'advanced'] },
+                      cost: { type: 'string' },
+                    },
                   },
                 },
+                architectureRecommendations: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Architecture recommendations',
+                },
+                integrationApproach: {
+                  type: 'string',
+                  description: 'How to integrate with existing systems',
+                },
+                technicalRisks: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Technical risks and mitigation',
+                },
+                securityConsiderations: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Security considerations',
+                },
+                scalabilityPath: {
+                  type: 'string',
+                  description: 'How to scale technically',
+                },
               },
-              architectureRecommendations: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Architecture recommendations',
-              },
-              integrationApproach: {
-                type: 'string',
-                description: 'How to integrate with existing systems',
-              },
-              technicalRisks: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Technical risks and mitigation',
-              },
-              securityConsiderations: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Security considerations',
-              },
-              scalabilityPath: {
-                type: 'string',
-                description: 'How to scale technically',
-              },
+              required: ['recommendedStack', 'architectureRecommendations', 'integrationApproach'],
             },
-            required: ['recommendedStack', 'architectureRecommendations', 'integrationApproach'],
           },
         }],
-        function_call: { name: 'tech_analysis' },
+        tool_choice: { type: 'function', function: { name: 'tech_analysis' } },
         temperature: 0.7,
       });
 
-      const functionCall = completion.choices[0]?.message?.function_call;
-      if (!functionCall?.arguments) {
-        throw new Error('No function call response');
+      const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
+      if (!toolCall?.function?.arguments) {
+        throw new Error('No tool call response');
       }
 
-      const result = JSON.parse(functionCall.arguments);
+      const result = JSON.parse(toolCall.function.arguments);
 
       // Group by maturity fit
       const beginnerTech = result.recommendedStack.filter((t: any) => t.maturityFit === 'beginner');

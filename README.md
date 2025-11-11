@@ -12,6 +12,7 @@ AI-powered intake widget for automated business consultation. Transform client c
 - **Email Delivery**: Sends detailed analysis to prospects
 - **Analytics**: PostHog integration for tracking and optimization
 - **Vector Database**: Supabase pgvector for RAG and semantic search
+- **Logging**: Supabase-based logging system for shareable debugging
 
 ## 📁 Project Structure
 
@@ -61,6 +62,7 @@ All documentation is organized in the [`docs/`](docs/) folder:
 - **Features**: [`docs/project/FEATURES.md`](docs/project/FEATURES.md) - All features
 - **API Docs**: [`docs/api/API_OVERVIEW.md`](docs/api/API_OVERVIEW.md) - API reference
 - **Testing**: [`docs/guides/TESTING_GUIDE.md`](docs/guides/TESTING_GUIDE.md) - Testing guide
+- **Logging**: [`docs/guides/LOGGING_GUIDE.md`](docs/guides/LOGGING_GUIDE.md) - Logging system for debugging
 - **Agents**: [`docs/agents/AGENT_SYSTEM_COMPLETE.md`](docs/agents/AGENT_SYSTEM_COMPLETE.md) - Agent system
 - **Deployment**: [`docs/deployment/DEPLOYMENT_CHECKLIST.md`](docs/deployment/DEPLOYMENT_CHECKLIST.md) - Deployment guide
 

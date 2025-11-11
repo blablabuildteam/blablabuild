@@ -52,45 +52,48 @@ Geef:
           { role: 'system', content: systemPrompt },
           { role: 'user', content: 'Analyseer dit bedrijf en geef strategische inzichten.' },
         ],
-        functions: [{
-          name: 'business_analysis',
-          description: 'Analyze business and provide strategic insights',
-          parameters: {
-            type: 'object',
-            properties: {
-              opportunities: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Business opportunities identified',
+        tools: [{
+          type: 'function',
+          function: {
+            name: 'business_analysis',
+            description: 'Analyze business and provide strategic insights',
+            parameters: {
+              type: 'object',
+              properties: {
+                opportunities: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Business opportunities identified',
+                },
+                challenges: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Potential challenges to address',
+                },
+                recommendations: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Strategic recommendations',
+                },
+                industryInsights: {
+                  type: 'string',
+                  description: 'Industry-specific insights',
+                },
               },
-              challenges: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Potential challenges to address',
-              },
-              recommendations: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Strategic recommendations',
-              },
-              industryInsights: {
-                type: 'string',
-                description: 'Industry-specific insights',
-              },
+              required: ['opportunities', 'challenges', 'recommendations'],
             },
-            required: ['opportunities', 'challenges', 'recommendations'],
           },
         }],
-        function_call: { name: 'business_analysis' },
+        tool_choice: { type: 'function', function: { name: 'business_analysis' } },
         temperature: 0.7,
       });
 
-      const functionCall = completion.choices[0]?.message?.function_call;
-      if (!functionCall?.arguments) {
-        throw new Error('No function call response');
+      const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
+      if (!toolCall?.function?.arguments) {
+        throw new Error('No tool call response');
       }
 
-      const result = JSON.parse(functionCall.arguments);
+      const result = JSON.parse(toolCall.function.arguments);
 
       return {
         agent: this.role,

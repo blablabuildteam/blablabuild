@@ -36,15 +36,20 @@ npm run test:full
 
 ---
 
-## Clean Database
+## View Logs
 
 ```bash
-# Clean all test data
-npm run cleanup
+# View logs via web UI
+open http://localhost:3000/debug/logs
 
-# Or use programmatically
-npx tsx __tests__/cleanup.ts
+# Or via API
+curl http://localhost:3000/api/debug/logs?level=error&limit=50
+
+# Filter by session
+curl http://localhost:3000/api/debug/logs?sessionId=session_abc123
 ```
+
+See [`docs/guides/LOGGING_GUIDE.md`](../guides/LOGGING_GUIDE.md) for full logging documentation.
 
 ---
 

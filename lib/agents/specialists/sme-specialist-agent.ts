@@ -57,62 +57,65 @@ Gebruik je diepgaande kennis van de ${industry} sector om praktisch, relevant ad
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Geef ${industry}-specifieke inzichten en best practices.` },
         ],
-        functions: [{
-          name: 'industry_expertise',
-          description: 'Provide industry-specific expertise',
-          parameters: {
-            type: 'object',
-            properties: {
-              industryChallenges: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Common challenges in this industry',
-              },
-              bestPractices: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Industry best practices',
-              },
-              caseStudies: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    company: { type: 'string' },
-                    implementation: { type: 'string' },
-                    result: { type: 'string' },
-                  },
+        tools: [{
+          type: 'function',
+          function: {
+            name: 'industry_expertise',
+            description: 'Provide industry-specific expertise',
+            parameters: {
+              type: 'object',
+              properties: {
+                industryChallenges: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Common challenges in this industry',
                 },
-                description: 'Relevant case studies',
+                bestPractices: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Industry best practices',
+                },
+                caseStudies: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      company: { type: 'string' },
+                      implementation: { type: 'string' },
+                      result: { type: 'string' },
+                    },
+                  },
+                  description: 'Relevant case studies',
+                },
+                complianceConsiderations: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Regulatory and compliance considerations',
+                },
+                industryTrends: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Current industry trends',
+                },
+                competitiveBenchmarks: {
+                  type: 'string',
+                  description: 'How competitors are using AI/automation',
+                },
               },
-              complianceConsiderations: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Regulatory and compliance considerations',
-              },
-              industryTrends: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Current industry trends',
-              },
-              competitiveBenchmarks: {
-                type: 'string',
-                description: 'How competitors are using AI/automation',
-              },
+              required: ['industryChallenges', 'bestPractices', 'industryTrends'],
             },
-            required: ['industryChallenges', 'bestPractices', 'industryTrends'],
           },
         }],
-        function_call: { name: 'industry_expertise' },
+        tool_choice: { type: 'function', function: { name: 'industry_expertise' } },
         temperature: 0.7,
       });
 
-      const functionCall = completion.choices[0]?.message?.function_call;
-      if (!functionCall?.arguments) {
-        throw new Error('No function call response');
+      const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
+      if (!toolCall?.function?.arguments) {
+        throw new Error('No tool call response');
       }
 
-      const result = JSON.parse(functionCall.arguments);
+      const result = JSON.parse(toolCall.function.arguments);
 
       return {
         agent: this.role,

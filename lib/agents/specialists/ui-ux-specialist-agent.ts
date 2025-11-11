@@ -61,50 +61,53 @@ Geef praktische, implementeerbare UI/UX adviezen die direct toegepast kunnen wor
           { role: 'system', content: systemPrompt },
           { role: 'user', content: 'Geef UI/UX advies voor deze situatie.' },
         ],
-        functions: [{
-          name: 'ui_ux_analysis',
-          description: 'Provide UI/UX analysis and recommendations',
-          parameters: {
-            type: 'object',
-            properties: {
-              uxIssues: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Current UX issues or opportunities',
+        tools: [{
+          type: 'function',
+          function: {
+            name: 'ui_ux_analysis',
+            description: 'Provide UI/UX analysis and recommendations',
+            parameters: {
+              type: 'object',
+              properties: {
+                uxIssues: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Current UX issues or opportunities',
+                },
+                designRecommendations: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Specific design recommendations',
+                },
+                quickWins: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Quick UX improvements',
+                },
+                userJourneyInsights: {
+                  type: 'string',
+                  description: 'Insights about user journey',
+                },
+                toolRecommendations: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Recommended UX/UI tools',
+                },
               },
-              designRecommendations: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Specific design recommendations',
-              },
-              quickWins: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Quick UX improvements',
-              },
-              userJourneyInsights: {
-                type: 'string',
-                description: 'Insights about user journey',
-              },
-              toolRecommendations: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Recommended UX/UI tools',
-              },
+              required: ['uxIssues', 'designRecommendations', 'quickWins'],
             },
-            required: ['uxIssues', 'designRecommendations', 'quickWins'],
           },
         }],
-        function_call: { name: 'ui_ux_analysis' },
+        tool_choice: { type: 'function', function: { name: 'ui_ux_analysis' } },
         temperature: 0.7,
       });
 
-      const functionCall = completion.choices[0]?.message?.function_call;
-      if (!functionCall?.arguments) {
-        throw new Error('No function call response');
+      const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
+      if (!toolCall?.function?.arguments) {
+        throw new Error('No tool call response');
       }
 
-      const result = JSON.parse(functionCall.arguments);
+      const result = JSON.parse(toolCall.function.arguments);
 
       return {
         agent: this.role,

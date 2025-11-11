@@ -60,50 +60,53 @@ Voor elk idee, geef:
           { role: 'system', content: systemPrompt },
           { role: 'user', content: 'Genereer 3 op maat gemaakte AI/automatisering ideeën voor dit bedrijf.' },
         ],
-        functions: [{
-          name: 'generate_ideas',
-          description: 'Generate AI/automation ideas',
-          parameters: {
-            type: 'object',
-            properties: {
-              ideas: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    title: { type: 'string' },
-                    summary: { type: 'string' },
-                    stack: { type: 'array', items: { type: 'string' } },
-                    effort: { type: 'string', enum: ['low', 'medium', 'high'] },
-                    impact: { type: 'number', minimum: 1, maximum: 10 },
-                    risks: { type: 'array', items: { type: 'string' } },
-                    cost_lo: { type: 'number' },
-                    cost_hi: { type: 'number' },
-                    reasoning: { type: 'string' },
+        tools: [{
+          type: 'function',
+          function: {
+            name: 'generate_ideas',
+            description: 'Generate AI/automation ideas',
+            parameters: {
+              type: 'object',
+              properties: {
+                ideas: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      title: { type: 'string' },
+                      summary: { type: 'string' },
+                      stack: { type: 'array', items: { type: 'string' } },
+                      effort: { type: 'string', enum: ['low', 'medium', 'high'] },
+                      impact: { type: 'number', minimum: 1, maximum: 10 },
+                      risks: { type: 'array', items: { type: 'string' } },
+                      cost_lo: { type: 'number' },
+                      cost_hi: { type: 'number' },
+                      reasoning: { type: 'string' },
+                    },
+                    required: ['title', 'summary', 'stack', 'effort', 'impact'],
                   },
-                  required: ['title', 'summary', 'stack', 'effort', 'impact'],
+                  minItems: 3,
+                  maxItems: 3,
                 },
-                minItems: 3,
-                maxItems: 3,
+                rationale: {
+                  type: 'string',
+                  description: 'Why these specific ideas were chosen',
+                },
               },
-              rationale: {
-                type: 'string',
-                description: 'Why these specific ideas were chosen',
-              },
+              required: ['ideas', 'rationale'],
             },
-            required: ['ideas', 'rationale'],
           },
         }],
-        function_call: { name: 'generate_ideas' },
+        tool_choice: { type: 'function', function: { name: 'generate_ideas' } },
         temperature: 0.9, // Higher temperature for creativity
       });
 
-      const functionCall = completion.choices[0]?.message?.function_call;
-      if (!functionCall?.arguments) {
-        throw new Error('No function call response');
+      const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
+      if (!toolCall?.function?.arguments) {
+        throw new Error('No tool call response');
       }
 
-      const result = JSON.parse(functionCall.arguments);
+      const result = JSON.parse(toolCall.function.arguments);
 
       return {
         agent: this.role,

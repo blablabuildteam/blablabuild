@@ -29,6 +29,14 @@
 -- 2. Agent System Tables  
 -- Run: lib/db/agents-schema.sql
 -- Creates: 4 tables for agent tracking
+
+-- 3. Main Schema (includes logs table)
+-- Run: lib/db/schema.sql
+-- Creates: sessions, messages, slots, ideas, events, catalog, logs
+
+-- 4. Logs Table (if not in main schema)
+-- Run: scripts/migrate-add-logs-table.sql
+-- Creates: logs table for shareable debugging
 ```
 
 **How to run:**
@@ -133,15 +141,22 @@ curl -X POST https://your-app.vercel.app/api/feedback \
 
 **If agents don't initialize:**
 
-1. **Check console logs:**
+1. **Check application logs:**
    ```bash
-   # In Vercel logs, look for:
-   "✅ Agents initialized: ..."
+   # View logs via web UI:
+   https://your-app.vercel.app/debug/logs
+   
+   # Or via API:
+   curl https://your-app.vercel.app/api/debug/logs?level=error&limit=50
+   
+   # Or in Supabase dashboard:
+   # Navigate to Table Editor > logs table
    ```
 
 2. **Verify API key:**
    - `OPENROUTER_API_KEY` or `OPENAI_API_KEY` must be set
    - Agents will fallback gracefully if missing
+   - Test with: `curl https://your-app.vercel.app/api/debug/api-key`
 
 3. **Check imports:**
    - Verify `lib/agents/index.ts` exports correctly

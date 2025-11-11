@@ -3,20 +3,9 @@
  * Analyzes user responses and asks intelligent follow-up questions
  */
 
-import { getApiKey, isOpenRouter, getAppUrl } from '../utils';
+import { getApiKey, isOpenRouter, getAppUrl, hasApiKey, createOpenAIClient } from '../utils';
 import OpenAI from 'openai';
 import { Agent, AgentContext, AgentResponse, AgentRole } from './agent-registry';
-
-const openai = new OpenAI({
-  apiKey: getApiKey(),
-  baseURL: isOpenRouter() 
-    ? 'https://openrouter.ai/api/v1'
-    : 'https://api.openai.com/v1',
-  defaultHeaders: isOpenRouter() ? {
-    'HTTP-Referer': getAppUrl(),
-    'X-Title': 'blablabuild',
-  } : {},
-});
 
 export class IntakeAnalystAgent implements Agent {
   role: AgentRole = 'intake-analyst';
@@ -55,58 +44,65 @@ Geef een analyse en vervolgvraag die:
 - Natuurlijk en conversationeel klinkt`;
 
     try {
+      if (!hasApiKey()) {
+        throw new Error('API key not configured');
+      }
+      const openai = createOpenAIClient();
       const completion = await openai.chat.completions.create({
         model: isOpenRouter() ? 'openai/gpt-4o' : 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: 'Analyseer dit antwoord en stel de beste vervolgvraag.' },
         ],
-        functions: [{
-          name: 'analyze_and_respond',
-          description: 'Analyze user response and generate follow-up question',
-          parameters: {
-            type: 'object',
-            properties: {
-              analysis: {
-                type: 'string',
-                description: 'Deep analysis of what the user said',
-              },
-              keyInsights: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Key insights extracted from the response',
-              },
-              nextQuestion: {
-                type: 'string',
-                description: 'The next intelligent follow-up question',
-              },
-              extractedData: {
-                type: 'object',
-                description: 'Structured data extracted from the response',
-                properties: {
-                  industry: { type: 'string' },
-                  goal: { type: 'string' },
-                  pain_points: { type: 'array', items: { type: 'string' } },
-                  ai_opportunities: { type: 'string' },
-                  tools_crm: { type: 'boolean' },
-                  tools_marketing: { type: 'boolean' },
-                  data_integration: { type: 'string' },
+        tools: [{
+          type: 'function',
+          function: {
+            name: 'analyze_and_respond',
+            description: 'Analyze user response and generate follow-up question',
+            parameters: {
+              type: 'object',
+              properties: {
+                analysis: {
+                  type: 'string',
+                  description: 'Deep analysis of what the user said',
+                },
+                keyInsights: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Key insights extracted from the response',
+                },
+                nextQuestion: {
+                  type: 'string',
+                  description: 'The next intelligent follow-up question',
+                },
+                extractedData: {
+                  type: 'object',
+                  description: 'Structured data extracted from the response',
+                  properties: {
+                    industry: { type: 'string' },
+                    goal: { type: 'string' },
+                    pain_points: { type: 'array', items: { type: 'string' } },
+                    ai_opportunities: { type: 'string' },
+                    tools_crm: { type: 'boolean' },
+                    tools_marketing: { type: 'boolean' },
+                    data_integration: { type: 'string' },
+                  },
                 },
               },
+              required: ['analysis', 'keyInsights', 'nextQuestion'],
             },
-            required: ['analysis', 'keyInsights', 'nextQuestion'],
           },
         }],
-        function_call: { name: 'analyze_and_respond' },
+        tool_choice: { type: 'function', function: { name: 'analyze_and_respond' } },
         temperature: 0.8,
       });
 
-      const functionCall = completion.choices[0]?.message?.function_call;
-      if (!functionCall?.arguments) {
-        throw new Error('No function call response');
+      const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
+      if (!toolCall?.function?.arguments) {
+        throw new Error('No tool call response');
       }
 
-      const result = JSON.parse(functionCall.arguments);
+      const result = JSON.parse(toolCall.function.arguments);
 
       return {
         agent: this.role,

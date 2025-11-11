@@ -55,44 +55,47 @@ Geef ook 2-3 alternatieve formuleringen.`;
           { role: 'system', content: systemPrompt },
           { role: 'user', content: 'Wat is de beste vervolgvraag?' },
         ],
-        functions: [{
-          name: 'optimize_question',
-          description: 'Generate optimized question',
-          parameters: {
-            type: 'object',
-            properties: {
-              primaryQuestion: {
-                type: 'string',
-                description: 'The best question to ask next',
+        tools: [{
+          type: 'function',
+          function: {
+            name: 'optimize_question',
+            description: 'Generate optimized question',
+            parameters: {
+              type: 'object',
+              properties: {
+                primaryQuestion: {
+                  type: 'string',
+                  description: 'The best question to ask next',
+                },
+                alternatives: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Alternative formulations',
+                },
+                reasoning: {
+                  type: 'string',
+                  description: 'Why this question is optimal',
+                },
+                expectedInsights: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'What insights we expect to gain',
+                },
               },
-              alternatives: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Alternative formulations',
-              },
-              reasoning: {
-                type: 'string',
-                description: 'Why this question is optimal',
-              },
-              expectedInsights: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'What insights we expect to gain',
-              },
+              required: ['primaryQuestion', 'reasoning'],
             },
-            required: ['primaryQuestion', 'reasoning'],
           },
         }],
-        function_call: { name: 'optimize_question' },
+        tool_choice: { type: 'function', function: { name: 'optimize_question' } },
         temperature: 0.8,
       });
 
-      const functionCall = completion.choices[0]?.message?.function_call;
-      if (!functionCall?.arguments) {
-        throw new Error('No function call response');
+      const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
+      if (!toolCall?.function?.arguments) {
+        throw new Error('No tool call response');
       }
 
-      const result = JSON.parse(functionCall.arguments);
+      const result = JSON.parse(toolCall.function.arguments);
 
       return {
         agent: this.role,

@@ -4,7 +4,7 @@
 -- Agent executions table
 CREATE TABLE IF NOT EXISTS agent_executions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  session_id UUID NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+  session_id VARCHAR(255) NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
   agent_role TEXT NOT NULL,
   trigger TEXT NOT NULL,
   confidence DECIMAL NOT NULL CHECK (confidence >= 0 AND confidence <= 1),
@@ -54,7 +54,7 @@ CREATE INDEX idx_agent_ab_tests_active ON agent_ab_tests(active);
 CREATE TABLE IF NOT EXISTS agent_ab_test_assignments (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   test_id TEXT NOT NULL REFERENCES agent_ab_tests(id) ON DELETE CASCADE,
-  session_id UUID NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+  session_id VARCHAR(255) NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
   variant TEXT NOT NULL CHECK (variant IN ('A', 'B')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(test_id, session_id)

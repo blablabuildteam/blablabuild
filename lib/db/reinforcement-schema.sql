@@ -4,7 +4,7 @@
 -- Feedback from users
 CREATE TABLE IF NOT EXISTS feedback (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  session_id UUID NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+  session_id VARCHAR(255) NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
   rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
   comment TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -17,7 +17,7 @@ CREATE INDEX idx_feedback_created_at ON feedback(created_at);
 -- Reinforcement signals for learning
 CREATE TABLE IF NOT EXISTS reinforcement_signals (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  session_id UUID NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+  session_id VARCHAR(255) NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
   type TEXT NOT NULL CHECK (type IN ('positive', 'negative', 'neutral')),
   signal TEXT NOT NULL,
   value DECIMAL NOT NULL CHECK (value >= -1 AND value <= 1),
@@ -33,7 +33,7 @@ CREATE INDEX idx_reinforcement_created_at ON reinforcement_signals(created_at);
 -- Question tracking to understand which questions are asked
 CREATE TABLE IF NOT EXISTS question_tracking (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  session_id UUID NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+  session_id VARCHAR(255) NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
   question TEXT NOT NULL,
   step TEXT NOT NULL,
   asked_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -46,7 +46,7 @@ CREATE INDEX idx_question_tracking_step ON question_tracking(step);
 -- Answer quality tracking
 CREATE TABLE IF NOT EXISTS answer_quality (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  session_id UUID NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+  session_id VARCHAR(255) NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
   question TEXT NOT NULL,
   answer TEXT NOT NULL,
   answer_length INTEGER NOT NULL,
@@ -100,7 +100,7 @@ CREATE INDEX idx_ab_tests_active ON ab_tests(active);
 CREATE TABLE IF NOT EXISTS ab_test_assignments (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   test_id TEXT NOT NULL REFERENCES ab_tests(id) ON DELETE CASCADE,
-  session_id UUID NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+  session_id VARCHAR(255) NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
   variant TEXT NOT NULL CHECK (variant IN ('A', 'B')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(test_id, session_id)

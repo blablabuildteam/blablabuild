@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { ConversationState, Slots, Idea, ChatResponse } from './types';
 import { supabaseAdmin } from './supabase';
-import { sanitizeText, calculateProgress, getApiKey, isOpenRouter, getAppUrl } from './utils';
+import { sanitizeText, calculateProgress, getApiKey, isOpenRouter, getAppUrl, hasApiKey, createOpenAIClient } from './utils';
 import { scoreMaturity } from './scoring';
 import { generateIdeas } from './ideation';
 import { estimateCosts } from './costing';
@@ -11,16 +11,15 @@ import './agents'; // Initialize agents
 
 // Use OpenRouter for better pricing and model access
 // Compatible with OpenAI SDK - just change baseURL
-const openai = new OpenAI({
-  apiKey: getApiKey(),
-  baseURL: isOpenRouter() 
-    ? 'https://openrouter.ai/api/v1'
-    : 'https://api.openai.com/v1',
-  defaultHeaders: isOpenRouter() ? {
-    'HTTP-Referer': getAppUrl(),
-    'X-Title': 'blablabuild',
-  } : {},
-});
+// Initialize OpenAI client lazily to avoid errors if API key is missing
+let openai: OpenAI | null = null;
+
+function getOpenAIClient(): OpenAI {
+  if (!openai) {
+    openai = createOpenAIClient();
+  }
+  return openai;
+}
 
 interface OrchestratorContext {
   state: ConversationState;
@@ -501,8 +500,7 @@ Tot snel!`,
 
     try {
       // Check if API key is available
-      const apiKey = getApiKey();
-      if (!apiKey) {
+      if (!hasApiKey()) {
         console.warn('[Orchestrator] No API key found, skipping slot extraction');
         this.addTrace('Warning: No API key, skipping AI extraction');
         return;
@@ -510,7 +508,16 @@ Tot snel!`,
 
       // CRITICAL: Only send the current user's message to AI - no other session data
       // The AI should only see this single message, not conversation history from other sessions
-      const completion = await openai.chat.completions.create({
+      const client = getOpenAIClient();
+      
+      // Log API key info for debugging (only in non-production)
+      if (process.env.NODE_ENV !== 'production') {
+        const apiKey = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY;
+        console.log(`[extractSlots] Using API key prefix: ${apiKey?.substring(0, 10)}...`);
+        console.log(`[extractSlots] Using provider: ${isOpenRouter() ? 'OpenRouter' : 'OpenAI'}`);
+      }
+      
+      const completion = await client.chat.completions.create({
         model: process.env.OPENROUTER_API_KEY ? 'openai/gpt-4o-mini' : 'gpt-4o-mini',
         messages: [
           {
@@ -526,40 +533,57 @@ BELANGRIJK: Je analyseert alleen dit ene bericht. Je hebt geen toegang tot ander
             content: sanitized, // Only current user's message - isolated
           },
         ],
-        functions: [
+        tools: [
           {
-            name: 'extract_slots',
-            description: 'Extract structured information from user message',
-            parameters: {
-              type: 'object',
-              properties: {
-                industry: { type: 'string', enum: ['Retail', 'FMCG', 'Media', 'Hospitality', 'Tech', 'Other'] },
-                goal: { type: 'string' },
-                pain_points: { type: 'array', items: { type: 'string' } },
-                ai_opportunities: { type: 'string' },
-                overhead_areas: { type: 'string' },
-                tools_crm: { type: 'boolean' },
-                tools_marketing: { type: 'boolean' },
-                tools_analytics: { type: 'boolean' },
-                data_integration: { type: 'string', enum: ['good', 'fair', 'poor'] },
-                goal_short_term: { type: 'string' },
-                goal_long_term: { type: 'string' },
+            type: 'function',
+            function: {
+              name: 'extract_slots',
+              description: 'Extract structured information from user message',
+              parameters: {
+                type: 'object',
+                properties: {
+                  industry: { type: 'string', enum: ['Retail', 'FMCG', 'Media', 'Hospitality', 'Tech', 'Other'] },
+                  goal: { type: 'string' },
+                  pain_points: { type: 'array', items: { type: 'string' } },
+                  ai_opportunities: { type: 'string' },
+                  overhead_areas: { type: 'string' },
+                  tools_crm: { type: 'boolean' },
+                  tools_marketing: { type: 'boolean' },
+                  tools_analytics: { type: 'boolean' },
+                  data_integration: { type: 'string', enum: ['good', 'fair', 'poor'] },
+                  goal_short_term: { type: 'string' },
+                  goal_long_term: { type: 'string' },
+                },
               },
             },
           },
         ],
-        function_call: { name: 'extract_slots' },
+        tool_choice: { type: 'function', function: { name: 'extract_slots' } },
       });
 
-      const functionCall = completion.choices[0]?.message?.function_call;
-      if (functionCall && functionCall.arguments) {
-        const extracted = JSON.parse(functionCall.arguments);
+      const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
+      if (toolCall && toolCall.function?.arguments) {
+        const extracted = JSON.parse(toolCall.function.arguments);
         // Merge with existing slots
         this.state.slots = { ...this.state.slots, ...extracted };
         this.addTrace(`Extracted slots: ${Object.keys(extracted).join(', ')}`);
       }
     } catch (error: any) {
       console.error('[Orchestrator] Error extracting slots:', error);
+      
+      // Enhanced error logging for 401 errors
+      if (error.status === 401 || error.code === 401) {
+        const apiKey = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY;
+        console.error('[Orchestrator] 401 Authentication Error Details:');
+        console.error(`  - API Key present: ${!!apiKey}`);
+        console.error(`  - API Key length: ${apiKey?.length || 0}`);
+        console.error(`  - API Key prefix: ${apiKey?.substring(0, 10) || 'N/A'}...`);
+        console.error(`  - Using provider: ${isOpenRouter() ? 'OpenRouter' : 'OpenAI'}`);
+        console.error(`  - Error message: ${error.message}`);
+        console.error(`  - Error code: ${error.code}`);
+        console.error(`  - Full error:`, JSON.stringify(error, null, 2));
+      }
+      
       this.addTrace(`Error extracting slots: ${error.message || error}`);
       // Continue processing even if extraction fails - don't block conversation
       // The conversation can continue without AI extraction

@@ -7,7 +7,7 @@ CREATE EXTENSION IF NOT EXISTS "vector";
 
 -- 2. Create tables
 CREATE TABLE IF NOT EXISTS sessions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id VARCHAR(255) PRIMARY KEY,
   started_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   completed_at TIMESTAMP WITH TIME ZONE,
   locale VARCHAR(10) DEFAULT 'en',
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS sessions (
 
 CREATE TABLE IF NOT EXISTS messages (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
+  session_id VARCHAR(255) REFERENCES sessions(id) ON DELETE CASCADE,
   role VARCHAR(50) NOT NULL CHECK (role IN ('user', 'assistant', 'system')),
   content TEXT NOT NULL,
   tool_calls JSONB,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS messages (
 
 CREATE TABLE IF NOT EXISTS slots (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
+  session_id VARCHAR(255) REFERENCES sessions(id) ON DELETE CASCADE,
   key VARCHAR(100) NOT NULL,
   value JSONB NOT NULL,
   confidence NUMERIC(3,2) DEFAULT 0.5,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS slots (
 
 CREATE TABLE IF NOT EXISTS ideas (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
+  session_id VARCHAR(255) REFERENCES sessions(id) ON DELETE CASCADE,
   title VARCHAR(255) NOT NULL,
   summary TEXT,
   stack JSONB,
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS ideas (
 
 CREATE TABLE IF NOT EXISTS events (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
+  session_id VARCHAR(255) REFERENCES sessions(id) ON DELETE CASCADE,
   type VARCHAR(100) NOT NULL,
   payload JSONB,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

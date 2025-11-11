@@ -58,55 +58,58 @@ Synthetiseer deze informatie naar:
           { role: 'system', content: systemPrompt },
           { role: 'user', content: 'Synthetiseer alle verzamelde informatie naar actionable insights.' },
         ],
-        functions: [{
-          name: 'synthesize_insights',
-          description: 'Synthesize insights from conversation',
-          parameters: {
-            type: 'object',
-            properties: {
-              keyFindings: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Key findings from the conversation',
+        tools: [{
+          type: 'function',
+          function: {
+            name: 'synthesize_insights',
+            description: 'Synthesize insights from conversation',
+            parameters: {
+              type: 'object',
+              properties: {
+                keyFindings: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Key findings from the conversation',
+                },
+                hiddenPatterns: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Patterns not explicitly mentioned',
+                },
+                quickWins: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Immediate opportunities',
+                },
+                strategicRecommendations: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Strategic recommendations',
+                },
+                risks: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Key risks to consider',
+                },
+                summary: {
+                  type: 'string',
+                  description: 'Overall synthesis summary',
+                },
               },
-              hiddenPatterns: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Patterns not explicitly mentioned',
-              },
-              quickWins: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Immediate opportunities',
-              },
-              strategicRecommendations: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Strategic recommendations',
-              },
-              risks: {
-                type: 'array',
-                items: { type: 'string' },
-                description: 'Key risks to consider',
-              },
-              summary: {
-                type: 'string',
-                description: 'Overall synthesis summary',
-              },
+              required: ['keyFindings', 'quickWins', 'summary'],
             },
-            required: ['keyFindings', 'quickWins', 'summary'],
           },
         }],
-        function_call: { name: 'synthesize_insights' },
+        tool_choice: { type: 'function', function: { name: 'synthesize_insights' } },
         temperature: 0.7,
       });
 
-      const functionCall = completion.choices[0]?.message?.function_call;
-      if (!functionCall?.arguments) {
-        throw new Error('No function call response');
+      const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
+      if (!toolCall?.function?.arguments) {
+        throw new Error('No tool call response');
       }
 
-      const result = JSON.parse(functionCall.arguments);
+      const result = JSON.parse(toolCall.function.arguments);
 
       return {
         agent: this.role,
