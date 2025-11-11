@@ -226,6 +226,24 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
   private async handleCollecting(userMessage: string): Promise<ChatResponse> {
     this.addTrace('🤖 Activating agents for collecting phase...');
     
+    // Check conversation length and warn if too long
+    const userMessages = this.state.messages.filter(m => m.role === 'user').length;
+    const MAX_QUESTIONS = 10; // Maximum questions before forcing completion
+    const MIN_QUESTIONS = 5;
+    
+    if (userMessages >= MAX_QUESTIONS) {
+      const { logger } = await import('./logger');
+      logger.warn('Conversation too long - forcing completion', {
+        sessionId: this.state.sessionId,
+        userMessageCount: userMessages,
+        maxQuestions: MAX_QUESTIONS,
+        endpoint: '/api/chat',
+      });
+      this.addTrace(`⚠️ Conversation too long (${userMessages} questions), forcing completion`);
+      this.state.currentStep = 'scoring';
+      return this.handleScoring();
+    }
+    
     // Track answer quality from previous question
     const previousMessage = this.state.messages[this.state.messages.length - 3];
     let activeAgentNames: string[] = [];
@@ -297,6 +315,18 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
       const userMessages = this.state.messages.filter(m => m.role === 'user').length;
       const assistantMessages = this.state.messages.filter(m => m.role === 'assistant').map(m => m.content.toLowerCase());
       const MIN_QUESTIONS = 5;
+      const MAX_QUESTIONS = 10;
+      
+      // Log warning if approaching max questions
+      if (userMessages >= MAX_QUESTIONS - 2) {
+        const { logger } = await import('./logger');
+        logger.warn('Approaching maximum questions limit', {
+          sessionId: this.state.sessionId,
+          userMessageCount: userMessages,
+          maxQuestions: MAX_QUESTIONS,
+          endpoint: '/api/chat',
+        });
+      }
       
       // Helper to check if we've already asked something similar
       const hasAskedSimilar = (keywords: string[]): boolean => {
@@ -719,6 +749,13 @@ c) Slecht - data zit versnipperd in silos`;
     // Count user messages (questions answered)
     const userMessages = this.state.messages.filter(m => m.role === 'user').length;
     const MIN_QUESTIONS = 5; // Minimum questions before moving to scoring
+    const MAX_QUESTIONS = 10; // Maximum questions before forcing completion
+    
+    // Force completion if too many questions
+    if (userMessages >= MAX_QUESTIONS && this.state.currentStep === 'collecting') {
+      this.addTrace(`determineNextStep: Too many questions (${userMessages}), forcing completion`);
+      return 'scoring';
+    }
     
     // Stay in collecting until we have at least MIN_QUESTIONS user responses
     if (this.state.currentStep === 'collecting' && userMessages < MIN_QUESTIONS) {
