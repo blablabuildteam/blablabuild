@@ -29,8 +29,9 @@ interface OrchestratorContext {
 export class ConversationOrchestrator {
   private state: ConversationState;
   private agentCoordinator: AgentCoordinator;
+  private endpoint: string = '/api/chat'; // Default endpoint
 
-  constructor(sessionId?: string) {
+  constructor(sessionId?: string, endpoint?: string) {
     this.state = {
       sessionId: sessionId || `session_${Date.now()}`,
       slots: {},
@@ -40,6 +41,9 @@ export class ConversationOrchestrator {
       trace: [],
     };
     this.agentCoordinator = new AgentCoordinator(this.state.sessionId);
+    if (endpoint) {
+      this.endpoint = endpoint;
+    }
   }
 
   async loadState(sessionId: string): Promise<void> {
@@ -237,7 +241,7 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
         sessionId: this.state.sessionId,
         userMessageCount: userMessages,
         maxQuestions: MAX_QUESTIONS,
-        endpoint: '/api/chat',
+        endpoint: this.endpoint,
       });
       this.addTrace(`⚠️ Conversation too long (${userMessages} questions), forcing completion`);
       this.state.currentStep = 'scoring';
@@ -324,7 +328,7 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
           sessionId: this.state.sessionId,
           userMessageCount: userMessages,
           maxQuestions: MAX_QUESTIONS,
-          endpoint: '/api/chat',
+          endpoint: this.endpoint,
         });
       }
       
@@ -394,7 +398,7 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
           sessionId: this.state.sessionId,
           userMessageCount: userMessages,
           maxQuestions: MAX_QUESTIONS,
-          endpoint: '/api/chat',
+          endpoint: this.endpoint,
         });
       }
       
@@ -445,7 +449,7 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
         sessionId: this.state.sessionId,
         userMessageCount: userMessages,
         maxQuestions: MAX_QUESTIONS,
-        endpoint: '/api/chat',
+        endpoint: this.endpoint,
       });
     }
 

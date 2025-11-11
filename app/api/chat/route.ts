@@ -7,6 +7,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
+  const endpoint = '/api/chat';
   console.log('📨 POST /api/chat - Request received');
   try {
     const body = await req.json();
@@ -40,13 +41,13 @@ export async function POST(req: NextRequest) {
     if (sessionId) {
       console.log('🔄 Loading existing session:', sessionId);
       // Load existing session
-      orchestrator = new ConversationOrchestrator(sessionId);
+      orchestrator = new ConversationOrchestrator(sessionId, endpoint);
       await orchestrator.loadState(sessionId);
     } else {
       console.log('🆕 Creating new session');
       // Create new session
       newSessionId = `session_${nanoid()}`;
-      orchestrator = new ConversationOrchestrator(newSessionId);
+      orchestrator = new ConversationOrchestrator(newSessionId, endpoint);
 
       // Create session record
       await supabaseAdmin.from('sessions').insert({
