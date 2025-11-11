@@ -28,6 +28,7 @@ interface LogsResponse {
     since: string | null;
     before: string | null;
   };
+  error?: string;
 }
 
 export default function LogsPage() {
@@ -77,6 +78,7 @@ export default function LogsPage() {
 
   useEffect(() => {
     fetchLogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.offset]);
 
   const getLevelColor = (level: string) => {

@@ -55,10 +55,18 @@ class Logger {
       }
 
       // Fire and forget - don't block execution if logging fails
-      supabaseAdmin.from('logs').insert(logData).catch((err) => {
-        // Only log to console if Supabase logging fails
-        console.error('[Logger] Failed to write log to Supabase:', err);
-      });
+      // Use void to explicitly ignore the promise
+      void (async () => {
+        try {
+          const { error } = await supabaseAdmin.from('logs').insert(logData);
+          if (error) {
+            console.error('[Logger] Failed to write log to Supabase:', error);
+          }
+        } catch (err) {
+          // Only log to console if Supabase logging fails
+          console.error('[Logger] Failed to write log to Supabase:', err);
+        }
+      })();
     } catch (err) {
       // Silently fail - don't break the app if logging fails
       console.error('[Logger] Error writing log:', err);

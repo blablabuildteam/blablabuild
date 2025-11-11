@@ -5,12 +5,16 @@ const SITE_PASSWORD = process.env.SITE_PASSWORD;
 const AUTH_COOKIE_NAME = 'site_auth';
 const AUTH_TOKEN = process.env.AUTH_TOKEN;
 
-if (!SITE_PASSWORD || !AUTH_TOKEN) {
-  throw new Error('Missing required environment variables: SITE_PASSWORD or AUTH_TOKEN');
-}
-
 export async function POST(req: NextRequest) {
   try {
+    // If auth is not configured, allow access
+    if (!SITE_PASSWORD || !AUTH_TOKEN) {
+      return NextResponse.json({ 
+        success: true,
+        message: 'Authentication not configured' 
+      });
+    }
+
     const { password } = await req.json();
 
     if (!password) {
