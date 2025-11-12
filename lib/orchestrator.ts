@@ -213,16 +213,16 @@ export class ConversationOrchestrator {
   }
 
   private async handleInit(): Promise<ChatResponse> {
-    // Calculate initial max questions (will be dynamic as conversation progresses)
-    const initialMaxQuestions = calculateMaxQuestions(
-      this.state.slots,
-      [],
-      0
-    );
+    // Structured intake: 8 focused questions to quickly identify AI/automation workflow opportunities
+    const initialMaxQuestions = 8;
     
-    const message = `Welkom bij blablabuild. Ik help je graag om te ontdekken hoe AI en automatisering jouw bedrijf kunnen versterken.
+    const message = `Welkom bij blablabuild! 🚀
 
-Deze intake bestaat uit ongeveer ${initialMaxQuestions} korte vragen. Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
+Ik help je graag om te ontdekken welke AI- en automatiseringsworkflows jouw bedrijf kunnen versterken.
+
+Deze intake bestaat uit ${initialMaxQuestions} korte vragen met meerdere keuzemogelijkheden. We gaan snel naar de kern: welke workflows kunnen we voor jullie implementeren?
+
+Als je nu je bedrijf opnieuw zou kunnen inrichten met AI en automatisering, hoe zou je dat dan doen?`;
 
     this.state.currentStep = 'collecting';
 
@@ -231,7 +231,7 @@ Deze intake bestaat uit ongeveer ${initialMaxQuestions} korte vragen. Als je nu 
       sessionId: this.state.sessionId,
       step: 'collecting',
       progress: 0,
-      maxQuestions: initialMaxQuestions, // Dynamic max questions
+      maxQuestions: initialMaxQuestions,
     };
   }
 
@@ -414,7 +414,13 @@ Deze intake bestaat uit ongeveer ${initialMaxQuestions} korte vragen. Als je nu 
 
     // Fallback to traditional question if agents didn't provide one or it was rejected
     if (!nextQuestion) {
-      nextQuestion = await this.getNextQuestion();
+      const traditionalQuestionResult = await this.getNextQuestion();
+      nextQuestion = traditionalQuestionResult.question;
+      
+      // Set options from traditional question if not already set
+      if (nextQuestion && !questionOptions && traditionalQuestionResult.options) {
+        questionOptions = traditionalQuestionResult.options;
+      }
       
       // Also check traditional question for duplicates
       if (nextQuestion && hasAskedSimilar(nextQuestion)) {
@@ -718,8 +724,17 @@ Tot snel!`,
         messages: [
           {
             role: 'system',
-            content: `Je bent een expert in het extracteren van gestructureerde informatie uit conversaties.
-Extraheer relevante bedrijfsinformatie uit het bericht van de gebruiker.
+            content: `Je bent een expert in het extracteren van gestructureerde informatie uit conversaties voor blablabuild.
+
+blablabuild focust op het identificeren van AI/automatiseringsworkflow-implementatiekansen. We bouwen concrete workflows met AI en automatisering.
+
+Extraheer relevante bedrijfsinformatie uit het bericht van de gebruiker, met focus op:
+- Workflow-bottlenecks en automatisering-potentieel
+- AI-implementatiekansen
+- Handmatige taken die geautomatiseerd kunnen worden
+- Data-integratie behoeften
+- Tool-stack voor integraties
+
 Geef antwoord in JSON formaat met alleen de velden die je met zekerheid kunt bepalen.
 
 BELANGRIJK: Je analyseert alleen dit ene bericht. Je hebt geen toegang tot andere gesprekken of gebruikers.`,
@@ -743,6 +758,8 @@ BELANGRIJK: Je analyseert alleen dit ene bericht. Je hebt geen toegang tot ander
                   pain_points: { type: 'array', items: { type: 'string' } },
                   ai_opportunities: { type: 'string' },
                   overhead_areas: { type: 'string' },
+                  manual_hours: { type: 'string', enum: ['<5', '5-10', '10-20', '20+'] },
+                  budget_band: { type: 'string', enum: ['<10k', '10-25k', '25-75k', '75k+'] },
                   tools_crm: { type: 'boolean' },
                   tools_marketing: { type: 'boolean' },
                   tools_analytics: { type: 'boolean' },
@@ -786,8 +803,11 @@ BELANGRIJK: Je analyseert alleen dit ene bericht. Je hebt geen toegang tot ander
     }
   }
 
-  private async getNextQuestion(): Promise<string | null> {
+  private async getNextQuestion(): Promise<{ question: string | null; options?: string[] }> {
     const slots = this.state.slots;
+    const userMessageCount = this.state.messages.filter(m => m.role === 'user').length;
+    const userMessages = this.state.messages.filter(m => m.role === 'user').map(m => m.content.toLowerCase());
+    const allUserText = userMessages.join(' ');
     
     // Get all assistant messages to avoid repeating questions
     const assistantMessages = this.state.messages
@@ -801,64 +821,276 @@ BELANGRIJK: Je analyseert alleen dit ene bericht. Je hebt geen toegang tot ander
       );
     };
 
-    // Question flow based on missing information
-    if (!slots.industry && !slots.goal) {
-      return null; // First message is free-form
+    // Helper to check if information is already captured from user answers
+    const hasInfoInAnswers = (keywords: string[], patterns: string[] = []): boolean => {
+      const allPatterns = [...keywords, ...patterns];
+      return allPatterns.some(pattern => 
+        allUserText.includes(pattern.toLowerCase())
+      );
+    };
+
+    // Helper to determine question priority based on what we know
+    const getQuestionPriority = (): Array<{ id: string; priority: number; condition: () => boolean }> => {
+      const questions = [];
+
+      // Q1: Goal/What they're looking for - HIGHEST PRIORITY (always ask first if missing)
+      questions.push({
+        id: 'goal',
+        priority: 10,
+        condition: () => userMessageCount === 1 && !slots.goal && !hasAskedQuestion(['zoek', 'looking', 'hulp', 'help'])
+      });
+
+      // Q2: Pain points/Situation - HIGH PRIORITY (needed for workflow identification)
+      questions.push({
+        id: 'pain_points',
+        priority: 9,
+        condition: () => {
+          if (slots.pain_points && slots.pain_points.length > 0) return false;
+          if (hasAskedQuestion(['situatie', 'uitdaging', 'probleem', 'pijnpunt'])) return false;
+          // Skip if user already mentioned pain points in their answers
+          if (hasInfoInAnswers(['probleem', 'uitdaging', 'moeilijk', 'struggling', 'pijnpunt', 'bottleneck'])) return false;
+          return true;
+        }
+      });
+
+      // Q3: Automation opportunities - HIGH PRIORITY (core workflow identification)
+      questions.push({
+        id: 'opportunities',
+        priority: 8,
+        condition: () => {
+          if (slots.ai_opportunities) return false;
+          if (hasAskedQuestion(['omzet', 'revenue', 'tijd', 'time', 'laat liggen'])) return false;
+          // Skip if user already mentioned where they're losing revenue/time
+          if (hasInfoInAnswers(['omzet', 'revenue', 'tijd', 'time', 'conversie', 'leads', 'verkeer'])) return false;
+          return true;
+        }
+      });
+
+      // Q4: Manual hours - MEDIUM-HIGH PRIORITY (automation potential)
+      questions.push({
+        id: 'manual_hours',
+        priority: 7,
+        condition: () => {
+          if (slots.manual_hours) return false;
+          if (hasAskedQuestion(['handmatig', 'manual', 'uren', 'hours', 'tijd'])) return false;
+          // Skip if user already mentioned time spent
+          if (hasInfoInAnswers(['uren', 'hours', 'tijd', 'per week', 'handmatig', 'manual'])) return false;
+          return true;
+        }
+      });
+
+      // Q5: Data integration - MEDIUM PRIORITY (workflow needs)
+      questions.push({
+        id: 'data_integration',
+        priority: 6,
+        condition: () => {
+          if (slots.data_integration) return false;
+          if (hasAskedQuestion(['data', 'geïntegreerd', 'integrated', 'silos'])) return false;
+          // Skip if user already mentioned data integration status
+          if (hasInfoInAnswers(['data', 'gekoppeld', 'integrated', 'silos', 'systemen'])) return false;
+          return true;
+        }
+      });
+
+      // Q6: Tools/Stack - MEDIUM PRIORITY (integration opportunities)
+      questions.push({
+        id: 'tools',
+        priority: 5,
+        condition: () => {
+          // If we already know about tools, skip
+          if (slots.tools_crm || slots.tools_marketing || slots.tools_analytics) return false;
+          if (hasAskedQuestion(['tools', 'systemen', 'software', 'crm'])) return false;
+          // Skip if user already mentioned tools
+          if (hasInfoInAnswers(['crm', 'salesforce', 'hubspot', 'mailchimp', 'analytics', 'tools', 'software', 'systeem'])) return false;
+          return true;
+        }
+      });
+
+      // Q7: Budget - MEDIUM-LOW PRIORITY (can skip if not critical)
+      questions.push({
+        id: 'budget',
+        priority: 4,
+        condition: () => {
+          if (slots.budget_band) return false;
+          if (hasAskedQuestion(['budget', 'investering', 'investment', 'kosten'])) return false;
+          // Skip if user already mentioned budget
+          if (hasInfoInAnswers(['budget', 'euro', 'kosten', 'investering', 'investment', 'prijs'])) return false;
+          return true;
+        }
+      });
+
+      // Q8: Ambition - LOW PRIORITY (nice to have, can infer from other answers)
+      questions.push({
+        id: 'ambition',
+        priority: 3,
+        condition: () => {
+          if (slots.goal_short_term || slots.goal_long_term) return false;
+          if (hasAskedQuestion(['ambitie', 'ambition', 'doel', 'goal', 'versnellen'])) return false;
+          // Skip if user already mentioned goals/ambition
+          if (hasInfoInAnswers(['ambitie', 'ambition', 'doel', 'goal', 'willen', 'versnellen', 'groei'])) return false;
+          return true;
+        }
+      });
+
+      return questions.sort((a, b) => b.priority - a.priority);
+    };
+
+    // First message is free-form from init
+    if (userMessageCount === 0) {
+      return { question: null };
     }
 
-    if (!slots.pain_points || slots.pain_points.length === 0) {
-      if (!hasAskedQuestion(['pijnpunten', 'uitdagingen', 'problemen'])) {
-        return 'Welke 3 grootste pijnpunten ervaar je momenteel binnen je marketing- en verkoopprocessen?';
+    // Get prioritized questions
+    const prioritizedQuestions = getQuestionPriority();
+
+    // Find the highest priority question that should be asked
+    for (const q of prioritizedQuestions) {
+      if (q.condition()) {
+        // Generate question based on ID
+        switch (q.id) {
+          case 'goal':
+            return {
+              question: '1 → Wat zoek je op dit moment?*',
+              options: [
+                'Hulp bij een specifieke taak of workflow',
+                'Ik wil mijn resultaten verbeteren, maar weet nog niet precies hoe',
+                'Ik zoek een strategisch sparringpartner voor AI/automatisering'
+              ]
+            };
+
+          case 'pain_points':
+            // Variant based on what we know
+            if (allUserText.includes('groei') || allUserText.includes('growth')) {
+              return {
+                question: '2 → Welke uitspraak beschrijft jullie huidige situatie het best?*',
+                options: [
+                  'We doen van alles, maar echte groei ontbreekt',
+                  'We hebben voldoende capaciteit, maar missen regie',
+                  'We missen strategisch overzicht',
+                  'Geen idee, dat inzicht zoeken we juist'
+                ]
+              };
+            }
+            return {
+              question: '2 → Welke uitspraak beschrijft jullie huidige situatie het best?*',
+              options: [
+                'We doen van alles, maar echte groei ontbreekt',
+                'We hebben voldoende capaciteit, maar missen regie',
+                'We missen strategisch overzicht',
+                'Geen idee, dat inzicht zoeken we juist'
+              ]
+            };
+
+          case 'opportunities':
+            // Variant based on context
+            if (allUserText.includes('lead') || allUserText.includes('conversie')) {
+              return {
+                question: '3 → Waar denk je dat je de meeste omzet of tijd laat liggen?*',
+                options: [
+                  'Te lage conversie',
+                  'Te weinig leads',
+                  'Geen of te weinig herhaalaankopen',
+                  'Te weinig bezoekers/verkeer',
+                  'We weten dit nog niet goed'
+                ]
+              };
+            }
+            return {
+              question: '3 → Waar denk je dat je de meeste omzet of tijd laat liggen?*',
+              options: [
+                'Te lage conversie',
+                'Te weinig leads',
+                'Geen of te weinig herhaalaankopen',
+                'Te weinig bezoekers/verkeer',
+                'We weten dit nog niet goed'
+              ]
+            };
+
+          case 'manual_hours':
+            return {
+              question: '4 → Hoeveel tijd per week wordt er besteed aan handmatige taken die geautomatiseerd zouden kunnen worden?*',
+              options: [
+                'Minder dan 5 uur',
+                '5-10 uur',
+                '10-20 uur',
+                'Meer dan 20 uur'
+              ]
+            };
+
+          case 'data_integration':
+            return {
+              question: '5 → Hoe toegankelijk en geïntegreerd is jullie data uit verschillende systemen?*',
+              options: [
+                'Zeer goed - alles is gekoppeld',
+                'Redelijk - sommige systemen zijn gekoppeld',
+                'Slecht - data zit versnipperd in silos'
+              ]
+            };
+
+          case 'tools':
+            // Variant: if they mentioned CRM, focus on other tools
+            if (allUserText.includes('crm') || slots.tools_crm) {
+              return {
+                question: '6 → Welke andere tools gebruiken jullie nog meer?*',
+                options: [
+                  'Marketing tools (Mailchimp, ActiveCampaign, etc.)',
+                  'Analytics tools (Google Analytics, Mixpanel, etc.)',
+                  'CMS of content tools',
+                  'We gebruiken alleen CRM',
+                  'Andere tools'
+                ]
+              };
+            }
+            return {
+              question: '6 → Welke tools gebruiken jullie momenteel?*',
+              options: [
+                'CRM systeem (Salesforce, HubSpot, Pipedrive, etc.)',
+                'Marketing tools (Mailchimp, ActiveCampaign, etc.)',
+                'Analytics tools (Google Analytics, Mixpanel, etc.)',
+                'We gebruiken nog geen specifieke tools',
+                'Andere tools'
+              ]
+            };
+
+          case 'budget':
+            return {
+              question: '7 → Wat is je maandelijkse budget voor AI/automatisering?*',
+              options: [
+                'Minder dan 2.000 euro per maand',
+                'Tussen de 2.000 en 5.000 euro',
+                'Tussen de 5.000 en 10.000 euro',
+                'Tussen de 10.000 en 50.000 euro',
+                'Meer dan 50.000 euro',
+                'Dat bespreek ik liever later'
+              ]
+            };
+
+          case 'ambition':
+            return {
+              question: '8 → Wat typeert jullie ambitie?*',
+              options: [
+                'We willen graag enkele slimme acties inzetten',
+                'We willen structureel versnellen en zijn bereid te investeren',
+                'We zoeken een strategisch groeiplan én iemand die dit uitvoert'
+              ]
+            };
+        }
       }
     }
 
-    if (slots.score_lead_gen === undefined) {
-      if (!hasAskedQuestion(['schaal', 'cijfer', 'efficiëntie', 'beoordelen', '1 tot 10'])) {
-        return `Op een schaal van 1 tot 10, hoe zou je de efficiëntie van deze processen beoordelen?
+    // Check if we have minimum required info to proceed
+    const hasMinimumInfo = 
+      (slots.goal || hasInfoInAnswers(['zoek', 'looking', 'hulp', 'help', 'willen', 'doel'])) &&
+      (slots.pain_points?.length > 0 || hasInfoInAnswers(['probleem', 'uitdaging', 'moeilijk', 'struggling'])) &&
+      (slots.ai_opportunities || slots.manual_hours || hasInfoInAnswers(['tijd', 'uren', 'omzet', 'revenue', 'conversie']));
 
-• Leadgeneratie (via website/campagnes)
-• Conversie van leads naar klanten
-• Data-analyse & rapportering
-
-Geef per proces een cijfer tussen 1-10.`;
-      }
+    // If we have minimum info and asked at least 3 questions, we can proceed
+    if (hasMinimumInfo && userMessageCount >= 3) {
+      return { question: null };
     }
 
-    if (!slots.manual_hours) {
-      if (!hasAskedQuestion(['tijd', 'uren', 'handmatige taken', 'geautomatiseerd'])) {
-        return `Hoeveel tijd per week wordt er gemiddeld besteed aan handmatige taken die geautomatiseerd zouden kunnen worden?
-
-a) Minder dan 5 uur
-b) 5-10 uur
-c) 10-20 uur
-d) Meer dan 20 uur`;
-      }
-    }
-
-    if (!slots.data_integration) {
-      if (!hasAskedQuestion(['data', 'geïntegreerd', 'gekoppeld', 'silos'])) {
-        return `Hoe toegankelijk en geïntegreerd is jullie data uit verschillende systemen?
-
-a) Zeer goed - alles is gekoppeld
-b) Redelijk - sommige systemen zijn gekoppeld
-c) Slecht - data zit versnipperd in silos`;
-      }
-    }
-
-    if (!slots.goal_short_term) {
-      if (!hasAskedQuestion(['doelstelling', 'doel', '3 maanden', 'korte termijn'])) {
-        return 'Wat is jullie belangrijkste bedrijfsdoelstelling voor de komende 3 maanden?';
-      }
-    }
-
-    if (!slots.goal_long_term) {
-      if (!hasAskedQuestion(['langere termijn', 'strategisch', 'komend jaar', 'lange termijn'])) {
-        return 'En op de langere termijn: wat is jullie strategische doel voor komend jaar?';
-      }
-    }
-
-    // All required information collected
-    return null;
+    // If we don't have minimum info but no more questions, return null to proceed anyway
+    return { question: null };
   }
 
   private async saveMessage(role: 'user' | 'assistant', content: string): Promise<void> {

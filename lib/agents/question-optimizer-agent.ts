@@ -31,7 +31,9 @@ export class QuestionOptimizerAgent implements Agent {
   }
 
   async execute(context: AgentContext): Promise<AgentResponse> {
-    const systemPrompt = `Je bent een expert in het stellen van effectieve vragen tijdens intake gesprekken.
+    const systemPrompt = `Je bent een expert in het stellen van effectieve vragen tijdens intake gesprekken voor blablabuild.
+
+blablabuild focust op het snel identificeren van AI/automatiseringsworkflow-implementatiekansen. We bouwen concrete workflows met AI en automatisering.
 
 Context:
 ${this.formatContext(context)}
@@ -40,19 +42,18 @@ Wat we nog NIET weten:
 ${this.formatMissingInfo(context)}
 
 Creëer de PERFECT vervolgvraag die:
-1. Voortbouwt op het gesprek (niet abrupt)
-2. Maximale informatie extraheert
-3. Natuurlijk en conversationeel klinkt
-4. De gebruiker aanzet tot nadenken
-5. Specifiek genoeg is voor actie
+1. Snel identificeert welke workflows we kunnen implementeren
+2. Focus op AI/automatisering-implementatiekansen
+3. Voortbouwt op het gesprek (niet abrupt)
+4. Maximale informatie extraheert over workflow-bottlenecks
+5. Natuurlijk en conversationeel klinkt
 
-BELANGRIJK: Gebruik multiple choice opties (2-4 opties) wanneer mogelijk om het antwoord te versnellen:
-- Ja/Nee vragen → ["Ja", "Nee", "Weet ik niet"]
+BELANGRIJK: Gebruik ALTIJD multiple choice opties (3-5 opties) om snel naar implementatiekansen te leiden:
+- Workflow-gerelateerde vragen → Focus op waar automatisering impact heeft
 - Tijdsbesteding → ["Minder dan 5 uur", "5-10 uur", "10-20 uur", "Meer dan 20 uur"]
-- Tool gebruik → ["Ja, we gebruiken X", "Nee, niet gebruikt", "We overwegen het"]
-- Schaal vragen → ["1-3", "4-6", "7-8", "9-10"]
-
-Laat opties leeg voor open vragen waar vrije tekst nodig is.
+- Tool gebruik → ["CRM systeem", "Marketing tools", "Analytics tools", "Geen tools", "Andere"]
+- Budget → ["<2k", "2-5k", "5-10k", "10-50k", "50k+", "Later bespreken"]
+- Situatie → Focus op workflow-bottlenecks en automatisering-potentieel
 
 Geef ook 2-3 alternatieve formuleringen.`;
 
