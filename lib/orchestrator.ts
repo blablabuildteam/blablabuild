@@ -382,26 +382,29 @@ Deze intake bestaat uit ongeveer ${initialMaxQuestions} korte vragen. Als je nu 
       
       // Check if agent-generated question is too similar to previously asked questions
       // Also check for specific key phrases that indicate duplicate topics
-      const keyPhrases = [
-        'manuele processen', 'manual processes', 'personnel planning', 'personeelsplanning',
-        'rooster', 'planning', 'tijd', 'uren', 'handmatige taken'
-      ];
-      const questionLower = agentQuestion.toLowerCase();
-      const hasKeyPhraseMatch = keyPhrases.some(phrase => 
-        questionLower.includes(phrase.toLowerCase()) && 
-        assistantMessages.some(msg => msg.includes(phrase.toLowerCase()))
-      );
-      
-      if (agentQuestion && (hasAskedSimilar(agentQuestion) || hasKeyPhraseMatch)) {
-        this.addTrace(`⚠️ Agent question too similar to previous question, rejecting: ${agentQuestion.substring(0, 50)}...`);
-        if (hasKeyPhraseMatch) {
-          this.addTrace(`⚠️ Detected duplicate key phrase match`);
+      if (agentQuestion) {
+        const keyPhrases = [
+          'manuele processen', 'manual processes', 'personnel planning', 'personeelsplanning',
+          'rooster', 'planning', 'tijd', 'uren', 'handmatige taken'
+        ];
+        const questionLower = agentQuestion.toLowerCase();
+        const hasKeyPhraseMatch = keyPhrases.some(phrase => 
+          questionLower.includes(phrase.toLowerCase()) && 
+          assistantMessages.some(msg => msg.includes(phrase.toLowerCase()))
+        );
+        
+        if (hasAskedSimilar(agentQuestion) || hasKeyPhraseMatch) {
+          this.addTrace(`⚠️ Agent question too similar to previous question, rejecting: ${agentQuestion.substring(0, 50)}...`);
+          if (hasKeyPhraseMatch) {
+            this.addTrace(`⚠️ Detected duplicate key phrase match`);
+          }
+          // Don't use this question, fall through to traditional generation
+          nextQuestion = null;
+        } else {
+          nextQuestion = agentQuestion;
+          questionOptions = agentQuestionResult.options;
+          activeAgentNames = [...new Set([...activeAgentNames, ...(agentQuestionResult.activeAgentNames || [])])];
         }
-        // Don't use this question, fall through to traditional generation
-      } else {
-        nextQuestion = agentQuestion;
-        questionOptions = agentQuestionResult.options;
-        activeAgentNames = [...new Set([...activeAgentNames, ...(agentQuestionResult.activeAgentNames || [])])];
       }
     } catch (err: any) {
       console.error('[Orchestrator] Error getting question from agents:', err);
