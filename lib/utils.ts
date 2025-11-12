@@ -44,6 +44,170 @@ export function calculateProgress(slots: any): number {
   return Math.min(baseProgress, 70);
 }
 
+/**
+ * Detect if the task is simple based on user messages
+ * Simple tasks are typically:
+ * - Single, focused problems (e.g., "personnel planning", "rooster maken")
+ * - Clear, straightforward goals
+ * - Not complex multi-system integrations
+ * @param messages Array of messages to analyze
+ * @param slots Current slots filled
+ * @returns true if task appears simple
+ */
+export function isSimpleTask(
+  messages: Array<{ role: string; content: string }> = [],
+  slots: any = {}
+): boolean {
+  // Get all user messages combined
+  const userMessages = messages.filter(m => m.role === 'user');
+  if (userMessages.length === 0) return false;
+  
+  const allUserText = userMessages.map(m => m.content.toLowerCase()).join(' ');
+  
+  // Simple task indicators
+  const simpleTaskKeywords = [
+    // Planning/scheduling
+    'rooster', 'planning', 'schedule', 'personnel planning', 'personeelsplanning',
+    'roostermaken', 'rooster maken', 'planning maken',
+    // Simple automation
+    'excel', 'spreadsheet', 'handmatig', 'automatiseren',
+    // Single process
+    'boekingen', 'reserveringen', 'afspraken',
+    // Simple tools
+    'pen en papier', 'papier', 'notitie',
+  ];
+  
+  // Complex task indicators (if present, task is NOT simple)
+  const complexTaskKeywords = [
+    'integratie', 'systeem', 'meerdere', 'complex', 'enterprise',
+    'data warehouse', 'api', 'database', 'migratie', 'transformatie',
+  ];
+  
+  // Check for complex indicators first
+  const hasComplexIndicators = complexTaskKeywords.some(keyword => 
+    allUserText.includes(keyword)
+  );
+  
+  if (hasComplexIndicators) return false;
+  
+  // Check for simple task indicators
+  const hasSimpleIndicators = simpleTaskKeywords.some(keyword => 
+    allUserText.includes(keyword)
+  );
+  
+  // Also check if user gave very short, focused initial answer
+  const firstUserMessage = userMessages[0]?.content || '';
+  const isShortFocusedAnswer = firstUserMessage.length < 150 && 
+    (hasSimpleIndicators || firstUserMessage.split(' ').length < 20);
+  
+  // Check if goal is very specific and simple
+  const goal = slots.goal || '';
+  const isSimpleGoal = goal.length > 0 && goal.length < 100 && 
+    simpleTaskKeywords.some(keyword => goal.toLowerCase().includes(keyword));
+  
+  return hasSimpleIndicators || isShortFocusedAnswer || isSimpleGoal;
+}
+
+/**
+ * Calculate dynamic max questions based on information collected and answer quality
+ * @param slots Current slots filled
+ * @param messages Array of messages to analyze answer quality
+ * @param currentQuestionNumber Current question number
+ * @returns Estimated max questions needed
+ */
+export function calculateMaxQuestions(
+  slots: any,
+  messages: Array<{ role: string; content: string }> = [],
+  currentQuestionNumber: number = 0
+): number {
+  const MIN_QUESTIONS = 5; // Minimum questions needed
+  const MIN_QUESTIONS_SIMPLE = 3; // Minimum for simple tasks
+  const BASE_MAX_QUESTIONS = 8; // Base maximum
+  const MAX_QUESTIONS = 10; // Absolute maximum
+  
+  // Check if task is simple
+  const taskIsSimple = isSimpleTask(messages, slots);
+  
+  // Calculate progress
+  const progress = calculateProgress(slots);
+  
+  // Count filled slots
+  const requiredSlots = [
+    'industry',
+    'goal',
+    'pain_points',
+    'score_lead_gen',
+    'score_conversion',
+    'data_integration',
+    'goal_short_term',
+  ];
+  const filledSlots = requiredSlots.filter(slot => slots[slot] !== undefined && slots[slot] !== null).length;
+  const slotsRatio = filledSlots / requiredSlots.length;
+  
+  // Analyze answer quality (average length of user messages)
+  const userMessages = messages.filter(m => m.role === 'user');
+  const avgAnswerLength = userMessages.length > 0
+    ? userMessages.reduce((sum, m) => sum + m.content.length, 0) / userMessages.length
+    : 0;
+  
+  // Calculate quality score (0-1)
+  // Longer answers (100+ chars) = high quality, shorter (<50 chars) = lower quality
+  const qualityScore = Math.min(1, Math.max(0, (avgAnswerLength - 30) / 100));
+  
+  // Calculate information completeness score (0-1)
+  const completenessScore = slotsRatio;
+  
+  // Combine factors to determine max questions
+  // Higher progress + better quality + more slots = fewer questions needed
+  const progressFactor = 1 - (progress / 100) * 0.4; // Progress reduces max by up to 40%
+  const qualityFactor = 1 - qualityScore * 0.3; // Quality reduces max by up to 30%
+  const completenessFactor = 1 - completenessScore * 0.3; // Completeness reduces max by up to 30%
+  
+  // Weighted combination
+  const reductionFactor = (progressFactor * 0.4) + (qualityFactor * 0.3) + (completenessFactor * 0.3);
+  
+  // Calculate dynamic max
+  let dynamicMax = Math.round(BASE_MAX_QUESTIONS * reductionFactor);
+  
+  // For simple tasks, reduce max questions significantly
+  if (taskIsSimple) {
+    // Simple tasks need fewer questions - cap at 5-6 max
+    dynamicMax = Math.min(dynamicMax, 6);
+    // If we have good progress on simple task, reduce even more
+    if (progress >= 50 && slotsRatio >= 0.5) {
+      dynamicMax = Math.min(dynamicMax, 4);
+    }
+  }
+  
+  // Determine minimum based on task complexity
+  const effectiveMinQuestions = taskIsSimple ? MIN_QUESTIONS_SIMPLE : MIN_QUESTIONS;
+  
+  // Ensure we don't go below minimum or above maximum
+  dynamicMax = Math.max(effectiveMinQuestions, Math.min(MAX_QUESTIONS, dynamicMax));
+  
+  // If we're already past the calculated max, use current + 2 as buffer
+  if (currentQuestionNumber > dynamicMax) {
+    dynamicMax = Math.min(MAX_QUESTIONS, currentQuestionNumber + 2);
+  }
+  
+  // If progress is very high (>70%), cap at 6 questions (or 4 for simple tasks)
+  if (progress >= 70 && slotsRatio >= 0.7) {
+    dynamicMax = Math.min(dynamicMax, taskIsSimple ? 4 : 6);
+  }
+  
+  // If we have very detailed answers (>150 chars avg) and good progress, reduce further
+  if (avgAnswerLength > 150 && progress >= 60) {
+    dynamicMax = Math.min(dynamicMax, taskIsSimple ? 4 : 6);
+  }
+  
+  // For simple tasks with good info, allow even earlier completion
+  if (taskIsSimple && progress >= 60 && slotsRatio >= 0.6 && userMessages.length >= 2) {
+    dynamicMax = Math.min(dynamicMax, 4);
+  }
+  
+  return dynamicMax;
+}
+
 export function formatCurrency(amount: number, locale: string = 'nl-NL'): string {
   return new Intl.NumberFormat(locale, {
     style: 'currency',

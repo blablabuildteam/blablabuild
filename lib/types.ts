@@ -101,6 +101,7 @@ export interface ChatResponse {
   complete?: boolean;
   activeAgents?: string[]; // Agent names that are currently active
   options?: string[]; // Multiple choice options for faster answers
+  maxQuestions?: number; // Maximum number of questions expected
 }
 
 // Database types

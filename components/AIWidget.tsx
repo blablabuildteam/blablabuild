@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Cancel01Icon as CloseIcon, 
-  CursorLoading01Icon as LoadingIcon, 
   ArrowRight01Icon as ArrowRightIcon, 
   QuoteDownIcon as QuoteIcon, 
   CheckmarkCircle01Icon as CheckmarkCircleIcon, 
@@ -32,6 +31,7 @@ export default function AIWidget() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState<string>('Verwerken...');
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -41,6 +41,10 @@ export default function AIWidget() {
   const [questionKey, setQuestionKey] = useState(0); // Counter to force re-render
   const [currentStep, setCurrentStep] = useState<string>('init');
   const [showLeadForm, setShowLeadForm] = useState(false);
+  const [questionNumber, setQuestionNumber] = useState(0);
+  const [maxQuestions, setMaxQuestions] = useState(7);
+  const [emailCaptured, setEmailCaptured] = useState(false);
+  const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [leadForm, setLeadForm] = useState({
     email: '',
     companyName: '',
@@ -120,6 +124,16 @@ export default function AIWidget() {
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMessage, timestamp: new Date() }]);
     setIsLoading(true);
+    setLoadingMessage('Je antwoord wordt verwerkt...');
+    
+    // Update question number
+    const newQuestionNumber = messages.filter(m => m.role === 'user').length + 1;
+    setQuestionNumber(newQuestionNumber);
+    
+    // Show email prompt after Q2 if not captured yet
+    if (newQuestionNumber === 2 && !emailCaptured) {
+      setShowEmailPrompt(true);
+    }
 
     trackWidgetEvent(sessionId || 'unknown', 'message_sent', {
       message_length: userMessage.length,
@@ -144,6 +158,8 @@ export default function AIWidget() {
         throw new Error(errorData.error || `API error: ${response.status}`);
       }
 
+      setLoadingMessage('AI analyseert je antwoord...');
+      
       const data: ChatResponse = await response.json();
       console.log('✅ API Response data:', data);
       console.log('📝 Full message:', data.message);
@@ -158,6 +174,11 @@ export default function AIWidget() {
       // Update current step from response
       if (data.step) {
         setCurrentStep(data.step);
+      }
+      
+      // Update max questions from response if provided
+      if (data.maxQuestions) {
+        setMaxQuestions(data.maxQuestions);
       }
 
       console.log('💬 Setting current question:', data.message);
@@ -196,6 +217,10 @@ export default function AIWidget() {
       setProgress(data.progress || progress);
       console.log('📊 Progress updated:', data.progress || progress);
       
+      // Update question number based on user messages
+      const userMessageCount = messages.filter(m => m.role === 'user').length + 1;
+      setQuestionNumber(userMessageCount);
+      
       // Scroll to top to show new question
       setTimeout(() => {
         contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -220,9 +245,42 @@ export default function AIWidget() {
     } finally {
       console.log('🏁 sendMessage complete, setting isLoading to false');
       setIsLoading(false);
+      setLoadingMessage('Verwerken...');
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
+    }
+  };
+
+  const handleEarlyEmailCapture = async () => {
+    if (!leadForm.email.trim() || !sessionId) return;
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(leadForm.email.trim())) {
+      alert('Voer een geldig email adres in');
+      return;
+    }
+    
+    try {
+      // Save email early to session
+      await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          email: leadForm.email.trim(),
+          companyName: leadForm.companyName,
+        }),
+      });
+      
+      setEmailCaptured(true);
+      setShowEmailPrompt(false);
+      const currentQNum = messages.filter(m => m.role === 'user').length;
+      trackWidgetEvent(sessionId, 'email_captured_early', {
+        question_number: currentQNum,
+      });
+    } catch (error) {
+      console.error('Error saving early email:', error);
     }
   };
 
@@ -245,7 +303,86 @@ export default function AIWidget() {
     };
   }, []);
 
-  const questionNumber = Math.min(Math.floor(progress / 14), 7);
+  // Calculate question number from actual user messages
+  const actualQuestionNumber = messages.filter(m => m.role === 'user').length + (isLoading ? 1 : 0);
+
+  // Blablabla Animation Component - Typing/Transcription Effect
+  const BlablablaAnimation = ({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) => {
+    const textSize = size === 'sm' ? 'text-xs' : size === 'lg' ? 'text-lg' : 'text-sm';
+    const letterSpacing = size === 'sm' ? 'tracking-tight' : 'tracking-wide';
+    const [visibleChars, setVisibleChars] = useState(0);
+    const letters = ['b', 'l', 'a', 'b', 'l', 'a', 'b', 'l', 'a'];
+    
+    useEffect(() => {
+      // Reset and start typing animation
+      setVisibleChars(0);
+      let timeoutId: NodeJS.Timeout;
+      const interval = setInterval(() => {
+        setVisibleChars((prev) => {
+          if (prev >= letters.length) {
+            // Once all letters are visible, restart after a pause
+            timeoutId = setTimeout(() => setVisibleChars(0), 1000);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 150); // Typing speed - adjust for faster/slower
+      
+      return () => {
+        clearInterval(interval);
+        if (timeoutId) clearTimeout(timeoutId);
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // letters is constant, no need to include in deps
+    
+    return (
+      <motion.div 
+        className={`flex items-center gap-0.5 ${textSize} font-light text-black ${letterSpacing}`}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        {letters.map((letter, index) => (
+          <motion.span
+            key={index}
+            initial={{ opacity: 0, scale: 0.5, y: 10 }}
+            animate={{
+              opacity: index < visibleChars ? 1 : 0,
+              scale: index < visibleChars ? [0.5, 1.2, 1] : 0.5,
+              y: index < visibleChars ? 0 : 10,
+            }}
+            transition={{
+              opacity: { duration: 0.1 },
+              scale: {
+                duration: 0.3,
+                times: [0, 0.5, 1],
+                ease: 'easeOut',
+              },
+              y: {
+                duration: 0.3,
+                ease: 'easeOut',
+              },
+            }}
+            className="inline-block"
+          >
+            {letter}
+          </motion.span>
+        ))}
+        <motion.span
+          animate={{
+            opacity: [0.3, 1, 0.3],
+          }}
+          transition={{
+            duration: 1,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+          className="ml-1 text-black"
+        >
+          ...
+        </motion.span>
+      </motion.div>
+    );
+  };
 
   // Process steps configuration
   const processSteps = [
@@ -439,6 +576,87 @@ export default function AIWidget() {
 
             {/* Content Area */}
             <div ref={contentRef} className="flex-1 overflow-y-auto p-5 bg-bla-charcoal">
+              {/* Loading State with Skeleton */}
+              {isLoading && !currentQuestion && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="space-y-4"
+                >
+                  <div className="bg-bla-charcoal-light rounded-2xl border border-bla-charcoal-border p-6 backdrop-blur-sm">
+                    <div className="flex items-center gap-3 mb-4">
+                      <BlablablaAnimation size="md" />
+                      <p className="text-sm font-light text-bla-text-light">{loadingMessage}</p>
+                    </div>
+                    {/* Skeleton loader */}
+                    <div className="space-y-3">
+                      <div className="h-4 bg-bla-charcoal-border rounded w-3/4 animate-pulse" />
+                      <div className="h-4 bg-bla-charcoal-border rounded w-full animate-pulse" />
+                      <div className="h-4 bg-bla-charcoal-border rounded w-5/6 animate-pulse" />
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+              
+              {/* Question Progress Indicator */}
+              {currentQuestion && !isComplete && actualQuestionNumber > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-4 flex items-center justify-between text-xs font-extralight text-bla-text-muted"
+                >
+                  <span>Vraag {actualQuestionNumber} van ~{maxQuestions}</span>
+                  <span>{Math.round(progress)}% compleet</span>
+                </motion.div>
+              )}
+              
+              {/* Email Prompt (Early Capture) */}
+              {showEmailPrompt && !emailCaptured && !isComplete && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="mb-4 bg-bla-lime/10 border border-bla-lime/30 rounded-2xl p-4 backdrop-blur-sm"
+                >
+                  <div className="flex items-start gap-3">
+                    <MailIcon className="w-5 h-5 text-bla-lime flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm font-light text-bla-text-light mb-2">
+                        Laat je email achter zodat we je intake kunnen voortzetten als je tussendoor stopt.
+                      </p>
+                      <div className="flex gap-2">
+                        <input
+                          type="email"
+                          value={leadForm.email}
+                          onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
+                          placeholder="jouw@email.nl"
+                          className="flex-1 px-3 py-2 border border-bla-charcoal-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 focus:border-bla-lime/50 text-sm font-light text-bla-text-light placeholder-bla-text-muted bg-bla-charcoal backdrop-blur-sm"
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter' && leadForm.email.trim()) {
+                              handleEarlyEmailCapture();
+                            }
+                          }}
+                        />
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={handleEarlyEmailCapture}
+                          disabled={!leadForm.email.trim()}
+                          className="px-4 py-2 bg-bla-lime/90 hover:bg-bla-lime text-bla-dark rounded-full text-xs font-light transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          Opslaan
+                        </motion.button>
+                        <button
+                          onClick={() => setShowEmailPrompt(false)}
+                          className="px-3 py-2 text-xs font-extralight text-bla-text-muted hover:text-bla-text-light transition-colors"
+                        >
+                          Later
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+              
               {currentQuestion && !isComplete && (
                 <motion.div
                   key={`question-${questionKey}`} // Use counter for reliable re-render
@@ -534,14 +752,31 @@ export default function AIWidget() {
                       )}
                     </div>
                     
-                    <div className="flex items-center justify-between">
-                      <button
-                        type="button"
-                        onClick={() => setInput('')}
-                        className="text-xs font-extralight text-bla-text-muted hover:text-bla-text-light transition-colors"
-                      >
-                        Wis
-                      </button>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setInput('')}
+                          className="text-xs font-extralight text-bla-text-muted hover:text-bla-text-light transition-colors"
+                        >
+                          Wis
+                        </button>
+                        {/* Skip Button - only show if not first question */}
+                        {actualQuestionNumber > 1 && (
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={async () => {
+                              setInput('Overslaan');
+                              await sendMessage();
+                            }}
+                            disabled={isLoading}
+                            className="text-xs font-extralight text-bla-text-muted hover:text-bla-text-light transition-colors disabled:opacity-40"
+                          >
+                            Overslaan
+                          </motion.button>
+                        )}
+                      </div>
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -554,8 +789,8 @@ export default function AIWidget() {
                       >
                         {isLoading ? (
                           <>
-                            <LoadingIcon className="w-4 h-4 animate-spin" />
-                            <span>Verwerken</span>
+                            <BlablablaAnimation size="sm" />
+                            <span>{loadingMessage}</span>
                           </>
                         ) : (
                           <>
@@ -794,7 +1029,7 @@ Tot snel!`);
                     >
                       {isSubmittingLead ? (
                         <>
-                          <LoadingIcon className="w-4 h-4 animate-spin" />
+                          <BlablablaAnimation size="sm" />
                           <span>Verzenden...</span>
                         </>
                       ) : (

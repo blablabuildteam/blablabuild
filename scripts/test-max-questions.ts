@@ -4,6 +4,8 @@
  * Simulates a conversation with 10+ messages to test the limit
  */
 
+export {}; // Make this a module
+
 const API_URL = process.env.API_URL || 'http://localhost:3000';
 
 async function testMaxQuestionsLimit() {

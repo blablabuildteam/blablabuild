@@ -144,9 +144,21 @@ Geef ook 2-3 alternatieve formuleringen.`;
 
   private formatContext(context: AgentContext): string {
     const recentMessages = context.messages.slice(-3);
-    return recentMessages
+    const contextStr = recentMessages
       .map(m => `${m.role}: ${m.content}`)
       .join('\n');
+    
+    // Add previously asked questions to avoid duplicates
+    const previousQuestions = context.messages
+      .filter(m => m.role === 'assistant')
+      .map(m => m.content)
+      .slice(-5); // Last 5 questions
+    
+    if (previousQuestions.length > 0) {
+      return `${contextStr}\n\nBELANGRIJK: Vermijd vragen die te veel lijken op deze eerder gestelde vragen:\n${previousQuestions.map((q, i) => `${i + 1}. ${q}`).join('\n')}`;
+    }
+    
+    return contextStr;
   }
 
   private formatMissingInfo(context: AgentContext): string {

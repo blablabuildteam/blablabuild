@@ -4,6 +4,8 @@
  * Analyzes bot responses and provides context-aware answers
  */
 
+export {}; // Make this a module
+
 const API_URL = process.env.API_URL || 'https://blablabuild.vercel.app';
 
 interface ChatResponse {

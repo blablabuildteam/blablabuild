@@ -146,10 +146,22 @@ Geef een analyse en vervolgvraag die:
   }
 
   private formatConversationHistory(messages: Array<{ role: string; content: string }>): string {
-    return messages
+    const recentMessages = messages
       .slice(-4) // Last 4 messages
       .map(m => `${m.role === 'user' ? 'Gebruiker' : 'Assistent'}: ${m.content}`)
       .join('\n');
+    
+    // Add previously asked questions to avoid duplicates
+    const previousQuestions = messages
+      .filter(m => m.role === 'assistant')
+      .map(m => m.content)
+      .slice(-5); // Last 5 questions
+    
+    if (previousQuestions.length > 0) {
+      return `${recentMessages}\n\nBELANGRIJK: Vermijd vragen die te veel lijken op deze eerder gestelde vragen:\n${previousQuestions.map((q, i) => `${i + 1}. ${q}`).join('\n')}`;
+    }
+    
+    return recentMessages;
   }
 
   private getFallbackQuestion(context: AgentContext): string {

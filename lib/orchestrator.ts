@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { ConversationState, Slots, Idea, ChatResponse } from './types';
 import { supabaseAdmin } from './supabase';
-import { sanitizeText, calculateProgress, getApiKey, isOpenRouter, getAppUrl, hasApiKey, createOpenAIClient } from './utils';
+import { sanitizeText, calculateProgress, calculateMaxQuestions, isSimpleTask, getApiKey, isOpenRouter, getAppUrl, hasApiKey, createOpenAIClient } from './utils';
 import { scoreMaturity } from './scoring';
 import { generateIdeas } from './ideation';
 import { estimateCosts } from './costing';
@@ -213,9 +213,16 @@ export class ConversationOrchestrator {
   }
 
   private async handleInit(): Promise<ChatResponse> {
+    // Calculate initial max questions (will be dynamic as conversation progresses)
+    const initialMaxQuestions = calculateMaxQuestions(
+      this.state.slots,
+      [],
+      0
+    );
+    
     const message = `Welkom bij blablabuild. Ik help je graag om te ontdekken hoe AI en automatisering jouw bedrijf kunnen versterken.
 
-Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
+Deze intake bestaat uit ongeveer ${initialMaxQuestions} korte vragen. Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
 
     this.state.currentStep = 'collecting';
 
@@ -224,6 +231,7 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
       sessionId: this.state.sessionId,
       step: 'collecting',
       progress: 0,
+      maxQuestions: initialMaxQuestions, // Dynamic max questions
     };
   }
 
@@ -232,8 +240,32 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
     
     // Check conversation length and warn if too long
     const userMessages = this.state.messages.filter(m => m.role === 'user').length;
-    const MAX_QUESTIONS = 10; // Maximum questions before forcing completion
-    const MIN_QUESTIONS = 5;
+    
+    // Calculate dynamic max questions based on information collected
+    const dynamicMaxQuestions = calculateMaxQuestions(
+      this.state.slots,
+      this.state.messages.map(m => ({ role: m.role, content: m.content })),
+      userMessages
+    );
+    
+    const MAX_QUESTIONS = dynamicMaxQuestions;
+    
+    // Check if task is simple
+    const taskIsSimple = isSimpleTask(
+      this.state.messages.map(m => ({ role: m.role, content: m.content })),
+      this.state.slots
+    );
+    const MIN_QUESTIONS = taskIsSimple ? 3 : 5;
+    
+    // Smart stop: If user says "skip" or similar, move forward
+    const skipKeywords = ['overslaan', 'skip', 'sla over', 'volgende', 'next'];
+    const isSkip = skipKeywords.some(keyword => userMessage.toLowerCase().includes(keyword));
+    
+    if (isSkip && userMessages >= MIN_QUESTIONS) {
+      this.addTrace(`User skipped question, moving to scoring (${userMessages} questions answered, simple: ${taskIsSimple})`);
+      this.state.currentStep = 'scoring';
+      return this.handleScoring();
+    }
     
     if (userMessages >= MAX_QUESTIONS) {
       const { logger } = await import('./logger');
@@ -297,31 +329,109 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
       }
     }
 
+    // Get all assistant messages to check for duplicates
+    const assistantMessages = this.state.messages
+      .filter(m => m.role === 'assistant')
+      .map(m => m.content.toLowerCase());
+    
+    // Helper to check if we've already asked something similar
+    // Can be called with: (question) or (question, keywords) or (keywords only as first arg)
+    const hasAskedSimilar = (questionOrKeywords: string | string[], keywords?: string[]): boolean => {
+      // Handle case where first arg is keywords array (backward compatibility)
+      if (Array.isArray(questionOrKeywords) && !keywords) {
+        const keywordArray = questionOrKeywords;
+        return assistantMessages.some(msg => 
+          keywordArray.some(keyword => msg.includes(keyword.toLowerCase()))
+        );
+      }
+      
+      // Normal case: question string with optional keywords
+      const question = questionOrKeywords as string;
+      const questionLower = question.toLowerCase();
+      
+      // Check if the question text itself is very similar to a previous question
+      const similarityThreshold = 0.6; // 60% similarity
+      for (const prevMsg of assistantMessages) {
+        // Simple similarity check: count common words
+        const questionWords = new Set(questionLower.split(/\s+/));
+        const prevWords = new Set(prevMsg.split(/\s+/));
+        const commonWords = [...questionWords].filter(w => prevWords.has(w));
+        const similarity = commonWords.length / Math.max(questionWords.size, prevWords.size);
+        
+        if (similarity > similarityThreshold) {
+          return true;
+        }
+      }
+      
+      // Check specific keywords if provided
+      if (keywords && keywords.length > 0) {
+        return assistantMessages.some(msg => 
+          keywords.some(keyword => msg.includes(keyword.toLowerCase()))
+        );
+      }
+      
+      return false;
+    };
+
     // Get best next question from agents
     let nextQuestion: string | null = null;
     let questionOptions: string[] | undefined = undefined;
     try {
       const agentQuestionResult = await this.agentCoordinator.getBestQuestion(this.state, userMessage);
-      nextQuestion = agentQuestionResult.question;
-      questionOptions = agentQuestionResult.options;
-      activeAgentNames = [...new Set([...activeAgentNames, ...(agentQuestionResult.activeAgentNames || [])])];
+      const agentQuestion = agentQuestionResult.question;
+      
+      // Check if agent-generated question is too similar to previously asked questions
+      // Also check for specific key phrases that indicate duplicate topics
+      const keyPhrases = [
+        'manuele processen', 'manual processes', 'personnel planning', 'personeelsplanning',
+        'rooster', 'planning', 'tijd', 'uren', 'handmatige taken'
+      ];
+      const questionLower = agentQuestion.toLowerCase();
+      const hasKeyPhraseMatch = keyPhrases.some(phrase => 
+        questionLower.includes(phrase.toLowerCase()) && 
+        assistantMessages.some(msg => msg.includes(phrase.toLowerCase()))
+      );
+      
+      if (agentQuestion && (hasAskedSimilar(agentQuestion) || hasKeyPhraseMatch)) {
+        this.addTrace(`⚠️ Agent question too similar to previous question, rejecting: ${agentQuestion.substring(0, 50)}...`);
+        if (hasKeyPhraseMatch) {
+          this.addTrace(`⚠️ Detected duplicate key phrase match`);
+        }
+        // Don't use this question, fall through to traditional generation
+      } else {
+        nextQuestion = agentQuestion;
+        questionOptions = agentQuestionResult.options;
+        activeAgentNames = [...new Set([...activeAgentNames, ...(agentQuestionResult.activeAgentNames || [])])];
+      }
     } catch (err: any) {
       console.error('[Orchestrator] Error getting question from agents:', err);
       this.addTrace(`Agent question error: ${err.message || err}`);
       // Fallback to traditional question generation
     }
 
-    // Fallback to traditional question if agents didn't provide one
+    // Fallback to traditional question if agents didn't provide one or it was rejected
     if (!nextQuestion) {
       nextQuestion = await this.getNextQuestion();
+      
+      // Also check traditional question for duplicates
+      if (nextQuestion && hasAskedSimilar(nextQuestion)) {
+        this.addTrace(`⚠️ Traditional question also too similar, generating alternative...`);
+        nextQuestion = null; // Will trigger fallback generation below
+      }
     }
 
     // If no question from traditional method, generate a follow-up based on what we know
     if (!nextQuestion) {
       const userMessages = this.state.messages.filter(m => m.role === 'user').length;
-      const assistantMessages = this.state.messages.filter(m => m.role === 'assistant').map(m => m.content.toLowerCase());
       const MIN_QUESTIONS = 5;
-      const MAX_QUESTIONS = 10;
+      
+      // Calculate dynamic max questions
+      const dynamicMaxQuestions = calculateMaxQuestions(
+        this.state.slots,
+        this.state.messages.map(m => ({ role: m.role, content: m.content })),
+        userMessages
+      );
+      const MAX_QUESTIONS = dynamicMaxQuestions;
       
       // Log warning if approaching max questions
       if (userMessages >= MAX_QUESTIONS - 2) {
@@ -334,16 +444,18 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
         });
       }
       
-      // Helper to check if we've already asked something similar
-      const hasAskedSimilar = (keywords: string[]): boolean => {
-        return assistantMessages.some(msg => 
-          keywords.some(keyword => msg.includes(keyword.toLowerCase()))
-        );
-      };
+      // Use the hasAskedSimilar helper defined above (reuse it)
+      
+      // Check if task is simple for this context
+      const taskIsSimpleHere = isSimpleTask(
+        this.state.messages.map(m => ({ role: m.role, content: m.content })),
+        this.state.slots
+      );
+      const MIN_QUESTIONS_HERE = taskIsSimpleHere ? 3 : 5;
       
       // If we haven't asked enough questions yet, generate a follow-up
-      if (userMessages < MIN_QUESTIONS) {
-        this.addTrace(`Generating follow-up question (${userMessages}/${MIN_QUESTIONS} questions asked)`);
+      if (userMessages < MIN_QUESTIONS_HERE) {
+        this.addTrace(`Generating follow-up question (${userMessages}/${MIN_QUESTIONS_HERE} questions asked, simple: ${taskIsSimpleHere})`);
         
         // Get all previous user answers to build context
         const previousAnswers = this.state.messages
@@ -392,7 +504,14 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
       // We have enough information, move to scoring
       // But first check if we've asked too many questions
       const userMessages = this.state.messages.filter(m => m.role === 'user').length;
-      const MAX_QUESTIONS = 10;
+      
+      // Calculate dynamic max questions
+      const dynamicMaxQuestions = calculateMaxQuestions(
+        this.state.slots,
+        this.state.messages.map(m => ({ role: m.role, content: m.content })),
+        userMessages
+      );
+      const MAX_QUESTIONS = dynamicMaxQuestions;
       
       if (userMessages >= MAX_QUESTIONS) {
         const { logger } = await import('./logger');
@@ -416,8 +535,16 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
     ).catch(err => console.error('Error tracking question:', err));
 
     const progress = calculateProgress(this.state.slots);
+    
+    // Recalculate dynamic max questions for response (reuse existing userMessages count)
+    const finalUserMessages = this.state.messages.filter(m => m.role === 'user').length;
+    const finalDynamicMaxQuestions = calculateMaxQuestions(
+      this.state.slots,
+      this.state.messages.map(m => ({ role: m.role, content: m.content })),
+      finalUserMessages
+    );
 
-    this.addTrace(`✅ Agent-optimized question generated`);
+    this.addTrace(`✅ Agent-optimized question generated (max questions: ${finalDynamicMaxQuestions})`);
 
     return {
       message: nextQuestion,
@@ -426,6 +553,7 @@ Als je nu je bedrijf opnieuw zou kunnen inrichten, hoe zou je dat dan doen?`;
       progress,
       activeAgents: activeAgentNames.length > 0 ? activeAgentNames : undefined,
       options: questionOptions, // Multiple choice options
+      maxQuestions: finalDynamicMaxQuestions, // Dynamic max questions based on info collected
     };
   }
 
@@ -783,25 +911,69 @@ c) Slecht - data zit versnipperd in silos`;
 
     // Count user messages (questions answered)
     const userMessages = this.state.messages.filter(m => m.role === 'user').length;
-    const MIN_QUESTIONS = 5; // Minimum questions before moving to scoring
-    const MAX_QUESTIONS = 10; // Maximum questions before forcing completion
+    
+    // Check if task is simple
+    const taskIsSimple = isSimpleTask(
+      this.state.messages.map(m => ({ role: m.role, content: m.content })),
+      this.state.slots
+    );
+    
+    // Log simple task detection for debugging
+    if (taskIsSimple && userMessages === 1) {
+      this.addTrace(`✅ Simple task detected - will use reduced question count`);
+      // Log asynchronously without blocking
+      import('./logger').then(({ logger }) => {
+        logger.info('Simple task detected', {
+          sessionId: this.state.sessionId,
+          endpoint: this.endpoint,
+          userMessage: this.state.messages.find(m => m.role === 'user')?.content?.substring(0, 100),
+        });
+      }).catch(err => console.error('Error logging simple task:', err));
+    }
+    
+    // Adjust minimum questions based on task complexity
+    const MIN_QUESTIONS = taskIsSimple ? 3 : 5; // Simple tasks need fewer questions
+    
+    // Calculate dynamic max questions based on information collected
+    const dynamicMaxQuestions = calculateMaxQuestions(
+      this.state.slots,
+      this.state.messages.map(m => ({ role: m.role, content: m.content })),
+      userMessages
+    );
+    const MAX_QUESTIONS = dynamicMaxQuestions;
     
     // Force completion if too many questions
     if (userMessages >= MAX_QUESTIONS && this.state.currentStep === 'collecting') {
-      this.addTrace(`determineNextStep: Too many questions (${userMessages}), forcing completion`);
+      this.addTrace(`determineNextStep: Too many questions (${userMessages}/${MAX_QUESTIONS}), forcing completion`);
       return 'scoring';
     }
     
     // Stay in collecting until we have at least MIN_QUESTIONS user responses
     if (this.state.currentStep === 'collecting' && userMessages < MIN_QUESTIONS) {
-      this.addTrace(`determineNextStep: Only ${userMessages} questions answered, need ${MIN_QUESTIONS}, staying in collecting`);
+      this.addTrace(`determineNextStep: Only ${userMessages} questions answered, need ${MIN_QUESTIONS} (simple: ${taskIsSimple}), staying in collecting`);
       return 'collecting';
     }
 
     // Check if we should move from collecting to scoring
+    // Improved logic: move forward if we have enough info OR if progress is high
     const progress = calculateProgress(this.state.slots);
-    if (progress >= 80 && this.state.currentStep === 'collecting' && userMessages >= MIN_QUESTIONS) {
-      this.addTrace(`determineNextStep: Progress ${progress}%, ${userMessages} questions answered, moving to scoring`);
+    
+    // For simple tasks, allow earlier completion with less progress
+    const progressThreshold = taskIsSimple ? 60 : 75;
+    const hasEnoughInfo = progress >= progressThreshold && userMessages >= MIN_QUESTIONS;
+    const hasHighProgress = progress >= (taskIsSimple ? 70 : 85) && userMessages >= MIN_QUESTIONS - 1;
+    
+    // For simple tasks, also check if we have core information (goal + pain points)
+    const painPoints = this.state.slots.pain_points;
+    const hasPainPoints = Array.isArray(painPoints) && painPoints.length > 0;
+    const hasCoreInfo = taskIsSimple && 
+      this.state.slots.goal && 
+      (hasPainPoints || this.state.slots.ai_opportunities) &&
+      userMessages >= MIN_QUESTIONS;
+    
+    if ((hasEnoughInfo || hasHighProgress || hasCoreInfo) && this.state.currentStep === 'collecting') {
+      const reason = hasCoreInfo ? 'core info for simple task' : hasEnoughInfo ? 'enough info' : 'high progress';
+      this.addTrace(`determineNextStep: Progress ${progress}%, ${userMessages} questions answered (simple: ${taskIsSimple}), moving to scoring (reason: ${reason})`);
       return 'scoring';
     }
 
