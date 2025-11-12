@@ -304,7 +304,8 @@ export default function AIWidget() {
   }, []);
 
   // Calculate question number from actual user messages
-  const actualQuestionNumber = messages.filter(m => m.role === 'user').length + (isLoading ? 1 : 0);
+  // Question number = number of answers given + 1 (for the current question being asked)
+  const actualQuestionNumber = messages.filter(m => m.role === 'user').length + 1;
 
   // Blablabla Animation Component - Typing/Transcription Effect
   const BlablablaAnimation = ({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) => {
