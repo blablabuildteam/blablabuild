@@ -713,7 +713,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Use Cases Section */}
+      {/* Impact Section */}
       <section id="impact" className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 py-16 md:py-20 lg:py-24">
         <motion.div 
           className="mx-auto w-full px-6 mb-12 md:mb-16" 
@@ -726,121 +726,166 @@ export default function HomePage() {
           <div className="text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-bla-lime/20 rounded-full mb-4">
               <div className="w-1.5 h-1.5 bg-bla-lime rounded-full animate-pulse"></div>
-              <p className="text-[10px] uppercase tracking-wider text-gray-900 font-medium">WAT WE BOUWEN</p>
+              <p className="text-[10px] uppercase tracking-wider text-gray-900 font-medium">GEGARANDEERDE RESULTATEN</p>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold">
-              Proven in<br />practice
+              Onze Impact
             </h2>
           </div>
         </motion.div>
 
-        {/* Horizontal scrolling carousel */}
-        <div className="overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-          <div className="flex gap-6 min-w-max pb-4" style={{ paddingLeft: 'calc((100vw - min(100vw, 1250px)) / 2 + 24px)' }}>
+        {/* Three Cards Grid */}
+        <div className="mx-auto w-full px-6 mb-12 md:mb-16" style={{ maxWidth: '1250px' }}>
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+            {/* Card 1: DATA & AI-STRATEGIE */}
             <motion.div 
-              className="space-y-4 w-80 flex-shrink-0 snap-center"
-              initial={{ opacity: 0, x: 100 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              whileHover={{ scale: 1.02 }}
+              className="p-6 rounded-xl border border-gray-700 hover:border-bla-lime transition-all"
+              style={{ backgroundColor: '#111828' }}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, delay: 0.1 }}
             >
-              <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
-                <Database className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
+              <h3 className="text-xl md:text-2xl font-bold mb-4 text-white">Data & AI-Strategie</h3>
+              <div className="h-48 bg-gray-900 rounded-xl flex items-center justify-center mb-4 group hover:bg-gray-800 transition-all">
+                <Database className="w-20 h-20 text-bla-lime group-hover:scale-110 transition-transform" />
               </div>
-              <h3 className="text-xs uppercase tracking-wider font-medium">DATA-GEDREVEN INZICHTEN</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                Van lead scoring tot predictive analytics. We bouwen systemen die leren, evolueren en direct ROI leveren met jouw data.
+              <p className="text-sm italic text-gray-300 mb-3">Van onzekerheid naar gegarandeerde groei</p>
+              <p className="text-sm text-gray-300 mb-4 leading-relaxed">
+                We pakken het gebrek aan data-inzichten en wrijving door gedecentraliseerde informatie aan. Complexe data vertalen we naar een <strong className="text-white">duidelijk overzicht van jouw kansen</strong>.
               </p>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-300"><strong className="text-white">Data Centralisatie</strong> (Silo's doorbreken)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-300"><strong className="text-white">Real-time Inzicht & Dashboarding</strong> (Directe sturing)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-300"><strong className="text-white">Voorspellende Analyse</strong> (Kansen in kaart)</span>
+                </li>
+              </ul>
             </motion.div>
 
+            {/* Card 2: HIGH-IMPACT GROEI */}
             <motion.div 
-              className="space-y-4 w-80 flex-shrink-0 snap-center"
-              initial={{ opacity: 0, x: 100 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              whileHover={{ scale: 1.02 }}
+              className="p-6 rounded-xl border border-gray-700 hover:border-bla-lime transition-all"
+              style={{ backgroundColor: '#111828' }}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
-                <Zap className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
+              <h3 className="text-xl md:text-2xl font-bold mb-4 text-white">High-Impact Groei</h3>
+              <div className="h-48 bg-gray-900 rounded-xl flex items-center justify-center mb-4 group hover:bg-gray-800 transition-all">
+                <TrendingUp className="w-20 h-20 text-bla-lime group-hover:scale-110 transition-transform" />
               </div>
-              <h3 className="text-xs uppercase tracking-wider font-medium">EMBEDDED AI-WORKFLOWS</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                Geen black boxes. We integreren AI naadloos in jouw bestaande processen - fast, accurate en volledig onder controle.
+              <p className="text-sm italic text-gray-300 mb-3">Van gestagneerde resultaten naar snelle meetbare groei</p>
+              <p className="text-sm text-gray-300 mb-4 leading-relaxed">
+                We elimineren wrijving in de klantervaring, focussen op <strong className="text-white">snelle impact</strong> en <em>low-hanging fruit</em>. Het resultaat? Duurzame groei die <strong className="text-white">meetbaar is in weken</strong>, niet maanden.
               </p>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-300"><strong className="text-white">Full-Funnel Groei-Analyse</strong> (Cross-Channel)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-300"><strong className="text-white">Web- & E-commerce Optimalisatie</strong> (CX)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-300"><strong className="text-white">Strategische SEA, SEO & AEO</strong> (Gerichte inzet)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-300"><strong className="text-white">Gepersonaliseerde Automatisering</strong> (Efficiënte campagnes)</span>
+                </li>
+              </ul>
             </motion.div>
 
+            {/* Card 3: AUTOMATISERING & EFFICIËNTIE */}
             <motion.div 
-              className="space-y-4 w-80 flex-shrink-0 snap-center"
-              initial={{ opacity: 0, x: 100 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              whileHover={{ scale: 1.02 }}
+              className="p-6 rounded-xl border border-gray-700 hover:border-bla-lime transition-all"
+              style={{ backgroundColor: '#111828' }}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
-                <TrendingUp className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
+              <h3 className="text-xl md:text-2xl font-bold mb-4 text-white">Automatisering</h3>
+              <div className="h-48 bg-gray-900 rounded-xl flex items-center justify-center mb-4 group hover:bg-gray-800 transition-all">
+                <Zap className="w-20 h-20 text-bla-lime group-hover:scale-110 transition-transform" />
               </div>
-              <h3 className="text-xs uppercase tracking-wider font-medium">SCHAALBARE GROEI</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                Gebouwd voor enterprise scale. Onze oplossingen groeien mee - on demand, in the loop, altijd aan het verbeteren.
+              <p className="text-sm italic text-gray-300 mb-3">Van hoge kosten en lange processen naar AI workflows</p>
+              <p className="text-sm text-gray-300 mb-4 leading-relaxed">
+                Bedrijven missen tijd voor innovatie door dagelijkse operaties. We zetten onze senioriteit en AI-engine in om <strong className="text-white">80% van de overhead</strong> en wrijving te elimineren door naadloze integratie van AI-workflows.
               </p>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-300"><strong className="text-white">CRM & Lead Orchestratie</strong></span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-300"><strong className="text-white">Supply Chain & Logistiek Automatisering</strong></span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-300"><strong className="text-white">Interne Workflow Automatisering</strong> (Uren/Documentatie)</span>
+                </li>
+              </ul>
             </motion.div>
-
-            <motion.div 
-              className="space-y-4 w-80 flex-shrink-0 snap-center"
-              initial={{ opacity: 0, x: 100 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
-                <Sparkles className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
-              </div>
-              <h3 className="text-xs uppercase tracking-wider font-medium">AI LEAD QUALIFICATION</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                Automatische lead scoring en kwalificatie. Jouw sales team focust op de beste kansen, AI doet de rest.
-              </p>
-            </motion.div>
-
-            <motion.div 
-              className="space-y-4 w-80 flex-shrink-0 snap-center"
-              initial={{ opacity: 0, x: 100 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
-                <Target className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
-              </div>
-              <h3 className="text-xs uppercase tracking-wider font-medium">CONTENT AUTOMATION</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                Van e-mail campagnes tot product descriptions. Consistente, on-brand content op schaal.
-              </p>
-            </motion.div>
-
-            <motion.div 
-              className="space-y-4 w-80 flex-shrink-0 snap-center"
-              initial={{ opacity: 0, x: 100 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
-                <DollarSign className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
-              </div>
-              <h3 className="text-xs uppercase tracking-wider font-medium">PREDICTIVE ANALYTICS</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                Voorspel trends, identificeer kansen en optimaliseer je business decisions met data-driven inzichten.
-              </p>
-            </motion.div>
-            <div className="w-6 flex-shrink-0"></div>
           </div>
         </div>
+
+        {/* CTA Section */}
+        <motion.div 
+          className="mx-auto w-full px-6 text-center" 
+          style={{ maxWidth: '1250px' }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <p className="text-base md:text-lg text-gray-700 mb-4">
+            Doe ons{' '}
+            <button
+              onClick={() => {
+                trackEvent('cta_impact_clicked');
+                document.getElementById('ai-widget-trigger')?.click();
+              }}
+              className="px-4 py-1.5 bg-[#1125FF] hover:bg-[#1125FF]/90 text-white text-sm rounded-full font-medium transition-all inline-flex items-center gap-1.5 relative overflow-hidden group"
+            >
+              <span className="relative z-10 flex items-center gap-1.5">
+                Gratis AI Advies
+                <ArrowRight className="w-3.5 h-3.5" />
+              </span>
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-br from-transparent via-white/30 to-transparent"
+                style={{
+                  width: '200%',
+                  height: '200%',
+                  transform: 'rotate(45deg)',
+                }}
+                animate={{
+                  x: ['-100%', '100%'],
+                  y: ['-100%', '100%'],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatDelay: 1,
+                  ease: 'easeInOut',
+                }}
+              />
+            </button>
+            {' '}om er achter te komen wat we voor je kunnen doen
+          </p>
+        </motion.div>
       </section>
 
       {/* CTA Section */}
