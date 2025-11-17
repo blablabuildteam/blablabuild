@@ -25,7 +25,7 @@ import Image from 'next/image';
 export default function HomePage() {
   const [currentOutcome, setCurrentOutcome] = useState(0);
   const [showNavCTA, setShowNavCTA] = useState(false);
-  const [flippedCards, setFlippedCards] = useState<Set<number>>(new Set());
+  const [flippedCards, setFlippedCards] = useState<Set<number | string>>(new Set());
 
   useEffect(() => {
     initAnalytics();
@@ -209,7 +209,7 @@ export default function HomePage() {
     },
   ];
 
-  const toggleCardFlip = (id: number) => {
+  const toggleCardFlip = (id: number | string) => {
     setFlippedCards((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(id)) {
@@ -1003,11 +1003,12 @@ export default function HomePage() {
 
         {/* Flip Cards Grid */}
         <div className="mx-auto w-full px-6" style={{ maxWidth: '1250px' }}>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" style={{ gridAutoRows: 'minmax(400px, auto)' }}>
             {caseStudies.map((caseStudy, idx) => (
               <motion.div
                 key={caseStudy.id}
-                className="h-[400px] perspective-1000"
+                className="h-[400px] w-full"
+                style={{ width: '100%' }}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
@@ -1019,21 +1020,28 @@ export default function HomePage() {
                   damping: 12
                 }}
               >
-                <div
-                  className="relative w-full h-full preserve-3d cursor-pointer group"
-                  style={{
-                    transformStyle: 'preserve-3d',
-                    transform: flippedCards.has(caseStudy.id) ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                    transition: 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
-                  }}
-                  onClick={() => toggleCardFlip(caseStudy.id)}
-                >
+                <div className="h-full w-full perspective-1000">
+                  <div
+                    className="relative w-full h-full preserve-3d cursor-pointer group"
+                    style={{
+                      transformStyle: 'preserve-3d',
+                      transform: flippedCards.has(caseStudy.id) ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                      transformOrigin: '50% 50%',
+                      transition: 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
+                      width: '100%',
+                      height: '100%',
+                    }}
+                    onClick={() => toggleCardFlip(caseStudy.id)}
+                  >
                   {/* Front Card */}
                   <div
                     className="absolute inset-0 w-full h-full backface-hidden rounded-xl overflow-hidden shadow-lg transition-all"
                     style={{
                       backfaceVisibility: 'hidden',
                       WebkitBackfaceVisibility: 'hidden',
+                      transform: 'rotateY(0deg)',
+                      width: '100%',
+                      height: '100%',
                     }}
                   >
                     <div
@@ -1086,6 +1094,8 @@ export default function HomePage() {
                       backfaceVisibility: 'hidden',
                       WebkitBackfaceVisibility: 'hidden',
                       transform: 'rotateY(180deg)',
+                      width: '100%',
+                      height: '100%',
                     }}
                   >
                     <div className="flex flex-col h-full">
@@ -1113,6 +1123,7 @@ export default function HomePage() {
                         </p>
                       </div>
                     </div>
+                  </div>
                   </div>
                 </div>
               </motion.div>
