@@ -383,37 +383,226 @@ export default function HomePage() {
               <div className="w-1.5 h-1.5 bg-bla-lime rounded-full animate-pulse"></div>
               <p className="text-[10px] uppercase tracking-wider text-gray-900 font-medium">VAN EERSTE CONTACT TOT SCHAALBARE IMPACT</p>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold">A lean process</h2>
+            <h2 className="text-3xl md:text-4xl font-bold">
+              <style>{`
+                @keyframes diagonal-shimmer {
+                  0% { 
+                    background-position: 200% 200%;
+                  }
+                  100% { 
+                    background-position: -200% -200%;
+                  }
+                }
+              `}</style>
+              Geen agency bullsh
+              <span
+                className="inline-block relative"
+                style={{
+                  background: 'linear-gradient(135deg, currentColor 0%, rgba(255,255,255,0.9) 50%, currentColor 100%)',
+                  backgroundSize: '200% 200%',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  animation: 'diagonal-shimmer 3s ease-in-out infinite',
+                  animationDelay: '1s',
+                }}
+              >
+                *
+              </span>
+              t, simpelweg resultaat
+            </h2>
           </motion.div>
 
-          <div className="mx-auto" style={{ maxWidth: '800px' }}>
-            {/* Connected circles - horizontal on desktop, vertical on mobile */}
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-8 md:gap-4 lg:gap-0">
+          <div className="mx-auto relative" style={{ maxWidth: '1000px' }}>
+            {/* SVG Process Flow Animation */}
+            <div className="relative w-full h-64 md:h-80 mb-12">
+              <svg 
+                className="w-full h-full" 
+                viewBox="0 0 1000 200" 
+                preserveAspectRatio="xMidYMid meet"
+              >
+                <defs>
+                  <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#000" />
+                  </marker>
+                </defs>
+                
+                {/* Main horizontal line to first circle - at bottom */}
+                <motion.path
+                  d="M 50 130 L 158.67 130"
+                  fill="none"
+                  stroke="#000"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  whileInView={{ pathLength: 1, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.46, ease: "easeInOut" }}
+                />
+                
+                {/* First BLA Circle - aligned with first text column */}
+                <motion.circle
+                  cx="158.67"
+                  cy="110"
+                  r="20"
+                  fill="none"
+                  stroke="#000"
+                  strokeWidth="2"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  whileInView={{ pathLength: 1, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.62, delay: 0.46, ease: "easeInOut" }}
+                />
+                {/* Loop inside first circle - counterclockwise from bottom */}
+                <motion.path
+                  d="M 158.67 130 A 20 20 0 1 0 158.67 130"
+                  fill="none"
+                  stroke="#000"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  style={{ pathLength: 1 }}
+                  initial={{ opacity: 0, pathLength: 0 }}
+                  whileInView={{ opacity: 1, pathLength: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.76, delay: 0.76, ease: "easeInOut" }}
+                />
+                <text x="158.67" y="115" textAnchor="middle" style={{ fontSize: '12px', fontWeight: 'bold', fill: '#000' }}>
+                  BLA
+                </text>
+                
+                {/* Line from first to second circle - at bottom */}
+                <motion.path
+                  d="M 158.67 130 L 500 130"
+                  fill="none"
+                  stroke="#000"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  whileInView={{ pathLength: 1, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.46, delay: 1.24, ease: "easeInOut" }}
+                />
+                
+                {/* Second BLA Circle - aligned with second text column (center) */}
+                <motion.circle
+                  cx="500"
+                  cy="100"
+                  r="30"
+                  fill="none"
+                  stroke="#000"
+                  strokeWidth="2"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  whileInView={{ pathLength: 1, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.62, delay: 1.54, ease: "easeInOut" }}
+                />
+                {/* Loop inside second circle - counterclockwise from bottom */}
+                <motion.path
+                  d="M 500 130 A 30 30 0 1 0 500 130"
+                  fill="none"
+                  stroke="#000"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  initial={{ opacity: 0, pathLength: 0 }}
+                  whileInView={{ opacity: 1, pathLength: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.76, delay: 1.84, ease: "easeInOut" }}
+                />
+                <text x="500" y="105" textAnchor="middle" style={{ fontSize: '14px', fontWeight: 'bold', fill: '#000' }}>
+                  BLA
+                </text>
+                
+                {/* Line from second to third circle - at bottom */}
+                <motion.path
+                  d="M 500 130 L 841.33 130"
+                  fill="none"
+                  stroke="#000"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  whileInView={{ pathLength: 1, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.46, delay: 2.30, ease: "easeInOut" }}
+                />
+                
+                {/* BUILD Circle - aligned with third text column */}
+                <motion.circle
+                  cx="841.33"
+                  cy="90"
+                  r="40"
+                  fill="none"
+                  stroke="#000"
+                  strokeWidth="2"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  whileInView={{ pathLength: 1, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.62, delay: 2.62, ease: "easeInOut" }}
+                />
+                {/* Loop inside BUILD circle - counterclockwise from bottom */}
+                <motion.path
+                  d="M 841.33 130 A 40 40 0 1 0 841.33 130"
+                  fill="none"
+                  stroke="#000"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  initial={{ opacity: 0, pathLength: 0 }}
+                  whileInView={{ opacity: 1, pathLength: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.76, delay: 2.92, ease: "easeInOut" }}
+                />
+                <text x="841.33" y="95" textAnchor="middle" style={{ fontSize: '16px', fontWeight: 'bold', fill: '#000' }}>
+                  BUILD
+                </text>
+                
+                {/* SCALE upward curve - more bent */}
+                <motion.path
+                  d="M 841.33 130 Q 880 100 900 70 Q 920 50 980 40"
+                  fill="none"
+                  stroke="#000"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  markerEnd="url(#arrowhead)"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  whileInView={{ pathLength: 1, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.62, delay: 3.38, ease: "easeInOut" }}
+                />
+                <text x="980" y="30" textAnchor="middle" style={{ fontSize: '12px', fontWeight: 'bold', fill: '#000' }}>
+                  SCALE
+                </text>
+              </svg>
+            </div>
+
+            {/* Text Containers - Sequential Animation */}
+            <div className="grid md:grid-cols-3 gap-6">
               {[
-                { title: 'CONNECT', subtitle: 'bla', description: 'AI intake voor directe inzichten' },
-                { title: 'CO-CREATE', subtitle: 'bla', description: 'Workshop-gedreven verdieping' },
-                { title: 'BUILD', subtitle: '', description: 'Actionable pilot met impact' },
-                { title: 'SCALE', subtitle: '', description: 'Groei bij succesvolle KPIs' },
-              ].map((phase, idx) => (
-                <motion.div 
-                  key={phase.title} 
-                  className="flex flex-col items-center z-10 relative"
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
+                {
+                  text: "We bellen een keer of doen een koffietje om jouw situatie te bespreken"
+                },
+                {
+                  text: "We bereiden een sessie voor om met jou en je team de diepte in te duiken en een plan te maken."
+                },
+                {
+                  text: "We gaan direct aan de slag om in enkele weken impact te leveren."
+                }
+              ].map((item, idx) => (
+                <motion.div
+                  key={idx}
+                  className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:border-bla-lime transition-all"
+                  initial={{ opacity: 0, x: -50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
-                  transition={{ 
-                    duration: 0.5,
-                    delay: idx * 0.15,
+                  transition={{
+                    duration: 1.2,
+                    delay: 1.0 + idx * 0.4,
                     type: "spring",
-                    stiffness: 200,
-                    damping: 15
+                    stiffness: 100,
+                    damping: 12
                   }}
                 >
-                  <div className="w-32 h-32 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center mb-4 hover:border-bla-lime transition-all">
-                    <span className="text-sm font-bold text-gray-700">{phase.title}</span>
-                  </div>
-                  <p className="text-xs text-gray-600 text-center max-w-[120px]">{phase.description}</p>
-                  {phase.subtitle && <span className="text-xs text-bla-lime mt-1">({phase.subtitle})</span>}
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    {item.text}
+                  </p>
                 </motion.div>
               ))}
             </div>
