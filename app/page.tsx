@@ -200,10 +200,30 @@ export default function HomePage() {
                     trackEvent('cta_nav_clicked');
                     document.getElementById('ai-widget-trigger')?.click();
                   }}
-                  className="px-4 py-1.5 bg-[#1125FF] hover:bg-[#1125FF]/90 text-white text-sm rounded-full font-medium transition-all flex items-center gap-1.5"
+                  className="px-4 py-1.5 bg-[#1125FF] hover:bg-[#1125FF]/90 text-white text-sm rounded-full font-medium transition-all flex items-center gap-1.5 relative overflow-hidden group"
                 >
-                  Gratis AI Advies
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <span className="relative z-10 flex items-center gap-1.5">
+                    Gratis AI Advies
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-br from-transparent via-white/30 to-transparent"
+                    style={{
+                      width: '200%',
+                      height: '200%',
+                      transform: 'rotate(45deg)',
+                    }}
+                    animate={{
+                      x: ['-100%', '100%'],
+                      y: ['-100%', '100%'],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      repeatDelay: 1,
+                      ease: 'easeInOut',
+                    }}
+                  />
                 </button>
               </motion.div>
             )}
@@ -271,13 +291,19 @@ export default function HomePage() {
       {/* Approach Section */}
       <section id="aanpak" className="min-h-screen snap-start flex items-center justify-center bg-gray-50 px-6 py-16 md:py-20 lg:py-24">
         <div className="mx-auto w-full" style={{ maxWidth: '1250px' }}>
-          <div className="text-center mb-12 md:mb-16 lg:mb-20">
+          <motion.div 
+            className="text-center mb-12 md:mb-16 lg:mb-20"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+          >
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-bla-lime/20 rounded-full mb-4">
               <div className="w-1.5 h-1.5 bg-bla-lime rounded-full animate-pulse"></div>
               <p className="text-[10px] uppercase tracking-wider text-gray-900 font-medium">VAN EERSTE CONTACT TOT SCHAALBARE IMPACT</p>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold">A lean process</h2>
-          </div>
+          </motion.div>
 
           <div className="mx-auto" style={{ maxWidth: '800px' }}>
             {/* Connected circles - horizontal on desktop, vertical on mobile */}
@@ -288,13 +314,26 @@ export default function HomePage() {
                 { title: 'BUILD', subtitle: '', description: 'Actionable pilot met impact' },
                 { title: 'SCALE', subtitle: '', description: 'Groei bij succesvolle KPIs' },
               ].map((phase, idx) => (
-                <div key={phase.title} className="flex flex-col items-center z-10 relative">
+                <motion.div 
+                  key={phase.title} 
+                  className="flex flex-col items-center z-10 relative"
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ 
+                    duration: 0.5,
+                    delay: idx * 0.15,
+                    type: "spring",
+                    stiffness: 200,
+                    damping: 15
+                  }}
+                >
                   <div className="w-32 h-32 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center mb-4 hover:border-bla-lime transition-all">
                     <span className="text-sm font-bold text-gray-700">{phase.title}</span>
                   </div>
                   <p className="text-xs text-gray-600 text-center max-w-[120px]">{phase.description}</p>
                   {phase.subtitle && <span className="text-xs text-bla-lime mt-1">({phase.subtitle})</span>}
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -304,7 +343,13 @@ export default function HomePage() {
       {/* Founders Section */}
       <section id="team" className="min-h-screen snap-start flex items-center justify-center bg-white px-6 py-16 md:py-20 lg:py-24">
         <div className="mx-auto w-full" style={{ maxWidth: '1250px' }}>
-          <div className="text-center mb-10 md:mb-12 lg:mb-14">
+          <motion.div 
+            className="text-center mb-10 md:mb-12 lg:mb-14"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+          >
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-bla-lime/20 rounded-full mb-4">
               <div className="w-1.5 h-1.5 bg-bla-lime rounded-full animate-pulse"></div>
               <p className="text-[10px] uppercase tracking-wider text-gray-900 font-medium">INNOVATION → BUSINESS TRANSFORMATION</p>
@@ -312,13 +357,23 @@ export default function HomePage() {
             <h2 className="text-3xl md:text-4xl font-bold mb-2">
               The <span className="text-bla-lime">Three Faces</span> of GenAI Friction
             </h2>
-          </div>
+          </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {founders.map((founder) => (
-              <div
+            {founders.map((founder, idx) => (
+              <motion.div
                 key={founder.name}
                 className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:border-bla-lime transition-all"
+                initial={{ opacity: 0, x: idx % 2 === 0 ? -50 : 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ 
+                  duration: 0.6,
+                  delay: idx * 0.1,
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 12
+                }}
               >
                 <div className="w-12 h-12 bg-bla-lime rounded-lg flex items-center justify-center mb-4 text-xl font-bold text-bla-dark">
                   {founder.name.charAt(0)}
@@ -339,7 +394,7 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -347,7 +402,14 @@ export default function HomePage() {
 
       {/* Use Cases Section */}
       <section id="impact" className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 py-16 md:py-20 lg:py-24">
-        <div className="mx-auto w-full px-6 mb-12 md:mb-16" style={{ maxWidth: '1250px' }}>
+        <motion.div 
+          className="mx-auto w-full px-6 mb-12 md:mb-16" 
+          style={{ maxWidth: '1250px' }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
+        >
           <div className="text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-bla-lime/20 rounded-full mb-4">
               <div className="w-1.5 h-1.5 bg-bla-lime rounded-full animate-pulse"></div>
@@ -357,15 +419,18 @@ export default function HomePage() {
               Proven in<br />practice
             </h2>
           </div>
-        </div>
+        </motion.div>
 
         {/* Horizontal scrolling carousel */}
         <div className="overflow-x-auto scrollbar-hide snap-x snap-mandatory">
           <div className="flex gap-6 min-w-max pb-4" style={{ paddingLeft: 'calc((100vw - min(100vw, 1250px)) / 2 + 24px)' }}>
             <motion.div 
               className="space-y-4 w-80 flex-shrink-0 snap-center"
+              initial={{ opacity: 0, x: 100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.5, delay: 0.1 }}
               whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
             >
               <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
                 <Database className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
@@ -378,8 +443,11 @@ export default function HomePage() {
 
             <motion.div 
               className="space-y-4 w-80 flex-shrink-0 snap-center"
+              initial={{ opacity: 0, x: 100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.5, delay: 0.2 }}
               whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
             >
               <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
                 <Zap className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
@@ -392,8 +460,11 @@ export default function HomePage() {
 
             <motion.div 
               className="space-y-4 w-80 flex-shrink-0 snap-center"
+              initial={{ opacity: 0, x: 100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.5, delay: 0.3 }}
               whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
             >
               <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
                 <TrendingUp className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
@@ -406,8 +477,11 @@ export default function HomePage() {
 
             <motion.div 
               className="space-y-4 w-80 flex-shrink-0 snap-center"
+              initial={{ opacity: 0, x: 100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.5, delay: 0.4 }}
               whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
             >
               <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
                 <Sparkles className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
@@ -420,8 +494,11 @@ export default function HomePage() {
 
             <motion.div 
               className="space-y-4 w-80 flex-shrink-0 snap-center"
+              initial={{ opacity: 0, x: 100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.5, delay: 0.5 }}
               whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
             >
               <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
                 <Target className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
@@ -434,8 +511,11 @@ export default function HomePage() {
 
             <motion.div 
               className="space-y-4 w-80 flex-shrink-0 snap-center"
+              initial={{ opacity: 0, x: 100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.5, delay: 0.6 }}
               whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
             >
               <div className="h-64 bg-gray-900 rounded-xl flex items-center justify-center group hover:bg-gray-800 transition-all">
                 <DollarSign className="w-24 h-24 text-bla-lime group-hover:scale-110 transition-transform" />
@@ -452,22 +532,49 @@ export default function HomePage() {
 
       {/* CTA Section */}
       <section className="snap-start flex items-center justify-center bg-white px-6 py-12 md:py-16 lg:py-20">
-        <div className="mx-auto w-full text-center" style={{ maxWidth: '1250px' }}>
-          <h2 className="text-2xl md:text-3xl font-bold mb-3">Klaar om te starten?</h2>
-          <p className="text-sm text-gray-600 mb-6">
+        <motion.div 
+          className="mx-auto w-full text-center" 
+          style={{ maxWidth: '1250px' }}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.7, type: "spring", stiffness: 80 }}
+        >
+          <motion.h2 
+            className="text-2xl md:text-3xl font-bold mb-3"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            Klaar om te starten?
+          </motion.h2>
+          <motion.p 
+            className="text-sm text-gray-600 mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             Beantwoord 7 vragen en ontvang binnen 5 minuten een gepersonaliseerde AI-analyse.
-          </p>
-          <button
+          </motion.p>
+          <motion.button
             onClick={() => {
               trackEvent('cta_bottom_clicked');
               document.getElementById('ai-widget-trigger')?.click();
             }}
             className="px-6 py-2.5 bg-bla-lime hover:bg-bla-lime/90 text-bla-dark rounded-full text-sm font-semibold transition-all inline-flex items-center gap-2"
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3, type: "spring", stiffness: 200 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Start je gratis analyse
             <Target className="w-4 h-4" />
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </section>
 
       {/* Footer */}
