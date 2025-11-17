@@ -18,6 +18,9 @@ import {
   Quote,
 } from 'lucide-react';
 import { initAnalytics, trackEvent } from '@/lib/analytics';
+import { ShimmeringText } from '@/components/ShimmeringText';
+import LinkedInIcon from './LinkedIn_icon.svg.png';
+import Image from 'next/image';
 
 export default function HomePage() {
   const [currentOutcome, setCurrentOutcome] = useState(0);
@@ -91,6 +94,7 @@ export default function HomePage() {
         'Bewezen Thought Leadership',
         'Prototyping Expert',
       ],
+      linkedin: 'https://www.linkedin.com/in/danieldevos/',
     },
     {
       name: 'Kevin',
@@ -102,6 +106,7 @@ export default function HomePage() {
         'Merkopbouw & Emotie',
         'Data-gedreven Groei',
       ],
+      linkedin: 'https://www.linkedin.com/in/kevin-roos-van-raadshooven-941b9732/',
     },
     {
       name: 'Xennith',
@@ -114,6 +119,7 @@ export default function HomePage() {
         'Meetbaar Groei Focus',
         'Operationele Efficiëntie',
       ],
+      linkedin: 'https://www.linkedin.com/in/xennith/',
     },
   ];
 
@@ -622,10 +628,10 @@ export default function HomePage() {
           >
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-bla-lime/20 rounded-full mb-4">
               <div className="w-1.5 h-1.5 bg-bla-lime rounded-full animate-pulse"></div>
-              <p className="text-[10px] uppercase tracking-wider text-gray-900 font-medium">INNOVATION → BUSINESS TRANSFORMATION</p>
+              <p className="text-[10px] uppercase tracking-wider text-gray-900 font-medium">Senioriteit zonder Overhead</p>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-2">
-              The <span className="text-bla-lime">Three Faces</span> of GenAI Friction
+              Het High-Impact Orchestration Team
             </h2>
           </motion.div>
 
@@ -633,7 +639,7 @@ export default function HomePage() {
             {founders.map((founder, idx) => (
               <motion.div
                 key={founder.name}
-                className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:border-bla-lime transition-all"
+                className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:border-bla-lime transition-all relative"
                 initial={{ opacity: 0, x: idx % 2 === 0 ? -50 : 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
@@ -645,6 +651,22 @@ export default function HomePage() {
                   damping: 12
                 }}
               >
+                {/* LinkedIn Icon - Top Right */}
+                <a
+                  href={founder.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="absolute top-4 right-4 w-6 h-6 hover:scale-110 transition-transform"
+                >
+                  <Image
+                    src={LinkedInIcon}
+                    alt="LinkedIn"
+                    width={24}
+                    height={24}
+                    className="w-6 h-6"
+                  />
+                </a>
+
                 <div className="w-12 h-12 bg-bla-lime rounded-lg flex items-center justify-center mb-4 text-xl font-bold text-bla-dark">
                   {founder.name.charAt(0)}
                 </div>
@@ -667,6 +689,27 @@ export default function HomePage() {
               </motion.div>
             ))}
           </div>
+          
+          {/* Subtitle with shimmer effect */}
+          <motion.div 
+            className="text-center mt-8 md:mt-10"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <p className="text-base md:text-lg text-black">
+              Gecombineerd meer dan{' '}
+              <ShimmeringText
+                text="50 jaar"
+                duration={2}
+                color="#000000"
+                shimmeringColor="#CEFF00"
+                className="font-bold"
+              />
+              {' '}digitale ervaring ― nu beschikbaar voor jouw innovaties
+            </p>
+          </motion.div>
         </div>
       </section>
 
