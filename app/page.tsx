@@ -232,15 +232,96 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="min-h-screen snap-start flex items-center justify-center px-6 py-12 md:py-16">
-        <div className="mx-auto text-center w-full" style={{ maxWidth: '1250px' }}>
+      <section className="min-h-screen snap-start flex items-center justify-center px-6 py-12 md:py-16 relative overflow-hidden">
+        {/* Animated tech background */}
+        <div className="absolute inset-0 opacity-30 pointer-events-none">
+          {/* Animated grid pattern */}
+          <div 
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `
+                linear-gradient(rgba(206, 255, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(206, 255, 0, 0.1) 1px, transparent 1px)
+              `,
+              backgroundSize: '50px 50px',
+            }}
+          />
+          {/* Animated gradient mesh */}
+          <motion.div
+            className="absolute inset-0"
+            style={{
+              background: `
+                radial-gradient(circle at 20% 30%, rgba(206, 255, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(206, 255, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(206, 255, 0, 0.05) 0%, transparent 50%)
+              `,
+            }}
+            animate={{
+              background: [
+                `
+                  radial-gradient(circle at 20% 30%, rgba(206, 255, 0, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(206, 255, 0, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 50%, rgba(206, 255, 0, 0.05) 0%, transparent 50%)
+                `,
+                `
+                  radial-gradient(circle at 30% 40%, rgba(206, 255, 0, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 60%, rgba(206, 255, 0, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 60% 40%, rgba(206, 255, 0, 0.05) 0%, transparent 50%)
+                `,
+                `
+                  radial-gradient(circle at 20% 30%, rgba(206, 255, 0, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(206, 255, 0, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 50%, rgba(206, 255, 0, 0.05) 0%, transparent 50%)
+                `,
+              ],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+          {/* Floating particles */}
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full"
+              style={{
+                width: `${4 + i * 2}px`,
+                height: `${4 + i * 2}px`,
+                background: 'rgba(206, 255, 0, 0.2)',
+                left: `${10 + i * 15}%`,
+                top: `${20 + i * 10}%`,
+              }}
+              animate={{
+                y: [0, -20, 0],
+                x: [0, 10, 0],
+                opacity: [0.2, 0.4, 0.2],
+              }}
+              transition={{
+                duration: 3 + i * 0.5,
+                repeat: Infinity,
+                delay: i * 0.3,
+                ease: 'easeInOut',
+              }}
+            />
+          ))}
+        </div>
+        <div className="mx-auto text-center w-full relative z-10" style={{ maxWidth: '1250px' }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-bla-lime/20 rounded-full mb-4">
+              <p className="text-[10px] uppercase tracking-wider text-gray-900 font-medium">minder praten, meer bouwen</p>
+            </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-8 leading-tight max-w-4xl mx-auto">
-              Van complexiteit naar resultaten
+              Een chat. Een meeting.{' '}
+              <br />
+              <span className="font-bold" style={{ color: '#CEFF00' }}>
+                Directe AI Impact
+              </span>
             </h1>
             
             {/* Animated outcome subtitle */}
@@ -277,8 +358,8 @@ export default function HomePage() {
                 <button
                   key={idx}
                   onClick={() => setCurrentOutcome(idx)}
-                  className={`h-1.5 rounded-full transition-all ${
-                    idx === currentOutcome ? 'w-8 bg-bla-lime' : 'w-1.5 bg-gray-300'
+                  className={`h-[0.5625rem] rounded-full transition-all ${
+                    idx === currentOutcome ? 'w-12 bg-bla-lime' : 'w-[0.5625rem] bg-gray-300'
                   }`}
                   aria-label={`Go to outcome ${idx + 1}`}
                 />
