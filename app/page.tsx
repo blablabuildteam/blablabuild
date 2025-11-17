@@ -21,10 +21,46 @@ import { initAnalytics, trackEvent } from '@/lib/analytics';
 
 export default function HomePage() {
   const [currentOutcome, setCurrentOutcome] = useState(0);
+  const [showNavCTA, setShowNavCTA] = useState(false);
 
   useEffect(() => {
     initAnalytics();
     trackEvent('page_view', { page: 'home' });
+  }, []);
+
+  // Track when "Aanpak" section enters viewport to show nav CTA
+  useEffect(() => {
+    let observer: IntersectionObserver | null = null;
+    
+    // Wait for DOM to be ready
+    const timer = setTimeout(() => {
+      const aanpakSection = document.getElementById('aanpak');
+      if (!aanpakSection) return;
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            // Show CTA when the section enters viewport (once visible, keep it visible)
+            if (entry.isIntersecting) {
+              setShowNavCTA(true);
+            }
+          });
+        },
+        {
+          threshold: 0.1, // Trigger when 10% of the section is visible
+          rootMargin: '0px 0px 0px 0px',
+        }
+      );
+
+      observer.observe(aanpakSection);
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      if (observer) {
+        observer.disconnect();
+      }
+    };
   }, []);
 
   const outcomes = [
@@ -104,16 +140,74 @@ export default function HomePage() {
             </span>
           </div>
           
-          <button
-            onClick={() => {
-              trackEvent('cta_nav_clicked');
-              document.getElementById('ai-widget-trigger')?.click();
-            }}
-            className="px-4 py-1.5 bg-bla-lime hover:bg-bla-lime/90 text-bla-dark text-sm rounded-full font-medium transition-all flex items-center gap-1.5"
-          >
-            Start analyse
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          <div className="hidden md:flex items-center gap-6 absolute left-1/2 transform -translate-x-1/2">
+            <a
+              href="#aanpak"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('aanpak')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="text-sm text-gray-700 hover:text-gray-900 transition-colors"
+            >
+              Aanpak
+            </a>
+            <a
+              href="#team"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('team')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="text-sm text-gray-700 hover:text-gray-900 transition-colors"
+            >
+              Team
+            </a>
+            <a
+              href="#impact"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('impact')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="text-sm text-gray-700 hover:text-gray-900 transition-colors"
+            >
+              Impact
+            </a>
+            <a
+              href="#cases"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('cases')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="text-sm text-gray-700 hover:text-gray-900 transition-colors"
+            >
+              Cases
+            </a>
+          </div>
+          
+          <AnimatePresence>
+            {showNavCTA && (
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 20,
+                }}
+              >
+                <button
+                  onClick={() => {
+                    trackEvent('cta_nav_clicked');
+                    document.getElementById('ai-widget-trigger')?.click();
+                  }}
+                  className="px-4 py-1.5 bg-[#1125FF] hover:bg-[#1125FF]/90 text-white text-sm rounded-full font-medium transition-all flex items-center gap-1.5"
+                >
+                  Gratis AI Advies
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </nav>
 
@@ -175,7 +269,7 @@ export default function HomePage() {
       </section>
 
       {/* Approach Section */}
-      <section className="min-h-screen snap-start flex items-center justify-center bg-gray-50 px-6 py-16 md:py-20 lg:py-24">
+      <section id="aanpak" className="min-h-screen snap-start flex items-center justify-center bg-gray-50 px-6 py-16 md:py-20 lg:py-24">
         <div className="mx-auto w-full" style={{ maxWidth: '1250px' }}>
           <div className="text-center mb-12 md:mb-16 lg:mb-20">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-bla-lime/20 rounded-full mb-4">
@@ -208,7 +302,7 @@ export default function HomePage() {
       </section>
 
       {/* Founders Section */}
-      <section className="min-h-screen snap-start flex items-center justify-center bg-white px-6 py-16 md:py-20 lg:py-24">
+      <section id="team" className="min-h-screen snap-start flex items-center justify-center bg-white px-6 py-16 md:py-20 lg:py-24">
         <div className="mx-auto w-full" style={{ maxWidth: '1250px' }}>
           <div className="text-center mb-10 md:mb-12 lg:mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-bla-lime/20 rounded-full mb-4">
@@ -252,7 +346,7 @@ export default function HomePage() {
       </section>
 
       {/* Use Cases Section */}
-      <section className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 py-16 md:py-20 lg:py-24">
+      <section id="impact" className="min-h-screen snap-start flex flex-col justify-center bg-gray-50 py-16 md:py-20 lg:py-24">
         <div className="mx-auto w-full px-6 mb-12 md:mb-16" style={{ maxWidth: '1250px' }}>
           <div className="text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-bla-lime/20 rounded-full mb-4">

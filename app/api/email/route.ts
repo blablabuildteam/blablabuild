@@ -125,9 +125,9 @@ function generateEmailHtml(ideas: any[], email: string): string {
   <meta charset="utf-8">
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: #c4f000; padding: 30px; text-align: center; border-radius: 8px; margin-bottom: 30px; }
+    .header { background: #CEFF00; padding: 30px; text-align: center; border-radius: 8px; margin-bottom: 30px; }
     .header h1 { margin: 0; color: #0a0a0a; }
-    .idea { background: #f5f5f5; padding: 20px; margin-bottom: 20px; border-radius: 8px; border-left: 4px solid #c4f000; }
+    .idea { background: #f5f5f5; padding: 20px; margin-bottom: 20px; border-radius: 8px; border-left: 4px solid #CEFF00; }
     .idea h2 { margin-top: 0; color: #0a0a0a; }
     .meta { display: flex; gap: 15px; margin: 10px 0; font-size: 14px; }
     .meta span { background: white; padding: 5px 10px; border-radius: 4px; }

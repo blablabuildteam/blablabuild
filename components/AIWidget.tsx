@@ -514,7 +514,7 @@ export default function AIWidget() {
                             }`}
                             animate={isCurrent ? { 
                               scale: [1, 1.1, 1],
-                              borderColor: ['rgba(196, 240, 0, 0.3)', 'rgba(196, 240, 0, 0.6)', 'rgba(196, 240, 0, 0.3)'],
+                              borderColor: ['rgba(206, 255, 0, 0.3)', 'rgba(206, 255, 0, 0.6)', 'rgba(206, 255, 0, 0.3)'],
                             } : {}}
                             transition={{ 
                               duration: 2,
@@ -1098,7 +1098,7 @@ Tot snel!`);
                   <motion.div
                     animate={{ scale: [1, 1.2, 1], opacity: [0.6, 1, 0.6] }}
                     transition={{ repeat: Infinity, duration: 2 }}
-                    className="w-1.5 h-1.5 bg-bla-lime rounded-full shadow-[0_0_4px_rgba(196,240,0,0.5)]"
+                    className="w-1.5 h-1.5 bg-bla-lime rounded-full shadow-[0_0_4px_rgba(206,255,0,0.5)]"
                   />
                   <span className="text-xs font-extralight text-bla-text-muted">blablabuild AI</span>
                 </div>

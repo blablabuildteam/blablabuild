@@ -16,7 +16,7 @@ const config: Config = {
       colors: {
         // Dark charcoal theme with subtle accents
         bla: {
-          lime: "#c4f000",      // Bright lime accent
+          lime: "#CEFF00",      // Bright lime accent
           dark: "#0a0a0a",      // Deep black
           charcoal: "#1a1a1a",  // Dark charcoal background
           "charcoal-light": "#2a2a2a", // Lighter charcoal
