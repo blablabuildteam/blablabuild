@@ -18,7 +18,7 @@ const GLBViewer = dynamic(() => import('@/components/GLBViewer'), {
 
 export default function ImpactSection() {
   return (
-    <section id="impact" className="min-h-screen snap-start flex flex-col justify-start bg-white py-16 md:py-20 lg:py-24 relative">
+    <section id="impact" className="min-h-screen snap-start flex flex-col justify-start bg-gray-50 py-16 md:py-20 lg:py-24 relative">
       <motion.div 
         className="mx-auto w-full px-mobile-x md:px-content mb-12 md:mb-16"
         initial={{ opacity: 0, scale: 0.9 }}
@@ -42,7 +42,7 @@ export default function ImpactSection() {
         <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
           {/* Card 1: DATA & AI-STRATEGIE */}
           <motion.div 
-            className="p-card-padding rounded-xl transition-all bg-gray-50 text-left"
+            className="p-card-padding rounded-xl transition-all bg-white text-left"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
@@ -65,7 +65,7 @@ export default function ImpactSection() {
 
           {/* Card 2: HIGH-IMPACT GROEI */}
           <motion.div 
-            className="p-card-padding rounded-xl transition-all bg-gray-50 text-left"
+            className="p-card-padding rounded-xl transition-all bg-white text-left"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
@@ -88,7 +88,7 @@ export default function ImpactSection() {
 
           {/* Card 3: AUTOMATISERING & EFFICIËNTIE */}
           <motion.div 
-            className="p-card-padding rounded-xl transition-all bg-gray-50 text-left"
+            className="p-card-padding rounded-xl transition-all bg-white text-left"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}

@@ -23,6 +23,12 @@ export default function ApproachSection() {
       title: 'Build',
       image: '/build.png',
       content: 'We gaan direct aan de slag om in enkele weken impact te leveren.'
+    },
+    {
+      number: 4,
+      title: 'Scale',
+      image: '/line-chart.png',
+      content: 'Ons ultieme einddoel. Bij het behalen van beoogde resultaten blijven we aan als jouw innovatie partner op geschaald success te behalen.'
     }
   ];
 
@@ -51,6 +57,14 @@ export default function ApproachSection() {
                   background-position: -200% -200%;
                 }
               }
+              @keyframes border-shimmer {
+                0% { 
+                  background-position: 0% 0%;
+                }
+                100% { 
+                  background-position: 200% 200%;
+                }
+              }
             `}</style>
             Geen agency bullsh
             <span
@@ -70,7 +84,7 @@ export default function ApproachSection() {
             t, simpelweg resultaat
           </h2>
           <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
-            Een gestructureerde aanpak die van eerste contact tot schaalbare impact leidt.
+            Een simpele aanpak dat ervoor zorgt dat we snel impact kunnen maken
           </p>
         </motion.div>
 
@@ -79,7 +93,16 @@ export default function ApproachSection() {
           {steps.map((step, idx) => (
             <motion.div
               key={idx}
-              className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-bla-lime transition-all shadow-sm"
+              className={`relative rounded-xl overflow-hidden transition-all shadow-sm ${
+                step.number === 3 
+                  ? '' 
+                  : 'bg-white border border-gray-200 hover:border-bla-lime'
+              }`}
+              style={step.number === 3 ? {
+                background: 'linear-gradient(135deg, rgba(206, 255, 0, 0.25) 0%, rgba(206, 255, 0, 0.08) 50%, rgba(206, 255, 0, 0.25) 100%)',
+                backgroundSize: '200% 200%',
+                animation: 'border-shimmer 3s ease-in-out infinite'
+              } : {}}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false, margin: "-100px" }}
@@ -91,10 +114,10 @@ export default function ApproachSection() {
                 damping: 15
               }}
             >
-              <div className="grid md:grid-cols-2 gap-0">
+              <div className={`grid md:grid-cols-4 gap-0 ${step.number === 3 ? 'bg-white/90' : ''}`}>
                 {/* Left: Image */}
                 <motion.div 
-                  className="relative h-48 md:h-56 bg-gray-100 order-2 md:order-1"
+                  className="relative h-32 md:h-40 order-2 md:order-1 md:col-span-1 overflow-hidden"
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: false, margin: "-100px" }}
@@ -108,13 +131,14 @@ export default function ApproachSection() {
                     src={step.image}
                     alt={step.title}
                     fill
-                    className="object-cover"
+                    className="object-contain"
+                    style={{ objectPosition: 'center center' }}
                   />
                 </motion.div>
                 
                 {/* Right: Content */}
                 <motion.div 
-                  className="p-8 md:p-12 flex flex-col justify-center order-1 md:order-2"
+                  className="p-6 md:p-8 flex flex-col justify-center order-1 md:order-2 md:col-span-3"
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: false, margin: "-100px" }}
@@ -124,9 +148,9 @@ export default function ApproachSection() {
                     ease: "easeOut"
                   }}
                 >
-                  <div className="flex items-center gap-4 mb-4">
+                  <div className="mb-4">
                     <motion.div 
-                      className="w-12 h-12 rounded-full bg-bla-lime flex items-center justify-center text-xl font-bold text-gray-900"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-bla-lime rounded-lg text-gray-900"
                       initial={{ opacity: 0, scale: 0 }}
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: false, margin: "-100px" }}
@@ -138,9 +162,9 @@ export default function ApproachSection() {
                         damping: 15
                       }}
                     >
-                      {step.number}
+                      <span className="text-lg font-bold">{step.number}</span>
+                      <span className={`text-lg ${step.number === 3 ? 'font-bold' : 'font-medium'}`}>{step.title}</span>
                     </motion.div>
-                    <h3 className="text-2xl md:text-3xl font-bold">{step.title}</h3>
                   </div>
                   <p className="text-gray-700 leading-relaxed text-sm md:text-base">
                     {step.content}

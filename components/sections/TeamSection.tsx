@@ -39,7 +39,7 @@ const founders = [
     focus: 'Structuur, Proces & Implementatie',
     description: 'Combineert AI consulting, tech en productie kennis om complexiteit te vertalen naar concrete en uitvoerbare kansen met focus op het stroomlijnen organisaties.',
     highlights: [
-      'Enterprise Strategie & Ervaring',
+      'Enterprise Strategie Ervaring',
       'Van Pijn naar Plan',
       'Meetbaar Groei Focus',
       'Operationele Efficiëntie',
@@ -66,6 +66,25 @@ export default function TeamSection() {
           <h2 className="text-3xl md:text-4xl font-bold mb-2">
             Het High-Impact Orchestration Team
           </h2>
+          <motion.div 
+            className="text-center mt-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <p className="text-base md:text-lg text-black">
+              Gecombineerd meer dan{' '}
+              <ShimmeringText
+                text="50 jaar"
+                duration={2}
+                color="#000000"
+                shimmeringColor="#CEFF00"
+                className="font-bold"
+              />
+              {' '}digitale ervaring.
+            </p>
+          </motion.div>
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-6">
@@ -122,27 +141,6 @@ export default function TeamSection() {
             </motion.div>
           ))}
         </div>
-        
-        {/* Subtitle with shimmer effect */}
-        <motion.div 
-          className="text-center mt-8 md:mt-10"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          <p className="text-base md:text-lg text-black">
-            Gecombineerd meer dan{' '}
-            <ShimmeringText
-              text="50 jaar"
-              duration={2}
-              color="#000000"
-              shimmeringColor="#CEFF00"
-              className="font-bold"
-            />
-            {' '}digitale ervaring ― nu beschikbaar voor jouw innovaties
-          </p>
-        </motion.div>
       </div>
     </section>
   );
