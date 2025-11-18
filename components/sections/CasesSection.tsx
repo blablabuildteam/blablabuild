@@ -9,74 +9,100 @@ const caseStudies = [
   {
     id: 1,
     badge: 'Data & AI',
-    title: 'E-commerce Platform Transformation',
+    title: 'Centrale AI-beheeromgeving voor meerdere websites',
     bullets: [
-      '80% reductie in operationele kosten',
-      '3x snellere order processing',
-      'Real-time inventory tracking',
+      'Tijd voor contentwijziging -85%',
+      'Foutmarge tussen sites -95%',
+      'Livegang nieuwe content < 1 minuut',
     ],
     backgroundImage: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    description: 'We hebben een volledig geautomatiseerd e-commerce platform gebouwd dat real-time inventory tracking combineert met AI-gedreven voorspellingen. Het resultaat: een 80% reductie in operationele kosten en 3x snellere order processing. De oplossing integreert naadloos met bestaande systemen en schaalt automatisch mee met de groei van het bedrijf.',
+    goal: 'Alle websites tegelijk kunnen beheren en wijzigen vanuit één systeem',
+    approach: 'AI-commandocentrum dat via prompts content en visuele wijzigingen uitvoert op gekoppelde frontends, met één gedeelde database',
+    period: 'Direct na implementatie (6 weken)',
   },
   {
     id: 2,
     badge: 'Growth & CX',
-    title: 'Lead Generation Automatisering',
+    title: 'Schaalbare AI-contentgeneratie voor lokale SEO in Europese steden',
     bullets: [
-      '250% verhoging in kwalitatieve leads',
-      '60% tijd bespaard op lead qualification',
-      'AI-powered lead scoring systeem',
+      'Nieuwe pagina\'s aangemaakt 2.500+',
+      'Zoekverkeer binnen 6 maanden +418%',
+      'Organische omzet +312%',
     ],
     backgroundImage: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    description: 'Door het implementeren van een geavanceerd AI-systeem voor lead qualification en scoring, hebben we de kwaliteit van leads met 250% verhoogd. Het systeem bespaart het sales team 60% van hun tijd door automatisch leads te scoren en te categoriseren op basis van gedrag en intentie.',
+    goal: 'Automatisch unieke locatiepagina\'s creëren en publiceren op grote schaal voor meerdere landen',
+    approach: 'AI en programmatische logica genereren per stad unieke content, lokale data en foto\'s. Drip-feed publicatie voor natuurlijke indexatie en sterke interne linkstructuur.',
+    period: '6 maanden na implementatie',
   },
   {
     id: 3,
-    badge: 'Automatisering',
-    title: 'Supply Chain Optimalisatie',
+    badge: 'Data & AI',
+    title: 'AI-productmatching tussen leveranciers en Shopify',
     bullets: [
-      '40% reductie in voorraadkosten',
-      'Real-time tracking & voorspellingen',
-      'Geautomatiseerde bestelprocessen',
+      'Handmatige invoer -95%',
+      '100% consistente productnummers',
+      'Nieuwe producten live binnen 1 uur',
     ],
     backgroundImage: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-    description: 'Een volledig geautomatiseerd supply chain management systeem dat real-time tracking combineert met voorspellende analytics. Het systeem heeft geleid tot een 40% reductie in voorraadkosten door slimmere bestelprocessen en nauwkeurige vraagvoorspellingen. Alle processen zijn geautomatiseerd, van bestelling tot levering.',
+    goal: 'Automatisch koppelen van duizenden leverancier-SKU\'s aan eigen Shopify-producten',
+    approach: 'Python-pipeline met AI-matching die namen, specificaties en afkortingen herkent (EA → Emporio Armani, Waring → WRG etc.)',
+    period: '3 weken na implementatie',
   },
   {
     id: 4,
-    badge: 'Data & AI',
-    title: 'Customer Analytics Dashboard',
+    badge: 'Automatisering',
+    title: 'Multi-vendor scraping & product-update workflow',
     bullets: [
-      '360° klantbeeld in real-time',
-      'Voorspellende customer insights',
-      'Geautomatiseerde rapportage',
+      '20+ leveranciers gekoppeld',
+      'Productupdates 10× sneller',
+      'Up-to-date voorraad zonder handwerk',
     ],
     backgroundImage: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-    description: 'Een geavanceerd analytics dashboard dat alle klantdata centraliseert en transformeert naar actionable insights. Het systeem biedt een 360° klantbeeld in real-time en gebruikt AI om voorspellende analyses te maken. Automatische rapportage bespaart weken aan handmatig werk.',
+    goal: 'Productinfo, prijzen en voorraad automatisch ophalen van leverancierssites',
+    approach: 'AI-gestuurde scraper + validatiestap die automatisch Shopify bijwerkt bij wijziging',
+    period: '4 weken',
   },
   {
     id: 5,
-    badge: 'Growth & CX',
-    title: 'Personalized Marketing Platform',
+    badge: 'Data & AI',
+    title: 'Azure BI-dashboard voor sales & voorraad',
     bullets: [
-      '35% verhoging in conversie',
-      'Geautomatiseerde personalisatie',
-      'Cross-channel campagne management',
+      '360° inzicht in voorraad en omzet',
+      'Rapportagetijd -70%',
+      'Nieuwe KPI\'s voor pricing & logistiek',
     ],
     backgroundImage: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
-    description: 'Een geïntegreerd marketing platform dat AI gebruikt om elke klantinteractie te personaliseren. Het systeem heeft geleid tot een 35% verhoging in conversie door relevante content en aanbiedingen op het juiste moment te leveren. Alle campagnes worden automatisch geoptimaliseerd en beheerd.',
+    goal: 'Eén waarheid voor alle Edge-data in real-time dashboards',
+    approach: 'Azure Data Factory + SQL-staging + Power BI met automatische refresh-flows',
+    period: '6 weken',
   },
   {
     id: 6,
     badge: 'Automatisering',
-    title: 'Workflow Automatisering Suite',
+    title: 'AI-gedreven prijslijst-generator',
     bullets: [
-      '70% reductie in handmatig werk',
-      'Geautomatiseerde document processing',
-      'Seamless integratie met bestaande tools',
+      'Prijsupdate-tijd -90%',
+      'Minder foutieve marges',
+      '100% compliance met MAP-regels',
     ],
     backgroundImage: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-    description: 'Een uitgebreide suite van geautomatiseerde workflows die repetitieve taken elimineert. Het systeem heeft 70% van het handmatige werk geautomatiseerd, inclusief document processing, data entry en communicatie. Alle workflows integreren naadloos met bestaande tools en systemen.',
+    goal: 'Voor elke klantgroep automatisch aangepaste prijslijsten maken op basis van marge-, voorraad- en verzendregels',
+    approach: 'Python-workflow die data uit Sage, Shopify en Excel combineert tot dynamische PDF/XLS-output',
+    period: 'Binnen 2 weken',
+  },
+  {
+    id: 7,
+    badge: 'Growth & CX',
+    title: 'Conversational AI voor retail',
+    bullets: [
+      '85% snellere informatieontsluiting',
+      '+200% gebruik',
+      'Nieuwe leadgenerator',
+    ],
+    backgroundImage: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    goal: 'Toegankelijke manier om advies te krijgen op een webwinkel',
+    approach: 'AI-agent die via natuurlijke taal vragen beantwoordt en producten koppelt',
+    period: '6 weken',
   },
 ];
 
@@ -191,10 +217,10 @@ export default function CasesSection() {
 
       {/* Carousel Container */}
       <div className="mx-auto w-full relative">
-        {/* Carousel Wrapper - Overflow container */}
-        <div className="relative w-full overflow-x-hidden overflow-y-hidden">
+        {/* Carousel Wrapper - Scrollable container */}
+        <div className="relative w-full overflow-x-auto overflow-y-hidden scrollbar-hide snap-x snap-mandatory pl-mobile-x md:pl-content pr-4 md:pr-[120px]" style={{ scrollBehavior: 'smooth' }}>
           <motion.div
-            className="flex gap-6 lg:gap-8 pl-4 md:pl-[120px] pr-4 md:pr-[120px]"
+            className="flex gap-6 lg:gap-8"
             animate={{
               x: `-${(currentIndex * 100) / cardsPerView}%`,
             }}
@@ -204,20 +230,28 @@ export default function CasesSection() {
               damping: 30,
             }}
             style={{
-              width: `${(caseStudies.length * 100) / cardsPerView}%`,
+              width: 'max-content',
             }}
           >
             {caseStudies.map((caseStudy, idx) => {
               // Calculate gap size based on breakpoint (gap-6 = 1.5rem, gap-8 = 2rem)
-              const gapSize = cardsPerView === 3 ? 2 : cardsPerView === 2 ? 1.5 : 0; // rem
-              const totalGapSpace = cardsPerView > 1 ? (cardsPerView - 1) * gapSize : 0;
+              const gapSize = cardsPerView === 3 ? 2 : cardsPerView === 2 ? 1.5 : 1.5; // rem
+              
+              // On mobile, make cards narrower (85% of viewport) so second card is partially visible
+              // This ensures the next card peeks through, making it clear the carousel is scrollable
+              const mobileCardWidth = 'calc(85vw - 1rem)'; // 85% viewport width minus left padding
+              // On desktop, calculate based on cards per view
+              const desktopCardWidth = cardsPerView === 3 
+                ? `calc((100vw - 240px - ${(cardsPerView - 1) * gapSize}rem) / ${cardsPerView})`
+                : `calc((100vw - 240px - ${(cardsPerView - 1) * gapSize}rem) / ${cardsPerView})`;
               
               return (
               <div
                 key={caseStudy.id}
-                className="flex-shrink-0"
+                className="flex-shrink-0 snap-start"
                 style={{
-                  width: `calc((100% - ${totalGapSpace}rem) / ${cardsPerView})`,
+                  width: cardsPerView === 1 ? mobileCardWidth : desktopCardWidth,
+                  minWidth: cardsPerView === 1 ? mobileCardWidth : undefined,
                 }}
               >
                 <motion.div
@@ -319,15 +353,29 @@ export default function CasesSection() {
                             </span>
                           </div>
 
-                          {/* Title */}
-                          <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
-                            {caseStudy.title}
-                          </h3>
+                          {/* Goal */}
+                          <div className="mb-4">
+                            <h4 className="text-sm font-semibold text-gray-900 mb-2">Doel:</h4>
+                            <p className="text-sm text-gray-700 leading-relaxed">
+                              {caseStudy.goal}
+                            </p>
+                          </div>
 
-                          {/* Description */}
-                          <p className="text-sm text-gray-700 leading-relaxed flex-grow mb-4">
-                            {caseStudy.description}
-                          </p>
+                          {/* Approach */}
+                          <div className="mb-4 flex-grow">
+                            <h4 className="text-sm font-semibold text-gray-900 mb-2">Aanpak:</h4>
+                            <p className="text-sm text-gray-700 leading-relaxed">
+                              {caseStudy.approach}
+                            </p>
+                          </div>
+
+                          {/* Period */}
+                          <div className="mb-4">
+                            <h4 className="text-sm font-semibold text-gray-900 mb-2">Periode tot resultaat:</h4>
+                            <p className="text-sm text-gray-700 leading-relaxed">
+                              {caseStudy.period}
+                            </p>
+                          </div>
 
                           {/* Flip Back Hint */}
                           <div className="mt-auto pt-4 border-t border-gray-200">

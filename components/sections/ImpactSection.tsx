@@ -48,7 +48,7 @@ export default function ImpactSection() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <div className="text-sm font-medium text-gray-700 mb-4">01</div>
+            <div className="text-sm font-medium text-gray-700 mb-4">001</div>
             <div className="h-48 rounded-xl flex items-center justify-start mb-4 group transition-all overflow-hidden">
               <GLBViewer 
                 src="/3dobjects/Spheres.glb" 
@@ -71,7 +71,7 @@ export default function ImpactSection() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <div className="text-sm font-medium text-gray-700 mb-4">02</div>
+            <div className="text-sm font-medium text-gray-700 mb-4">002</div>
             <div className="h-48 rounded-xl flex items-center justify-start mb-4 group transition-all overflow-hidden">
               <GLBViewer 
                 src="/3dobjects/Plus.glb" 
@@ -94,7 +94,7 @@ export default function ImpactSection() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <div className="text-sm font-medium text-gray-700 mb-4">03</div>
+            <div className="text-sm font-medium text-gray-700 mb-4">003</div>
             <div className="h-48 rounded-xl flex items-center justify-start mb-4 group transition-all overflow-hidden">
               <GLBViewer 
                 src="/3dobjects/Hair_ring_02.glb" 
