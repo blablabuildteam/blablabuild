@@ -185,10 +185,10 @@ export default function CasesSection() {
                 disabled={!canGoPrev}
                 className={`
                   flex items-center justify-center w-10 h-10 rounded-full
-                  transition-all duration-200
+                  transition-all duration-200 border-2
                   ${canGoPrev 
-                    ? 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer shadow-lg hover:shadow-xl' 
-                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    ? 'bg-black text-white border-black hover:bg-gray-800 hover:border-gray-800 cursor-pointer' 
+                    : 'bg-white text-gray-300 border-gray-300 cursor-not-allowed'
                   }
                 `}
                 aria-label="Previous case"
@@ -200,10 +200,10 @@ export default function CasesSection() {
                 disabled={!canGoNext}
                 className={`
                   flex items-center justify-center w-10 h-10 rounded-full
-                  transition-all duration-200
+                  transition-all duration-200 border-2
                   ${canGoNext 
-                    ? 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer shadow-lg hover:shadow-xl' 
-                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    ? 'bg-black text-white border-black hover:bg-gray-800 hover:border-gray-800 cursor-pointer' 
+                    : 'bg-white text-gray-300 border-gray-300 cursor-not-allowed'
                   }
                 `}
                 aria-label="Next case"
@@ -366,7 +366,7 @@ export default function CasesSection() {
                           </div>
 
                           {/* Approach */}
-                          <div className="mb-4 flex-grow">
+                          <div className="mb-4">
                             <h4 className="text-sm font-semibold text-gray-900 mb-2">Aanpak:</h4>
                             <p className="text-sm text-gray-700 leading-relaxed">
                               {caseStudy.approach}
