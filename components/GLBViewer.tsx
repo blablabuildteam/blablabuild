@@ -2,7 +2,7 @@
 
 import { Suspense, useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, useGLTF, Environment, Html } from '@react-three/drei';
+import { OrbitControls, useGLTF, Html } from '@react-three/drei';
 import { Mesh } from 'three';
 
 interface GLBViewerProps {
@@ -55,7 +55,8 @@ function Scene({ src, autoRotate, rotationSpeed }: { src: string; autoRotate: bo
         minPolarAngle={Math.PI / 3}
         maxPolarAngle={Math.PI / 1.5}
       />
-      <Environment preset="city" />
+      {/* Environment removed to avoid CORS issues with external HDR files */}
+      {/* Lighting is handled by ambient, directional, and point lights above */}
     </>
   );
 }
