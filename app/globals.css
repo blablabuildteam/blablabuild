@@ -163,6 +163,8 @@
     width: 100%;
     max-width: 100vw;
     position: relative;
+    margin: 0;
+    padding: 0;
   }
   
   /* All elements use Matter font */
@@ -212,6 +214,13 @@ html {
   overflow-x: hidden;
   width: 100%;
   max-width: 100vw;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 /* Minimal scrollbar */

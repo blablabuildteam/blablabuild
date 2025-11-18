@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { CheckCircle2 } from 'lucide-react';
 import { LogoIcon } from '@/components/ui/LogoIcon';
 
 const caseStudies = [
@@ -82,7 +82,6 @@ const caseStudies = [
 
 export default function CasesSection() {
   const [flippedCards, setFlippedCards] = useState<Set<number | string>>(new Set());
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   const toggleCardFlip = (id: number | string) => {
     setFlippedCards((prev) => {
@@ -96,43 +95,8 @@ export default function CasesSection() {
     });
   };
 
-  // Calculate cards per viewport based on screen size
-  const getCardsPerView = () => {
-    if (typeof window === 'undefined') return 3;
-    if (window.innerWidth >= 1024) return 3; // lg: 3 cards
-    if (window.innerWidth >= 768) return 2;  // md: 2 cards
-    return 1; // mobile: 1 card
-  };
-
-  const [cardsPerView, setCardsPerView] = useState(3);
-
-  // Update cards per view on resize
-  useEffect(() => {
-    const handleResize = () => {
-      setCardsPerView(getCardsPerView());
-    };
-    if (typeof window !== 'undefined') {
-      setCardsPerView(getCardsPerView());
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }
-  }, []);
-
-  const maxIndex = Math.max(0, caseStudies.length - cardsPerView);
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => Math.min(prev + 1, maxIndex));
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => Math.max(prev - 1, 0));
-  };
-
-  const canGoNext = currentIndex < maxIndex;
-  const canGoPrev = currentIndex > 0;
-
   return (
-    <section id="cases" className="min-h-screen snap-start flex flex-col justify-center bg-white py-16 md:py-20 lg:py-24 overflow-x-visible">
+    <section id="cases" className="min-h-screen snap-start flex flex-col justify-center bg-white py-16 md:py-20 lg:py-24">
       <motion.div 
         className="mx-auto w-full px-4 md:px-content mb-12 md:mb-16"
         initial={{ opacity: 0, y: 30 }}
@@ -148,77 +112,20 @@ export default function CasesSection() {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
             Cases
           </h2>
-          <div className="flex items-center justify-between gap-4">
-            <p className="text-base md:text-lg text-gray-600 flex-1 text-center">
-              Ontdek hoe we impact hebben geleverd voor onze klanten
-            </p>
-            {/* Navigation Arrows */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <button
-                onClick={handlePrev}
-                disabled={!canGoPrev}
-                className={`
-                  flex items-center justify-center w-10 h-10 rounded-full
-                  transition-all duration-200
-                  ${canGoPrev 
-                    ? 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer shadow-lg hover:shadow-xl' 
-                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  }
-                `}
-                aria-label="Previous case"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={handleNext}
-                disabled={!canGoNext}
-                className={`
-                  flex items-center justify-center w-10 h-10 rounded-full
-                  transition-all duration-200
-                  ${canGoNext 
-                    ? 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer shadow-lg hover:shadow-xl' 
-                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  }
-                `}
-                aria-label="Next case"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
+          <p className="text-base md:text-lg text-gray-600">
+            Ontdek hoe we impact hebben geleverd voor onze klanten
+          </p>
         </div>
       </motion.div>
 
-      {/* Carousel Container */}
-      <div className="mx-auto w-full relative">
-        {/* Carousel Wrapper - Overflow container */}
-        <div className="relative w-full overflow-x-visible">
-          <motion.div
-            className="flex gap-6 lg:gap-8 pl-4 md:pl-[120px] pr-4 md:pr-[120px]"
-            animate={{
-              x: `-${(currentIndex * 100) / cardsPerView}%`,
-            }}
-            transition={{
-              type: "spring",
-              stiffness: 300,
-              damping: 30,
-            }}
-            style={{
-              width: `${(caseStudies.length * 100) / cardsPerView}%`,
-            }}
-          >
-            {caseStudies.map((caseStudy, idx) => {
-              // Calculate gap size based on breakpoint (gap-6 = 1.5rem, gap-8 = 2rem)
-              const gapSize = cardsPerView === 3 ? 2 : cardsPerView === 2 ? 1.5 : 0; // rem
-              const totalGapSpace = cardsPerView > 1 ? (cardsPerView - 1) * gapSize : 0;
-              
-              return (
+      {/* Cases Grid Container */}
+      <div className="mx-auto w-full px-4 md:px-[120px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {caseStudies.map((caseStudy, idx) => {
+            return (
               <div
                 key={caseStudy.id}
-                className="flex-shrink-0"
-                style={{
-                  width: `calc((100% - ${totalGapSpace}rem) / ${cardsPerView})`,
-                }}
+                className="w-full"
               >
                 <motion.div
                   className="h-[400px] w-full"
@@ -341,9 +248,8 @@ export default function CasesSection() {
                   </div>
                 </motion.div>
               </div>
-              );
-            })}
-          </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

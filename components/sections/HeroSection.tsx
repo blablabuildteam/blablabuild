@@ -15,7 +15,10 @@ const outcomes = [
 
 export default function HeroSection() {
   const [currentOutcome, setCurrentOutcome] = useState(0);
+  const [paddingTop, setPaddingTop] = useState(160); // Default mobile value
+  const [navHeight, setNavHeight] = useState(60); // Store nav height separately
   const videoRef = useRef<HTMLVideoElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   // Set video source based on screen size
   useEffect(() => {
@@ -61,6 +64,70 @@ export default function HeroSection() {
     };
   }, []);
 
+  // Calculate navigation height dynamically and set padding-top
+  useEffect(() => {
+    const calculatePadding = () => {
+      // Find the navigation element
+      const nav = document.querySelector('nav');
+      if (!nav) {
+        console.log('[HeroSection] Navigation element not found');
+        return;
+      }
+
+      const navHeight = nav.getBoundingClientRect().height;
+      console.log('[HeroSection] Nav height:', navHeight, 'px');
+      
+      // Check if mobile carousel exists
+      const mobileCarousel = document.querySelector('[data-mobile-nav-carousel]');
+      let carouselHeight = 0;
+      if (mobileCarousel) {
+        carouselHeight = mobileCarousel.getBoundingClientRect().height;
+        console.log('[HeroSection] Mobile carousel height:', carouselHeight, 'px');
+      } else {
+        console.log('[HeroSection] No mobile carousel found (desktop view)');
+      }
+
+      const totalNavHeight = navHeight + carouselHeight;
+      console.log('[HeroSection] Total nav height:', totalNavHeight, 'px');
+      
+      // Store nav height for video positioning
+      setNavHeight(totalNavHeight);
+      
+      // Get bottom padding based on screen size
+      const isMobile = window.innerWidth < 768;
+      const bottomPadding = isMobile ? 48 : 64; // pb-12 = 48px, pb-16 = 64px
+      console.log('[HeroSection] Screen width:', window.innerWidth, 'px, isMobile:', isMobile, ', bottomPadding:', bottomPadding, 'px');
+      
+      // Set padding-top: nav height + bottom padding
+      const finalPadding = totalNavHeight + bottomPadding;
+      console.log('[HeroSection] Setting padding-top:', finalPadding, 'px (nav:', totalNavHeight, 'px + bottom:', bottomPadding, 'px)');
+      setPaddingTop(finalPadding);
+    };
+
+    // Calculate on mount
+    calculatePadding();
+
+    // Recalculate on resize
+    let resizeTimeout: NodeJS.Timeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        calculatePadding();
+      }, 100);
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    // Also recalculate after a short delay to ensure nav is rendered
+    const timer = setTimeout(calculatePadding, 100);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimeout);
+      clearTimeout(timer);
+    };
+  }, []);
+
   // Cycle through outcomes every 3 seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -70,9 +137,20 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="min-h-screen snap-start flex items-center justify-center px-4 md:px-content pt-28 pb-12 md:pt-20 md:pb-16 relative overflow-hidden">
+    <section 
+      ref={sectionRef}
+      className="min-h-screen snap-start flex items-center justify-center px-4 md:px-content pb-12 md:pb-16 relative overflow-hidden"
+      style={{ paddingTop: `${paddingTop}px` }}
+    >
       {/* Video background with border radius and padding */}
-      <div className="absolute inset-0 p-4 md:p-6 lg:p-8" style={{ zIndex: 0, paddingTop: 'calc(7rem + 0.5rem)', borderTop: '1px solid rgba(0, 0, 0, 0.1)' }}>
+      <div 
+        className="absolute left-0 right-0 bottom-0 p-4 md:p-6 lg:p-8" 
+        style={{ 
+          zIndex: 0, 
+          top: `${navHeight}px`,
+          borderTop: '1px solid rgba(0, 0, 0, 0.1)' 
+        }}
+      >
         <video
           ref={videoRef}
           autoPlay
@@ -185,20 +263,6 @@ export default function HeroSection() {
                 </div>
               </motion.div>
             </AnimatePresence>
-          </div>
-
-          {/* Progress indicators */}
-          <div className="flex gap-2 justify-center mt-8">
-            {outcomes.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentOutcome(idx)}
-                className={`h-[0.5625rem] rounded-full transition-all ${
-                  idx === currentOutcome ? 'w-12 bg-bla-lime' : 'w-[0.5625rem] bg-gray-300'
-                }`}
-                aria-label={`Go to outcome ${idx + 1}`}
-              />
-            ))}
           </div>
         </motion.div>
       </div>

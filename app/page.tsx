@@ -214,7 +214,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen overflow-y-scroll overflow-x-hidden snap-y snap-mandatory w-full max-w-full">
+    <div className="min-h-screen overflow-y-auto overflow-x-hidden snap-y snap-mandatory w-full" style={{ margin: 0, padding: 0 }}>
       <Navigation showNavCTA={showNavCTA} activeSection={activeSection} />
       <HeroSection />
       <ApproachSection />

@@ -22,7 +22,24 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
-      const navHeight = 60; // Match nav bar height
+      // Calculate nav height dynamically
+      // On desktop: tabs are inside nav bar (60px)
+      // On mobile: tabs are in separate carousel below nav (60px nav + carousel height)
+      const isMobile = window.innerWidth < 768;
+      let navHeight = 60; // Base nav bar height
+      
+      if (isMobile) {
+        // Measure the mobile carousel height if it exists
+        const mobileCarousel = document.querySelector('[data-mobile-nav-carousel]');
+        if (mobileCarousel) {
+          const carouselHeight = mobileCarousel.getBoundingClientRect().height;
+          navHeight = 60 + carouselHeight;
+        } else {
+          // Fallback: approximate height (py-2 padding + link height)
+          navHeight = 108; // 60px nav + ~48px carousel
+        }
+      }
+      
       const elementPosition = element.getBoundingClientRect().top + window.scrollY;
       const offsetPosition = elementPosition - navHeight;
 
@@ -119,7 +136,7 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
       </nav>
       
       {/* Mobile carousel */}
-      <div className="md:hidden fixed top-[60px] left-0 right-0 z-40 bg-white/95 backdrop-blur-sm">
+      <div data-mobile-nav-carousel className="md:hidden fixed top-[60px] left-0 right-0 z-40 bg-white/95 backdrop-blur-sm">
         <div className="flex items-center justify-between px-4 py-2 w-full">
           {navLinks.map((link) => (
             <a
