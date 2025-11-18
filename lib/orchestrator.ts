@@ -1081,7 +1081,7 @@ BELANGRIJK: Je analyseert alleen dit ene bericht. Je hebt geen toegang tot ander
     // Check if we have minimum required info to proceed
     const hasMinimumInfo = 
       (slots.goal || hasInfoInAnswers(['zoek', 'looking', 'hulp', 'help', 'willen', 'doel'])) &&
-      (slots.pain_points?.length > 0 || hasInfoInAnswers(['probleem', 'uitdaging', 'moeilijk', 'struggling'])) &&
+      ((slots.pain_points?.length ?? 0) > 0 || hasInfoInAnswers(['probleem', 'uitdaging', 'moeilijk', 'struggling'])) &&
       (slots.ai_opportunities || slots.manual_hours || hasInfoInAnswers(['tijd', 'uren', 'omzet', 'revenue', 'conversie']));
 
     // If we have minimum info and asked at least 3 questions, we can proceed

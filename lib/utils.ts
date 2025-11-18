@@ -57,7 +57,7 @@ export function sanitizeText(text: string): string {
 
 // Progress calculation
 export function calculateProgress(slots: Slots): number {
-  const slotKeys = Object.keys(slots)
+  const slotKeys = Object.keys(slots) as Array<keyof Slots>
   if (slotKeys.length === 0) return 0
   
   const filledSlots = slotKeys.filter(key => {
