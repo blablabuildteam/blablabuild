@@ -8,7 +8,7 @@ import { LogoIcon } from '@/components/ui/LogoIcon';
 const caseStudies = [
   {
     id: 1,
-    badge: 'Data & AI',
+    badges: ['Data & AI-Strategie', 'Automatisering'],
     title: 'Centrale AI-beheeromgeving voor meerdere websites',
     bullets: [
       'Tijd voor contentwijziging -85%',
@@ -22,7 +22,7 @@ const caseStudies = [
   },
   {
     id: 2,
-    badge: 'Growth & CX',
+    badges: ['High-Impact Groei', 'Data & AI-Strategie'],
     title: 'Schaalbare AI-contentgeneratie voor lokale SEO in Europese steden',
     bullets: [
       'Nieuwe pagina\'s aangemaakt 2.500+',
@@ -36,7 +36,7 @@ const caseStudies = [
   },
   {
     id: 3,
-    badge: 'Data & AI',
+    badges: ['Data & AI-Strategie', 'Automatisering'],
     title: 'AI-productmatching tussen leveranciers en Shopify',
     bullets: [
       'Handmatige invoer -95%',
@@ -50,7 +50,7 @@ const caseStudies = [
   },
   {
     id: 4,
-    badge: 'Automatisering',
+    badges: ['Automatisering', 'Data & AI-Strategie'],
     title: 'Multi-vendor scraping & product-update workflow',
     bullets: [
       '20+ leveranciers gekoppeld',
@@ -64,7 +64,7 @@ const caseStudies = [
   },
   {
     id: 5,
-    badge: 'Data & AI',
+    badges: ['Data & AI-Strategie'],
     title: 'Azure BI-dashboard voor sales & voorraad',
     bullets: [
       '360° inzicht in voorraad en omzet',
@@ -78,7 +78,7 @@ const caseStudies = [
   },
   {
     id: 6,
-    badge: 'Automatisering',
+    badges: ['Automatisering', 'Data & AI-Strategie'],
     title: 'AI-gedreven prijslijst-generator',
     bullets: [
       'Prijsupdate-tijd -90%',
@@ -92,7 +92,7 @@ const caseStudies = [
   },
   {
     id: 7,
-    badge: 'Growth & CX',
+    badges: ['High-Impact Groei', 'Data & AI-Strategie'],
     title: 'Conversational AI voor retail',
     bullets: [
       '85% snellere informatieontsluiting',
@@ -302,11 +302,13 @@ export default function CasesSection() {
                           
                           {/* Content */}
                           <div className="relative z-10 flex flex-col h-full">
-                            {/* Badge */}
-                            <div className="mb-4">
-                              <span className="inline-block px-3 py-1 bg-bla-lime text-bla-dark text-xs font-semibold rounded-[12px]">
-                                {caseStudy.badge}
-                              </span>
+                            {/* Badges */}
+                            <div className="mb-4 flex flex-wrap gap-2">
+                              {caseStudy.badges.map((badge, badgeIdx) => (
+                                <span key={badgeIdx} className="inline-block px-3 py-1 bg-bla-lime text-bla-dark text-xs font-semibold rounded-[12px]">
+                                  {badge}
+                                </span>
+                              ))}
                             </div>
 
                             {/* Title */}
@@ -346,11 +348,13 @@ export default function CasesSection() {
                         }}
                       >
                         <div className="flex flex-col h-full">
-                          {/* Badge */}
-                          <div className="mb-4">
-                            <span className="inline-block px-3 py-1 bg-bla-lime text-bla-dark text-xs font-semibold rounded-full">
-                              {caseStudy.badge}
-                            </span>
+                          {/* Badges */}
+                          <div className="mb-4 flex flex-wrap gap-2">
+                            {caseStudy.badges.map((badge, badgeIdx) => (
+                              <span key={badgeIdx} className="inline-block px-3 py-1 bg-bla-lime text-bla-dark text-xs font-semibold rounded-full">
+                                {badge}
+                              </span>
+                            ))}
                           </div>
 
                           {/* Goal */}
