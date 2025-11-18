@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 import { LogoIcon } from '@/components/ui/LogoIcon';
 
 export default function ApproachSection() {
@@ -22,7 +21,7 @@ export default function ApproachSection() {
       number: 3,
       title: 'Build',
       image: '/build.png',
-      content: 'We gaan direct aan de slag om in enkele weken impact te leveren.'
+      content: 'This is where the magic happens. We gaan direct aan de slag om in enkele weken impact te leveren.'
     },
     {
       number: 4,
@@ -114,31 +113,10 @@ export default function ApproachSection() {
                 damping: 15
               }}
             >
-              <div className={`grid md:grid-cols-4 gap-0 ${step.number === 3 ? 'bg-white/90' : ''}`}>
-                {/* Left: Image */}
+              <div className={`${step.number === 3 ? 'bg-white/90' : ''}`}>
+                {/* Content */}
                 <motion.div 
-                  className="relative h-32 md:h-40 order-2 md:order-1 md:col-span-1 overflow-hidden"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: false, margin: "-100px" }}
-                  transition={{
-                    duration: 0.6,
-                    delay: idx * 0.3 + 0.2,
-                    ease: "easeOut"
-                  }}
-                >
-                  <Image
-                    src={step.image}
-                    alt={step.title}
-                    fill
-                    className="object-contain"
-                    style={{ objectPosition: 'center center' }}
-                  />
-                </motion.div>
-                
-                {/* Right: Content */}
-                <motion.div 
-                  className="p-6 md:p-8 flex flex-col justify-center order-1 md:order-2 md:col-span-3"
+                  className="pl-mobile-x pr-4 pt-4 pb-4 md:pl-[120px] md:pr-[120px] md:pt-6 md:pb-6 flex flex-col justify-start"
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: false, margin: "-100px" }}
@@ -148,9 +126,9 @@ export default function ApproachSection() {
                     ease: "easeOut"
                   }}
                 >
-                  <div className="mb-4">
+                  <div className="mb-4 flex items-center gap-4 flex-wrap">
                     <motion.div 
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-bla-lime rounded-lg text-gray-900"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-bla-lime rounded-lg text-gray-900 flex-shrink-0"
                       initial={{ opacity: 0, scale: 0 }}
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: false, margin: "-100px" }}
@@ -165,10 +143,10 @@ export default function ApproachSection() {
                       <span className="text-lg font-bold">{step.number}</span>
                       <span className={`text-lg ${step.number === 3 ? 'font-bold' : 'font-medium'}`}>{step.title}</span>
                     </motion.div>
+                    <p className="text-gray-700 leading-relaxed text-sm md:text-base flex-1 min-w-0">
+                      {step.content}
+                    </p>
                   </div>
-                  <p className="text-gray-700 leading-relaxed text-sm md:text-base">
-                    {step.content}
-                  </p>
                 </motion.div>
               </div>
             </motion.div>
