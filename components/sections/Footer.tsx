@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="snap-start bg-bla-lime py-10 md:py-12 lg:py-16 flex flex-col relative">
       <div className="mx-auto px-4 md:px-nav w-full flex-1 flex flex-col">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left mb-auto">
-          <div className="flex items-center -ml-4 md:-ml-[60px]">
+          <div className="flex items-center">
             <div className="w-32 h-32 md:w-48 md:h-48 lg:w-64 lg:h-64 flex-shrink-0">
               <Image
                 src="/icon.svg"
