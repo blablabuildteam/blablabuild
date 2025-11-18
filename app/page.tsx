@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowRight, 
@@ -19,17 +19,76 @@ import {
 } from 'lucide-react';
 import { initAnalytics, trackEvent } from '@/lib/analytics';
 import { ShimmeringText } from '@/components/ShimmeringText';
+import dynamic from 'next/dynamic';
 import LinkedInIcon from './LinkedIn_icon.svg.png';
 import Image from 'next/image';
+
+const GLBViewer = dynamic(() => import('@/components/GLBViewer'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center bg-gray-900">
+      <div className="w-16 h-16 border-4 border-bla-lime border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  ),
+});
 
 export default function HomePage() {
   const [currentOutcome, setCurrentOutcome] = useState(0);
   const [showNavCTA, setShowNavCTA] = useState(false);
   const [flippedCards, setFlippedCards] = useState<Set<number | string>>(new Set());
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     initAnalytics();
     trackEvent('page_view', { page: 'home' });
+  }, []);
+
+  // Set video source based on screen size and playback rate
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    const updateVideoSource = () => {
+      if (!videoRef.current) return;
+      const isMobile = window.innerWidth <= 768;
+      const newSrc = isMobile ? '/mobilevideo.mp4' : '/desktopvideo.mp4';
+      const currentSrc = videoRef.current.src || '';
+      
+      // Only update if source needs to change
+      if (currentSrc !== newSrc) {
+        const wasPlaying = !videoRef.current.paused;
+        videoRef.current.src = newSrc;
+        videoRef.current.load();
+        
+        // Set playback rate
+        videoRef.current.playbackRate = 0.7;
+        
+        if (wasPlaying) {
+          videoRef.current.play().catch(() => {
+            // Autoplay may fail, but that's okay
+          });
+        }
+      }
+    };
+
+    // Set initial source immediately
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    videoRef.current.src = isMobile ? '/mobilevideo.mp4' : '/desktopvideo.mp4';
+    videoRef.current.playbackRate = 0.7;
+    
+    // Update on resize with debounce
+    let resizeTimeout: NodeJS.Timeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        updateVideoSource();
+      }, 250);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimeout);
+    };
   }, []);
 
   // Track when "Aanpak" section enters viewport to show nav CTA
@@ -224,7 +283,7 @@ export default function HomePage() {
   return (
     <div className="h-screen overflow-y-scroll snap-y snap-mandatory">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200">
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm" style={{ borderBottom: 'none', boxShadow: 'none' }}>
         <div className="mx-auto px-6 py-3 flex items-center justify-between" style={{ maxWidth: '1250px' }}>
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-bla-lime rounded-md flex items-center justify-center">
@@ -327,80 +386,20 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="min-h-screen snap-start flex items-center justify-center px-6 py-12 md:py-16 relative overflow-hidden">
-        {/* Animated tech background */}
-        <div className="absolute inset-0 opacity-30 pointer-events-none">
-          {/* Animated grid pattern */}
-          <div 
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `
-                linear-gradient(rgba(206, 255, 0, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(206, 255, 0, 0.1) 1px, transparent 1px)
-              `,
-              backgroundSize: '50px 50px',
-            }}
-          />
-          {/* Animated gradient mesh */}
-          <motion.div
-            className="absolute inset-0"
-            style={{
-              background: `
-                radial-gradient(circle at 20% 30%, rgba(206, 255, 0, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(206, 255, 0, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(206, 255, 0, 0.05) 0%, transparent 50%)
-              `,
-            }}
-            animate={{
-              background: [
-                `
-                  radial-gradient(circle at 20% 30%, rgba(206, 255, 0, 0.15) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 70%, rgba(206, 255, 0, 0.1) 0%, transparent 50%),
-                  radial-gradient(circle at 50% 50%, rgba(206, 255, 0, 0.05) 0%, transparent 50%)
-                `,
-                `
-                  radial-gradient(circle at 30% 40%, rgba(206, 255, 0, 0.15) 0%, transparent 50%),
-                  radial-gradient(circle at 70% 60%, rgba(206, 255, 0, 0.1) 0%, transparent 50%),
-                  radial-gradient(circle at 60% 40%, rgba(206, 255, 0, 0.05) 0%, transparent 50%)
-                `,
-                `
-                  radial-gradient(circle at 20% 30%, rgba(206, 255, 0, 0.15) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 70%, rgba(206, 255, 0, 0.1) 0%, transparent 50%),
-                  radial-gradient(circle at 50% 50%, rgba(206, 255, 0, 0.05) 0%, transparent 50%)
-                `,
-              ],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-          {/* Floating particles */}
-          {[...Array(6)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full"
-              style={{
-                width: `${4 + i * 2}px`,
-                height: `${4 + i * 2}px`,
-                background: 'rgba(206, 255, 0, 0.2)',
-                left: `${10 + i * 15}%`,
-                top: `${20 + i * 10}%`,
-              }}
-              animate={{
-                y: [0, -20, 0],
-                x: [0, 10, 0],
-                opacity: [0.2, 0.4, 0.2],
-              }}
-              transition={{
-                duration: 3 + i * 0.5,
-                repeat: Infinity,
-                delay: i * 0.3,
-                ease: 'easeInOut',
-              }}
-            />
-          ))}
+      <section className="min-h-screen snap-start flex items-center justify-center px-6 pt-24 pb-12 md:pt-16 md:pb-16 relative overflow-hidden">
+        {/* Video background with border radius and padding */}
+        <div className="absolute inset-0 p-4 md:p-6 lg:p-8" style={{ zIndex: 0, paddingTop: 'calc(3rem + 12px)', borderTop: '1px solid rgba(0, 0, 0, 0.1)' }}>
+          <video
+            ref={videoRef}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover rounded-2xl md:rounded-3xl"
+            src="/mobilevideo.mp4"
+          >
+            {/* Video source will be set dynamically via useEffect based on screen size */}
+          </video>
         </div>
         <div className="mx-auto text-center w-full relative z-10" style={{ maxWidth: '1250px' }}>
           <motion.div
@@ -828,103 +827,115 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
             {/* Card 1: DATA & AI-STRATEGIE */}
             <motion.div 
-              className="p-6 rounded-xl border border-gray-700 hover:border-bla-lime transition-all"
-              style={{ backgroundColor: '#111828' }}
+              className="p-6 rounded-xl border border-gray-300 hover:border-bla-lime transition-all bg-gray-100"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              <h3 className="text-xl md:text-2xl font-bold mb-4 text-white">Data & AI-Strategie</h3>
-              <div className="h-48 bg-gray-900 rounded-xl flex items-center justify-center mb-4 group hover:bg-gray-800 transition-all">
-                <Database className="w-20 h-20 text-bla-lime group-hover:scale-110 transition-transform" />
+              <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900">Data & AI-Strategie</h3>
+              <div className="h-48 rounded-xl flex items-center justify-center mb-4 group transition-all overflow-hidden">
+                <GLBViewer 
+                  src="/3dobjects/Spheres.glb" 
+                  className="w-full h-full"
+                  autoRotate={true}
+                  rotationSpeed={0.3}
+                />
               </div>
-              <p className="text-sm italic text-gray-300 mb-3">Van onzekerheid naar gegarandeerde groei</p>
-              <p className="text-sm text-gray-300 mb-4 leading-relaxed">
-                We pakken het gebrek aan data-inzichten en wrijving door gedecentraliseerde informatie aan. Complexe data vertalen we naar een <strong className="text-white">duidelijk overzicht van jouw kansen</strong>.
+              <p className="text-sm italic text-gray-600 mb-3">Van onzekerheid naar gegarandeerde groei</p>
+              <p className="text-sm text-gray-700 mb-4 leading-relaxed">
+                We pakken het gebrek aan data-inzichten en wrijving door gedecentraliseerde informatie aan. Complexe data vertalen we naar een <strong className="text-gray-900">duidelijk overzicht van jouw kansen</strong>.
               </p>
               <ul className="space-y-2">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-gray-300"><strong className="text-white">Data Centralisatie</strong> (Silo's doorbreken)</span>
+                  <span className="text-sm text-gray-700"><strong className="text-gray-900">Data Centralisatie</strong> (Silo's doorbreken)</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-gray-300"><strong className="text-white">Real-time Inzicht & Dashboarding</strong> (Directe sturing)</span>
+                  <span className="text-sm text-gray-700"><strong className="text-gray-900">Real-time Inzicht & Dashboarding</strong> (Directe sturing)</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-gray-300"><strong className="text-white">Voorspellende Analyse</strong> (Kansen in kaart)</span>
+                  <span className="text-sm text-gray-700"><strong className="text-gray-900">Voorspellende Analyse</strong> (Kansen in kaart)</span>
                 </li>
               </ul>
             </motion.div>
 
             {/* Card 2: HIGH-IMPACT GROEI */}
             <motion.div 
-              className="p-6 rounded-xl border border-gray-700 hover:border-bla-lime transition-all"
-              style={{ backgroundColor: '#111828' }}
+              className="p-6 rounded-xl border border-gray-300 hover:border-bla-lime transition-all bg-gray-100"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <h3 className="text-xl md:text-2xl font-bold mb-4 text-white">High-Impact Groei</h3>
-              <div className="h-48 bg-gray-900 rounded-xl flex items-center justify-center mb-4 group hover:bg-gray-800 transition-all">
-                <TrendingUp className="w-20 h-20 text-bla-lime group-hover:scale-110 transition-transform" />
+              <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900">High-Impact Groei</h3>
+              <div className="h-48 rounded-xl flex items-center justify-center mb-4 group transition-all overflow-hidden">
+                <GLBViewer 
+                  src="/3dobjects/Plus.glb" 
+                  className="w-full h-full"
+                  autoRotate={true}
+                  rotationSpeed={0.3}
+                />
               </div>
-              <p className="text-sm italic text-gray-300 mb-3">Van gestagneerde resultaten naar snelle meetbare groei</p>
-              <p className="text-sm text-gray-300 mb-4 leading-relaxed">
-                We elimineren wrijving in de klantervaring, focussen op <strong className="text-white">snelle impact</strong> en <em>low-hanging fruit</em>. Het resultaat? Duurzame groei die <strong className="text-white">meetbaar is in weken</strong>, niet maanden.
+              <p className="text-sm italic text-gray-600 mb-3">Van gestagneerde resultaten naar snelle meetbare groei</p>
+              <p className="text-sm text-gray-700 mb-4 leading-relaxed">
+                We elimineren wrijving in de klantervaring, focussen op <strong className="text-gray-900">snelle impact</strong> en <em>low-hanging fruit</em>. Het resultaat? Duurzame groei die <strong className="text-gray-900">meetbaar is in weken</strong>, niet maanden.
               </p>
               <ul className="space-y-2">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-gray-300"><strong className="text-white">Full-Funnel Groei-Analyse</strong> (Cross-Channel)</span>
+                  <span className="text-sm text-gray-700"><strong className="text-gray-900">Full-Funnel Groei-Analyse</strong> (Cross-Channel)</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-gray-300"><strong className="text-white">Web- & E-commerce Optimalisatie</strong> (CX)</span>
+                  <span className="text-sm text-gray-700"><strong className="text-gray-900">Web- & E-commerce Optimalisatie</strong> (CX)</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-gray-300"><strong className="text-white">Strategische SEA, SEO & AEO</strong> (Gerichte inzet)</span>
+                  <span className="text-sm text-gray-700"><strong className="text-gray-900">Strategische SEA, SEO & AEO</strong> (Gerichte inzet)</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-gray-300"><strong className="text-white">Gepersonaliseerde Automatisering</strong> (Efficiënte campagnes)</span>
+                  <span className="text-sm text-gray-700"><strong className="text-gray-900">Gepersonaliseerde Automatisering</strong> (Efficiënte campagnes)</span>
                 </li>
               </ul>
             </motion.div>
 
             {/* Card 3: AUTOMATISERING & EFFICIËNTIE */}
             <motion.div 
-              className="p-6 rounded-xl border border-gray-700 hover:border-bla-lime transition-all"
-              style={{ backgroundColor: '#111828' }}
+              className="p-6 rounded-xl border border-gray-300 hover:border-bla-lime transition-all bg-gray-100"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <h3 className="text-xl md:text-2xl font-bold mb-4 text-white">Automatisering</h3>
-              <div className="h-48 bg-gray-900 rounded-xl flex items-center justify-center mb-4 group hover:bg-gray-800 transition-all">
-                <Zap className="w-20 h-20 text-bla-lime group-hover:scale-110 transition-transform" />
+              <h3 className="text-xl md:text-2xl font-bold mb-4 text-gray-900">Automatisering</h3>
+              <div className="h-48 rounded-xl flex items-center justify-center mb-4 group transition-all overflow-hidden">
+                <GLBViewer 
+                  src="/3dobjects/Hair_ring_02.glb" 
+                  className="w-full h-full"
+                  autoRotate={true}
+                  rotationSpeed={0.3}
+                />
               </div>
-              <p className="text-sm italic text-gray-300 mb-3">Van hoge kosten en lange processen naar AI workflows</p>
-              <p className="text-sm text-gray-300 mb-4 leading-relaxed">
-                Bedrijven missen tijd voor innovatie door dagelijkse operaties. We zetten onze senioriteit en AI-engine in om <strong className="text-white">80% van de overhead</strong> en wrijving te elimineren door naadloze integratie van AI-workflows.
+              <p className="text-sm italic text-gray-600 mb-3">Van hoge kosten en lange processen naar AI workflows</p>
+              <p className="text-sm text-gray-700 mb-4 leading-relaxed">
+                Bedrijven missen tijd voor innovatie door dagelijkse operaties. We zetten onze senioriteit en AI-engine in om <strong className="text-gray-900">80% van de overhead</strong> en wrijving te elimineren door naadloze integratie van AI-workflows.
               </p>
               <ul className="space-y-2">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-gray-300"><strong className="text-white">CRM & Lead Orchestratie</strong></span>
+                  <span className="text-sm text-gray-700"><strong className="text-gray-900">CRM & Lead Orchestratie</strong></span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-gray-300"><strong className="text-white">Supply Chain & Logistiek Automatisering</strong></span>
+                  <span className="text-sm text-gray-700"><strong className="text-gray-900">Supply Chain & Logistiek Automatisering</strong></span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-gray-300"><strong className="text-white">Interne Workflow Automatisering</strong> (Uren/Documentatie)</span>
+                  <span className="text-sm text-gray-700"><strong className="text-gray-900">Interne Workflow Automatisering</strong> (Uren/Documentatie)</span>
                 </li>
               </ul>
             </motion.div>
@@ -1157,13 +1168,20 @@ export default function HomePage() {
           transition={{ duration: 0.7, type: "spring", stiffness: 80 }}
         >
           <motion.h2 
-            className="text-2xl md:text-3xl font-bold mb-3"
+            className="text-2xl md:text-3xl font-bold mb-3 flex items-center justify-center gap-2"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
             Klaar om te starten?
+            <Image 
+              src="/3dobjects/png/Ribbed triangle.png" 
+              alt="Ribbed triangle" 
+              width={32} 
+              height={32}
+              className="inline-block w-8 h-8 md:w-10 md:h-10"
+            />
           </motion.h2>
           <motion.p 
             className="text-sm text-gray-600 mb-6"
