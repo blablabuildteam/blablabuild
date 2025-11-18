@@ -139,12 +139,12 @@ export default function HeroSection() {
   return (
     <section 
       ref={sectionRef}
-      className="min-h-screen snap-start flex items-center justify-center px-4 md:px-content pb-12 md:pb-16 relative overflow-hidden"
+      className="min-h-screen snap-start flex items-center justify-center px-4 md:px-nav pb-12 md:pb-16 relative overflow-hidden"
       style={{ paddingTop: `${paddingTop}px` }}
     >
       {/* Video background with border radius and padding */}
       <div 
-        className="absolute left-0 right-0 bottom-0 p-4 md:p-6 lg:p-8" 
+        className="absolute left-0 right-0 bottom-0 px-4 md:px-nav py-4 md:py-6 lg:py-8" 
         style={{ 
           zIndex: 0, 
           top: `${navHeight}px`,
