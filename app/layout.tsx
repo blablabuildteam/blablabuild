@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import AIWidget from "@/components/AIWidget";
 import PasswordGate from "@/components/PasswordGate";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "blablabuild | AI & Automatisering voor Snelle Groei",
@@ -28,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="nl">
-      <body className={inter.className}>
+      <body>
         <PasswordGate>
           {children}
           <AIWidget />

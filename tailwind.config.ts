@@ -15,12 +15,12 @@ const config: Config = {
   				'sans-serif'
   			],
   			sans: [
-  				'Inter',
+  				'Matter',
   				'system-ui',
   				'sans-serif'
   			],
   			thin: [
-  				'Inter',
+  				'Matter',
   				'system-ui',
   				'sans-serif'
   			]
@@ -132,7 +132,13 @@ const config: Config = {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+		spacing: {
+			'nav': '60px',
+			'content': '120px',
+			'mobile-x': '16px',
+			'card-padding': '24px'
+		}
   	}
   },
   plugins: [require("tailwindcss-animate")],
