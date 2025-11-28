@@ -1,159 +1,208 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { LogoIcon } from '@/components/ui/LogoIcon';
+import { motion, useInView } from 'framer-motion';
+import Image from 'next/image';
+import { useRef } from 'react';
 
-export default function ApproachSection() {
-  const steps = [
-    {
-      number: 1,
-      title: 'Bla',
-      image: '/bla1.png',
-      content: 'We bellen een keer of doen een koffietje om jouw situatie te bespreken'
+// Image assets from Figma
+const imgImage14 = "https://www.figma.com/api/mcp/asset/874bde05-bbfc-42a0-bfa9-0fbd41044c9c";
+const imgImage18 = "https://www.figma.com/api/mcp/asset/b7119e5a-d036-4ed1-9377-a12dc9228b27";
+const imgChain1 = "https://www.figma.com/api/mcp/asset/95802efc-77d1-4b0a-bada-39377d4973ff";
+
+const steps = [
+  {
+    number: 1,
+    label: 'Stap 1',
+    title: 'Bla #1',
+    description: 'We bellen een keer of doen een koffietje om jouw situatie te bespreken',
+    image: imgImage14,
+  },
+  {
+    number: 2,
+    label: 'Stap 2',
+    title: 'Bla #2',
+    description: 'We bereiden een sessie voor om met jou en je team de diepte in te duiken en een plan te maken.',
+    image: imgImage14,
+  },
+  {
+    number: 3,
+    label: 'Stap 3',
+    title: 'Build',
+    description: 'This is where the magic happens. We gaan direct aan de slag om in enkele weken impact te leveren.',
+    image: imgChain1,
+  },
+  {
+    number: 4,
+    label: 'Stap 4',
+    title: 'Scale',
+    description: 'Ons ultieme einddoel. Bij het behalen van beoogde resultaten blijven we aan als jouw innovatie partner op geschaald success te behalen.',
+    image: imgImage18,
+  },
+];
+
+// Step item component with individual element animations
+function StepItem({ step, idx }: { step: typeof steps[0]; idx: number }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px 0px" });
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.1,
+      },
     },
-    {
-      number: 2,
-      title: 'Bla',
-      image: '/bla2.png',
-      content: 'We bereiden een sessie voor om met jou en je team de diepte in te duiken en een plan te maken.'
+  };
+
+  const labelVariants = {
+    hidden: { opacity: 0, x: -40 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.25, 0.4, 0.25, 1],
+      },
     },
-    {
-      number: 3,
-      title: 'Build',
-      image: '/build.png',
-      content: 'This is where the magic happens. We gaan direct aan de slag om in enkele weken impact te leveren.'
+  };
+
+  const titleVariants = {
+    hidden: { opacity: 0, y: 30, filter: 'blur(8px)' },
+    visible: {
+      opacity: 1,
+      y: 0,
+      filter: 'blur(0px)',
+      transition: {
+        duration: 0.6,
+        ease: [0.25, 0.4, 0.25, 1],
+      },
     },
-    {
-      number: 4,
-      title: 'Scale',
-      image: '/line-chart.png',
-      content: 'Ons ultieme einddoel. Bij het behalen van beoogde resultaten blijven we aan als jouw innovatie partner op geschaald success te behalen.'
-    }
-  ];
+  };
+
+  const descriptionVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.25, 0.4, 0.25, 1],
+      },
+    },
+  };
+
+  const imageVariants = {
+    hidden: { opacity: 0, scale: 0.8, rotate: -5 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      rotate: 0,
+      transition: {
+        duration: 0.7,
+        ease: [0.25, 0.4, 0.25, 1],
+      },
+    },
+  };
+
+  const dividerVariants = {
+    hidden: { scaleX: 0, originX: 0 },
+    visible: {
+      scaleX: 1,
+      transition: {
+        duration: 0.8,
+        ease: [0.25, 0.4, 0.25, 1],
+      },
+    },
+  };
 
   return (
-    <section id="aanpak" className="min-h-screen snap-start flex items-center justify-center bg-gray-50 px-4 md:px-content py-16 md:py-20 lg:py-24">
-      <div className="mx-auto w-full max-w-6xl">
-        {/* Section Header */}
+    <motion.div
+      ref={ref}
+      className="relative"
+      variants={containerVariants}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+    >
+      {/* Divider Line */}
+      {idx > 0 && (
+        <motion.div
+          className="w-full h-px bg-white/30 mb-8"
+          variants={dividerVariants}
+        />
+      )}
+
+      <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-12 py-8 md:py-12">
+        {/* Step Label */}
+        <motion.div className="flex-shrink-0 w-[80px]" variants={labelVariants}>
+          <p className="font-host font-bold text-lg md:text-xl text-bla-lime">
+            {step.label}
+          </p>
+        </motion.div>
+
+        {/* Title & Description */}
+        <div className="flex-1 max-w-[416px]">
+          <motion.h3
+            className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-bla-lime mb-4"
+            variants={titleVariants}
+          >
+            {step.title}
+          </motion.h3>
+          <motion.p
+            className="font-host font-normal text-base md:text-lg text-white leading-relaxed"
+            variants={descriptionVariants}
+          >
+            {step.description}
+          </motion.p>
+        </div>
+
+        {/* Image */}
+        <motion.div
+          className="flex-shrink-0 w-[200px] h-[200px] md:w-[245px] md:h-[245px] ml-auto hidden md:block"
+          variants={imageVariants}
+        >
+          <img
+            src={step.image}
+            alt=""
+            className="w-full h-full object-contain"
+          />
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
+export default function ApproachSection() {
+  return (
+    <section id="aanpak" className="min-h-screen snap-start bg-bla-blue py-16 md:py-24 px-4 md:px-16 overflow-hidden">
+      <div className="mx-auto w-full max-w-[1312px]">
+        {/* Header */}
         <motion.div 
-          className="text-center mb-12 md:mb-16 lg:mb-20"
+          className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <div className="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-bla-lime rounded-[12px] mb-4">
-            <LogoIcon className="w-3 h-3 flex-shrink-0 self-center" />
-            <p className="text-[10px] uppercase tracking-wider text-gray-900 font-medium leading-[1.2] self-center">VAN EERSTE CONTACT TOT SCHAALBARE IMPACT</p>
-          </div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <style>{`
-              @keyframes diagonal-shimmer {
-                0% { 
-                  background-position: 200% 200%;
-                }
-                100% { 
-                  background-position: -200% -200%;
-                }
-              }
-              @keyframes border-shimmer {
-                0% { 
-                  background-position: 0% 0%;
-                }
-                100% { 
-                  background-position: 200% 200%;
-                }
-              }
-            `}</style>
-            Geen agency bullsh
-            <span
-              className="inline-block relative"
-              style={{
-                background: 'linear-gradient(135deg, currentColor 0%, rgba(255,255,255,0.9) 50%, currentColor 100%)',
-                backgroundSize: '200% 200%',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                animation: 'diagonal-shimmer 3s ease-in-out infinite',
-                animationDelay: '1s',
-              }}
-            >
-              *
-            </span>
-            t, simpelweg resultaat
+          <h2 className="font-host font-medium text-3xl md:text-[48px] text-white max-w-[512px] leading-tight">
+            Geen agency <span className="text-bla-lime">bullsh*t,</span> simpelweg resultaat
           </h2>
-          <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
+          <p className="font-host font-medium text-lg md:text-2xl text-white max-w-[521px]">
             Een simpele aanpak dat ervoor zorgt dat we snel impact kunnen maken
           </p>
         </motion.div>
 
-        {/* List Section */}
-        <div className="space-y-8 md:space-y-12">
+        {/* Divider */}
+        <div className="w-full h-px bg-white/30 mb-8" />
+
+        {/* Steps */}
+        <div className="space-y-0">
           {steps.map((step, idx) => (
-            <motion.div
-              key={idx}
-              className={`relative rounded-xl overflow-hidden transition-all shadow-sm ${
-                step.number === 3 
-                  ? '' 
-                  : 'bg-white border border-gray-200 hover:border-bla-lime'
-              }`}
-              style={step.number === 3 ? {
-                background: 'linear-gradient(135deg, rgba(206, 255, 0, 0.25) 0%, rgba(206, 255, 0, 0.08) 50%, rgba(206, 255, 0, 0.25) 100%)',
-                backgroundSize: '200% 200%',
-                animation: 'border-shimmer 3s ease-in-out infinite'
-              } : {}}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, margin: "-100px" }}
-              transition={{
-                duration: 0.8,
-                delay: idx * 0.3,
-                type: "spring",
-                stiffness: 80,
-                damping: 15
-              }}
-            >
-              <div className={`${step.number === 3 ? 'bg-white/90' : ''}`}>
-                {/* Content */}
-                <motion.div 
-                  className="pl-mobile-x pr-4 pt-4 pb-4 md:pl-[120px] md:pr-[120px] md:pt-6 md:pb-6 flex flex-col justify-start"
-                  initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: false, margin: "-100px" }}
-                  transition={{
-                    duration: 0.6,
-                    delay: idx * 0.3 + 0.1,
-                    ease: "easeOut"
-                  }}
-                >
-                  <div className="mb-4 flex items-center gap-4 flex-wrap">
-                    <motion.div 
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-bla-lime rounded-lg text-gray-900 flex-shrink-0"
-                      initial={{ opacity: 0, scale: 0 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: false, margin: "-100px" }}
-                      transition={{
-                        duration: 0.5,
-                        delay: idx * 0.3 + 0.15,
-                        type: "spring",
-                        stiffness: 200,
-                        damping: 15
-                      }}
-                    >
-                      <span className="text-lg font-bold">{step.number}</span>
-                      <span className={`text-lg ${step.number === 3 ? 'font-bold' : 'font-medium'}`}>{step.title}</span>
-                    </motion.div>
-                    <p className="text-gray-700 leading-relaxed text-sm md:text-base flex-1 min-w-0">
-                      {step.content}
-                    </p>
-                  </div>
-                </motion.div>
-              </div>
-            </motion.div>
+            <StepItem key={step.number} step={step} idx={idx} />
           ))}
         </div>
       </div>
     </section>
   );
 }
-

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import AIWidget from "@/components/AIWidget";
 import PasswordGate from "@/components/PasswordGate";
 
 export const metadata: Metadata = {
@@ -28,7 +27,6 @@ export default function RootLayout({
       <body>
         <PasswordGate>
           {children}
-          <AIWidget />
         </PasswordGate>
       </body>
     </html>

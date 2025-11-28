@@ -1,143 +1,222 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { CheckCircle2 } from 'lucide-react';
-import Image from 'next/image';
-import LinkedInIcon from '@/app/LinkedIn_icon.svg.png';
-import { ShimmeringText } from '@/components/ShimmeringText';
-import { LogoIcon } from '@/components/ui/LogoIcon';
+import { useRef, useEffect, useState, useCallback } from 'react';
 
 const founders = [
   {
     name: 'Daniel',
-    role: 'Data, Tech & AI',
-    focus: 'AI, Technologie en Data',
-    description: 'Brengt strategie, data en cutting-edge AI-technologie samen. Vertaalt complexe uitdagingen naar slimme, schaalbare oplossingen door razendsnelle prototyping.',
-    highlights: [
-      'Toekomstbestendige AI-Strategie',
-      'Operationele AI/Data Workflows',
-      'Bewezen Thought Leadership',
-      'Prototyping Expert',
-    ],
-    linkedin: 'https://www.linkedin.com/in/danieldevos/',
+    role: 'Data, tech & AI',
+    description: 'Combineert AI consulting, tech en productie kennis om complexiteit te vertalen naar concrete en uitvoerbare kansen met focus op het stroomlijnen organisaties.',
+    cardRotation: 3.886,
+    cardSkew: 1.267,
   },
   {
     name: 'Kevin',
     role: 'Growth & CX',
-    focus: 'Markt, Merk en Conversie',
     description: 'Combineert strategische visie met hands-on ondernemerschap om schaalbare digitale oplossingen te leveren. Specialisatie ligt in het winnen van de markt door een sterke merkidentiteit en conversiekracht.',
-    highlights: [
-      'E-commerce & Conversie',
-      'Merkopbouw & Emotie',
-      'Data-gedreven Groei',
-    ],
-    linkedin: 'https://www.linkedin.com/in/kevin-roos-van-raadshooven-941b9732/',
+    cardRotation: -4.331,
+    cardSkew: -1.411,
   },
   {
     name: 'Xennith',
     role: 'Business Transformation',
-    focus: 'Structuur, Proces & Implementatie',
     description: 'Combineert AI consulting, tech en productie kennis om complexiteit te vertalen naar concrete en uitvoerbare kansen met focus op het stroomlijnen organisaties.',
-    highlights: [
-      'Enterprise Strategie Ervaring',
-      'Van Pijn naar Plan',
-      'Meetbaar Groei Focus',
-      'Operationele Efficiëntie',
-    ],
-    linkedin: 'https://www.linkedin.com/in/xennith/',
+    cardRotation: 4.359,
+    cardSkew: 1.42,
   },
 ];
 
-export default function TeamSection() {
+// Canvas-based video frame display for smooth scroll-driven playback
+function VideoCanvas({ 
+  videoRef, 
+  className 
+}: { 
+  videoRef: React.RefObject<HTMLVideoElement | null>;
+  className?: string;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+    if (!canvas || !video) return;
+
+    const ctx = canvas.getContext('2d', { alpha: false });
+    if (!ctx) return;
+
+    const drawFrame = () => {
+      if (video.readyState >= 2) {
+        // Set canvas size to match video
+        if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+          canvas.width = video.videoWidth || 1920;
+          canvas.height = video.videoHeight || 1080;
+        }
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      }
+      animationRef.current = requestAnimationFrame(drawFrame);
+    };
+
+    drawFrame();
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [videoRef]);
+
   return (
-    <section id="team" className="min-h-screen snap-start flex items-center justify-center bg-white px-4 md:px-content py-16 md:py-20 lg:py-24">
-      <div className="mx-auto w-full">
-        <motion.div 
-          className="text-center mb-10 md:mb-12 lg:mb-14"
-          initial={{ opacity: 0, y: 20 }}
+    <canvas 
+      ref={canvasRef} 
+      className={className}
+      style={{ imageRendering: 'auto' }}
+    />
+  );
+}
+
+export default function TeamSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoDuration, setVideoDuration] = useState(0);
+
+  const handleVideoLoaded = useCallback(() => {
+    if (videoRef.current) {
+      setVideoDuration(videoRef.current.duration);
+      videoRef.current.currentTime = 0;
+    }
+  }, []);
+
+  // Scroll-driven video playback
+  useEffect(() => {
+    const section = sectionRef.current;
+    const video = videoRef.current;
+    if (!section || !video || videoDuration === 0) return;
+
+    let ticking = false;
+    let lastSetTime = 0;
+
+    const handleScroll = () => {
+      if (ticking) return;
+      
+      ticking = true;
+      requestAnimationFrame(() => {
+        const rect = section.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        
+        // Video starts when section top enters bottom third of viewport
+        // This makes it start earlier than waiting for center
+        const startTrigger = viewportHeight * 0.7; // Start when section top is at 70% down viewport
+        
+        // Video ends when section bottom reaches top of viewport
+        const scrollRange = rect.height + startTrigger;
+        
+        // Calculate progress: 0 when section top at startTrigger, 1 when section bottom leaves viewport top
+        const distanceScrolled = startTrigger - rect.top;
+        const progress = Math.max(0, Math.min(1, distanceScrolled / scrollRange));
+        
+        // Set video time directly
+        const targetTime = progress * videoDuration;
+        
+        // Only update if section is in/near viewport and time changed enough
+        if (rect.bottom > -100 && rect.top < viewportHeight + 100) {
+          if (Math.abs(lastSetTime - targetTime) > 0.05) {
+            video.currentTime = targetTime;
+            lastSetTime = targetTime;
+          }
+        }
+        
+        ticking = false;
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [videoDuration]);
+
+  return (
+    <section 
+      ref={sectionRef}
+      id="team" 
+      className="min-h-screen flex flex-col justify-center bg-white px-4 md:px-16 py-16 md:py-24"
+    >
+      {/* Hidden video element - single source of truth */}
+      <video
+        ref={videoRef}
+        src="/5793002-hd_1920_1080_30fps.mp4"
+        className="hidden"
+        muted
+        playsInline
+        preload="auto"
+        onLoadedMetadata={handleVideoLoaded}
+      />
+
+      <div className="mx-auto w-full max-w-[1312px]">
+        {/* Header */}
+        <motion.h2
+          className="font-host font-medium text-3xl md:text-[48px] text-black text-center max-w-[820px] mx-auto leading-tight mb-12 md:mb-20"
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <div className="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-bla-lime rounded-[12px] mb-4">
-            <LogoIcon className="w-3 h-3 flex-shrink-0 self-center" />
-            <p className="text-[10px] uppercase tracking-wider text-gray-900 font-medium leading-[1.2] self-center">Senioriteit zonder Overhead</p>
-          </div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-2">
-            Het High-Impact Orchestration Team
-          </h2>
-          <motion.div 
-            className="text-center mt-4"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <p className="text-base md:text-lg text-black">
-              Gecombineerd meer dan{' '}
-              <ShimmeringText
-                text="50 jaar"
-                duration={2}
-                color="#000000"
-                shimmeringColor="#CEFF00"
-                className="font-bold"
-              />
-              {' '}digitale ervaring.
-            </p>
-          </motion.div>
-        </motion.div>
+          Dat betekent voor jou senioriteit die de handen uit de mouwen steekt
+        </motion.h2>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        {/* Team Cards */}
+        <div className="grid md:grid-cols-3 gap-8 md:gap-6">
           {founders.map((founder, idx) => (
             <motion.div
               key={founder.name}
-              className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:border-bla-lime transition-all relative"
-              initial={{ opacity: 0, x: idx % 2 === 0 ? -50 : 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              className="relative"
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ 
                 duration: 0.6,
-                delay: idx * 0.1,
+                delay: idx * 0.15,
                 type: "spring",
                 stiffness: 100,
-                damping: 12
+                damping: 15
               }}
             >
-              {/* LinkedIn Icon - Top Right */}
-              <a
-                href={founder.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="absolute top-4 right-4 w-6 h-6 hover:scale-110 transition-transform"
-              >
-                <Image
-                  src={LinkedInIcon}
-                  alt="LinkedIn"
-                  width={24}
-                  height={24}
-                  className="w-6 h-6"
+              {/* Yellow Background Card - Rotated */}
+              <div
+                className="absolute inset-0 bg-bla-lime rounded-xl -z-10"
+                style={{
+                  transform: `rotate(${founder.cardRotation}deg) skewX(${founder.cardSkew}deg)`,
+                  top: '-12px',
+                  left: '-12px',
+                  right: '-12px',
+                  bottom: '-12px',
+                }}
+              />
+
+              {/* Canvas displaying video frame - all show same frame */}
+              <div className="aspect-[416/529] w-full rounded-xl overflow-hidden mb-4 bg-gray-100">
+                <VideoCanvas 
+                  videoRef={videoRef} 
+                  className="w-full h-full object-cover"
                 />
-              </a>
-
-              <div className="w-12 h-12 bg-bla-lime rounded-lg flex items-center justify-center mb-4 text-xl font-bold text-bla-dark">
-                {founder.name.charAt(0)}
               </div>
-              
-              <h3 className="text-xl font-bold mb-1">{founder.name}</h3>
-              <p className="text-sm text-gray-600 mb-4">{founder.role}</p>
-              
-              <p className="text-sm text-gray-700 mb-4 leading-relaxed">
-                {founder.description}
-              </p>
 
-              <ul className="space-y-2">
-                {founder.highlights.map((highlight) => (
-                  <li key={highlight} className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-bla-lime mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-gray-600">{highlight}</span>
-                  </li>
-                ))}
-              </ul>
+              {/* Info */}
+              <div className="mt-6">
+                <h3 className="font-host font-bold text-lg md:text-xl text-black">
+                  {founder.name}
+                </h3>
+                <p className="font-host font-normal text-lg md:text-xl text-bla-blue mb-4">
+                  {founder.role}
+                </p>
+                <p className="font-host font-normal text-sm md:text-base text-[#85867f] leading-relaxed">
+                  {founder.description}
+                </p>
+              </div>
             </motion.div>
           ))}
         </div>
@@ -145,4 +224,3 @@ export default function TeamSection() {
     </section>
   );
 }
-

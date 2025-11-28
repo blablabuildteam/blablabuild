@@ -23,12 +23,18 @@ const config: Config = {
   				'Matter',
   				'system-ui',
   				'sans-serif'
+  			],
+  			'host': [
+  				'Host Grotesk',
+  				'system-ui',
+  				'sans-serif'
   			]
   		},
   		colors: {
   			bla: {
   				lime: '#CEFF00',
-  				dark: '#0a0a0a',
+  				blue: '#1125FF',
+  				dark: '#151F28',
   				charcoal: '#1a1a1a',
   				'charcoal-light': '#2a2a2a',
   				'charcoal-border': '#333333',
@@ -36,7 +42,8 @@ const config: Config = {
   				'gray-light': '#f3f4f6',
   				border: '#e5e7eb',
   				'text-light': '#e5e5e5',
-  				'text-muted': '#999999'
+  				'text-muted': '#999999',
+  				lavender: '#e7e8ff'
   			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
