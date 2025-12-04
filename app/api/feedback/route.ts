@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ReinforcementLearning } from '@/lib/reinforcement';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -25,7 +25,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await ReinforcementLearning.recordFeedback(sessionId, rating, comment);
+    // Store feedback as an event
+    await supabaseAdmin.from('events').insert({
+      session_id: sessionId,
+      type: 'feedback',
+      payload: {
+        rating,
+        comment,
+        timestamp: new Date().toISOString(),
+      },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
@@ -36,4 +45,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-

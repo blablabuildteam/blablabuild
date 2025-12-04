@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ConversationOrchestrator } from '@/lib/orchestrator';
+import { GeminiChat } from '@/lib/gemini';
 import { supabaseAdmin } from '@/lib/supabase';
 import { nanoid } from 'nanoid';
 
@@ -7,7 +7,6 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
-  const endpoint = '/api/chat';
   console.log('📨 POST /api/chat - Request received');
   try {
     const body = await req.json();
@@ -22,7 +21,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validate sessionId format if provided (must start with 'session_' or be UUID)
+    // Validate sessionId format if provided
     if (sessionId && typeof sessionId === 'string') {
       const isValidSessionId = sessionId.startsWith('session_') || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId);
       if (!isValidSessionId) {
@@ -34,50 +33,42 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Initialize or load orchestrator
-    let orchestrator: ConversationOrchestrator;
-    let newSessionId = sessionId;
+    let activeSessionId = sessionId;
 
-    if (sessionId) {
-      console.log('🔄 Loading existing session:', sessionId);
-      // Load existing session
-      orchestrator = new ConversationOrchestrator(sessionId, endpoint);
-      await orchestrator.loadState(sessionId);
-    } else {
+    // Create new session if none provided
+    if (!sessionId) {
       console.log('🆕 Creating new session');
-      // Create new session
-      newSessionId = `session_${nanoid()}`;
-      orchestrator = new ConversationOrchestrator(newSessionId, endpoint);
+      activeSessionId = `session_${nanoid()}`;
 
-      // Create session record
       await supabaseAdmin.from('sessions').insert({
-        id: newSessionId,
+        id: activeSessionId,
         locale: 'nl',
         consent: true,
       });
 
-      // Track event
       await supabaseAdmin.from('events').insert({
-        session_id: newSessionId,
+        session_id: activeSessionId,
         type: 'session_started',
         payload: { timestamp: new Date().toISOString() },
       });
     }
 
-    console.log('🤖 Processing message with orchestrator...');
-    // Process the message
-    const response = await orchestrator.processMessage(message);
-    console.log('✅ Orchestrator response:', { 
+    // Initialize Gemini chat and load history
+    const chat = new GeminiChat(activeSessionId);
+    await chat.loadHistory();
+
+    console.log('🤖 Processing message with Gemini...');
+    const response = await chat.chat(message);
+    console.log('✅ Gemini response:', { 
       message: response.message?.substring(0, 50), 
       step: response.step,
       progress: response.progress,
-      hasActiveAgents: !!response.activeAgents 
     });
 
     // Track message event
     try {
       await supabaseAdmin.from('events').insert({
-        session_id: newSessionId,
+        session_id: activeSessionId,
         type: 'message_sent',
         payload: { 
           message_length: message.length,
@@ -112,7 +103,6 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Get session data
     const { data: session } = await supabaseAdmin
       .from('sessions')
       .select('*')
@@ -125,15 +115,9 @@ export async function GET(req: NextRequest) {
       .eq('session_id', sessionId)
       .order('created_at', { ascending: true });
 
-    const { data: ideas } = await supabaseAdmin
-      .from('ideas')
-      .select('*')
-      .eq('session_id', sessionId);
-
     return NextResponse.json({
       session,
       messages,
-      ideas,
     });
   } catch (error: any) {
     console.error('Error fetching session:', error);
@@ -143,4 +127,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-

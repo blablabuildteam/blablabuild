@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ConversationOrchestrator } from '@/lib/orchestrator';
+import { GeminiChat } from '@/lib/gemini';
 import { supabaseAdmin } from '@/lib/supabase';
 import { nanoid } from 'nanoid';
 
@@ -22,11 +22,11 @@ export async function POST(req: NextRequest) {
       consent: true,
     });
 
-    // Initialize orchestrator
-    const orchestrator = new ConversationOrchestrator(sessionId);
+    // Initialize Gemini chat
+    const chat = new GeminiChat(sessionId);
     
-    // Get initial message
-    const response = await orchestrator.processMessage('');
+    // Get initial message (empty message triggers welcome)
+    const response = await chat.chat('');
 
     // Track event
     await supabaseAdmin.from('events').insert({
@@ -49,4 +49,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-

@@ -17,6 +17,7 @@
     "test:dynamic": "tsx scripts/test-dynamic.ts"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^3.3.4",
     "@langchain/core": "^0.1.48",
     "@langchain/openai": "^0.0.19",
