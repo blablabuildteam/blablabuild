@@ -41,6 +41,7 @@ export default function FloatingChatBubble() {
   const [emailCaptured, setEmailCaptured] = useState(false);
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [leadForm, setLeadForm] = useState({
+    name: '',
     email: '',
     companyName: '',
     phone: '',
@@ -695,8 +696,22 @@ export default function FloatingChatBubble() {
                             {/* Lead Form */}
                             <div className="bg-chat-assistant-bg rounded-2xl border border-chat-input-border p-4 space-y-3">
                               <div className="flex items-center gap-2 mb-3">
-                                <Building className="w-4 h-4 text-black/60" />
+                                <User className="w-4 h-4 text-black/60" />
                                 <h4 className="text-sm font-medium text-black">Jouw gegevens</h4>
+                              </div>
+
+                              <div>
+                                <label className="flex items-center gap-2 text-xs text-black/60 mb-1">
+                                  <User className="w-3 h-3" /> Naam <span className="text-red-400">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  value={leadForm.name}
+                                  onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
+                                  placeholder="Jan Jansen"
+                                  className="w-full px-4 py-2.5 border border-chat-input-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
+                                  disabled={isSubmittingLead}
+                                />
                               </div>
 
                               <div>
@@ -743,8 +758,8 @@ export default function FloatingChatBubble() {
 
                               <button
                                 onClick={async () => {
-                                  if (!leadForm.email.trim()) {
-                                    alert('Email adres is verplicht');
+                                  if (!leadForm.name.trim() || !leadForm.email.trim()) {
+                                    alert('Naam en email zijn verplicht');
                                     return;
                                   }
 
@@ -755,6 +770,7 @@ export default function FloatingChatBubble() {
                                       headers: { 'Content-Type': 'application/json' },
                                       body: JSON.stringify({
                                         sessionId,
+                                        name: leadForm.name,
                                         email: leadForm.email,
                                         companyName: leadForm.companyName,
                                         phone: leadForm.phone,
@@ -765,7 +781,7 @@ export default function FloatingChatBubble() {
 
                                     if (!response.ok) throw new Error('Failed to save lead');
 
-                                    setCurrentQuestion(`Perfect! Ik stuur de analyse binnen 5 minuten naar ${leadForm.email}.\n\nEen van ons neemt binnenkort persoonlijk contact met je op.\n\nTot snel!`);
+                                    setCurrentQuestion(`Perfect ${leadForm.name}! Ik stuur de samenvatting en gouden tip binnen enkele minuten naar ${leadForm.email}.\n\nEen van ons (Daniel, Kevin of Xennith) neemt binnenkort persoonlijk contact met je op.\n\nTot snel!`);
                                     setShowLeadForm(false);
                                   } catch (error) {
                                     console.error('Error saving lead:', error);
@@ -774,7 +790,7 @@ export default function FloatingChatBubble() {
                                     setIsSubmittingLead(false);
                                   }
                                 }}
-                                disabled={!leadForm.email.trim() || isSubmittingLead}
+                                disabled={!leadForm.name.trim() || !leadForm.email.trim() || isSubmittingLead}
                                 className="w-full px-6 py-3 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-full text-sm font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-40 mt-4"
                               >
                                 {isSubmittingLead ? (
@@ -789,6 +805,12 @@ export default function FloatingChatBubble() {
                                   </>
                                 )}
                               </button>
+
+                              {/* Privacy Notice */}
+                              <p className="text-[10px] text-black/50 text-center mt-3 leading-relaxed">
+                                🔒 Je gegevens worden veilig verwerkt en alleen gebruikt om contact met je op te nemen. 
+                                We delen je gegevens nooit met derden. Door te versturen ga je akkoord met onze privacyvoorwaarden.
+                              </p>
                             </div>
                           </motion.div>
                         )}

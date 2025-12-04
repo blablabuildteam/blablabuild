@@ -1,14 +1,62 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 import { ChatResponse } from './types';
 import { supabaseAdmin } from './supabase';
 
-// System prompt based on gemini-gem.md
+// ===========================================
+// RATE LIMITING CONFIGURATION
+// ===========================================
+const RATE_LIMIT = {
+  maxRequestsPerMinute: 30,        // Max requests per minute per IP/session
+  maxRequestsPerDay: 500,          // Max requests per day total
+  maxTokensPerRequest: 1000,       // Max output tokens per request
+  maxMessagesPerSession: 10,       // Max messages per session
+};
+
+// Simple in-memory rate limiter (for production, use Redis)
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+const dailyRequestCount = { count: 0, resetTime: Date.now() + 24 * 60 * 60 * 1000 };
+
+function checkRateLimit(sessionId: string): { allowed: boolean; reason?: string } {
+  const now = Date.now();
+  
+  // Check daily limit
+  if (now > dailyRequestCount.resetTime) {
+    dailyRequestCount.count = 0;
+    dailyRequestCount.resetTime = now + 24 * 60 * 60 * 1000;
+  }
+  if (dailyRequestCount.count >= RATE_LIMIT.maxRequestsPerDay) {
+    return { allowed: false, reason: 'Dagelijkse limiet bereikt. Probeer het morgen opnieuw.' };
+  }
+  
+  // Check per-session limit
+  const sessionLimit = rateLimitStore.get(sessionId);
+  if (sessionLimit) {
+    if (now > sessionLimit.resetTime) {
+      // Reset the counter
+      rateLimitStore.set(sessionId, { count: 1, resetTime: now + 60 * 1000 });
+    } else if (sessionLimit.count >= RATE_LIMIT.maxRequestsPerMinute) {
+      return { allowed: false, reason: 'Te veel verzoeken. Wacht even en probeer opnieuw.' };
+    } else {
+      sessionLimit.count++;
+    }
+  } else {
+    rateLimitStore.set(sessionId, { count: 1, resetTime: now + 60 * 1000 });
+  }
+  
+  dailyRequestCount.count++;
+  return { allowed: true };
+}
+
+// ===========================================
+// SYSTEM PROMPT
+// ===========================================
 const SYSTEM_PROMPT = `U bent de 'Senior Intake Analist' van blablabuild. Uw taak is om de complexiteit van de klantvraag om te zetten in heldere kansen, terwijl u direct waarde biedt. U zult de klant door een gestructureerde flow van 5 interacties leiden, met als doel contactgegevens te verzamelen.
 
 ## Uw Persona en Grondbeginselen
 * **Toon:** Professioneel, ervaren en empathisch. U spreekt uitsluitend in duidelijke, MKB-vriendelijke taal.
 * **Jargon Verboden:** U vermijdt alle consulting- en tech-jargon (zoals orchestratie, frictie, governance). U gebruikt uitsluitend resultaatgerichte woorden als: knelpunten, tijdwinst, overzicht, meer klanten, gedoe besparen.
 * **Primaire Doel:** Leid de klant naar de conversie (contact) binnen maximaal 5 interacties.
+* **Alleen Tekst:** Geef ALLEEN tekstuele antwoorden. GEEN afbeeldingen, links, of multimedia content.
 
 ## Uw Kennisbank (De 3 Oplossingsdomeinen)
 U koppelt elke klantvraag aan (de overlap van) deze drie domeinen.
@@ -33,8 +81,8 @@ U volgt deze stappen strikt op. **Elke stap is één antwoord van u.**
 **Stap 4: De Bevinding, De Gouden Tip & Laatste Vraag (Gecombineerd)**
 * U vraagt eerst om de laatste context: "Voordat ik een aanbeveling doe: Welke systemen/tools gebruikt u momenteel voor [Genoemde Functie, bijv. CRM, Rapportage]?"
 * **Nadat de klant hierop heeft geantwoord,** geeft u de volledige bevinding in één antwoord:
-    1. **De Initial Conclusie:** Geef een conclusie over waar de grootste kansen liggen, gekoppeld aan de domeinen. (Vb: "Uw kans ligt in het koppelen van INZICHT aan TIJDSBESPARING.")
-    2. **De Gouden Tip:** Geef één concreet, laagdrempelig en direct toepasbaar inzicht ('Quick Win') dat past bij de genoemde tools/situatie.
+    1. **De Initial Conclusie:** Geef een conclusie over waar de grootste kansen liggen, gekoppeld aan de domeinen.
+    2. **De Gouden Tip:** Geef één concreet, laagdrempelig en direct toepasbaar inzicht ('Quick Win').
     3. **De Brug:** Rond af met: "Dit is een eerste, algemene bevinding. Om dit structureel in uw bedrijf te verankeren, is een persoonlijke blik van onze specialist nodig."
 
 **Stap 5: De Conversie (Einde van de Chat)**
@@ -43,12 +91,15 @@ U volgt deze stappen strikt op. **Elke stap is één antwoord van u.**
     2. Contact per **e-mail** (Laat uw e-mailadres achter)"
 
 ## Belangrijk
-- Houd antwoorden beknopt en to-the-point
+- Houd antwoorden beknopt en to-the-point (max 150 woorden)
 - Wees vriendelijk maar professioneel
 - Focus op de waarde die u kunt bieden
-- Sluit altijd af met een duidelijke vraag of call-to-action`;
+- Sluit altijd af met een duidelijke vraag of call-to-action
+- ALLEEN tekst, geen afbeeldingen of links`;
 
-// Initialize Gemini client
+// ===========================================
+// GEMINI CLIENT CONFIGURATION
+// ===========================================
 let genAI: GoogleGenerativeAI | null = null;
 
 function getGeminiClient(): GoogleGenerativeAI {
@@ -62,11 +113,30 @@ function getGeminiClient(): GoogleGenerativeAI {
   return genAI;
 }
 
+// Safety settings - block harmful content
+const safetySettings = [
+  { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+  { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+  { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+  { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+];
+
+// Generation config - text only, limited tokens
+const generationConfig = {
+  maxOutputTokens: RATE_LIMIT.maxTokensPerRequest,
+  temperature: 0.7,
+  topP: 0.9,
+  topK: 40,
+};
+
 interface ConversationMessage {
   role: 'user' | 'model';
   parts: { text: string }[];
 }
 
+// ===========================================
+// GEMINI CHAT CLASS
+// ===========================================
 export class GeminiChat {
   private sessionId: string;
   private history: ConversationMessage[] = [];
@@ -89,7 +159,6 @@ export class GeminiChat {
           role: msg.role === 'user' ? 'user' : 'model',
           parts: [{ text: msg.content }],
         }));
-        // Count user messages to track question progress
         this.questionCount = messages.filter((m: any) => m.role === 'user').length;
       }
     } catch (error) {
@@ -98,8 +167,37 @@ export class GeminiChat {
   }
 
   async chat(userMessage: string): Promise<ChatResponse> {
+    // Check rate limit
+    const rateLimitCheck = checkRateLimit(this.sessionId);
+    if (!rateLimitCheck.allowed) {
+      return {
+        message: rateLimitCheck.reason || 'Te veel verzoeken. Probeer het later opnieuw.',
+        sessionId: this.sessionId,
+        step: 'collecting',
+        progress: Math.min((this.questionCount / 5) * 100, 100),
+        complete: false,
+        maxQuestions: 5,
+      };
+    }
+
+    // Check max messages per session
+    if (this.questionCount >= RATE_LIMIT.maxMessagesPerSession) {
+      return {
+        message: 'Je hebt het maximum aantal berichten bereikt voor deze sessie. Laat je gegevens achter zodat we contact met je kunnen opnemen.',
+        sessionId: this.sessionId,
+        step: 'complete',
+        progress: 100,
+        complete: true,
+        maxQuestions: 5,
+      };
+    }
+
     const client = getGeminiClient();
-    const model = client.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = client.getGenerativeModel({ 
+      model: 'gemini-1.5-flash',
+      safetySettings,
+      generationConfig,
+    });
 
     // Increment question count for user messages
     if (userMessage) {
@@ -115,7 +213,7 @@ export class GeminiChat {
         },
         {
           role: 'model',
-          parts: [{ text: 'Begrepen. Ik ben de Senior Intake Analist van blablabuild. Ik zal de klant door de 5-stappen flow leiden met MKB-vriendelijke taal.' }],
+          parts: [{ text: 'Begrepen. Ik ben de Senior Intake Analist van blablabuild. Ik zal de klant door de 5-stappen flow leiden met MKB-vriendelijke taal. Alleen tekstuele antwoorden.' }],
         },
         ...this.history,
       ],
@@ -158,7 +256,9 @@ export class GeminiChat {
       // Determine step and progress based on question count
       const step = this.getStep();
       const progress = Math.min((this.questionCount / 5) * 100, 100);
-      const isComplete = this.questionCount >= 5;
+      
+      // Check if we're at the conversion step (step 4-5) where bevinding/concept is given
+      const isComplete = this.questionCount >= 4;
 
       return {
         message: response,
@@ -168,8 +268,21 @@ export class GeminiChat {
         complete: isComplete,
         maxQuestions: 5,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Gemini API error:', error);
+      
+      // Handle specific error types
+      if (error.message?.includes('quota') || error.message?.includes('rate')) {
+        return {
+          message: 'De AI service is tijdelijk overbelast. Probeer het over een minuutje opnieuw.',
+          sessionId: this.sessionId,
+          step: 'collecting',
+          progress: Math.min((this.questionCount / 5) * 100, 100),
+          complete: false,
+          maxQuestions: 5,
+        };
+      }
+      
       throw error;
     }
   }
@@ -183,3 +296,96 @@ export class GeminiChat {
   }
 }
 
+// ===========================================
+// CONVERSATION SUMMARY GENERATOR
+// ===========================================
+export async function generateConversationSummary(sessionId: string): Promise<{
+  summary: string;
+  domains: string[];
+  goldenTip: string;
+  challenge: string;
+}> {
+  // Check rate limit for summary generation
+  const rateLimitCheck = checkRateLimit(`summary_${sessionId}`);
+  if (!rateLimitCheck.allowed) {
+    return {
+      summary: 'Samenvatting kon niet worden gegenereerd vanwege te veel verzoeken.',
+      domains: [],
+      goldenTip: '',
+      challenge: '',
+    };
+  }
+
+  const client = getGeminiClient();
+  const model = client.getGenerativeModel({ 
+    model: 'gemini-1.5-flash',
+    safetySettings,
+    generationConfig: {
+      ...generationConfig,
+      maxOutputTokens: 500, // Smaller for summary
+    },
+  });
+
+  // Get conversation history
+  const { data: messages } = await supabaseAdmin
+    .from('messages')
+    .select('*')
+    .eq('session_id', sessionId)
+    .order('created_at', { ascending: true });
+
+  if (!messages || messages.length === 0) {
+    return {
+      summary: 'Geen gesprek gevonden.',
+      domains: [],
+      goldenTip: '',
+      challenge: '',
+    };
+  }
+
+  // Format conversation for summary
+  const conversationText = messages
+    .map((m: any) => `${m.role === 'user' ? 'Klant' : 'Analist'}: ${m.content}`)
+    .join('\n\n');
+
+  const summaryPrompt = `Analyseer het volgende intake gesprek en maak een gestructureerde samenvatting in JSON formaat.
+
+GESPREK:
+${conversationText}
+
+Geef de output in dit exacte JSON formaat (in het Nederlands):
+{
+  "challenge": "De hoofduitdaging van de klant in 1-2 zinnen",
+  "domains": ["INZICHT & DATA", "MEER KLANTEN & OMZET", of "TIJDSBESPARING & SLIMMER WERKEN" - welke van toepassing zijn],
+  "goldenTip": "De concrete gouden tip/quick win die gegeven is",
+  "summary": "Een korte samenvatting van het gesprek en de bevindingen (3-4 zinnen)"
+}
+
+Antwoord ALLEEN met de JSON, geen andere tekst.`;
+
+  try {
+    const result = await model.generateContent(summaryPrompt);
+    const responseText = result.response.text();
+    
+    // Parse JSON from response
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0]);
+      return {
+        summary: parsed.summary || '',
+        domains: parsed.domains || [],
+        goldenTip: parsed.goldenTip || '',
+        challenge: parsed.challenge || '',
+      };
+    }
+  } catch (error) {
+    console.error('Error generating summary:', error);
+  }
+
+  // Fallback if parsing fails
+  return {
+    summary: 'Er is een fout opgetreden bij het genereren van de samenvatting.',
+    domains: [],
+    goldenTip: '',
+    challenge: '',
+  };
+}

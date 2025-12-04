@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
-    const { sessionId, email, companyName, phone, role, notes } = await req.json();
+    const { sessionId, email, name, companyName, phone, role, notes } = await req.json();
 
     if (!sessionId || !email) {
       return NextResponse.json(
@@ -30,8 +30,9 @@ export async function POST(req: NextRequest) {
       completed_at: new Date().toISOString(),
     };
 
-    // Save company name and other info to slots
+    // Save lead data to slots
     const leadData: any = {};
+    if (name) leadData.name = name;
     if (companyName) leadData.company_name = companyName;
     if (phone) leadData.phone = phone;
     if (role) leadData.role = role;
@@ -61,6 +62,7 @@ export async function POST(req: NextRequest) {
       type: 'lead_created',
       payload: {
         email,
+        name,
         company_name: companyName,
         phone,
         role,
@@ -70,15 +72,23 @@ export async function POST(req: NextRequest) {
 
     // Track analytics
     trackWidgetEvent(sessionId, 'lead_created', {
+      has_name: !!name,
       has_company: !!companyName,
       has_phone: !!phone,
     });
 
-    // Trigger email sending (async, don't wait)
-    fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/email`, {
+    // Trigger email sending with conversation summary (async, don't wait)
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    fetch(`${appUrl}/api/email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessionId, email }),
+      body: JSON.stringify({ 
+        sessionId, 
+        email,
+        name,
+        companyName,
+        phone,
+      }),
     }).catch(err => console.error('Error triggering email:', err));
 
     return NextResponse.json({
@@ -93,4 +103,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-

@@ -46,6 +46,7 @@ export default function AIWidget() {
   const [emailCaptured, setEmailCaptured] = useState(false);
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [leadForm, setLeadForm] = useState({
+    name: '',
     email: '',
     companyName: '',
     phone: '',
@@ -901,6 +902,22 @@ export default function AIWidget() {
                     </div>
 
                     <div className="space-y-3">
+                      {/* Name - Required */}
+                      <div>
+                        <label className="flex items-center gap-2 text-xs font-extralight text-bla-text-muted mb-1.5">
+                          <UserIcon className="w-3.5 h-3.5" />
+                          Naam <span className="text-red-400">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={leadForm.name}
+                          onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
+                          placeholder="Jan Jansen"
+                          className="w-full px-4 py-3 border border-bla-charcoal-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 focus:border-bla-lime/50 transition-all text-sm font-light text-bla-text-light placeholder-bla-text-muted bg-bla-charcoal backdrop-blur-sm"
+                          disabled={isSubmittingLead}
+                        />
+                      </div>
+
                       {/* Email - Required */}
                       <div>
                         <label className="flex items-center gap-2 text-xs font-extralight text-bla-text-muted mb-1.5">
@@ -987,8 +1004,8 @@ export default function AIWidget() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={async () => {
-                        if (!leadForm.email.trim()) {
-                          alert('Email adres is verplicht');
+                        if (!leadForm.name.trim() || !leadForm.email.trim()) {
+                          alert('Naam en email zijn verplicht');
                           return;
                         }
 
@@ -999,6 +1016,7 @@ export default function AIWidget() {
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                               sessionId,
+                              name: leadForm.name,
                               email: leadForm.email,
                               companyName: leadForm.companyName,
                               phone: leadForm.phone,
@@ -1012,7 +1030,7 @@ export default function AIWidget() {
                           }
 
                           // Show success message
-                          setCurrentQuestion(`Perfect! Ik stuur de analyse binnen 5 minuten naar ${leadForm.email}.
+                          setCurrentQuestion(`Perfect ${leadForm.name}! Ik stuur de samenvatting en gouden tip binnen enkele minuten naar ${leadForm.email}.
 
 Een van ons (Daniel, Kevin of Xennith) neemt binnenkort persoonlijk contact met je op om de mogelijkheden door te spreken.
 
@@ -1025,7 +1043,7 @@ Tot snel!`);
                           setIsSubmittingLead(false);
                         }
                       }}
-                      disabled={!leadForm.email.trim() || isSubmittingLead}
+                      disabled={!leadForm.name.trim() || !leadForm.email.trim() || isSubmittingLead}
                       className="w-full px-6 py-3.5 bg-bla-lime/90 hover:bg-bla-lime text-bla-dark rounded-full text-sm font-light transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-bla-lime/20"
                     >
                       {isSubmittingLead ? (
@@ -1041,8 +1059,9 @@ Tot snel!`);
                       )}
                     </motion.button>
 
-                    <p className="text-xs font-extralight text-bla-text-muted text-center">
-                      Je gegevens worden veilig opgeslagen en alleen gebruikt om je de analyse te sturen.
+                    <p className="text-[10px] font-extralight text-bla-text-muted text-center leading-relaxed">
+                      🔒 Je gegevens worden veilig verwerkt en alleen gebruikt om contact met je op te nemen. 
+                      We delen je gegevens nooit met derden. Door te versturen ga je akkoord met onze privacyvoorwaarden.
                     </p>
                   </motion.div>
                 </motion.div>
