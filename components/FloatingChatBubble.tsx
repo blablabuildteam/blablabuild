@@ -436,7 +436,8 @@ export default function FloatingChatBubble() {
               >
                 {/* Glass Card Container */}
                 <motion.div 
-                  className="w-[90vw] max-w-[1078px] min-h-[320px] md:min-h-[380px] backdrop-blur-[3.6px] bg-white/30 border border-[#ededed] rounded-[24px] relative overflow-hidden"
+                  className="w-[90vw] max-w-[1078px] h-[60vh] backdrop-blur-[20px] bg-surface-glass border border-card-border rounded-[24px] relative overflow-hidden shadow-lg flex flex-col"
+                  style={{ WebkitBackdropFilter: 'blur(20px)' }}
                   initial={{ y: 50 }}
                   animate={{ y: 0 }}
                   transition={{ delay: 0.1, duration: 0.4, ease: "easeOut" }}
@@ -444,61 +445,62 @@ export default function FloatingChatBubble() {
                   {/* Close button */}
                   <button
                     onClick={toggleExpand}
-                    className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/50 hover:bg-white/70 flex items-center justify-center transition-all hover:scale-110 z-10"
+                    className="absolute top-4 right-4 w-10 h-10 rounded-full bg-surface-overlay hover:bg-surface flex items-center justify-center transition-all hover:scale-110 z-10"
                   >
-                    <X className="w-5 h-5 text-gray-700" />
+                    <X className="w-5 h-5 text-text-secondary" />
                   </button>
 
                   {!chatStarted ? (
                     /* Initial Input View */
-                    <div className="p-6 md:p-12 flex flex-col items-center justify-center h-full">
-                      {/* Logo Icon */}
-                      <motion.div
-                        className="mb-4 md:mb-6"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
-                      >
-                        <div className="w-12 h-12 bg-bla-lime rounded-xl flex items-center justify-center">
-                          <Image src="/icon.svg" alt="" width={32} height={32} className="w-8 h-8" />
-                        </div>
-                      </motion.div>
+                    <div className="p-6 md:p-12 flex flex-col items-center h-full justify-between">
+                      <div className="flex flex-col items-center gap-4 md:gap-6 mb-12 md:mb-16">
+                        {/* Logo Icon */}
+                        <motion.div
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
+                        >
+                          <div className="w-12 h-12 bg-bla-lime rounded-xl flex items-center justify-center">
+                            <Image src="/icon.svg" alt="" width={32} height={32} className="w-8 h-8" />
+                          </div>
+                        </motion.div>
 
-                      {/* Title */}
-                      <motion.div
-                        className="text-center max-w-[740px] mb-4 md:mb-6"
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.25, duration: 0.4 }}
-                      >
-                        <h3 className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-[#151f28]">
-                          Wat is jouw challenge?
-                        </h3>
-                        <p className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-[#151f28]">
-                          Ontdek hoe we jouw kunnen helpen.
-                        </p>
-                      </motion.div>
+                        {/* Title - Positioned at top */}
+                        <motion.div
+                          className="text-center max-w-[740px]"
+                          initial={{ y: 20, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{ delay: 0.25, duration: 0.4 }}
+                        >
+                          <h3 className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-text-primary">
+                            Wat is jouw challenge?
+                          </h3>
+                          <p className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-text-primary">
+                            Ontdek hoe we jouw kunnen helpen.
+                          </p>
+                        </motion.div>
+                      </div>
 
-                      {/* Input Form */}
+                      {/* Input Form - Positioned at bottom */}
                       <motion.form 
                         onSubmit={handleSubmit}
-                        className="w-full max-w-[1035px]"
+                        className="w-full max-w-[1035px] mt-auto pt-12 md:pt-16"
                         initial={{ y: 30, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.35, duration: 0.4 }}
                       >
-                        <div className="relative flex items-center bg-white rounded-[12px] h-[60px] md:h-[78px] shadow-sm">
+                        <div className="relative flex items-center bg-chat-input-bg rounded-[12px] h-[60px] md:h-[78px] shadow-sm">
                           <input
                             type="text"
                             value={idea}
                             onChange={(e) => setIdea(e.target.value)}
                             placeholder="Jouw idee..."
-                            className="w-full h-full bg-transparent rounded-[12px] px-6 md:px-8 pr-32 md:pr-40 text-base md:text-[18px] font-host text-black placeholder:text-[#b3b3b3] focus:outline-none"
+                            className="w-full h-full bg-transparent rounded-[12px] px-6 md:px-8 pr-32 md:pr-40 text-base md:text-[18px] font-host text-text-primary placeholder:text-text-muted focus:outline-none"
                             autoFocus
                           />
                           <button
                             type="submit"
-                            className="absolute right-2 md:right-3 bg-bla-lime rounded-[12px] px-4 md:px-6 py-2 md:py-2.5 flex items-center justify-center hover:bg-bla-lime/90 transition-all hover:scale-105 font-host font-normal text-base md:text-[18px] text-black min-w-[100px] md:min-w-[128px]"
+                            className="absolute right-2 md:right-3 bg-bla-lime rounded-[12px] px-4 md:px-6 py-2 md:py-2.5 flex items-center justify-center hover:bg-bla-lime/90 transition-all hover:scale-105 font-host font-normal text-base md:text-[18px] text-chat-user-text min-w-[100px] md:min-w-[128px]"
                           >
                             Verstuur
                           </button>
@@ -507,16 +509,16 @@ export default function FloatingChatBubble() {
                     </div>
                   ) : (
                     /* Chat View */
-                    <div className="flex flex-col h-[320px] md:h-[380px]">
+                    <div className="flex flex-col flex-1 relative">
                       {/* Chat Header */}
-                      <div className="p-4 border-b border-black/10 bg-white/20 flex items-center gap-3">
+                      <div className="p-4 border-b border-black/10 bg-chat-header-bg flex items-center gap-3">
                         <div className="w-8 h-8 bg-bla-lime rounded-lg flex items-center justify-center">
                           <Image src="/icon.svg" alt="" width={20} height={20} className="w-5 h-5" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-host font-medium text-sm text-[#151f28]">AI Intake</h3>
+                          <h3 className="font-host font-medium text-sm text-black">AI Intake</h3>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-black/60">
                               Vraag {actualQuestionNumber} van ~{maxQuestions}
                             </span>
                             <div className="flex-1 h-1 bg-black/10 rounded-full overflow-hidden max-w-[100px]">
@@ -532,18 +534,18 @@ export default function FloatingChatBubble() {
                       </div>
 
                       {/* Chat Content */}
-                      <div ref={contentRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+                      <div ref={contentRef} className="flex-1 overflow-y-auto p-4 pb-28 space-y-4">
                         {/* Loading State */}
                         {isLoading && !currentQuestion && (
-                          <div className="bg-white/50 rounded-2xl p-4">
+                          <div className="bg-chat-assistant-bg rounded-2xl p-4">
                             <div className="flex items-center gap-3 mb-3">
                               <BlablablaAnimation size="md" />
-                              <p className="text-sm font-light text-gray-600">{loadingMessage}</p>
+                              <p className="text-sm font-light text-black">{loadingMessage}</p>
                             </div>
                             <div className="space-y-2">
-                              <div className="h-3 bg-gray-200 rounded w-3/4 animate-pulse" />
-                              <div className="h-3 bg-gray-200 rounded w-full animate-pulse" />
-                              <div className="h-3 bg-gray-200 rounded w-5/6 animate-pulse" />
+                              <div className="h-3 bg-bla-border rounded w-3/4 animate-pulse" />
+                              <div className="h-3 bg-bla-border rounded w-full animate-pulse" />
+                              <div className="h-3 bg-bla-border rounded w-5/6 animate-pulse" />
                             </div>
                           </div>
                         )}
@@ -556,9 +558,9 @@ export default function FloatingChatBubble() {
                             className="bg-bla-lime/10 border border-bla-lime/30 rounded-2xl p-4"
                           >
                             <div className="flex items-start gap-3">
-                              <Mail className="w-5 h-5 text-bla-lime flex-shrink-0 mt-0.5" />
+                              <Mail className="w-5 h-5 text-black flex-shrink-0 mt-0.5" />
                               <div className="flex-1">
-                                <p className="text-sm font-light text-gray-700 mb-2">
+                                <p className="text-sm font-light text-black mb-2">
                                   Laat je email achter zodat we je intake kunnen voortzetten als je tussendoor stopt.
                                 </p>
                                 <div className="flex gap-2">
@@ -567,7 +569,7 @@ export default function FloatingChatBubble() {
                                     value={leadForm.email}
                                     onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
                                     placeholder="jouw@email.nl"
-                                    className="flex-1 px-3 py-2 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-white"
+                                    className="flex-1 px-3 py-2 border border-chat-input-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
                                     onKeyPress={(e) => {
                                       if (e.key === 'Enter' && leadForm.email.trim()) {
                                         handleEarlyEmailCapture();
@@ -583,7 +585,7 @@ export default function FloatingChatBubble() {
                                   </button>
                                   <button
                                     onClick={() => setShowEmailPrompt(false)}
-                                    className="px-3 py-2 text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                                    className="px-3 py-2 text-xs text-black/60 hover:text-black transition-colors"
                                   >
                                     Later
                                   </button>
@@ -608,9 +610,9 @@ export default function FloatingChatBubble() {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: idx * 0.05, duration: 0.3 }}
-                                className="bg-white/60 rounded-2xl border border-white/80 p-4"
+                                className="bg-chat-assistant-bg rounded-2xl border border-chat-assistant-border p-4"
                               >
-                                <p className="text-sm font-light leading-relaxed text-gray-800 whitespace-pre-wrap">
+                                <p className="text-sm font-light leading-relaxed text-black whitespace-pre-wrap">
                                   {part}
                                 </p>
                               </motion.div>
@@ -624,7 +626,7 @@ export default function FloatingChatBubble() {
                                 transition={{ delay: 0.3 }}
                                 className="space-y-2"
                               >
-                                <p className="text-xs text-gray-500 mb-2">
+                                <p className="text-xs text-black/60 mb-2">
                                   Kies een optie of typ je eigen antwoord:
                                 </p>
                                 <div className="grid grid-cols-1 gap-2">
@@ -638,7 +640,7 @@ export default function FloatingChatBubble() {
                                         setTimeout(() => sendMessage(), 50);
                                       }}
                                       disabled={isLoading}
-                                      className="w-full px-4 py-3 text-left bg-white/70 hover:bg-white border border-gray-200 hover:border-bla-lime/50 rounded-xl text-sm font-light text-gray-800 transition-all disabled:opacity-40"
+                                      className="w-full px-4 py-3 text-left bg-surface-overlay hover:bg-surface border border-chat-input-border hover:border-bla-lime/50 rounded-xl text-sm font-light text-black transition-all disabled:opacity-40"
                                     >
                                       {option}
                                     </motion.button>
@@ -652,18 +654,18 @@ export default function FloatingChatBubble() {
                         {/* Previous Answers */}
                         {messages.length > 1 && !isComplete && (
                           <div className="space-y-2 mt-4 pt-4 border-t border-black/10">
-                            <p className="text-xs text-gray-400 mb-2">Eerdere antwoorden:</p>
+                            <p className="text-xs text-black/60 mb-2">Eerdere antwoorden:</p>
                             {messages.slice(0, -1).reverse().map((message, idx) => (
                               message.role === 'user' && (
                                 <div
                                   key={idx}
-                                  className="bg-white/40 rounded-xl border border-white/60 p-3"
+                                  className="bg-chat-user-bg rounded-xl border border-chat-user-border p-3 shadow-sm"
                                 >
                                   <div className="flex items-start gap-2">
-                                    <div className="w-4 h-4 bg-bla-lime/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                      <Check className="w-2.5 h-2.5 text-bla-lime" />
+                                    <div className="w-4 h-4 bg-black/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                      <Check className="w-2.5 h-2.5 text-black" />
                                     </div>
-                                    <p className="text-xs font-light text-gray-600 leading-relaxed flex-1">
+                                    <p className="text-xs font-medium text-black leading-relaxed flex-1">
                                       {message.content}
                                     </p>
                                   </div>
@@ -680,25 +682,25 @@ export default function FloatingChatBubble() {
                             animate={{ opacity: 1, scale: 1 }}
                             className="space-y-4"
                           >
-                            <div className="bg-white/60 rounded-2xl border border-bla-lime/30 p-6 text-center">
+                            <div className="bg-chat-assistant-bg rounded-2xl border border-bla-lime/30 p-6 text-center">
                               <div className="w-12 h-12 bg-bla-lime/20 border border-bla-lime/30 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <Check className="w-6 h-6 text-bla-lime" />
+                                <Check className="w-6 h-6 text-black" />
                               </div>
-                              <h3 className="text-lg font-medium mb-2 text-gray-800">Analyse Compleet! 🎉</h3>
-                              <p className="text-sm font-light text-gray-600 leading-relaxed">
+                              <h3 className="text-lg font-medium mb-2 text-black">Analyse Compleet! 🎉</h3>
+                              <p className="text-sm font-light text-black leading-relaxed">
                                 {currentQuestion || 'Laat je gegevens achter zodat we de volledige analyse kunnen sturen.'}
                               </p>
                             </div>
 
                             {/* Lead Form */}
-                            <div className="bg-white/60 rounded-2xl border border-gray-200 p-4 space-y-3">
+                            <div className="bg-chat-assistant-bg rounded-2xl border border-chat-input-border p-4 space-y-3">
                               <div className="flex items-center gap-2 mb-3">
-                                <Building className="w-4 h-4 text-gray-400" />
-                                <h4 className="text-sm font-medium text-gray-700">Jouw gegevens</h4>
+                                <Building className="w-4 h-4 text-black/60" />
+                                <h4 className="text-sm font-medium text-black">Jouw gegevens</h4>
                               </div>
 
                               <div>
-                                <label className="flex items-center gap-2 text-xs text-gray-500 mb-1">
+                                <label className="flex items-center gap-2 text-xs text-black/60 mb-1">
                                   <Mail className="w-3 h-3" /> Email <span className="text-red-400">*</span>
                                 </label>
                                 <input
@@ -706,13 +708,13 @@ export default function FloatingChatBubble() {
                                   value={leadForm.email}
                                   onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
                                   placeholder="jouw@email.nl"
-                                  className="w-full px-4 py-2.5 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-white"
+                                  className="w-full px-4 py-2.5 border border-chat-input-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
                                   disabled={isSubmittingLead}
                                 />
                               </div>
 
                               <div>
-                                <label className="flex items-center gap-2 text-xs text-gray-500 mb-1">
+                                <label className="flex items-center gap-2 text-xs text-black/60 mb-1">
                                   <Building className="w-3 h-3" /> Bedrijfsnaam
                                 </label>
                                 <input
@@ -720,13 +722,13 @@ export default function FloatingChatBubble() {
                                   value={leadForm.companyName}
                                   onChange={(e) => setLeadForm({ ...leadForm, companyName: e.target.value })}
                                   placeholder="Jouw Bedrijf B.V."
-                                  className="w-full px-4 py-2.5 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-white"
+                                  className="w-full px-4 py-2.5 border border-chat-input-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
                                   disabled={isSubmittingLead}
                                 />
                               </div>
 
                               <div>
-                                <label className="flex items-center gap-2 text-xs text-gray-500 mb-1">
+                                <label className="flex items-center gap-2 text-xs text-black/60 mb-1">
                                   <Phone className="w-3 h-3" /> Telefoonnummer
                                 </label>
                                 <input
@@ -734,7 +736,7 @@ export default function FloatingChatBubble() {
                                   value={leadForm.phone}
                                   onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
                                   placeholder="+31 6 12345678"
-                                  className="w-full px-4 py-2.5 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-white"
+                                  className="w-full px-4 py-2.5 border border-chat-input-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
                                   disabled={isSubmittingLead}
                                 />
                               </div>
@@ -796,23 +798,23 @@ export default function FloatingChatBubble() {
                           <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="bg-white/60 rounded-2xl border border-bla-lime/30 p-6 text-center"
+                            className="bg-chat-assistant-bg rounded-2xl border border-bla-lime/30 p-6 text-center"
                           >
                             <div className="w-12 h-12 bg-bla-lime/20 border border-bla-lime/30 rounded-full flex items-center justify-center mx-auto mb-3">
-                              <Check className="w-6 h-6 text-bla-lime" />
+                              <Check className="w-6 h-6 text-black" />
                             </div>
-                            <h3 className="text-lg font-medium mb-2 text-gray-800">Alles geregeld! ✅</h3>
-                            <p className="text-sm font-light text-gray-600 leading-relaxed whitespace-pre-wrap">
+                            <h3 className="text-lg font-medium mb-2 text-black">Alles geregeld! ✅</h3>
+                            <p className="text-sm font-light text-black leading-relaxed whitespace-pre-wrap">
                               {currentQuestion}
                             </p>
                           </motion.div>
                         )}
                       </div>
 
-                      {/* Chat Input */}
+                      {/* Chat Input - Fixed at bottom */}
                       {!isComplete && (
-                        <div className="p-4 border-t border-black/10 bg-white/20">
-                          <div className="relative">
+                        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-black/10 rounded-b-[24px]">
+                          <div className="relative flex items-center">
                             <textarea
                               ref={inputRef}
                               value={input}
@@ -820,13 +822,13 @@ export default function FloatingChatBubble() {
                               onKeyPress={handleKeyPress}
                               placeholder={questionOptions?.length > 0 ? "Of typ je eigen antwoord..." : "Je antwoord..."}
                               rows={2}
-                              className="w-full px-4 py-3 pr-24 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 transition-all resize-none text-sm font-light bg-white"
+                              className="w-full px-4 py-3 pr-32 border border-chat-input-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 transition-all resize-none text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
                               disabled={isLoading}
                             />
                             <button
                               onClick={sendMessage}
                               disabled={!input.trim() || isLoading}
-                              className="absolute right-2 bottom-2 px-4 py-2 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-xl text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-40"
+                              className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-xl text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-40"
                             >
                               {isLoading ? (
                                 <BlablablaAnimation size="sm" />

@@ -1,6 +1,7 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { trackEvent } from '@/lib/analytics';
 import Image from 'next/image';
 
@@ -10,10 +11,45 @@ interface NavigationProps {
 }
 
 export default function Navigation({ showNavCTA, activeSection }: NavigationProps) {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    let ticking = false;
+    
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          setIsScrolled(scrollY > 50);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    // Check initial scroll position
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const navLinks = [
+    { id: 'oplossingen', label: 'Oplossingen' },
     { id: 'aanpak', label: 'Aanpak' },
-    { id: 'team', label: 'Team' },
-    { id: 'cases', label: 'Cases' },
+    { id: 'expertise', label: 'Expertise' },
+    { id: 'over-ons', label: 'Over ons' },
   ];
 
   const handleNavClick = (id: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -32,8 +68,55 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
   };
 
   return (
-    <nav className="fixed top-[38px] left-1/2 -translate-x-1/2 z-50 w-[calc(100%-32px)] md:w-[calc(100%-128px)] max-w-[1312px]">
-      <div className="backdrop-blur-md bg-white/80 rounded-3xl px-4 md:px-8 py-2 flex items-center justify-between h-[72px]">
+    <motion.nav 
+      className="fixed z-50"
+      initial={false}
+      animate={{
+        top: isScrolled ? 38 : 0,
+        left: isScrolled ? '50%' : 0,
+        x: isScrolled ? '-50%' : 0,
+        width: isScrolled ? (isMobile ? 'calc(100% - 32px)' : 'calc(100% - 128px)') : '100%',
+      }}
+      transition={{
+        duration: 0.6,
+        ease: [0.25, 0.1, 0.25, 1],
+      }}
+      style={{
+        maxWidth: isScrolled ? '1312px' : '100%',
+      }}
+    >
+      <motion.div 
+        className="px-4 md:px-8 py-2 flex items-center justify-between h-[72px]"
+        initial={false}
+        animate={{
+          backgroundColor: isScrolled ? 'var(--nav-bg-scrolled)' : 'var(--nav-bg)',
+          borderRadius: isScrolled ? 24 : 0,
+          scale: isScrolled ? 0.99 : 1,
+        }}
+        transition={{
+          duration: 0.6,
+          ease: [0.25, 0.1, 0.25, 1],
+          backgroundColor: {
+            duration: 0.5,
+            ease: [0.25, 0.1, 0.25, 1],
+          },
+          borderRadius: {
+            duration: 0.6,
+            ease: [0.25, 0.1, 0.25, 1],
+          },
+          scale: {
+            duration: 0.5,
+            ease: [0.34, 1.56, 0.64, 1],
+          },
+        }}
+        style={{
+          backdropFilter: isScrolled ? 'blur(28px)' : 'none',
+          WebkitBackdropFilter: isScrolled ? 'blur(28px)' : 'none',
+          borderBottom: isScrolled ? 'none' : '1px solid var(--bla-border)',
+          boxShadow: isScrolled ? '0 8px 32px rgba(0, 0, 0, 0.08)' : 'none',
+          transition: 'backdrop-filter 0.5s cubic-bezier(0.25, 0.1, 0.25, 1), border-bottom 0.5s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.5s cubic-bezier(0.25, 0.1, 0.25, 1)',
+        }}
+      >
         {/* Logo */}
         <div className="flex items-center gap-2 h-[37px] flex-shrink-0">
           <Image 
@@ -58,8 +141,8 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
               onClick={handleNavClick(link.id)}
               className={`font-sans font-medium text-xs md:text-base tracking-[-0.48px] transition-colors px-2 md:px-3 py-1 rounded-full ${
                 activeSection === link.id 
-                  ? 'text-bla-blue bg-bla-blue/10' 
-                  : 'text-black hover:text-bla-blue'
+                  ? 'text-bla-blue bg-[var(--nav-active-bg)]' 
+                  : 'text-text-primary hover:text-bla-blue'
               }`}
             >
               {link.label}
@@ -78,7 +161,7 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
             Gratis AI Advies
           </button>
         </div>
-      </div>
-    </nav>
+      </motion.div>
+    </motion.nav>
   );
 }

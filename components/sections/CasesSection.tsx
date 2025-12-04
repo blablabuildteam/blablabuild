@@ -9,56 +9,55 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Mobile: stacked 2-column grid, Desktop: scattered
+// Mobile: stacked 2-column grid, Desktop: zig-zag pattern with more spacing
 const postItCases = [
   {
     id: 1,
     text: "Automatisch website-pagina's maken voor elke stad of locatie",
     rotation: -6,
-    positionClass: 'left-[3%] top-[2%] md:left-[5%] md:top-[22%]',
+    positionClass: 'left-[3%] top-[2%] md:left-[8%] md:top-[12%]',
   },
   {
     id: 2,
     text: "Eén plek om al je websites te beheren",
     rotation: 5,
-    positionClass: 'left-[52%] top-[2%] md:left-[26%] md:top-[15%]',
+    positionClass: 'left-[52%] top-[2%] md:left-[60%] md:top-[20%]',
   },
   {
     id: 3,
     text: "Producten van leveranciers automatisch matchen met je eigen webshop",
     rotation: -4,
-    positionClass: 'left-[3%] top-[26%] md:left-[50%] md:top-[20%]',
+    positionClass: 'left-[3%] top-[26%] md:left-[22%] md:top-[38%]',
   },
   {
     id: 4,
     text: "Productinfo en prijzen automatisch ophalen bij tientallen leveranciers",
     rotation: 6,
-    positionClass: 'left-[52%] top-[26%] md:left-[73%] md:top-[25%]',
+    positionClass: 'left-[52%] top-[26%] md:left-[72%] md:top-[48%]',
   },
   {
     id: 5,
     text: "Één duidelijk dashboard met alle voorraad- en verkoopcijfers",
     rotation: -5,
-    positionClass: 'left-[3%] top-[50%] md:left-[10%] md:top-[52%]',
+    positionClass: 'left-[3%] top-[50%] md:left-[8%] md:top-[64%]',
   },
   {
     id: 6,
     text: "Automatische prijslijsten voor elke klantgroep",
     rotation: 4,
-    positionClass: 'left-[52%] top-[50%] md:left-[38%] md:top-[55%]',
+    positionClass: 'left-[52%] top-[50%] md:left-[60%] md:top-[77%]',
   },
   {
     id: 7,
     text: "Een slimme chatbot die klanten adviseert en producten vindt",
     rotation: -3,
-    positionClass: 'left-[28%] top-[74%] md:left-[65%] md:top-[50%]',
+    positionClass: 'left-[28%] top-[74%] md:left-[40%] md:top-[85%]',
   },
 ];
 
 export default function CasesSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const pinWrapRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -66,15 +65,30 @@ export default function CasesSection() {
 
     const section = sectionRef.current;
     const pinWrap = pinWrapRef.current;
-    const title = titleRef.current;
     const cardsContainer = cardsContainerRef.current;
 
-    if (!section || !pinWrap || !title || !cardsContainer) return;
+    if (!section || !pinWrap || !cardsContainer) return;
 
     const cards = cardsContainer.querySelectorAll('.post-it-card');
     if (cards.length === 0) return;
 
     const ctx = gsap.context(() => {
+      // Set initial state for all cards (hidden and off-screen)
+      cards.forEach((card, i) => {
+        const fromLeft = i % 2 === 0;
+        const startX = fromLeft ? -400 : 400;
+        const startY = 400 + (i * 30);
+        const startRotation = postItCases[i]?.rotation || 0;
+        
+        gsap.set(card, {
+          opacity: 0,
+          x: startX,
+          y: startY,
+          scale: 0.3,
+          rotation: startRotation + (fromLeft ? -60 : 60),
+        });
+      });
+
       // Create main timeline with scroll scrub
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -87,39 +101,22 @@ export default function CasesSection() {
         },
       });
 
-      // Title animation
-      tl.fromTo(
-        title,
-        { opacity: 0, y: 60, scale: 0.95 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.15, ease: 'power2.out' }
-      );
-
-      // Cards fly in one by one - from bottom, alternating left and right
+      // Cards fly in one by one - alternating left then right pattern
       cards.forEach((card, i) => {
-        const fromLeft = i % 2 === 0;
-        const startX = fromLeft ? -300 : 300;
-        const startY = 300 + (i * 25);
         const startRotation = postItCases[i]?.rotation || 0;
 
-        tl.fromTo(
+        tl.to(
           card,
-          {
-            opacity: 0,
-            x: startX,
-            y: startY,
-            scale: 0.3,
-            rotation: startRotation + (fromLeft ? -50 : 50),
-          },
           {
             opacity: 1,
             x: 0,
             y: 0,
             scale: 1,
             rotation: startRotation,
-            duration: 0.14,
+            duration: 0.15,
             ease: 'power2.out',
           },
-          i === 0 ? '+=0.05' : '-=0.03'
+          i * 0.13 // Stagger the animations
         );
       });
 
@@ -133,37 +130,33 @@ export default function CasesSection() {
   return (
     <section
       ref={sectionRef}
-      id="cases"
-      className="relative min-h-[300vh] w-full bg-white"
+      id="oplossingen"
+      className="relative min-h-[350vh] w-full bg-white overflow-visible"
     >
       <div
         ref={pinWrapRef}
-        className="h-screen w-full flex flex-col items-center px-2 md:px-8 overflow-hidden pt-20 md:pt-28"
+        className="h-screen w-full flex flex-col items-center px-2 md:px-8 overflow-visible pt-20 md:pt-28 pb-20 md:pb-28"
       >
-        {/* Header */}
-        <h2
-          ref={titleRef}
-          className="font-host font-medium text-base md:text-[28px] lg:text-[32px] text-black text-center max-w-[300px] md:max-w-[560px] mx-auto leading-tight mb-2 md:mb-6 px-2"
-        >
-          Gelijk schaalbare oplossingen bouwen en zorgen dat jouw organisatie sneller kan bewegen
+        {/* Header - Always visible */}
+        <h2 className="font-host font-medium text-base md:text-[28px] lg:text-[32px] text-text-primary text-center max-w-[300px] md:max-w-[560px] mx-auto leading-tight mb-2 md:mb-6 px-2">
+          Oplossingen die jouw organisatie écht sneller maken
         </h2>
 
         {/* Post-it Cards - Stacked grid on mobile, scattered on desktop */}
         <div 
           ref={cardsContainerRef} 
-          className="relative w-full flex-1 max-w-[1200px] mx-auto"
+          className="relative w-full flex-1 overflow-visible px-4 md:px-8 lg:px-12 pb-[120px]"
         >
           {postItCases.map((postIt, index) => (
             <div
               key={postIt.id}
               className={`post-it-card absolute ${postIt.positionClass}`}
               style={{
-                zIndex: 10 + index,
-                transform: `rotate(${postIt.rotation}deg)`,
+                zIndex: 100 + index,
               }}
             >
               <div
-                className="bg-bla-lime rounded-[14px] md:rounded-[22px] p-3 md:p-6 w-[45vw] max-w-[165px] md:max-w-none md:w-[195px] lg:w-[220px] h-[110px] md:h-[155px] lg:h-[175px] flex items-center justify-center cursor-pointer relative transition-all duration-300 hover:scale-110 hover:z-50 hover:shadow-2xl"
+                className="bg-bla-lime rounded-[14px] md:rounded-[22px] p-3 md:p-6 w-[45vw] max-w-[180px] md:max-w-none md:w-[240px] lg:w-[280px] h-[140px] md:h-[220px] lg:h-[260px] flex items-center justify-center cursor-pointer relative transition-all duration-300 hover:scale-110 hover:z-50 hover:shadow-2xl"
                 style={{
                   boxShadow: '0 6px 20px rgba(0,0,0,0.1), 0 3px 8px rgba(0,0,0,0.06)',
                 }}
@@ -184,7 +177,7 @@ export default function CasesSection() {
                     borderRadius: '0 0 14px 0',
                   }}
                 />
-                <p className="font-host font-normal text-[10px] md:text-[12px] lg:text-[13px] text-black text-center leading-tight md:leading-snug italic px-1 md:px-1">
+                <p className="font-host font-normal text-[14px] md:text-[16px] lg:text-[18px] text-chat-user-text text-center leading-tight md:leading-snug italic px-1 md:px-1">
                   {postIt.text}
                 </p>
               </div>

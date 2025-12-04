@@ -104,6 +104,67 @@
 
 @layer base {
   :root {
+    /* ===== BLABLABUILD DESIGN SYSTEM ===== */
+    
+    /* Core Brand Colors */
+    --bla-lime: #CEFF00;
+    --bla-blue: #1125FF;
+    --bla-dark: #151F28;
+    --bla-charcoal: #1a1a1a;
+    --bla-charcoal-light: #2a2a2a;
+    --bla-charcoal-border: #333333;
+    --bla-gray: #f9fafb;
+    --bla-gray-light: #f3f4f6;
+    --bla-border: #e5e7eb;
+    --bla-text-light: #e5e5e5;
+    --bla-text-muted: #999999;
+    --bla-lavender: #e7e8ff;
+    
+    /* Chat Widget Colors - User Messages: Yellow/Lime with Black */
+    --chat-user-bg: #CEFF00;
+    --chat-user-text: #0a0a0a;
+    --chat-user-border: rgba(206, 255, 0, 0.5);
+    --chat-assistant-bg: rgba(255, 255, 255, 0.6);
+    --chat-assistant-text: #1a1a1a;
+    --chat-assistant-border: rgba(255, 255, 255, 0.8);
+    --chat-input-bg: #ffffff;
+    --chat-input-border: #e5e7eb;
+    --chat-header-bg: rgba(255, 255, 255, 0.2);
+    
+    /* Surface Colors */
+    --surface: #ffffff;
+    --surface-elevated: #ffffff;
+    --surface-overlay: rgba(255, 255, 255, 0.9);
+    --surface-glass: rgba(255, 255, 255, 0.3);
+    
+    /* Text Colors */
+    --text-primary: #151F28;
+    --text-secondary: #4b5563;
+    --text-muted: #9ca3af;
+    --text-inverse: #ffffff;
+    
+    /* Navigation */
+    --nav-bg: rgba(255, 255, 255, 1);
+    --nav-bg-scrolled: rgba(255, 255, 255, 0.5);
+    --nav-blur: 12px;
+    --nav-blur-scrolled: 24px;
+    --nav-active-bg: rgba(17, 37, 255, 0.1);
+    --nav-active-text: #1125FF;
+    
+    /* Buttons */
+    --btn-primary-bg: #CEFF00;
+    --btn-primary-text: #0a0a0a;
+    --btn-primary-hover: rgba(206, 255, 0, 0.9);
+    --btn-secondary-bg: #ffffff;
+    --btn-secondary-text: #151F28;
+    --btn-secondary-border: #e5e7eb;
+    
+    /* Cards */
+    --card-bg: #ffffff;
+    --card-border: #ededed;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    
+    /* Standard CSS Variables */
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;

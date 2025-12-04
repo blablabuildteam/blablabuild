@@ -55,7 +55,7 @@ const expertiseItems = [
     tilt: -2,
   },
   {
-    title: 'Operationele efficientie',
+    title: 'Operationele efficiëntie',
     description: 'Stroomlijn je operaties en reduceer kosten door slimme automatisering en procesoptimalisatie.',
     tilt: 3,
   },
@@ -64,45 +64,49 @@ const expertiseItems = [
 export default function ExpertiseSection() {
   return (
     <TooltipProvider delayDuration={100}>
-      <section className="min-h-[800px] snap-start flex flex-col items-center justify-center bg-white px-4 md:px-16 py-16 md:py-24">
+      <section id="expertise" className="min-h-[800px] snap-start flex flex-col items-center justify-center bg-white px-4 md:px-16 py-16 md:py-24">
         <motion.h2
-          className="font-host font-medium text-3xl md:text-[48px] text-black text-center mb-8"
+          className="font-host font-medium text-3xl md:text-[48px] text-text-primary text-center mb-8"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          Onze expertise
+          Zo lossen wij de knelpunten op
         </motion.h2>
 
-        <div className="w-full max-w-[871px] text-center">
-          {expertiseItems.map((item, index) => (
-            <Tooltip key={item.title}>
-              <TooltipTrigger asChild>
-                <motion.p
-                  className="font-host font-medium text-2xl md:text-[42px] leading-relaxed text-[#787878] hover:text-bla-blue transition-colors duration-200 cursor-pointer"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
+        <div className="w-full max-w-[871px] flex flex-col items-center">
+          {expertiseItems.map((item, index) => {
+            const isLeft = index % 2 === 0;
+            return (
+              <Tooltip key={item.title}>
+                <TooltipTrigger asChild>
+                  <motion.span
+                    className="inline-block font-host font-medium text-2xl md:text-[42px] leading-relaxed text-text-muted hover:text-bla-blue transition-colors duration-200 cursor-pointer"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                  >
+                    {item.title}
+                  </motion.span>
+                </TooltipTrigger>
+                <TooltipContent 
+                  side={isLeft ? "left" : "right"}
+                  align="center"
+                  sideOffset={12}
+                  collisionPadding={16}
+                  className="max-w-[300px] bg-bla-blue text-white text-sm md:text-base font-host px-5 py-4 rounded-2xl shadow-2xl border-2 border-white/20"
+                  style={{ 
+                    transform: `rotate(${item.tilt}deg)`,
+                  }}
                 >
-                  {item.title}
-                </motion.p>
-              </TooltipTrigger>
-              <TooltipContent 
-                side="bottom"
-                sideOffset={8}
-                collisionPadding={16}
-                className="max-w-[300px] bg-bla-blue text-white text-sm md:text-base font-host px-5 py-4 rounded-2xl shadow-2xl border-2 border-white/20"
-                style={{ 
-                  transform: `rotate(${item.tilt}deg)`,
-                }}
-              >
-                <span className="block font-semibold text-bla-lime text-lg mb-1">💡 {item.title}</span>
-                <span className="leading-relaxed">{item.description}</span>
-              </TooltipContent>
-            </Tooltip>
-          ))}
+                  <span className="block font-semibold text-bla-lime text-lg mb-1">💡 {item.title}</span>
+                  <span className="leading-relaxed">{item.description}</span>
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
         </div>
       </section>
     </TooltipProvider>

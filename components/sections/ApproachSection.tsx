@@ -12,31 +12,24 @@ const imgChain1 = "https://www.figma.com/api/mcp/asset/95802efc-77d1-4b0a-bada-3
 const steps = [
   {
     number: 1,
-    label: 'Stap 1',
-    title: 'Bla #1',
-    description: 'We bellen een keer of doen een koffietje om jouw situatie te bespreken',
+    title: 'blabla',
+    description: 'Een snelle meeting of belafspraak om het plan voor de eerste verbeterslag definitief scherp te krijgen. Geen vertraging: we gaan direct over tot actie.',
     image: imgImage14,
+    fontWeight: 'font-light',
   },
   {
     number: 2,
-    label: 'Stap 2',
-    title: 'Bla #2',
-    description: 'We bereiden een sessie voor om met jou en je team de diepte in te duiken en een plan te maken.',
-    image: imgImage14,
+    title: 'build',
+    description: 'This is where the magic happens. We gaan direct aan de slag om in enkele weken impact te leveren.',
+    image: imgChain1,
+    fontWeight: 'font-bold',
   },
   {
     number: 3,
-    label: 'Stap 3',
-    title: 'Build',
-    description: 'This is where the magic happens. We gaan direct aan de slag om in enkele weken impact te leveren.',
-    image: imgChain1,
-  },
-  {
-    number: 4,
-    label: 'Stap 4',
-    title: 'Scale',
+    title: 'scale',
     description: 'Ons ultieme einddoel. Bij het behalen van beoogde resultaten blijven we aan als jouw innovatie partner op geschaald success te behalen.',
     image: imgImage18,
+    fontWeight: 'font-light',
   },
 ];
 
@@ -56,18 +49,6 @@ function StepItem({ step, idx }: { step: typeof steps[0]; idx: number }) {
     },
   };
 
-  const labelVariants = {
-    hidden: { opacity: 0, x: -40 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        duration: 0.5,
-        ease: [0.25, 0.4, 0.25, 1],
-      },
-    },
-  };
-
   const titleVariants = {
     hidden: { opacity: 0, y: 30, filter: 'blur(8px)' },
     visible: {
@@ -82,10 +63,11 @@ function StepItem({ step, idx }: { step: typeof steps[0]; idx: number }) {
   };
 
   const descriptionVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 20, filter: 'blur(8px)' },
     visible: {
       opacity: 1,
       y: 0,
+      filter: 'blur(0px)',
       transition: {
         duration: 0.5,
         ease: [0.25, 0.4, 0.25, 1],
@@ -94,11 +76,12 @@ function StepItem({ step, idx }: { step: typeof steps[0]; idx: number }) {
   };
 
   const imageVariants = {
-    hidden: { opacity: 0, scale: 0.8, rotate: -5 },
+    hidden: { opacity: 0, scale: 0.8, rotate: -5, filter: 'blur(8px)' },
     visible: {
       opacity: 1,
       scale: 1,
       rotate: 0,
+      filter: 'blur(0px)',
       transition: {
         duration: 0.7,
         ease: [0.25, 0.4, 0.25, 1],
@@ -134,17 +117,10 @@ function StepItem({ step, idx }: { step: typeof steps[0]; idx: number }) {
       )}
 
       <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-12 py-8 md:py-12">
-        {/* Step Label */}
-        <motion.div className="flex-shrink-0 w-[80px]" variants={labelVariants}>
-          <p className="font-host font-bold text-lg md:text-xl text-bla-lime">
-            {step.label}
-          </p>
-        </motion.div>
-
         {/* Title & Description */}
         <div className="flex-1 max-w-[416px]">
           <motion.h3
-            className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-bla-lime mb-4"
+            className={`font-host ${step.fontWeight} text-2xl md:text-[32px] leading-[34px] text-bla-lime mb-4`}
             variants={titleVariants}
           >
             {step.title}

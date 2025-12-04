@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { ContainerTextFlip } from '@/components/ui/container-text-flip';
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -44,7 +45,7 @@ export default function HeroSection() {
             objectPosition: `center ${30 + (scrollY * 0.02)}%`,
           }}
         >
-          <source src="/3255275-uhd_3840_2160_25fps.mp4" type="video/mp4" />
+          <source src="/desktopvideo.mp4" type="video/mp4" />
         </video>
         {/* Slight dark overlay for text readability */}
         <div className="absolute inset-0 bg-black/20" />
@@ -59,21 +60,33 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <motion.span
-            initial={{ filter: 'blur(10px)', opacity: 0 }}
-            animate={{ filter: 'blur(0px)', opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            Wij regelen de integraties.
-          </motion.span>
-          <br />
-          <motion.span
-            initial={{ filter: 'blur(10px)', opacity: 0 }}
-            animate={{ filter: 'blur(0px)', opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-          >
-            Jij realiseert de resultaten.
-          </motion.span>
+          <div className="flex flex-col items-center justify-center">
+            <motion.span
+              initial={{ filter: 'blur(10px)', opacity: 0 }}
+              animate={{ filter: 'blur(0px)', opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="whitespace-nowrap"
+            >
+              Wij doen de innovaties -
+            </motion.span>
+            <motion.span
+              initial={{ filter: 'blur(10px)', opacity: 0 }}
+              animate={{ filter: 'blur(0px)', opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="inline-flex items-baseline justify-center gap-x-3 whitespace-nowrap"
+            >
+              <span>Jij behaalt meer</span>
+              <span className="inline-flex items-center bg-bla-blue px-3 py-1 rounded-md">
+                <ContainerTextFlip
+                  words={["inzicht", "omzet", "snelheid"]}
+                  interval={2500}
+                  animationDuration={600}
+                  className="font-bold"
+                  highlightClassName="text-white"
+                />
+              </span>
+            </motion.span>
+          </div>
         </motion.h1>
       </div>
     </section>

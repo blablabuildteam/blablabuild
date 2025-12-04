@@ -10,7 +10,6 @@ import CTAWidgetSection from '@/components/sections/CTAWidgetSection';
 import ApproachSection from '@/components/sections/ApproachSection';
 import ExpertiseSection from '@/components/sections/ExpertiseSection';
 import TeamSection from '@/components/sections/TeamSection';
-import DarkCTASection from '@/components/sections/DarkCTASection';
 import Footer from '@/components/sections/Footer';
 import FloatingChatBubble from '@/components/FloatingChatBubble';
 
@@ -58,7 +57,7 @@ export default function HomePage() {
 
   // Track active section for navigation highlighting
   useEffect(() => {
-    const sections = ['aanpak', 'team', 'cases'];
+    const sections = ['oplossingen', 'aanpak', 'expertise', 'over-ons'];
     const sectionElements: { id: string; element: HTMLElement }[] = [];
     let observer: IntersectionObserver | null = null;
     let scrollTimeout: NodeJS.Timeout | null = null;
@@ -67,55 +66,76 @@ export default function HomePage() {
       const navHeight = 80;
       const viewportTop = navHeight;
       const viewportBottom = window.innerHeight;
+      const viewportCenter = viewportTop + (viewportBottom - viewportTop) / 2;
       let activeSection = '';
-      let maxVisibleArea = 0;
+      let maxScore = -Infinity;
 
       sectionElements.forEach(({ id, element }) => {
         const rect = element.getBoundingClientRect();
-        const visibleTop = Math.max(rect.top, viewportTop);
-        const visibleBottom = Math.min(rect.bottom, viewportBottom);
-        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
-        const sectionHeight = rect.height;
-        const visibleRatio = sectionHeight > 0 ? visibleHeight / sectionHeight : 0;
+        const sectionTop = rect.top;
+        const sectionBottom = rect.bottom;
+        const sectionCenter = sectionTop + (sectionBottom - sectionTop) / 2;
         
-        if (visibleHeight > 0) {
-          const distanceFromTop = Math.abs(rect.top - viewportTop);
-          const score = visibleRatio * 100 - (distanceFromTop * 0.1);
+        // Check if section is in viewport
+        const isInViewport = sectionBottom > viewportTop && sectionTop < viewportBottom;
+        
+        if (isInViewport) {
+          // Calculate visible area
+          const visibleTop = Math.max(sectionTop, viewportTop);
+          const visibleBottom = Math.min(sectionBottom, viewportBottom);
+          const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+          const sectionHeight = rect.height;
+          const visibleRatio = sectionHeight > 0 ? visibleHeight / sectionHeight : 0;
           
-          if (score > maxVisibleArea) {
-            maxVisibleArea = score;
+          // Calculate distance from viewport center
+          const distanceFromCenter = Math.abs(sectionCenter - viewportCenter);
+          
+          // Score: higher visible ratio and closer to center = higher score
+          const score = visibleRatio * 100 - (distanceFromCenter * 0.05);
+          
+          if (score > maxScore) {
+            maxScore = score;
             activeSection = id;
           }
         }
       });
 
+      // If no section is in viewport, check if we're below the first section
+      // If we're above all sections (hero area), don't highlight anything
       if (!activeSection && sectionElements.length > 0) {
-        let closestSection = '';
-        let closestDistance = Infinity;
+        const firstSection = sectionElements[0];
+        const firstRect = firstSection.element.getBoundingClientRect();
+        
+        // Only find closest section if we're BELOW the first section's top
+        // (meaning we've scrolled past the hero)
+        if (firstRect.top < viewportBottom) {
+          let closestSection = '';
+          let closestDistance = Infinity;
 
-        sectionElements.forEach(({ id, element }) => {
-          const rect = element.getBoundingClientRect();
-          const distance = Math.abs(rect.top - viewportTop);
-          
-          if (distance < closestDistance) {
-            closestDistance = distance;
-            closestSection = id;
+          sectionElements.forEach(({ id, element }) => {
+            const rect = element.getBoundingClientRect();
+            const sectionCenter = rect.top + (rect.bottom - rect.top) / 2;
+            const distance = Math.abs(sectionCenter - viewportCenter);
+            
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              closestSection = id;
+            }
+          });
+
+          if (closestSection) {
+            activeSection = closestSection;
           }
-        });
-
-        if (closestSection) {
-          activeSection = closestSection;
         }
       }
 
-      if (activeSection) {
-        setActiveSection(activeSection);
-      }
+      // Update state - can be empty string to clear active state
+      setActiveSection(activeSection);
     };
 
     const throttledScroll = () => {
       if (scrollTimeout) clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(handleScroll, 50);
+      scrollTimeout = setTimeout(handleScroll, 16); // ~60fps for responsive updates
     };
 
     const timer = setTimeout(() => {
@@ -123,6 +143,8 @@ export default function HomePage() {
         const section = document.getElementById(sectionId);
         if (section) {
           sectionElements.push({ id: sectionId, element: section });
+        } else {
+          console.warn(`Section with id "${sectionId}" not found`);
         }
       });
 
@@ -130,50 +152,12 @@ export default function HomePage() {
 
       observer = new IntersectionObserver(
         (entries) => {
-          const navHeight = 80;
-          const visibleSections = entries
-            .filter((entry) => entry.isIntersecting)
-            .map((entry) => ({
-              id: entry.target.id,
-              ratio: entry.intersectionRatio,
-              top: entry.boundingClientRect.top,
-              bottom: entry.boundingClientRect.bottom,
-            }))
-            .sort((a, b) => {
-              const distanceA = Math.abs(a.top - navHeight);
-              const distanceB = Math.abs(b.top - navHeight);
-              
-              if (Math.abs(distanceA - distanceB) > 50) {
-                return distanceA - distanceB;
-              }
-              
-              return b.ratio - a.ratio;
-            });
-
-          if (visibleSections.length > 0) {
-            setActiveSection(visibleSections[0].id);
-          } else {
-            let closestSection = '';
-            let closestDistance = Infinity;
-
-            sectionElements.forEach(({ id, element }) => {
-              const rect = element.getBoundingClientRect();
-              const distance = Math.abs(rect.top - navHeight);
-
-              if (distance < closestDistance) {
-                closestDistance = distance;
-                closestSection = id;
-              }
-            });
-
-            if (closestSection) {
-              setActiveSection(closestSection);
-            }
-          }
+          // Use scroll handler as primary, observer as fallback
+          handleScroll();
         },
         {
           threshold: [0, 0.1, 0.3, 0.5, 0.7, 1.0],
-          rootMargin: '-80px 0px -50% 0px',
+          rootMargin: '-80px 0px -20% 0px',
         }
       );
 
@@ -205,7 +189,6 @@ export default function HomePage() {
       <ApproachSection />
       <ExpertiseSection />
       <TeamSection />
-      <DarkCTASection />
       <Footer />
       <FloatingChatBubble />
     </div>

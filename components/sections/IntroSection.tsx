@@ -7,7 +7,7 @@ export default function IntroSection() {
     <section className="min-h-[688px] snap-start flex items-center justify-center bg-bla-lavender px-8 md:px-16 py-24 md:py-36 overflow-hidden">
       <div className="mx-auto w-full max-w-[863px] text-center">
         <motion.h2
-          className="font-host font-medium text-3xl md:text-[48px] leading-tight text-black mb-10 md:mb-12"
+          className="font-host font-medium text-3xl md:text-[48px] leading-tight text-text-primary mb-10 md:mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
@@ -21,7 +21,7 @@ export default function IntroSection() {
         </motion.h2>
         
         <motion.p
-          className="font-host font-medium text-lg md:text-2xl text-black leading-relaxed"
+          className="font-host font-medium text-lg md:text-2xl text-text-primary leading-relaxed"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
