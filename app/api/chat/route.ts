@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GeminiChat } from '@/lib/gemini';
-import { supabaseAdmin } from '@/lib/supabase';
+import { sessionStore, eventStore, messageStore } from '@/lib/storage';
 import { nanoid } from 'nanoid';
 
 export const runtime = 'nodejs';
@@ -40,13 +40,13 @@ export async function POST(req: NextRequest) {
       console.log('🆕 Creating new session');
       activeSessionId = `session_${nanoid()}`;
 
-      await supabaseAdmin.from('sessions').insert({
+      await sessionStore.insert({
         id: activeSessionId,
         locale: 'nl',
         consent: true,
       });
 
-      await supabaseAdmin.from('events').insert({
+      await eventStore.insert({
         session_id: activeSessionId,
         type: 'session_started',
         payload: { timestamp: new Date().toISOString() },
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 
     // Track message event
     try {
-      await supabaseAdmin.from('events').insert({
+      await eventStore.insert({
         session_id: activeSessionId,
         type: 'message_sent',
         payload: { 
@@ -103,17 +103,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const { data: session } = await supabaseAdmin
-      .from('sessions')
-      .select('*')
-      .eq('id', sessionId)
-      .single();
-
-    const { data: messages } = await supabaseAdmin
-      .from('messages')
-      .select('*')
-      .eq('session_id', sessionId)
-      .order('created_at', { ascending: true });
+    const { data: session } = await sessionStore.get(sessionId);
+    const { data: messages } = await messageStore.getBySession(sessionId);
 
     return NextResponse.json({
       session,

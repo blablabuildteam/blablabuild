@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { supabaseAdmin } from '@/lib/supabase';
+import { messageStore, sessionStore, eventStore } from '@/lib/storage';
 import { generateConversationSummary } from '@/lib/gemini';
 
 export const runtime = 'nodejs';
@@ -30,11 +30,7 @@ export async function POST(req: NextRequest) {
     const summary = await generateConversationSummary(sessionId);
 
     // Get conversation messages for context
-    const { data: messages } = await supabaseAdmin
-      .from('messages')
-      .select('*')
-      .eq('session_id', sessionId)
-      .order('created_at', { ascending: true });
+    const { data: messages } = await messageStore.getBySession(sessionId);
 
     // Generate email HTML with summary
     const emailHtml = generateEmailHtml({
@@ -79,16 +75,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Update session with email
-    await supabaseAdmin
-      .from('sessions')
-      .update({ 
-        email,
-        completed_at: new Date().toISOString(),
-      })
-      .eq('id', sessionId);
+    await sessionStore.update(sessionId, { 
+      email,
+      completed_at: new Date().toISOString(),
+    });
 
     // Track event
-    await supabaseAdmin.from('events').insert({
+    await eventStore.insert({
       session_id: sessionId,
       type: 'email_sent',
       payload: { email, name, companyName, phone },

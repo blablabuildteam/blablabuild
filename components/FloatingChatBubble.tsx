@@ -51,6 +51,7 @@ export default function FloatingChatBubble() {
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const scrollPositionRef = useRef<number>(0);
 
   // Show bubble after scrolling past hero section
   useEffect(() => {
@@ -83,6 +84,8 @@ export default function FloatingChatBubble() {
           
           // Only close when scrolling out if chat hasn't started
           if (wasInSection && !entry.isIntersecting && !chatStarted && isExpanded) {
+            // Store scroll position before closing modal
+            scrollPositionRef.current = window.scrollY;
             setIsExpanded(false);
           }
         });
@@ -296,12 +299,13 @@ export default function FloatingChatBubble() {
   };
 
   const toggleExpand = () => {
-    if (isExpanded && !chatStarted) {
-      // Only allow collapse if chat hasn't started
-      setUserManuallyCollapsed(true);
-      setIsExpanded(false);
-    } else if (isExpanded && chatStarted) {
-      // Chat is active - minimize but don't reset
+    if (isExpanded) {
+      // Store scroll position before closing modal
+      scrollPositionRef.current = window.scrollY;
+      
+      if (!chatStarted) {
+        setUserManuallyCollapsed(true);
+      }
       setIsExpanded(false);
     } else {
       setUserManuallyCollapsed(false);
@@ -309,6 +313,13 @@ export default function FloatingChatBubble() {
       setIsExpanded(true);
     }
   };
+  
+  // Callback to restore scroll position after modal exit animation completes
+  const handleExitComplete = useCallback(() => {
+    if (scrollPositionRef.current > 0) {
+      window.scrollTo({ top: scrollPositionRef.current, behavior: 'instant' });
+    }
+  }, []);
 
   useEffect(() => {
     if (!isInCTASection && !chatStarted) {
@@ -425,7 +436,7 @@ export default function FloatingChatBubble() {
     <AnimatePresence>
       {isVisible && (
         <div className={`fixed left-1/2 -translate-x-1/2 z-[9999] ${isExpanded ? 'bottom-24' : 'bottom-8'}`}>
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" onExitComplete={handleExitComplete}>
             {isExpanded ? (
               <motion.div
                 key="expanded"

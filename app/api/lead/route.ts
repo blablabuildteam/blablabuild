@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { sessionStore, eventStore, slotStore } from '@/lib/storage';
 import { trackWidgetEvent } from '@/lib/analytics';
 
 export const dynamic = 'force-dynamic';
@@ -25,13 +25,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Update session with lead information
-    const updateData: any = {
+    await sessionStore.update(sessionId, {
       email,
       completed_at: new Date().toISOString(),
-    };
+    });
 
     // Save lead data to slots
-    const leadData: any = {};
+    const leadData: Record<string, string> = {};
     if (name) leadData.name = name;
     if (companyName) leadData.company_name = companyName;
     if (phone) leadData.phone = phone;
@@ -40,24 +40,16 @@ export async function POST(req: NextRequest) {
 
     // Save lead data to slots
     for (const [key, value] of Object.entries(leadData)) {
-      await supabaseAdmin
-        .from('slots')
-        .upsert({
-          session_id: sessionId,
-          key,
-          value,
-          confidence: 1.0,
-        }, { onConflict: 'session_id,key' });
+      await slotStore.upsert({
+        session_id: sessionId,
+        key,
+        value,
+        confidence: 1.0,
+      });
     }
 
-    // Update session
-    await supabaseAdmin
-      .from('sessions')
-      .update(updateData)
-      .eq('id', sessionId);
-
     // Track lead creation event
-    await supabaseAdmin.from('events').insert({
+    await eventStore.insert({
       session_id: sessionId,
       type: 'lead_created',
       payload: {

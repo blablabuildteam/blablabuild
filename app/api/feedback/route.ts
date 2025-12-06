@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { eventStore } from '@/lib/storage';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Store feedback as an event
-    await supabaseAdmin.from('events').insert({
+    await eventStore.insert({
       session_id: sessionId,
       type: 'feedback',
       payload: {

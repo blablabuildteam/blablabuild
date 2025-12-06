@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 import { ChatResponse } from './types';
-import { supabaseAdmin } from './supabase';
+import { messageStore } from './storage';
 
 // ===========================================
 // RATE LIMITING CONFIGURATION
@@ -148,11 +148,7 @@ export class GeminiChat {
 
   async loadHistory(): Promise<void> {
     try {
-      const { data: messages } = await supabaseAdmin
-        .from('messages')
-        .select('*')
-        .eq('session_id', this.sessionId)
-        .order('created_at', { ascending: true });
+      const { data: messages } = await messageStore.getBySession(this.sessionId);
 
       if (messages && messages.length > 0) {
         this.history = messages.map((msg: any) => ({
@@ -226,16 +222,16 @@ export class GeminiChat {
       const result = await chat.sendMessage(prompt);
       const response = result.response.text();
 
-      // Save messages to database
+      // Save messages to storage
       if (userMessage) {
-        await supabaseAdmin.from('messages').insert({
+        await messageStore.insert({
           session_id: this.sessionId,
           role: 'user',
           content: userMessage,
         });
       }
 
-      await supabaseAdmin.from('messages').insert({
+      await messageStore.insert({
         session_id: this.sessionId,
         role: 'assistant',
         content: response,
@@ -327,11 +323,7 @@ export async function generateConversationSummary(sessionId: string): Promise<{
   });
 
   // Get conversation history
-  const { data: messages } = await supabaseAdmin
-    .from('messages')
-    .select('*')
-    .eq('session_id', sessionId)
-    .order('created_at', { ascending: true });
+  const { data: messages } = await messageStore.getBySession(sessionId);
 
   if (!messages || messages.length === 0) {
     return {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { sessionStore, messageStore, eventStore } from '@/lib/storage';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -14,17 +14,8 @@ export async function GET(req: NextRequest) {
 
     if (sessionId) {
       // Get session-specific analytics
-      const { data: messages } = await supabaseAdmin
-        .from('messages')
-        .select('*')
-        .eq('session_id', sessionId)
-        .order('created_at', { ascending: true });
-
-      const { data: events } = await supabaseAdmin
-        .from('events')
-        .select('*')
-        .eq('session_id', sessionId)
-        .order('created_at', { ascending: true });
+      const { data: messages } = await messageStore.getBySession(sessionId);
+      const { data: events } = await eventStore.getBySession(sessionId);
 
       return NextResponse.json({
         sessionId,
@@ -36,13 +27,8 @@ export async function GET(req: NextRequest) {
     }
 
     // Get overall stats
-    const { count: sessionCount } = await supabaseAdmin
-      .from('sessions')
-      .select('*', { count: 'exact', head: true });
-
-    const { count: messageCount } = await supabaseAdmin
-      .from('messages')
-      .select('*', { count: 'exact', head: true });
+    const { count: sessionCount } = await sessionStore.count();
+    const { count: messageCount } = await messageStore.count();
 
     return NextResponse.json({
       totalSessions: sessionCount || 0,

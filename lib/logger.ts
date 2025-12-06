@@ -1,5 +1,3 @@
-import { supabaseAdmin } from './supabase';
-
 export type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
 export interface LogContext {
@@ -11,66 +9,27 @@ export interface LogContext {
 }
 
 /**
- * Logger utility that stores logs in Supabase for sharing with contributors
- * Replaces console.log/error/warn with persistent, shareable logs
+ * Simple logger utility using console
  */
 class Logger {
-  private async writeLog(
+  private writeLog(
     level: LogLevel,
     message: string,
     context?: LogContext,
     error?: Error
-  ): Promise<void> {
-    // Always log to console for immediate visibility
+  ): void {
+    const timestamp = new Date().toISOString();
     const consoleMethod = level === 'error' ? console.error : level === 'warn' ? console.warn : console.log;
-    consoleMethod(`[${level.toUpperCase()}]`, message, context || '');
-
-    // Store in Supabase (non-blocking)
-    try {
-      const logData: any = {
-        level,
-        message,
-        context: context || {},
-        created_at: new Date().toISOString(),
-      };
-
-      if (context?.sessionId) {
-        logData.session_id = context.sessionId;
-      }
-
-      if (context?.endpoint) {
-        logData.endpoint = context.endpoint;
-      }
-
-      if (context?.userAgent) {
-        logData.user_agent = context.userAgent;
-      }
-
-      if (context?.ipAddress) {
-        logData.ip_address = context.ipAddress;
-      }
-
-      if (error?.stack) {
-        logData.stack_trace = error.stack;
-      }
-
-      // Fire and forget - don't block execution if logging fails
-      // Use void to explicitly ignore the promise
-      void (async () => {
-        try {
-          const { error } = await supabaseAdmin.from('logs').insert(logData);
-          if (error) {
-            console.error('[Logger] Failed to write log to Supabase:', error);
-          }
-        } catch (err) {
-          // Only log to console if Supabase logging fails
-          console.error('[Logger] Failed to write log to Supabase:', err);
-        }
-      })();
-    } catch (err) {
-      // Silently fail - don't break the app if logging fails
-      console.error('[Logger] Error writing log:', err);
-    }
+    
+    const logData = {
+      timestamp,
+      level,
+      message,
+      ...context,
+      ...(error?.stack ? { stack: error.stack } : {}),
+    };
+    
+    consoleMethod(`[${level.toUpperCase()}] ${timestamp}`, message, context || '');
   }
 
   /**
@@ -136,4 +95,3 @@ export const log = logger.info.bind(logger);
 export const logError = logger.error.bind(logger);
 export const logWarn = logger.warn.bind(logger);
 export const logDebug = logger.debug.bind(logger);
-

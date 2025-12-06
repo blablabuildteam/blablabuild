@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GeminiChat } from '@/lib/gemini';
-import { supabaseAdmin } from '@/lib/supabase';
+import { sessionStore, eventStore } from '@/lib/storage';
 import { nanoid } from 'nanoid';
 
 export const runtime = 'nodejs';
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     // Create new session
     const sessionId = `session_${nanoid()}`;
     
-    await supabaseAdmin.from('sessions').insert({
+    await sessionStore.insert({
       id: sessionId,
       locale: 'nl',
       utm_source,
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const response = await chat.chat('');
 
     // Track event
-    await supabaseAdmin.from('events').insert({
+    await eventStore.insert({
       session_id: sessionId,
       type: 'widget_opened',
       payload: { 
