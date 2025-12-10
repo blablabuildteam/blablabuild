@@ -15,44 +15,10 @@ import FloatingChatBubble from '@/components/FloatingChatBubble';
 export default function HomePage() {
   const [showNavCTA, setShowNavCTA] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('');
-  const [showBottomFade, setShowBottomFade] = useState(true);
-  const [fadeColor, setFadeColor] = useState('255, 255, 255'); // RGB for white
 
   useEffect(() => {
     initAnalytics();
     trackEvent('page_view', { page: 'home' });
-  }, []);
-
-  // Hide bottom fade when at the bottom of the page & change color based on section
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const distanceFromBottom = documentHeight - (scrollTop + windowHeight);
-      
-      // Hide fade when within 100px of bottom
-      setShowBottomFade(distanceFromBottom > 100);
-      
-      // Check if Aanpak section (blue) is at the bottom of viewport
-      const aanpakSection = document.getElementById('aanpak');
-      if (aanpakSection) {
-        const rect = aanpakSection.getBoundingClientRect();
-        const fadeZone = windowHeight - 128; // Where the fade starts (h-32 = 128px)
-        
-        // If Aanpak section overlaps with the fade zone
-        if (rect.top < windowHeight && rect.bottom > fadeZone) {
-          setFadeColor('17, 37, 255'); // bla-blue RGB
-        } else {
-          setFadeColor('255, 255, 255'); // white RGB
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Check on mount
-    
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Track when "Aanpak" section enters viewport to show nav CTA
@@ -223,17 +189,6 @@ export default function HomePage() {
       <TeamSection />
       <Footer />
       <FloatingChatBubble />
-      
-      {/* Bottom viewport fade */}
-      <div 
-        className={`fixed bottom-0 left-0 right-0 h-32 pointer-events-none z-[100] ${
-          showBottomFade ? 'opacity-100' : 'opacity-0'
-        }`}
-        style={{
-          background: `linear-gradient(to top, rgba(${fadeColor}, 1) 0%, rgba(${fadeColor}, 0) 100%)`,
-          transition: 'opacity 0.3s ease, background 0.3s ease'
-        }}
-      />
     </div>
   );
 }
