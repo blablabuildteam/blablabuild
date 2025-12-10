@@ -147,8 +147,9 @@ function StepItem({ step, idx }: { step: typeof steps[0]; idx: number }) {
 
 export default function ApproachSection() {
   return (
-    <section id="aanpak" className="min-h-screen snap-start bg-bla-blue py-16 md:py-24 px-4 md:px-16 overflow-hidden">
-      <div className="mx-auto w-full max-w-[1312px]">
+    <section id="aanpak" className="min-h-screen snap-start overflow-hidden py-[10px] px-[10px]">
+      <div className="w-full h-full rounded-3xl overflow-hidden bg-bla-blue py-16 md:py-24 px-4 md:px-16">
+        <div className="mx-auto w-full max-w-[1312px]">
         {/* Header */}
         <motion.div 
           className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16"
@@ -173,6 +174,7 @@ export default function ApproachSection() {
           {steps.map((step, idx) => (
             <StepItem key={step.number} step={step} idx={idx} />
           ))}
+        </div>
         </div>
       </div>
     </section>
