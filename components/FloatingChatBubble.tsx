@@ -6,6 +6,7 @@ import { MessageCircle, X, ArrowRight, Check, Mail, Building, Phone, User, FileT
 import { trackEvent, trackWidgetEvent } from '@/lib/analytics';
 import { ChatResponse } from '@/lib/types';
 import Image from 'next/image';
+import { BorderBeam } from '@/components/ui/border-beam';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -812,11 +813,10 @@ export default function FloatingChatBubble() {
                 </motion.div>
               </motion.div>
             ) : (
-              /* Collapsed Bubble */
-              <motion.button
+              /* Collapsed Bubble with Border Beam */
+              <motion.div
                 key="collapsed"
-                onClick={openChat}
-                className="w-[60px] h-[60px] bg-bla-lime rounded-full shadow-lg flex items-center justify-center relative"
+                className="relative rounded-full overflow-visible"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={isAnimatingAttention ? {
                   scale: [1, 1.2, 0.9, 1.15, 0.95, 1.1, 1],
@@ -832,39 +832,36 @@ export default function FloatingChatBubble() {
                   times: [0, 0.15, 0.3, 0.45, 0.6, 0.8, 1]
                 } : { type: "spring", stiffness: 300, damping: 20 }}
               >
-                <motion.div
-                  animate={isAnimatingAttention ? {
-                    rotate: [0, 15, -15, 15, -15, 0]
-                  } : {}}
-                  transition={{ duration: 0.6 }}
-                >
-                  <MessageCircle className="w-7 h-7 text-black" />
-                </motion.div>
+                {/* Border Beam Animation */}
+                <BorderBeam
+                  duration={6}
+                  size={150}
+                  borderWidth={2}
+                  colorFrom="rgba(150, 200, 0, 1)"
+                  colorTo="transparent"
+                  className="z-20 rounded-full"
+                />
                 
-                {/* Attention ring animation */}
-                {isAnimatingAttention && (
-                  <>
-                    <motion.div
-                      className="absolute inset-0 rounded-full border-4 border-bla-lime"
-                      initial={{ scale: 1, opacity: 1 }}
-                      animate={{ scale: 2, opacity: 0 }}
-                      transition={{ duration: 0.6, ease: "easeOut" }}
-                    />
-                    <motion.div
-                      className="absolute inset-0 rounded-full border-4 border-bla-lime"
-                      initial={{ scale: 1, opacity: 1 }}
-                      animate={{ scale: 2, opacity: 0 }}
-                      transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-                    />
-                  </>
-                )}
+                <button
+                  onClick={openChat}
+                  className="w-[60px] h-[60px] bg-bla-lime rounded-full shadow-lg flex items-center justify-center relative z-10"
+                >
+                  <motion.div
+                    animate={isAnimatingAttention ? {
+                      rotate: [0, 15, -15, 15, -15, 0]
+                    } : {}}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <MessageCircle className="w-7 h-7 text-black" />
+                  </motion.div>
+                </button>
                 
                 {/* Active chat indicator */}
                 {chatStarted && !isComplete && (
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"
+                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white z-30"
                   >
                     <motion.div
                       className="w-full h-full bg-red-500 rounded-full"
@@ -873,7 +870,7 @@ export default function FloatingChatBubble() {
                     />
                   </motion.div>
                 )}
-              </motion.button>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
