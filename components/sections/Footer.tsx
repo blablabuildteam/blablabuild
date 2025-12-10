@@ -95,19 +95,6 @@ export default function Footer() {
               </a>
             </div>
 
-            {/* CTA Section */}
-            <div className="flex flex-col items-start justify-end">
-              <button
-                onClick={() => {
-                  window.dispatchEvent(new CustomEvent('openChatWidget'));
-                }}
-                className="bg-bla-lime px-6 py-3 rounded-full font-sans font-semibold text-base text-black tracking-[-0.48px] hover:bg-bla-lime/90 transition-colors flex items-center gap-2"
-              >
-                Gratis AI Advies
-                <ArrowUpRight className="h-4 w-4" />
-              </button>
-            </div>
-
             {/* Location Section */}
             <div className="flex flex-col items-start gap-3">
               <h3 className="text-bla-lime text-sm font-semibold uppercase tracking-widest">
