@@ -67,7 +67,7 @@ export default function HeroSection() {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="whitespace-nowrap"
             >
-              Wij doen de innovaties -
+              Wij doen de AI innovaties -
             </motion.span>
             <motion.span
               initial={{ filter: 'blur(10px)', opacity: 0 }}

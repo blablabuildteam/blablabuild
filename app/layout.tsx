@@ -3,7 +3,7 @@ import "./globals.css";
 import PasswordGate from "@/components/PasswordGate";
 
 export const metadata: Metadata = {
-  title: "blablabuild | AI & Automatisering voor Snelle Groei",
+  title: "blablabuild | AI Innovaties voor Snelle Groei",
   description: "We transformeren complexiteit naar flow. AI-gedreven oplossingen voor moderne bedrijven.",
   keywords: "AI, automatisering, business transformation, data, tech",
   icons: {

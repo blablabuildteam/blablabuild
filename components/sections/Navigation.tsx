@@ -49,7 +49,7 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
     { id: 'oplossingen', label: 'Oplossingen' },
     { id: 'aanpak', label: 'Aanpak' },
     { id: 'expertise', label: 'Expertise' },
-    { id: 'over-ons', label: 'Over ons' },
+    { id: 'over-ons', label: 'Team' },
   ];
 
   const handleNavClick = (id: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
