@@ -2,66 +2,38 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { 
   ArrowLeft01Icon as ArrowLeftIcon,
   ArrowRight01Icon as ArrowRightIcon
 } from 'hugeicons-react';
-
-// Simple SVG Icons for the carousel cards
-const ChartLineIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M3 18L9 12L13 16L21 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M21 8H15V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
-const GrowthIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M3 21L12 12L16 16L21 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M21 11V7H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
-const SpeedometerIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-    <path d="M12 2V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-    <path d="M12 18V22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-    <path d="M4.93 4.93L7.76 7.76" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-    <path d="M16.24 16.24L19.07 19.07" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-    <path d="M2 12H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-    <path d="M18 12H22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-    <path d="M4.93 19.07L7.76 16.24" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-    <path d="M16.24 7.76L19.07 4.93" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-    <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
-  </svg>
-);
+import { ContainerTextFlip } from '@/components/ui/container-text-flip';
 
 interface CarouselCard {
   id: string;
   title: string;
   description: string;
-  IconComponent: React.ComponentType;
+  iconPath: string;
 }
 
 const carouselCards: CarouselCard[] = [
   {
     id: 'inzicht',
     title: 'Meer Inzicht',
-    description: 'AI-Analytics creating data with analytics on can solve services and marketing business.',
-    IconComponent: ChartLineIcon
+    description: 'Jij krijgt één helder overzicht van al je data, zodat je direct weet waar je kansen liggen en welke beslissingen je moet nemen.',
+    iconPath: '/icons/insights.svg'
   },
   {
     id: 'groei',
-    title: 'Meer Groei',
-    description: 'AI-Analytics creating data with analytics on can solve services and marketing business.',
-    IconComponent: GrowthIcon
+    title: 'Meer Omzet',
+    description: 'Wij focussen op de snelste winst: het optimaliseren van de weg van bezoeker naar betalende klant. Dit zorgt direct voor meetbare groei.',
+    iconPath: '/icons/growth.svg'
   },
   {
     id: 'snelheid',
     title: 'Meer Snelheid',
-    description: 'AI-Analytics creating data with analytics on can solve services and marketing business.',
-    IconComponent: SpeedometerIcon
+    description: 'Onze aanpak elimineert het saaie, repetitieve werk door slimme automatisering, zodat je weer tijd hebt om te ondernemen in plaats van te administreren.',
+    iconPath: '/icons/speed.svg'
   }
 ];
 
@@ -123,21 +95,27 @@ export default function HeroSection() {
           </div>
 
           {/* Content Container */}
-          <div className="relative z-10 h-full flex flex-col lg:flex-row items-center justify-between px-6 sm:px-8 lg:px-12 py-12">
+          <div className="relative z-10 h-full flex flex-col lg:flex-row items-center justify-center px-6 sm:px-8 lg:px-12 py-12">
             {/* Left Side - Header Content */}
-            <div className="flex-1 lg:max-w-[50%] mb-8 lg:mb-0">
+            <div className="flex-1 lg:max-w-[50%] mb-8 lg:mb-0 h-full flex items-center">
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="space-y-6"
+                className="space-y-6 w-full"
               >
                 <h1 className="font-host font-bold text-4xl md:text-5xl lg:text-6xl xl:text-[64px] leading-tight text-white">
                   <span className="block">Wij doen de innovaties -</span>
                   <span className="block mt-2">
                     Jij behaalt meer{' '}
                     <span className="inline-block bg-bla-blue px-3 py-1 rounded-md">
-                      omzet
+                      <ContainerTextFlip
+                        words={["inzicht", "omzet", "snelheid"]}
+                        interval={2500}
+                        animationDuration={600}
+                        className="font-bold"
+                        highlightClassName="text-white"
+                      />
                     </span>
                   </span>
                 </h1>
@@ -149,27 +127,27 @@ export default function HeroSection() {
             </div>
 
             {/* Right Side - Carousel */}
-            <div className="flex-1 lg:max-w-[45%] w-full lg:pl-8">
+            <div className="flex-1 lg:max-w-[45%] w-full lg:pl-8 h-full flex items-center">
               <motion.div
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="relative"
+                className="relative w-full"
               >
                 {/* Carousel Container */}
                 <div className="relative overflow-visible">
-                  <div className="flex gap-4 relative">
+                  <div className="flex gap-4 relative items-center w-full">
                     {carouselCards.map((card, index) => {
                       const isActive = index === currentCardIndex;
-                      const isNext = index === (currentCardIndex + 1) % carouselCards.length;
+                      const isLastCard = currentCardIndex === carouselCards.length - 1;
+                      const isNext = index === currentCardIndex + 1; // No modulo - don't wrap around
                       const isVisible = isActive || isNext;
-                      const { IconComponent } = card;
                       
                       return (
                         <motion.div
                           key={card.id}
-                          className={`flex-shrink-0 transition-all duration-500 ${
-                            isActive ? 'w-full' : isNext ? 'w-[55%]' : 'w-0'
+                          className={`flex-shrink-0 transition-all duration-500 flex ${
+                            isActive ? (isLastCard ? 'w-full' : 'w-[75%]') : isNext ? 'w-[50%]' : 'w-0'
                           }`}
                           initial={false}
                           animate={{
@@ -177,30 +155,45 @@ export default function HeroSection() {
                             scale: isActive ? 1 : isNext ? 0.95 : 1,
                           }}
                         >
-                          <div className={`bg-[#1a1a1a] rounded-3xl p-8 border-2 ${
+                          <div className={`bg-[#1a1a1a] rounded-3xl pt-6 px-6 pb-6 border-2 w-full ${
                             isActive 
-                              ? 'border-bla-lime/50 shadow-[0_0_20px_rgba(206,255,0,0.3)]' 
-                              : 'border-bla-lime/30 shadow-[0_0_10px_rgba(206,255,0,0.15)]'
-                          } relative overflow-hidden h-full`}>
+                              ? 'border-bla-lime shadow-[0_0_20px_rgba(206,255,0,0.3)]' 
+                              : 'border-bla-lime shadow-[0_0_10px_rgba(206,255,0,0.15)]'
+                          } relative overflow-hidden flex flex-col`}>
+                            {/* Grain effect overlay */}
+                            <div 
+                              className="absolute inset-0 rounded-3xl opacity-[0.15] pointer-events-none z-10"
+                              style={{
+                                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+                                backgroundSize: '200px 200px',
+                              }}
+                            />
                             {/* Glowing border effect */}
                             <div className={`absolute inset-0 rounded-3xl border-2 ${
-                              isActive ? 'border-bla-lime/30' : 'border-bla-lime/20'
+                              isActive ? 'border-bla-lime' : 'border-bla-lime'
                             } blur-sm`} />
                             
-                            {/* Icon */}
-                            <div className="mb-6">
-                              <div className="w-12 h-12 rounded-xl bg-bla-lime/20 flex items-center justify-center text-bla-lime border border-bla-lime/30">
-                                <div className="w-6 h-6">
-                                  <IconComponent />
+                            {/* Icon and Title Row */}
+                            <div className="mb-4 relative z-20 flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-xl bg-bla-lime flex items-center justify-center flex-shrink-0">
+                                <div className="w-6 h-6 relative">
+                                  <Image
+                                    src={card.iconPath}
+                                    alt={card.title}
+                                    fill
+                                    className="object-contain"
+                                    style={{ filter: 'brightness(0)' }}
+                                  />
                                 </div>
                               </div>
+                              <h3 className="text-white font-bold" style={{ fontSize: '1.7rem' }}>
+                                {card.title}
+                              </h3>
                             </div>
 
                             {/* Content */}
-                            <div className="space-y-4">
-                              <p className="text-white/70 text-sm font-medium">Onze Service:</p>
-                              <h3 className="text-white text-2xl font-bold">{card.title}</h3>
-                              <p className="text-white/80 text-base leading-relaxed">
+                            <div className="relative z-20 flex-1">
+                              <p className="text-white/80 leading-relaxed" style={{ fontSize: '1.2rem' }}>
                                 {card.description}
                               </p>
                             </div>
@@ -212,20 +205,24 @@ export default function HeroSection() {
                 </div>
 
                 {/* Navigation Arrows */}
-                <button
-                  onClick={prevCard}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-8 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg hover:bg-white/90 transition-colors z-20"
-                  aria-label="Previous card"
-                >
-                  <ArrowLeftIcon className="w-5 h-5 text-black" />
-                </button>
-                <button
-                  onClick={nextCard}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-8 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg hover:bg-white/90 transition-colors z-20"
-                  aria-label="Next card"
-                >
-                  <ArrowRightIcon className="w-5 h-5 text-black" />
-                </button>
+                {currentCardIndex > 0 && (
+                  <button
+                    onClick={prevCard}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-8 lg:-translate-x-12 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg hover:bg-white/90 transition-colors z-30"
+                    aria-label="Previous card"
+                  >
+                    <ArrowLeftIcon className="w-5 h-5 text-black" />
+                  </button>
+                )}
+                {currentCardIndex < carouselCards.length - 1 && (
+                  <button
+                    onClick={nextCard}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 lg:translate-x-4 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg hover:bg-white/90 transition-colors z-30"
+                    aria-label="Next card"
+                  >
+                    <ArrowRightIcon className="w-5 h-5 text-black" />
+                  </button>
+                )}
               </motion.div>
             </div>
           </div>
