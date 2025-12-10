@@ -15,7 +15,7 @@ const expertiseItems = [
     tilt: -2,
   },
   {
-    title: 'Operationele AI & Data workflows',
+    title: 'AI & Data workflows',
     description: 'Automatiseer processen en optimaliseer datastromen voor maximale efficiëntie en schaalbaarheid.',
     tilt: 3,
   },
@@ -45,7 +45,7 @@ const expertiseItems = [
     tilt: -3,
   },
   {
-    title: 'Enterprise strategie & erving',
+    title: 'Enterprise strategie & ervaring',
     description: 'Schaalbare oplossingen voor grote organisaties met focus op integratie en governance.',
     tilt: 2,
   },
