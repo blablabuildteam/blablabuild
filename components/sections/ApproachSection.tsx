@@ -4,31 +4,26 @@ import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
 import { useRef } from 'react';
 
-// Image assets from Figma
-const imgImage14 = "https://www.figma.com/api/mcp/asset/874bde05-bbfc-42a0-bfa9-0fbd41044c9c";
-const imgImage18 = "https://www.figma.com/api/mcp/asset/b7119e5a-d036-4ed1-9377-a12dc9228b27";
-const imgChain1 = "https://www.figma.com/api/mcp/asset/95802efc-77d1-4b0a-bada-39377d4973ff";
-
 const steps = [
   {
     number: 1,
     title: 'blabla',
     description: 'Een snelle meeting of belafspraak om het plan voor de eerste verbeterslag definitief scherp te krijgen. Geen vertraging: we gaan direct over tot actie.',
-    image: imgImage14,
+    image: '/3dobjects/png/Abstract.png',
     fontWeight: 'font-light',
   },
   {
     number: 2,
     title: 'build',
     description: 'This is where the magic happens. We gaan direct aan de slag om in enkele weken impact te leveren.',
-    image: imgChain1,
+    image: '/3dobjects/png/Chain.png',
     fontWeight: 'font-bold',
   },
   {
     number: 3,
     title: 'scale',
     description: 'Ons ultieme einddoel. Bij het behalen van beoogde resultaten blijven we aan als jouw innovatie partner op geschaald success te behalen.',
-    image: imgImage18,
+    image: '/3dobjects/png/Plus.png',
     fontWeight: 'font-light',
   },
 ];
@@ -135,13 +130,14 @@ function StepItem({ step, idx }: { step: typeof steps[0]; idx: number }) {
 
         {/* Image */}
         <motion.div
-          className="flex-shrink-0 w-[200px] h-[200px] md:w-[245px] md:h-[245px] ml-auto hidden md:block"
+          className="flex-shrink-0 w-[200px] h-[200px] md:w-[280px] md:h-[280px] ml-auto hidden md:block relative"
           variants={imageVariants}
         >
-          <img
+          <Image
             src={step.image}
-            alt=""
-            className="w-full h-full object-contain"
+            alt={step.title}
+            fill
+            className="object-contain"
           />
         </motion.div>
       </div>
