@@ -129,8 +129,23 @@ const config: Config = {
 			'zoom-out-in': 'zoomOutIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
 			'zoom-out-out': 'zoomOutOut 0.15s ease-in',
 			"border-beam": "border-beam calc(var(--duration)*1s) infinite linear",
+			marquee: "marquee var(--duration) linear infinite",
+			"marquee-vertical": "marquee-vertical var(--duration) linear infinite",
+			scroll: "scroll var(--animation-duration, 20s) linear infinite",
 		},
 		keyframes: {
+			marquee: {
+				from: { transform: "translateX(0)" },
+				to: { transform: "translateX(calc(-100% - var(--gap)))" },
+			},
+			"marquee-vertical": {
+				from: { transform: "translateY(0)" },
+				to: { transform: "translateY(calc(-100% - var(--gap)))" },
+			},
+			scroll: {
+				from: { transform: "translateX(0)" },
+				to: { transform: "translateX(calc(-50%))" },
+			},
 			"border-beam": {
 				"100%": {
 					"offset-distance": "100%",
