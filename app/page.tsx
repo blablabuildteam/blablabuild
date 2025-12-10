@@ -6,7 +6,6 @@ import Navigation from '@/components/sections/Navigation';
 import HeroSection from '@/components/sections/HeroSection';
 import IntroSection from '@/components/sections/IntroSection';
 import CasesSection from '@/components/sections/CasesSection';
-import CTAWidgetSection from '@/components/sections/CTAWidgetSection';
 import ApproachSection from '@/components/sections/ApproachSection';
 import ExpertiseSection from '@/components/sections/ExpertiseSection';
 import TeamSection from '@/components/sections/TeamSection';
@@ -185,7 +184,6 @@ export default function HomePage() {
       <HeroSection />
       <IntroSection />
       <CasesSection />
-      <CTAWidgetSection />
       <ApproachSection />
       <ExpertiseSection />
       <TeamSection />

@@ -16,9 +16,7 @@ interface Message {
 export default function FloatingChatBubble() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [isInCTASection, setIsInCTASection] = useState(false);
   const [idea, setIdea] = useState('');
-  const [userManuallyCollapsed, setUserManuallyCollapsed] = useState(false);
   const [isAnimatingAttention, setIsAnimatingAttention] = useState(false);
   
   // Chat state (migrated from AIWidget)
@@ -51,54 +49,30 @@ export default function FloatingChatBubble() {
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const scrollPositionRef = useRef<number>(0);
 
-  // Show bubble after scrolling past hero section
+  // Show bubble after any scroll or after a short delay
   useEffect(() => {
+    if (isVisible) return;
+
+    // Show after first scroll
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const heroHeight = window.innerHeight * 0.5;
-      setIsVisible(scrollY > heroHeight);
+      if (window.scrollY > 100) {
+        setIsVisible(true);
+      }
     };
 
+    // Also show after 2 seconds if user hasn't scrolled
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 2000);
+
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Track when CTA section is in view to auto-expand
-  useEffect(() => {
-    const ctaSection = document.querySelector('[data-cta-widget-section]');
-    if (!ctaSection) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const wasInSection = isInCTASection;
-          setIsInCTASection(entry.isIntersecting);
-          
-          // Auto expand when entering CTA section (unless user manually collapsed or chat is active)
-          if (entry.isIntersecting && !userManuallyCollapsed && !chatStarted) {
-            setIsExpanded(true);
-          }
-          
-          // Only close when scrolling out if chat hasn't started
-          if (wasInSection && !entry.isIntersecting && !chatStarted && isExpanded) {
-            // Store scroll position before closing modal
-            scrollPositionRef.current = window.scrollY;
-            setIsExpanded(false);
-          }
-        });
-      },
-      {
-        threshold: 0.3,
-        rootMargin: '-50px 0px -50px 0px',
-      }
-    );
-
-    observer.observe(ctaSection);
-    return () => observer.disconnect();
-  }, [userManuallyCollapsed, chatStarted, isExpanded, isInCTASection]);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(timer);
+    };
+  }, [isVisible]);
 
   // Initialize chat session
   const initializeSession = async (initialIdea?: string) => {
@@ -300,72 +274,36 @@ export default function FloatingChatBubble() {
 
   const toggleExpand = () => {
     if (isExpanded) {
-      // Store scroll position before closing modal
-      scrollPositionRef.current = window.scrollY;
-      
-      if (!chatStarted) {
-        setUserManuallyCollapsed(true);
-      }
       setIsExpanded(false);
     } else {
-      setUserManuallyCollapsed(false);
       trackEvent('chat_bubble_opened');
       setIsExpanded(true);
     }
   };
-  
-  // Callback to restore scroll position after modal exit animation completes
-  const handleExitComplete = useCallback(() => {
-    if (scrollPositionRef.current > 0) {
-      window.scrollTo({ top: scrollPositionRef.current, behavior: 'instant' });
-    }
-  }, []);
 
-  useEffect(() => {
-    if (!isInCTASection && !chatStarted) {
-      setUserManuallyCollapsed(false);
-    }
-  }, [isInCTASection, chatStarted]);
-
-  // Trigger function that can be called externally
-  const triggerOpen = useCallback(() => {
-    trackEvent('chat_bubble_triggered_external');
-    setUserManuallyCollapsed(false);
-    
-    // If not visible (above hero), scroll down a bit first
-    if (!isVisible) {
-      window.scrollTo({
-        top: window.innerHeight * 0.6,
-        behavior: 'smooth'
-      });
-    }
-    
-    // Start attention animation
+  // Open chat widget (called from nav CTA or bubble click)
+  const openChat = useCallback(() => {
+    trackEvent('chat_bubble_triggered');
+    setIsVisible(true);
     setIsAnimatingAttention(true);
     
-    // After animation plays, expand the widget
+    // After attention animation, expand
     setTimeout(() => {
       setIsExpanded(true);
       setIsAnimatingAttention(false);
-    }, 800);
-  }, [isVisible]);
+    }, 600);
+  }, []);
 
   // Listen for external trigger events (from Navigation button, etc.)
   useEffect(() => {
-    const handleTrigger = () => {
-      triggerOpen();
-    };
-
-    window.addEventListener('openChatWidget', handleTrigger);
-    
-    // Also expose on window for direct calls
-    (window as any).openChatWidget = triggerOpen;
+    window.addEventListener('openChatWidget', openChat);
+    (window as any).openChatWidget = openChat;
 
     return () => {
-      window.removeEventListener('openChatWidget', handleTrigger);
+      window.removeEventListener('openChatWidget', openChat);
       delete (window as any).openChatWidget;
     };
-  }, [triggerOpen]);
+  }, [openChat]);
 
   // Calculate question number from actual user messages
   const actualQuestionNumber = messages.filter(m => m.role === 'user').length + 1;
@@ -436,7 +374,7 @@ export default function FloatingChatBubble() {
     <AnimatePresence>
       {isVisible && (
         <div className={`fixed left-1/2 -translate-x-1/2 z-[9999] ${isExpanded ? 'bottom-24' : 'bottom-8'}`}>
-          <AnimatePresence mode="wait" onExitComplete={handleExitComplete}>
+          <AnimatePresence mode="wait">
             {isExpanded ? (
               <motion.div
                 key="expanded"
@@ -485,7 +423,7 @@ export default function FloatingChatBubble() {
                           transition={{ delay: 0.25, duration: 0.4 }}
                         >
                           <h3 className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-text-primary">
-                            Wat is jouw challenge?
+                            Wat is jouw Uitdaging?
                           </h3>
                           <p className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-text-primary">
                             Ontdek hoe we jouw kunnen helpen.
@@ -506,7 +444,7 @@ export default function FloatingChatBubble() {
                             type="text"
                             value={idea}
                             onChange={(e) => setIdea(e.target.value)}
-                            placeholder="Jouw idee..."
+                            placeholder="Jouw uitdaging..."
                             className="w-full h-full bg-transparent rounded-[12px] px-6 md:px-8 pr-32 md:pr-40 text-base md:text-[18px] font-host text-text-primary placeholder:text-text-muted focus:outline-none"
                             autoFocus
                           />
@@ -883,7 +821,7 @@ export default function FloatingChatBubble() {
               /* Collapsed Bubble */
               <motion.button
                 key="collapsed"
-                onClick={toggleExpand}
+                onClick={openChat}
                 className="w-[60px] h-[60px] bg-bla-lime rounded-full shadow-lg flex items-center justify-center relative"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={isAnimatingAttention ? {
