@@ -285,13 +285,7 @@ export default function FloatingChatBubble() {
   const openChat = useCallback(() => {
     trackEvent('chat_bubble_triggered');
     setIsVisible(true);
-    setIsAnimatingAttention(true);
-    
-    // After attention animation, expand
-    setTimeout(() => {
-      setIsExpanded(true);
-      setIsAnimatingAttention(false);
-    }, 600);
+    setIsExpanded(true);
   }, []);
 
   // Listen for external trigger events (from Navigation button, etc.)
@@ -382,15 +376,15 @@ export default function FloatingChatBubble() {
                 initial={{ scale: 0, opacity: 0, borderRadius: 30 }}
                 animate={{ scale: 1, opacity: 1, borderRadius: 24 }}
                 exit={{ scale: 0, opacity: 0, borderRadius: 30 }}
-                transition={{ type: "spring", stiffness: 200, damping: 25, mass: 0.8 }}
+                transition={{ type: "spring", stiffness: 400, damping: 30, mass: 0.5 }}
               >
                 {/* Glass Card Container */}
                 <motion.div 
                   className="w-[90vw] max-w-[1078px] h-[60vh] backdrop-blur-[20px] bg-surface-glass border border-card-border rounded-[24px] relative overflow-hidden shadow-lg flex flex-col"
                   style={{ WebkitBackdropFilter: 'blur(20px)' }}
-                  initial={{ y: 50 }}
+                  initial={{ y: 20 }}
                   animate={{ y: 0 }}
-                  transition={{ delay: 0.1, duration: 0.4, ease: "easeOut" }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
                 >
                   {/* Close button */}
                   <button
@@ -418,9 +412,9 @@ export default function FloatingChatBubble() {
                         {/* Title - Positioned at top */}
                         <motion.div
                           className="text-center max-w-[740px]"
-                          initial={{ y: 20, opacity: 0 }}
+                          initial={{ y: 10, opacity: 0 }}
                           animate={{ y: 0, opacity: 1 }}
-                          transition={{ delay: 0.25, duration: 0.4 }}
+                          transition={{ duration: 0.15 }}
                         >
                           <h3 className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-text-primary">
                             Wat is jouw Uitdaging?
@@ -435,9 +429,9 @@ export default function FloatingChatBubble() {
                       <motion.form 
                         onSubmit={handleSubmit}
                         className="w-full max-w-[1035px] mt-auto pt-12 md:pt-16"
-                        initial={{ y: 30, opacity: 0 }}
+                        initial={{ y: 10, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.35, duration: 0.4 }}
+                        transition={{ delay: 0.1, duration: 0.15 }}
                       >
                         <div className="relative flex items-center bg-chat-input-bg rounded-[12px] h-[60px] md:h-[78px] shadow-sm">
                           <input
