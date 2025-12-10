@@ -127,9 +127,15 @@ const config: Config = {
 			'scale-in': 'scaleIn 0.2s ease-out',
 			'slide-left': 'slideLeft 0.4s ease-out',
 			'zoom-out-in': 'zoomOutIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
-			'zoom-out-out': 'zoomOutOut 0.15s ease-in'
+			'zoom-out-out': 'zoomOutOut 0.15s ease-in',
+			"border-beam": "border-beam calc(var(--duration)*1s) infinite linear",
 		},
 		keyframes: {
+			"border-beam": {
+				"100%": {
+					"offset-distance": "100%",
+				},
+			},
 			fadeIn: {
 				'0%': {
 					opacity: '0'
