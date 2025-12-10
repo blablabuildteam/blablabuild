@@ -8,7 +8,7 @@ const foundersData = [
   {
     name: 'Daniel de Vos',
     role: 'Strategisch Data & AI Overzicht',
-    description: 'Brengt de kennis van grote bedrijven naar het MKB. Hij maakt onduidelijke data en slimme technologie direct werkend voor uw organisatie. Hij is gespecialiseerd in het snel testen van oplossingen en het elimineren van interne rompslomp. Het resultaat: u wint tijd en heeft een toekomstbestendige strategie.',
+    description: 'Brengt de kennis van grote bedrijven naar het MKB. Hij maakt onduidelijke data en slimme technologie direct werkend voor jouw organisatie. Hij is gespecialiseerd in het snel testen van oplossingen en het elimineren van interne rompslomp. Het resultaat: je wint tijd en hebt een toekomstbestendige strategie.',
     linkedin: 'https://www.linkedin.com/in/danieldevos/',
     cardRotation: 3.886,
     cardSkew: 1.267,
@@ -17,7 +17,7 @@ const foundersData = [
   {
     name: 'Xennith Oosterveer',
     role: 'Structuur & Operationele Tijdwinst',
-    description: 'Deze specialist is de brug tussen technologie en uw dagelijkse praktijk. Met meer dan een decennium aan strategische ervaring, vertaalt hij complexe uitdagingen naar een duidelijk, stapsgewijs plan. Het resultaat: directe \'quick wins\' (tijdwinst) en een efficiënte interne werkwijze, zodat u kunt groeien zonder de overhead van een groot bureau.',
+    description: 'Deze specialist is de brug tussen technologie en je dagelijkse praktijk. Met meer dan een decennium aan strategische ervaring, vertaalt hij complexe uitdagingen naar een duidelijk, stapsgewijs plan. Het resultaat: directe \'quick wins\' (tijdwinst) en een efficiënte interne werkwijze, zodat je kunt groeien zonder de overhead van een groot bureau.',
     linkedin: 'https://www.linkedin.com/in/xennith/',
     cardRotation: 4.359,
     cardSkew: 1.42,
@@ -26,7 +26,7 @@ const foundersData = [
   {
     name: 'Kevin Roos van Raadshooven',
     role: 'Meetbare Groei & Online Winst',
-    description: 'Een ondernemer die meedenkt en meedoet. Deze specialist bouwt winstgevende online merken door te focussen op de klant en wat écht verkoopt op uw website. Hij combineert data, psychologie en marketing om een sterk merk neer te zetten dat zorgt voor duurzame, meetbare omzetgroei.',
+    description: 'Een ondernemer die meedenkt en meedoet. Deze specialist bouwt winstgevende online merken door te focussen op de klant en wat écht verkoopt op jouw website. Hij combineert data, psychologie en marketing om een sterk merk neer te zetten dat zorgt voor duurzame, meetbare omzetgroei.',
     linkedin: 'https://www.linkedin.com/in/941b9732/',
     cardRotation: -4.331,
     cardSkew: -1.411,
@@ -153,20 +153,22 @@ export default function TeamSection() {
 
                 {/* Info */}
                 <div className="mt-6">
-                  <h3 className="font-host font-bold text-lg md:text-xl text-text-primary mb-2">
-                    {founder.name}
-                  </h3>
-                  {founder.linkedin && (
-                    <a
-                      href={founder.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block text-bla-blue hover:text-bla-lime transition-colors mb-3"
-                      aria-label={`${founder.name} LinkedIn profiel`}
-                    >
-                      <LinkedinIcon size={20} className="w-5 h-5" />
-                    </a>
-                  )}
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="font-host font-bold text-lg md:text-xl text-text-primary">
+                      {founder.name}
+                    </h3>
+                    {founder.linkedin && (
+                      <a
+                        href={founder.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-bla-blue hover:text-bla-lime transition-colors"
+                        aria-label={`${founder.name} LinkedIn profiel`}
+                      >
+                        <LinkedinIcon size={20} className="w-5 h-5" />
+                      </a>
+                    )}
+                  </div>
                   <p className="font-host font-normal text-lg md:text-xl text-bla-blue mb-4">
                     {founder.role}
                   </p>
