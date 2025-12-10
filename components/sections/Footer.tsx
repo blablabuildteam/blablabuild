@@ -40,18 +40,26 @@ export default function Footer() {
   };
 
   return (
-    <footer className="pt-16 pb-4 md:pt-24 md:pb-6">
-      <div className="container mx-auto px-4 md:px-6 max-w-[1440px]">
+    <footer className="pt-16 pb-4 md:pt-24 md:pb-6 px-[10px]">
+      <div className="w-full">
         {/* Main Footer Card */}
         <motion.div 
-          className="bg-bla-dark rounded-3xl p-8 md:p-16"
+          className="bg-bla-dark rounded-3xl p-8 md:p-16 relative"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
         >
+          {/* Grain effect overlay */}
+          <div 
+            className="absolute inset-0 rounded-3xl opacity-[0.2] pointer-events-none"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+              backgroundSize: '200px 200px',
+            }}
+          />
           {/* Heading Section */}
-          <div className="border-b border-bla-charcoal-border mb-8 pb-8 md:mb-12 md:pb-12 text-left md:text-center">
+          <div className="border-b border-white/10 mb-8 pb-8 md:mb-12 md:pb-12 text-left md:text-center relative z-10">
             <motion.div 
               className="flex items-center justify-start md:justify-center gap-4"
               initial={{ opacity: 0, y: 20 }}
@@ -75,7 +83,7 @@ export default function Footer() {
 
           {/* Contact Grid */}
           <motion.div 
-            className="mb-12 flex flex-col gap-10 md:mb-16 lg:flex-row lg:justify-between lg:gap-8"
+            className="mb-12 flex flex-col gap-10 md:mb-16 lg:flex-row lg:justify-between lg:gap-8 relative z-10"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -105,32 +113,32 @@ export default function Footer() {
               </span>
             </div>
           </motion.div>
-        </motion.div>
 
-        {/* Bottom Section */}
-        <motion.div 
-          className="flex flex-col gap-4 pt-4 md:flex-row md:items-center md:justify-between"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          <nav className="flex flex-wrap gap-x-6 gap-y-3">
-            {footerData.navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={handleNavClick(link.href)}
-                className="text-text-muted hover:text-bla-lime text-sm transition-colors"
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
+          {/* Bottom Section */}
+          <motion.div 
+            className="flex flex-col gap-4 pt-4 md:flex-row md:items-center md:justify-between relative z-10"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <nav className="flex flex-wrap gap-x-6 gap-y-3">
+              {footerData.navLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onClick={handleNavClick(link.href)}
+                  className="text-text-muted hover:text-bla-lime text-sm transition-colors"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
 
-          <div className="text-text-muted text-sm">
-            © {new Date().getFullYear()} blablabuild
-          </div>
+            <div className="text-text-muted text-sm">
+              © {new Date().getFullYear()} blablabuild
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </footer>
