@@ -54,7 +54,8 @@ export default function HeroSection() {
   return (
     <section 
       ref={sectionRef}
-      className="relative h-screen p-[10px] pt-[82px]"
+      className="relative h-[100dvh] p-[10px] pt-[82px]"
+      style={{ minHeight: '100vh' }}
     >
       {/* Main Container with Rounded Edges and Spacing */}
       <div className="relative z-10 w-full h-full">
