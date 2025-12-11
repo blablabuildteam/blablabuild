@@ -45,7 +45,7 @@ blablabuild/
 
 - **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS, Framer Motion
 - **Backend**: Next.js API Routes, Node.js
-- **AI/LLM**: OpenAI GPT-4, LangChain
+- **AI/LLM**: Google Gemini 1.5 Flash, OpenAI GPT-4 (optional)
 - **Database**: Supabase (PostgreSQL + pgvector)
 - **Email**: Resend
 - **Analytics**: PostHog
@@ -79,7 +79,11 @@ npm install
 Create a `.env.local` file with:
 
 ```bash
-# OpenAI
+# Gemini AI (Required for chat functionality)
+GEMINI_API_KEY=your-gemini-api-key-here
+# Get your API key from: https://aistudio.google.com/app/apikey
+
+# OpenAI (if using other features)
 OPENAI_API_KEY=sk-...
 
 # Supabase

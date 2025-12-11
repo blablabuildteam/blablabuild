@@ -33,7 +33,7 @@ export default function AIWidget() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState<string>('Verwerken...');
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [progress, setProgress] = useState(0);
+  // Progress removed - no longer tracking progress bar
   const [isComplete, setIsComplete] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [questionOptions, setQuestionOptions] = useState<string[]>([]); // Multiple choice options
@@ -87,7 +87,7 @@ export default function AIWidget() {
       setSessionId(data.sessionId);
       setCurrentQuestion(data.message);
       setMessages([{ role: 'assistant', content: data.message, timestamp: new Date() }]);
-      setProgress(data.progress || 0);
+      // Progress tracking removed
       if (data.step) {
         setCurrentStep(data.step);
       }
@@ -130,11 +130,6 @@ export default function AIWidget() {
     // Update question number
     const newQuestionNumber = messages.filter(m => m.role === 'user').length + 1;
     setQuestionNumber(newQuestionNumber);
-    
-    // Show email prompt after Q2 if not captured yet
-    if (newQuestionNumber === 2 && !emailCaptured) {
-      setShowEmailPrompt(true);
-    }
 
     trackWidgetEvent(sessionId || 'unknown', 'message_sent', {
       message_length: userMessage.length,
@@ -215,16 +210,15 @@ export default function AIWidget() {
       
       console.log('✅ All state updates queued');
 
-      setProgress(data.progress || progress);
-      console.log('📊 Progress updated:', data.progress || progress);
+      // Progress removed - no longer tracking
       
       // Update question number based on user messages
       const userMessageCount = messages.filter(m => m.role === 'user').length + 1;
       setQuestionNumber(userMessageCount);
       
-      // Scroll to top to show new question
+      // Scroll to bottom to show new message
       setTimeout(() => {
-        contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+        contentRef.current?.scrollTo({ top: contentRef.current.scrollHeight, behavior: 'smooth' });
       }, 100);
       
       if (data.complete) {
@@ -537,43 +531,6 @@ export default function AIWidget() {
                 </div>
               )}
 
-              {/* Progress Bar - Cool animated version */}
-              {!isComplete && (
-                <div className="h-px bg-bla-charcoal-border overflow-hidden relative">
-                  {/* Base progress */}
-                  <motion.div
-                    className="h-full bg-gradient-to-r from-bla-lime/80 via-bla-lime to-bla-lime/80 relative"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-                  >
-                    {/* Animated shimmer effect */}
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                      animate={{
-                        x: ['-100%', '200%'],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: 'linear',
-                      }}
-                    />
-                    {/* Glow effect */}
-                    <motion.div
-                      className="absolute top-0 left-0 h-full w-full bg-bla-lime/30 blur-sm"
-                      animate={{
-                        opacity: [0.3, 0.6, 0.3],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                      }}
-                    />
-                  </motion.div>
-                </div>
-              )}
             </motion.div>
 
             {/* Content Area */}
@@ -599,105 +556,53 @@ export default function AIWidget() {
                   </div>
                 </motion.div>
               )}
-              
-              {/* Question Progress Indicator */}
-              {currentQuestion && !isComplete && actualQuestionNumber > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-4 flex items-center justify-between text-xs font-extralight text-bla-text-muted"
-                >
-                  <span>Vraag {actualQuestionNumber} van ~{maxQuestions}</span>
-                  <span>{Math.round(progress)}% compleet</span>
-                </motion.div>
-              )}
-              
-              {/* Email Prompt (Early Capture) */}
-              {showEmailPrompt && !emailCaptured && !isComplete && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="mb-4 bg-bla-lime/10 border border-bla-lime/30 rounded-2xl p-4 backdrop-blur-sm"
-                >
-                  <div className="flex items-start gap-3">
-                    <MailIcon className="w-5 h-5 text-bla-lime flex-shrink-0 mt-0.5" />
-                    <div className="flex-1">
-                      <p className="text-sm font-light text-bla-text-light mb-2">
-                        Laat je email achter zodat we je intake kunnen voortzetten als je tussendoor stopt.
-                      </p>
-                      <div className="flex gap-2">
-                        <input
-                          type="email"
-                          value={leadForm.email}
-                          onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-                          placeholder="jouw@email.nl"
-                          className="flex-1 px-3 py-2 border border-bla-charcoal-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 focus:border-bla-lime/50 text-sm font-light text-bla-text-light placeholder-bla-text-muted bg-bla-charcoal backdrop-blur-sm"
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter' && leadForm.email.trim()) {
-                              handleEarlyEmailCapture();
-                            }
-                          }}
-                        />
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={handleEarlyEmailCapture}
-                          disabled={!leadForm.email.trim()}
-                          className="px-4 py-2 bg-bla-lime/90 hover:bg-bla-lime text-bla-dark rounded-full text-xs font-light transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                        >
-                          Opslaan
-                        </motion.button>
-                        <button
-                          onClick={() => setShowEmailPrompt(false)}
-                          className="px-3 py-2 text-xs font-extralight text-bla-text-muted hover:text-bla-text-light transition-colors"
-                        >
-                          Later
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-              
-              {currentQuestion && !isComplete && (
-                <motion.div
-                  key={`question-${questionKey}`} // Use counter for reliable re-render
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="space-y-4"
-                >
-                  {/* Debug info */}
-                  {process.env.NODE_ENV === 'development' && (
-                    <div className="text-xs text-gray-400 mb-2">
-                      Question #{questionKey}: {currentQuestion.substring(0, 30)}...
-                    </div>
-                  )}
-                  
-                  {/* Question Display - Clean, form-like style */}
-                  <div className="space-y-4">
-                    {currentQuestion.split('\n\n').filter(q => q.trim()).map((part, idx) => (
-                      <motion.div 
-                        key={`${currentQuestion.substring(0, 30)}-${idx}`}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.05, duration: 0.3 }}
-                        className="bg-bla-charcoal-light rounded-2xl border border-bla-charcoal-border p-6 backdrop-blur-sm"
-                      >
-                        <p className="text-base font-light leading-relaxed text-bla-text-light whitespace-pre-wrap">
-                          {part}
-                        </p>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  {/* Input Area */}
+              {/* Chat History - Regular chat layout */}
+              <div className="space-y-3 mb-4">
+                {messages.map((message, idx) => (
                   <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4 }}
-                    className="space-y-3"
+                    key={idx}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
+                    <div
+                      className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                        message.role === 'user'
+                          ? 'bg-bla-lime/90 text-bla-dark'
+                          : 'bg-bla-charcoal-light border border-bla-charcoal-border text-bla-text-light'
+                      }`}
+                    >
+                      <p className="text-sm font-light leading-relaxed whitespace-pre-wrap">
+                        {message.content}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+                {/* Show current question if it exists and not already in messages */}
+                {currentQuestion && !isComplete && !messages.some(m => m.content === currentQuestion && m.role === 'assistant') && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex justify-start"
+                  >
+                    <div className="max-w-[80%] rounded-2xl px-4 py-3 bg-bla-charcoal-light border border-bla-charcoal-border text-bla-text-light">
+                      <p className="text-sm font-light leading-relaxed whitespace-pre-wrap">
+                        {currentQuestion}
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Input Area - Always show when not complete */}
+              {!isComplete && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="space-y-3"
+                >
                     {/* Multiple Choice Options */}
                     {questionOptions && questionOptions.length > 0 && (
                       <motion.div
@@ -811,43 +716,6 @@ export default function AIWidget() {
                 </motion.div>
               )}
 
-              {/* Previous Answers - Minimal display */}
-              {messages.length > 1 && !isComplete && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="mt-4 space-y-2"
-                >
-                  <div className="space-y-2">
-                    {messages.slice(0, -1).reverse().map((message, idx) => (
-                      message.role === 'user' && (
-                        <motion.div
-                          key={idx}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: idx * 0.1, type: 'spring', stiffness: 100 }}
-                          whileHover={{ x: 2, transition: { duration: 0.2 } }}
-                          className="group bg-bla-charcoal-light rounded-2xl border border-bla-charcoal-border p-3 hover:border-bla-lime/20 transition-all cursor-default backdrop-blur-sm"
-                        >
-                          <div className="flex items-start gap-2">
-                            <motion.div
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              className="w-4 h-4 bg-bla-lime/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border border-bla-lime/20"
-                            >
-                              <CheckmarkCircleIcon className="w-2.5 h-2.5 text-bla-lime" />
-                            </motion.div>
-                            <p className="text-xs font-light text-bla-text-light leading-relaxed flex-1">
-                              {message.content}
-                            </p>
-                          </div>
-                        </motion.div>
-                      )
-                    ))}
-                  </div>
-                </motion.div>
-              )}
 
               {/* Complete State - Lead Form */}
               {isComplete && showLeadForm && (

@@ -106,8 +106,12 @@ function getGeminiClient(): GoogleGenerativeAI {
   if (!genAI) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      throw new Error('GEMINI_API_KEY is not set');
+      throw new Error(
+        'GEMINI_API_KEY is not set. Please add GEMINI_API_KEY to your .env.local file. ' +
+        'Get your API key from: https://aistudio.google.com/app/apikey'
+      );
     }
+    console.log('✅ Gemini API key loaded:', apiKey.substring(0, 10) + '...');
     genAI = new GoogleGenerativeAI(apiKey);
   }
   return genAI;
@@ -190,7 +194,7 @@ export class GeminiChat {
 
     const client = getGeminiClient();
     const model = client.getGenerativeModel({ 
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.0-flash', // Use available stable version
       safetySettings,
       generationConfig,
     });
@@ -266,9 +270,45 @@ export class GeminiChat {
       };
     } catch (error: any) {
       console.error('Gemini API error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        status: error.status,
+        statusText: error.statusText,
+        code: error.code,
+        stack: error.stack,
+      });
       
       // Handle specific error types
-      if (error.message?.includes('quota') || error.message?.includes('rate')) {
+      const errorMessage = error.message?.toLowerCase() || '';
+      const errorCode = error.code || '';
+      
+      // API key errors
+      if (errorMessage.includes('api key') || errorMessage.includes('invalid api key') || errorCode === 401 || errorCode === 403) {
+        console.error('❌ Invalid or missing API key');
+        return {
+          message: 'Er is een probleem met de API configuratie. Neem contact op met de beheerder.',
+          sessionId: this.sessionId,
+          step: 'collecting',
+          progress: Math.min((this.questionCount / 5) * 100, 100),
+          complete: false,
+          maxQuestions: 5,
+        };
+      }
+      
+      // Rate limit / quota errors
+      if (errorMessage.includes('quota') || errorMessage.includes('rate') || errorCode === 429 || error.status === 429 || error.status === 'RESOURCE_EXHAUSTED') {
+        console.error('⚠️ Rate limit/quota error detected:', error.message);
+        // Check if it's a quota exhaustion (not just rate limit)
+        if (errorMessage.includes('exceeded') || errorMessage.includes('quota')) {
+          return {
+            message: 'De API quota is overschreden. Controleer je Google Cloud billing en quota instellingen.',
+            sessionId: this.sessionId,
+            step: 'collecting',
+            progress: Math.min((this.questionCount / 5) * 100, 100),
+            complete: false,
+            maxQuestions: 5,
+          };
+        }
         return {
           message: 'De AI service is tijdelijk overbelast. Probeer het over een minuutje opnieuw.',
           sessionId: this.sessionId,
@@ -279,7 +319,30 @@ export class GeminiChat {
         };
       }
       
-      throw error;
+      // Log ALL errors for debugging - this will help us see what's actually happening
+      console.error('🔍 Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+      
+      // Safety/content blocking
+      if (errorMessage.includes('safety') || errorMessage.includes('blocked') || errorCode === 400) {
+        return {
+          message: 'Je bericht kon niet worden verwerkt. Probeer het opnieuw met andere woorden.',
+          sessionId: this.sessionId,
+          step: 'collecting',
+          progress: Math.min((this.questionCount / 5) * 100, 100),
+          complete: false,
+          maxQuestions: 5,
+        };
+      }
+      
+      // Generic error - log full details but show user-friendly message
+      return {
+        message: 'Er is een fout opgetreden bij het verwerken van je bericht. Probeer het opnieuw.',
+        sessionId: this.sessionId,
+        step: 'collecting',
+        progress: Math.min((this.questionCount / 5) * 100, 100),
+        complete: false,
+        maxQuestions: 5,
+      };
     }
   }
 
@@ -314,7 +377,7 @@ export async function generateConversationSummary(sessionId: string): Promise<{
 
   const client = getGeminiClient();
   const model = client.getGenerativeModel({ 
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.0-flash', // Use available stable version
     safetySettings,
     generationConfig: {
       ...generationConfig,
