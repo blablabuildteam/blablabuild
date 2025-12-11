@@ -103,7 +103,7 @@ export default function TeamSection() {
     <section 
       id="over-ons" 
       className="min-h-screen flex flex-col justify-center px-4 md:px-16 py-16 md:py-24"
-      style={{ backgroundColor: '#e7e8ff' }}
+      style={{ backgroundColor: '#f5f5f5' }}
     >
       <div className="mx-auto w-full max-w-[1312px]">
         {/* Header */}
