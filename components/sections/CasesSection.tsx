@@ -186,7 +186,7 @@ export default function CasesSection() {
                   {/* CTA Link */}
                   <div>
                     <a
-                      href="mailto:hello@blablabuild.com"
+                      href="mailto:team@blablabuild.com"
                       className="text-text-primary hover:text-bla-lime flex items-center gap-2 text-base md:text-lg transition-colors group"
                     >
                       Neem contact op

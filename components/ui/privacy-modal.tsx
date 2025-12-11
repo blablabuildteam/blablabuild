@@ -146,10 +146,10 @@ export default function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
                       <p className="text-base md:text-lg leading-relaxed">
                         Als je je gegevens wilt inzien of laten verwijderen, kun je altijd contact met ons opnemen via{' '}
                         <a 
-                          href="mailto:hello@blablabuild.com" 
+                          href="mailto:team@blablabuild.com" 
                           className="text-bla-lime hover:text-bla-lime/80 underline transition-colors"
                         >
-                          hello@blablabuild.com
+                          team@blablabuild.com
                         </a>
                         .
                       </p>

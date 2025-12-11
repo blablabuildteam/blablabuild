@@ -9,8 +9,8 @@ import PrivacyModal from '@/components/ui/privacy-modal';
 const footerData = {
   heading: 'blablabuild',
   email: {
-    label: 'hello@blablabuild.com',
-    href: 'mailto:hello@blablabuild.com',
+    label: 'team@blablabuild.com',
+    href: 'mailto:team@blablabuild.com',
   },
   location: {
     label: 'Built in Amsterdam',

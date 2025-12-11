@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     if (resend) {
       // Send to customer
       await resend.emails.send({
-        from: 'blablabuild <hello@blablabuild.com>',
+        from: 'blablabuild <team@blablabuild.com>',
         to: email,
         subject: 'Jouw Intake Samenvatting & Gouden Tip 🚀',
         html: emailHtml,
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
 
       // Send internal notification with lead info
       await resend.emails.send({
-        from: 'blablabuild <hello@blablabuild.com>',
+        from: 'blablabuild <team@blablabuild.com>',
         to: 'daniel@blablabuild.com',
         subject: `Nieuwe lead: ${companyName || name || email}`,
         html: generateInternalNotificationHtml({
@@ -322,7 +322,7 @@ function generateEmailHtml(data: EmailData): string {
       <p>Connect → Co-Create → Build → Scale</p>
       <p>
         <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://blablabuild.com'}">Website</a> | 
-        <a href="mailto:hello@blablabuild.com">Email</a>
+        <a href="mailto:team@blablabuild.com">Email</a>
       </p>
     </div>
   </div>
