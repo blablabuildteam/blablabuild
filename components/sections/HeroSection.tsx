@@ -54,7 +54,7 @@ export default function HeroSection() {
   return (
     <section 
       ref={sectionRef}
-      className="relative h-auto md:h-[100dvh] p-1 sm:p-[10px] pt-[80px] sm:pt-[80px] md:pt-[82px]"
+      className="relative h-auto md:h-[100dvh] p-1 sm:p-[10px] pt-[76px] sm:pt-[80px] md:pt-[82px]"
       style={{ minHeight: 'auto' }}
     >
       {/* Main Container with Rounded Edges and Spacing */}
@@ -78,16 +78,16 @@ export default function HeroSection() {
           />
 
           {/* Content Container */}
-          <div className="relative z-10 h-auto md:h-full flex flex-col lg:flex-row items-center justify-center px-4 sm:px-6 md:px-8 lg:px-12 py-1 sm:py-2 md:py-4 lg:py-12">
+          <div className="relative z-10 h-auto md:h-full flex flex-col lg:flex-row items-start lg:items-center justify-center px-[1.8rem] sm:px-6 md:px-8 lg:px-12 pt-2 sm:pt-3 md:pt-4 lg:pt-12 pb-0 sm:pb-0 md:pb-8 lg:pb-12">
             {/* Left Side - Header Content */}
-            <div className="flex-1 lg:max-w-[50%] mb-0 sm:mb-1 md:mb-2 lg:mb-0 h-auto md:h-full flex items-center">
+            <div className="w-full lg:flex-1 lg:max-w-[50%] mb-0 sm:mb-0 md:mb-2 lg:mb-0 h-auto md:h-full flex items-start lg:items-center">
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6 w-full"
+                className="space-y-1 sm:space-y-2 md:space-y-5 lg:space-y-6 w-full"
               >
-                <h2 className="font-sans text-[4rem] sm:text-[4.32rem] md:text-[5.4rem] lg:text-[6.48rem] xl:text-[8.64rem] font-bold tracking-tight text-bla-white mb-1 sm:mb-2 md:mb-3 lg:mb-4">
+                <h2 className="font-sans text-[4rem] sm:text-[4.32rem] md:text-[5.4rem] lg:text-[6.48rem] xl:text-[8.64rem] font-bold tracking-tight text-bla-white mt-4 sm:mt-6 md:mt-0 mb-1 sm:mb-2 md:mb-3 lg:mb-4">
                   <span className="font-normal">blabla</span>
                   <span className="font-bold">build</span>
                 </h2>
@@ -95,14 +95,14 @@ export default function HeroSection() {
                   <span className="block">Wij doen <span className="text-bla-lime">AI</span> innovaties</span>
                 </h1>
                 
-                <p className="text-lg md:text-xl max-w-xl">
+                <p className="text-lg md:text-xl max-w-xl mb-0 sm:mb-0 md:mb-0">
                   <span className="text-bla-white">Wij helpen je bedrijf om AI-gericht te werken,</span> <span className="text-bla-text-gray">leggen de koppeling tussen je processen en omzet, en maken je onderneming winstgevender.</span>
                 </p>
               </motion.div>
             </div>
 
             {/* Right Side - Carousel */}
-            <div className="flex-1 lg:max-w-[45%] w-full lg:pl-8 h-auto md:h-full flex items-center">
+            <div className="w-full lg:flex-1 lg:max-w-[45%] lg:pl-8 h-auto md:h-full flex items-start lg:items-center py-0 sm:py-0 md:py-0">
               <motion.div
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -136,14 +136,14 @@ export default function HeroSection() {
                             scale: isActive ? 1 : isNext ? 0.95 : 1,
                           }}
                         >
-                          <div className={`bg-[#1a1a1a] rounded-2xl sm:rounded-3xl pt-4 sm:pt-5 md:pt-6 px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6 w-full ${
+                          <div className={`bg-[#1a1a1a] rounded-2xl sm:rounded-3xl pt-3 sm:pt-4 md:pt-6 px-4 sm:px-5 md:px-6 pb-3 sm:pb-4 md:pb-6 w-full ${
                             isActive 
                               ? 'shadow-[0_0_20px_rgba(206,255,0,0.3)]' 
                               : 'shadow-[0_0_10px_rgba(206,255,0,0.15)]'
                           } relative overflow-hidden flex flex-col`}>
                             
                             {/* Icon and Title */}
-                            <div className="mb-3 sm:mb-4 relative z-20 flex flex-col gap-2 sm:gap-3 md:gap-4">
+                            <div className="mb-2 sm:mb-3 md:mb-4 relative z-20 flex flex-col gap-1.5 sm:gap-2 md:gap-4">
                               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-bla-lime flex items-center justify-center flex-shrink-0">
                                 <div className="w-5 h-5 sm:w-6 sm:h-6 relative">
                                   <Image
