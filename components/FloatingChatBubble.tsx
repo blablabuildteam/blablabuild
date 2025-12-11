@@ -51,27 +51,53 @@ export default function FloatingChatBubble() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Show bubble after any scroll or after a short delay
+  // Show bubble only after scrolling past the header section
   useEffect(() => {
-    if (isVisible) return;
+    if (isVisible) return; // Once visible, stay visible
 
-    // Show after first scroll
+    let rafId: number | null = null;
+
     const handleScroll = () => {
-      if (window.scrollY > 100) {
-        setIsVisible(true);
-      }
+      if (rafId) return; // Throttle with requestAnimationFrame
+      
+      rafId = window.requestAnimationFrame(() => {
+        // Find the hero/header section (first section in the page)
+        const heroSection = document.querySelector('section:first-of-type');
+        
+        if (heroSection) {
+          const heroRect = heroSection.getBoundingClientRect();
+          const heroBottom = heroRect.bottom;
+          
+          // Show bubble when user has scrolled past the header (header bottom is above viewport top)
+          // Using a small threshold (50px) to account for any padding/margins
+          if (heroBottom <= 50) {
+            setIsVisible(true);
+          }
+        } else {
+          // Fallback: show after scrolling past viewport height (for mobile) or 200px
+          const threshold = window.innerHeight > 768 ? window.innerHeight : 200;
+          if (window.scrollY > threshold) {
+            setIsVisible(true);
+          }
+        }
+        
+        rafId = null;
+      });
     };
 
-    // Also show after 2 seconds if user hasn't scrolled
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 2000);
+    // Check initial scroll position after a short delay to ensure DOM is ready
+    const initialCheck = setTimeout(() => {
+      handleScroll();
+    }, 100);
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     
     return () => {
+      clearTimeout(initialCheck);
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+      }
       window.removeEventListener('scroll', handleScroll);
-      clearTimeout(timer);
     };
   }, [isVisible]);
 

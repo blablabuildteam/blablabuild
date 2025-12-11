@@ -21,6 +21,19 @@ function BubbleBackground({
   ...props
 }: BubbleBackgroundProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    // Only run on client to avoid hydration mismatch
+    if (typeof window !== 'undefined') {
+      const checkMobile = () => {
+        setIsMobile(window.innerWidth < 768);
+      };
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+      return () => window.removeEventListener('resize', checkMobile);
+    }
+  }, []);
 
   return (
     <div
@@ -99,6 +112,17 @@ function BubbleBackground({
           .blob-4 {
             animation: blob-drift-4 9s ease-in-out infinite;
           }
+          
+          /* Ensure bubbles are always circular on mobile */
+          @media (max-width: 768px) {
+            .blob-1,
+            .blob-2,
+            .blob-3,
+            .blob-4 {
+              border-radius: 50% !important;
+              overflow: hidden;
+            }
+          }
         `}
       </style>
 
@@ -107,9 +131,10 @@ function BubbleBackground({
         xmlns="http://www.w3.org/2000/svg"
         className="absolute top-0 left-0 w-0 h-0"
         aria-hidden="true"
+        style={{ position: 'absolute', width: 0, height: 0 }}
       >
         <defs>
-          <filter id="goo-hero">
+          <filter id="goo-hero" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur
               in="SourceGraphic"
               stdDeviation="10"
@@ -129,7 +154,12 @@ function BubbleBackground({
       {/* Animated Gradient Blobs - pointer-events-none to allow scrolling */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ filter: 'url(#goo-hero) blur(60px)' }}
+        style={{ 
+          filter: isMobile ? 'blur(60px)' : 'url(#goo-hero) blur(60px)',
+          willChange: 'transform',
+          transform: 'translateZ(0)',
+          WebkitTransform: 'translateZ(0)',
+        }}
       >
         {/* Blue Blob - Bottom Left */}
         <div
@@ -141,6 +171,10 @@ function BubbleBackground({
             left: '-10%',
             opacity: 0.5,
             background: `radial-gradient(circle at center, rgba(${blueColor}, 0.8) 0%, rgba(${blueColor}, 0) 60%)`,
+            borderRadius: '50%',
+            willChange: 'transform',
+            transform: 'translateZ(0)',
+            WebkitTransform: 'translateZ(0)',
           }}
         />
 
@@ -154,6 +188,10 @@ function BubbleBackground({
             left: '10%',
             opacity: 0.3,
             background: `radial-gradient(circle at center, rgba(${blueColor}, 0.6) 0%, rgba(${blueColor}, 0) 55%)`,
+            borderRadius: '50%',
+            willChange: 'transform',
+            transform: 'translateZ(0)',
+            WebkitTransform: 'translateZ(0)',
           }}
         />
 
@@ -167,6 +205,10 @@ function BubbleBackground({
             right: '-15%',
             opacity: 0.45,
             background: `radial-gradient(circle at center, rgba(${voltColor}, 0.7) 0%, rgba(${voltColor}, 0) 55%)`,
+            borderRadius: '50%',
+            willChange: 'transform',
+            transform: 'translateZ(0)',
+            WebkitTransform: 'translateZ(0)',
           }}
         />
 
@@ -180,6 +222,10 @@ function BubbleBackground({
             right: '5%',
             opacity: 0.25,
             background: `radial-gradient(circle at center, rgba(${voltColor}, 0.5) 0%, rgba(${voltColor}, 0) 50%)`,
+            borderRadius: '50%',
+            willChange: 'transform',
+            transform: 'translateZ(0)',
+            WebkitTransform: 'translateZ(0)',
           }}
         />
       </div>
