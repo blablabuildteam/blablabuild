@@ -59,7 +59,8 @@ export default function HomePage() {
     const sections = ['oplossingen', 'aanpak', 'expertise', 'over-ons'];
     const sectionElements: { id: string; element: HTMLElement }[] = [];
     let observer: IntersectionObserver | null = null;
-    let scrollTimeout: NodeJS.Timeout | null = null;
+    let rafId: number | null = null;
+    let isScrolling = false;
 
     const handleScroll = () => {
       const navHeight = 80;
@@ -130,11 +131,14 @@ export default function HomePage() {
 
       // Update state - can be empty string to clear active state
       setActiveSection(activeSection);
+      isScrolling = false;
     };
 
     const throttledScroll = () => {
-      if (scrollTimeout) clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(handleScroll, 16); // ~60fps for responsive updates
+      if (!isScrolling) {
+        isScrolling = true;
+        rafId = window.requestAnimationFrame(handleScroll);
+      }
     };
 
     const timer = setTimeout(() => {
@@ -170,7 +174,9 @@ export default function HomePage() {
 
     return () => {
       clearTimeout(timer);
-      if (scrollTimeout) clearTimeout(scrollTimeout);
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+      }
       window.removeEventListener('scroll', throttledScroll);
       if (observer) {
         observer.disconnect();
@@ -179,7 +185,10 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen overflow-hidden w-full" style={{ margin: 0, padding: 0 }}>
+    <div 
+      className="min-h-screen overflow-hidden w-full" 
+      style={{ margin: 0, padding: 0, touchAction: 'pan-y' }}
+    >
       <Navigation showNavCTA={showNavCTA} activeSection={activeSection} />
       <HeroSection />
       <IntroSection />

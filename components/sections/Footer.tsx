@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
+import PrivacyModal from '@/components/ui/privacy-modal';
 
 const footerData = {
   heading: 'blablabuild',
@@ -23,9 +25,19 @@ const footerData = {
 };
 
 export default function Footer() {
-  const handleNavClick = (href: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+
+  const handleNavClick = (href: string, label: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    
+    // Handle Privacy link - open modal
+    if (label === 'Privacy') {
+      setIsPrivacyModalOpen(true);
+      return;
+    }
+    
+    // Handle anchor links
     if (href.startsWith('#')) {
-      e.preventDefault();
       const element = document.getElementById(href.slice(1));
       if (element) {
         const navHeight = 110;
@@ -127,8 +139,8 @@ export default function Footer() {
                 <a
                   key={link.label}
                   href={link.href}
-                  onClick={handleNavClick(link.href)}
-                  className="text-text-muted hover:text-bla-lime text-sm transition-colors"
+                  onClick={handleNavClick(link.href, link.label)}
+                  className="text-text-muted hover:text-bla-lime text-sm transition-colors cursor-pointer"
                 >
                   {link.label}
                 </a>
@@ -141,6 +153,12 @@ export default function Footer() {
           </motion.div>
         </motion.div>
       </div>
+      
+      {/* Privacy Modal */}
+      <PrivacyModal 
+        isOpen={isPrivacyModalOpen} 
+        onClose={() => setIsPrivacyModalOpen(false)} 
+      />
     </footer>
   );
 }

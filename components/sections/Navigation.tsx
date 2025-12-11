@@ -105,22 +105,27 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
 
   const handleNavClick = (id: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      const navHeight = 110;
-      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = elementPosition - navHeight;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-      
-      // Close menu on mobile after navigation
-      if (isMobile) {
-        setIsMenuOpen(false);
-      }
+    
+    // Close menu on mobile first (before scrolling)
+    if (isMobile) {
+      setIsMenuOpen(false);
     }
+    
+    // Small delay to ensure menu starts closing before scroll
+    // This prevents the menu animation from interfering with scroll
+    setTimeout(() => {
+      const element = document.getElementById(id);
+      if (element) {
+        const navHeight = 110;
+        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - navHeight;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, isMobile ? 100 : 0);
   };
 
   const handleCTAClick = () => {
@@ -235,17 +240,18 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
               aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             >
               <div 
-                className="relative w-8 h-8"
+                className="relative w-8 h-8 flex items-center justify-center"
                 style={isMenuOpen ? {} : {
                   transform: 'scaleX(1.5)',
                   transformOrigin: 'center',
                 }}
               >
-                <Image
+                <img
                   src={isMenuOpen ? '/icons/close.svg' : '/icons/two-line-horizontal.svg'}
                   alt={isMenuOpen ? 'Close' : 'Menu'}
-                  fill
-                  className="object-contain"
+                  className="w-full h-full object-contain"
+                  width={32}
+                  height={32}
                 />
               </div>
             </button>
