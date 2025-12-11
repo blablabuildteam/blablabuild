@@ -95,7 +95,7 @@ export default function HeroSection() {
                 </h1>
                 
                 <p className="text-white/90 text-lg md:text-xl max-w-xl">
-                  Slimme, schaalbare oplossingen voor jouw bedrijf. Boost je omzet en efficiëntie.
+                  Slimme en schaalbare AI oplossingen voor jouw bedrijf. Zodat jij weer kunt ondernemen.
                 </p>
               </motion.div>
             </div>

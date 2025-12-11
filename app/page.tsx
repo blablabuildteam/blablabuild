@@ -179,7 +179,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen overflow-x-hidden w-full" style={{ margin: 0, padding: 0 }}>
+    <div className="min-h-screen overflow-hidden w-full" style={{ margin: 0, padding: 0 }}>
       <Navigation showNavCTA={showNavCTA} activeSection={activeSection} />
       <HeroSection />
       <IntroSection />

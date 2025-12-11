@@ -7,6 +7,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 // Register ScrollTrigger plugin
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
+  // Configure ScrollTrigger to refresh on more events
+  ScrollTrigger.config({
+    autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize',
+  });
 }
 
 // Mobile: stacked 2-column grid, Desktop: 2x3 scattered pattern
@@ -68,71 +72,98 @@ export default function CasesSection() {
     const cards = cardsContainer.querySelectorAll('.post-it-card');
     if (cards.length === 0) return;
 
-    const ctx = gsap.context(() => {
-      // Set initial state for all cards (hidden and off-screen)
-      cards.forEach((card, i) => {
-        const fromLeft = i % 2 === 0;
-        const startX = fromLeft ? -400 : 400;
-        const startY = 400 + (i * 30);
-        const startRotation = postItCases[i]?.rotation || 0;
-        
-        gsap.set(card, {
-          opacity: 0,
-          x: startX,
-          y: startY,
-          scale: 0.3,
-          rotation: startRotation + (fromLeft ? -60 : 60),
+    let ctx: gsap.Context;
+
+    const initScrollTrigger = () => {
+      ctx = gsap.context(() => {
+        // Set initial state for all cards (hidden and off-screen)
+        cards.forEach((card, i) => {
+          const fromLeft = i % 2 === 0;
+          const startX = fromLeft ? -400 : 400;
+          const startY = 400 + (i * 30);
+          const startRotation = postItCases[i]?.rotation || 0;
+          
+          gsap.set(card, {
+            opacity: 0,
+            x: startX,
+            y: startY,
+            scale: 0.3,
+            rotation: startRotation + (fromLeft ? -60 : 60),
+          });
         });
-      });
 
-      // Create main timeline with scroll scrub
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: 'top top',
-          end: '+=150%',
-          pin: pinWrap,
-          scrub: 1,
-          anticipatePin: 1,
-        },
-      });
-
-      // Cards fly in one by one - alternating left then right pattern
-      cards.forEach((card, i) => {
-        const startRotation = postItCases[i]?.rotation || 0;
-
-        tl.to(
-          card,
-          {
-            opacity: 1,
-            x: 0,
-            y: 0,
-            scale: 1,
-            rotation: startRotation,
-            duration: 0.15,
-            ease: 'power2.out',
+        // Create main timeline with scroll scrub
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: 'top top',
+            end: '+=100%',
+            pin: pinWrap,
+            scrub: 1,
+            invalidateOnRefresh: true,
           },
-          i * 0.13 // Stagger the animations
-        );
-      });
+        });
 
-      // Hold at the end
-      tl.to({}, { duration: 0.2 });
-    }, section);
+        // Cards fly in one by one - alternating left then right pattern
+        cards.forEach((card, i) => {
+          const startRotation = postItCases[i]?.rotation || 0;
 
-    return () => ctx.revert();
+          tl.to(
+            card,
+            {
+              opacity: 1,
+              x: 0,
+              y: 0,
+              scale: 1,
+              rotation: startRotation,
+              duration: 0.15,
+              ease: 'power2.out',
+            },
+            i * 0.13 // Stagger the animations
+          );
+        });
+
+        // Hold at the end
+        tl.to({}, { duration: 0.2 });
+      }, section);
+
+      // Refresh ScrollTrigger multiple times to ensure correct positions
+      ScrollTrigger.refresh();
+    };
+
+    // Small delay to ensure DOM is ready, then initialize
+    const initTimeout = setTimeout(() => {
+      initScrollTrigger();
+      
+      // Additional refreshes to catch any late layout shifts
+      setTimeout(() => ScrollTrigger.refresh(), 100);
+      setTimeout(() => ScrollTrigger.refresh(), 500);
+      setTimeout(() => ScrollTrigger.refresh(), 1000);
+    }, 50);
+
+    // Also refresh on resize
+    const handleResize = () => {
+      ScrollTrigger.refresh();
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      clearTimeout(initTimeout);
+      window.removeEventListener('resize', handleResize);
+      if (ctx) ctx.revert();
+    };
   }, []);
 
   return (
     <section
       ref={sectionRef}
       id="oplossingen"
-      className="relative min-h-[250vh] w-full overflow-visible"
+      className="relative min-h-[180vh] w-full overflow-hidden"
       style={{ backgroundColor: '#fdfdfd' }}
     >
       <div
         ref={pinWrapRef}
-        className="h-screen w-full flex flex-col items-center px-2 md:px-8 overflow-visible pt-20 md:pt-28 pb-20 md:pb-28"
+        className="h-screen w-full flex flex-col items-center px-2 md:px-8 pt-20 md:pt-28 pb-20 md:pb-28"
       >
         {/* Header - Always visible */}
         <h2 className="font-host font-medium text-base md:text-[28px] lg:text-[32px] text-text-primary text-center max-w-[300px] md:max-w-[560px] mx-auto leading-tight mb-2 md:mb-6 px-2">
