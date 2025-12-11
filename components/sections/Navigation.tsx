@@ -89,7 +89,7 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
         className="px-4 md:px-8 py-2 flex items-center justify-between h-[72px]"
         initial={false}
         animate={{
-          backgroundColor: isScrolled ? 'var(--nav-bg-scrolled)' : 'var(--nav-bg)',
+          backgroundColor: isScrolled ? 'var(--nav-bg-scrolled)' : (!isMobile ? '#fdfdfd' : 'var(--nav-bg)'),
           borderRadius: isScrolled ? 24 : 0,
           scale: isScrolled ? 0.99 : 1,
         }}
@@ -112,7 +112,7 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
         style={{
           backdropFilter: isScrolled ? 'blur(28px)' : 'none',
           WebkitBackdropFilter: isScrolled ? 'blur(28px)' : 'none',
-          borderBottom: isScrolled ? 'none' : '1px solid var(--bla-border)',
+          borderBottom: isScrolled ? 'none' : (!isMobile ? 'none' : '1px solid var(--bla-border)'),
           boxShadow: isScrolled ? '0 8px 32px rgba(0, 0, 0, 0.08)' : 'none',
           transition: 'backdrop-filter 0.5s cubic-bezier(0.25, 0.1, 0.25, 1), border-bottom 0.5s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.5s cubic-bezier(0.25, 0.1, 0.25, 1)',
         }}
