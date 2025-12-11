@@ -60,14 +60,14 @@ export function CarouselContent({ children, className = '' }: { children: React.
   return (
     <div className={`relative overflow-visible ${className}`}>
       <div 
-        className="flex items-center justify-center gap-0 relative w-full" 
+        className="flex items-center justify-center gap-0 relative w-full pt-5 pb-10 md:pt-0 md:pb-0" 
         style={{ 
           margin: '0 auto',
         }}
       >
         {/* Previous card (left) with fade */}
         <div 
-          className="carousel-side-card w-[30%] sm:w-[32%] md:w-[30%] flex-shrink-0 relative transition-opacity duration-500 ease-in-out"
+          className="carousel-side-card w-[38%] sm:w-[32%] md:w-[30%] flex-shrink-0 relative transition-opacity duration-500 ease-in-out"
           style={{
             opacity: 0.5,
             maskImage: 'linear-gradient(to right, transparent, black 40%)',
@@ -93,7 +93,7 @@ export function CarouselContent({ children, className = '' }: { children: React.
         
         {/* Next card (right) with fade */}
         <div 
-          className="carousel-side-card w-[30%] sm:w-[32%] md:w-[30%] flex-shrink-0 relative transition-opacity duration-500 ease-in-out"
+          className="carousel-side-card w-[38%] sm:w-[32%] md:w-[30%] flex-shrink-0 relative transition-opacity duration-500 ease-in-out"
           style={{
             opacity: 0.5,
             maskImage: 'linear-gradient(to left, transparent, black 40%)',
