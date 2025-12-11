@@ -119,6 +119,8 @@
     --bla-text-light: #e5e5e5;
     --bla-text-muted: #999999;
     --bla-lavender: #e7e8ff;
+    --bla-white: #FBFCFA;
+    --bla-text-gray: #9E9E96;
     
     /* Chat Widget Colors - User Messages: Yellow/Lime with Black */
     --chat-user-bg: #CEFF00;

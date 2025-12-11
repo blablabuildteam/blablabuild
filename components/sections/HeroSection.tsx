@@ -54,12 +54,12 @@ export default function HeroSection() {
   return (
     <section 
       ref={sectionRef}
-      className="relative h-[100dvh] p-[10px] pt-[82px]"
-      style={{ minHeight: '100vh' }}
+      className="relative h-auto md:h-[100dvh] p-1 sm:p-[10px] pt-[80px] sm:pt-[80px] md:pt-[82px]"
+      style={{ minHeight: 'auto' }}
     >
       {/* Main Container with Rounded Edges and Spacing */}
-      <div className="relative z-10 w-full h-full">
-        <div className="w-full h-full rounded-3xl overflow-hidden border border-white/10 relative">
+      <div className="relative z-10 w-full h-auto md:h-full">
+        <div className="w-full h-auto md:h-full rounded-3xl overflow-hidden border border-white/10 relative">
           {/* Animated Gradient Background */}
           <BubbleBackground
             className="absolute inset-0 z-0 rounded-3xl pointer-events-none"
@@ -67,41 +67,42 @@ export default function HeroSection() {
             blueColor="17,37,255"
             voltColor="206,255,0"
           />
+          
+          {/* Grain effect overlay */}
+          <div 
+            className="absolute inset-0 rounded-3xl opacity-[0.20] pointer-events-none z-[1]"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+              backgroundSize: '200px 200px',
+            }}
+          />
 
           {/* Content Container */}
-          <div className="relative z-10 h-full flex flex-col lg:flex-row items-center justify-center px-6 sm:px-8 lg:px-12 py-12">
+          <div className="relative z-10 h-auto md:h-full flex flex-col lg:flex-row items-center justify-center px-4 sm:px-6 md:px-8 lg:px-12 py-1 sm:py-2 md:py-4 lg:py-12">
             {/* Left Side - Header Content */}
-            <div className="flex-1 lg:max-w-[50%] mb-8 lg:mb-0 h-full flex items-center">
+            <div className="flex-1 lg:max-w-[50%] mb-0 sm:mb-1 md:mb-2 lg:mb-0 h-auto md:h-full flex items-center">
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="space-y-6 w-full"
+                className="space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6 w-full"
               >
-                <h1 className="font-host font-bold text-4xl md:text-5xl lg:text-6xl xl:text-[64px] leading-tight text-white">
-                  <span className="block">Wij doen de innovaties -</span>
-                  <span className="block mt-2">
-                    Jij behaalt meer{' '}
-                    <span className="inline-block bg-bla-blue px-3 py-1 rounded-md">
-                      <ContainerTextFlip
-                        words={["inzicht", "omzet", "snelheid"]}
-                        interval={2500}
-                        animationDuration={600}
-                        className="font-bold"
-                        highlightClassName="text-white"
-                      />
-                    </span>
-                  </span>
+                <h2 className="font-sans text-[4rem] sm:text-[4.32rem] md:text-[5.4rem] lg:text-[6.48rem] xl:text-[8.64rem] font-bold tracking-tight text-bla-white mb-1 sm:mb-2 md:mb-3 lg:mb-4">
+                  <span className="font-normal">blabla</span>
+                  <span className="font-bold">build</span>
+                </h2>
+                <h1 className="font-host font-medium text-4xl md:text-5xl lg:text-6xl xl:text-[64px] leading-tight text-bla-white">
+                  <span className="block">Wij doen <span className="text-bla-lime">AI</span> innovaties</span>
                 </h1>
                 
-                <p className="text-white/90 text-lg md:text-xl max-w-xl">
-                  Slimme en schaalbare AI oplossingen voor jouw bedrijf. Zodat jij weer kunt ondernemen.
+                <p className="text-lg md:text-xl max-w-xl">
+                  <span className="text-bla-white">Wij helpen je bedrijf om AI-gericht te werken,</span> <span className="text-bla-text-gray">leggen de koppeling tussen je processen en omzet, en maken je onderneming winstgevender.</span>
                 </p>
               </motion.div>
             </div>
 
             {/* Right Side - Carousel */}
-            <div className="flex-1 lg:max-w-[45%] w-full lg:pl-8 h-full flex items-center">
+            <div className="flex-1 lg:max-w-[45%] w-full lg:pl-8 h-auto md:h-full flex items-center">
               <motion.div
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -110,7 +111,7 @@ export default function HeroSection() {
               >
                 {/* Carousel Container */}
                 <div className="relative overflow-visible">
-                  <div className="flex gap-4 relative items-center w-full">
+                  <div className="flex gap-3 sm:gap-4 relative items-center w-full">
                     {carouselCards.map((card, index) => {
                       const isActive = index === currentCardIndex;
                       const isLastCard = currentCardIndex === carouselCards.length - 1;
@@ -121,7 +122,13 @@ export default function HeroSection() {
                         <motion.div
                           key={card.id}
                           className={`flex-shrink-0 transition-all duration-500 flex ${
-                            isActive ? (isLastCard ? 'w-full' : 'w-[75%]') : isNext ? 'w-[50%]' : 'w-0'
+                            // Mobile: active card 75%, next card 50% (peek)
+                            // Desktop: active card 75% (or full if last), next card 50%
+                            isActive 
+                              ? (isLastCard ? 'w-full' : 'w-[75%]') 
+                              : isNext 
+                                ? 'w-[50%]' 
+                                : 'w-0'
                           }`}
                           initial={false}
                           animate={{
@@ -129,28 +136,16 @@ export default function HeroSection() {
                             scale: isActive ? 1 : isNext ? 0.95 : 1,
                           }}
                         >
-                          <div className={`bg-[#1a1a1a] rounded-3xl pt-6 px-6 pb-6 border-2 w-full ${
+                          <div className={`bg-[#1a1a1a] rounded-2xl sm:rounded-3xl pt-4 sm:pt-5 md:pt-6 px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6 w-full ${
                             isActive 
-                              ? 'border-bla-lime shadow-[0_0_20px_rgba(206,255,0,0.3)]' 
-                              : 'border-bla-lime shadow-[0_0_10px_rgba(206,255,0,0.15)]'
+                              ? 'shadow-[0_0_20px_rgba(206,255,0,0.3)]' 
+                              : 'shadow-[0_0_10px_rgba(206,255,0,0.15)]'
                           } relative overflow-hidden flex flex-col`}>
-                            {/* Grain effect overlay */}
-                            <div 
-                              className="absolute inset-0 rounded-3xl opacity-[0.15] pointer-events-none z-10"
-                              style={{
-                                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-                                backgroundSize: '200px 200px',
-                              }}
-                            />
-                            {/* Glowing border effect */}
-                            <div className={`absolute inset-0 rounded-3xl border-2 ${
-                              isActive ? 'border-bla-lime' : 'border-bla-lime'
-                            } blur-sm`} />
                             
-                            {/* Icon and Title Row */}
-                            <div className="mb-4 relative z-20 flex items-center gap-4">
-                              <div className="w-12 h-12 rounded-xl bg-bla-lime flex items-center justify-center flex-shrink-0">
-                                <div className="w-6 h-6 relative">
+                            {/* Icon and Title */}
+                            <div className="mb-3 sm:mb-4 relative z-20 flex flex-col gap-2 sm:gap-3 md:gap-4">
+                              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-bla-lime flex items-center justify-center flex-shrink-0">
+                                <div className="w-5 h-5 sm:w-6 sm:h-6 relative">
                                   <Image
                                     src={card.iconPath}
                                     alt={card.title}
@@ -160,14 +155,17 @@ export default function HeroSection() {
                                   />
                                 </div>
                               </div>
-                              <h3 className="text-white font-bold" style={{ fontSize: '1.7rem' }}>
+                              <p className="text-bla-white leading-relaxed text-base sm:text-lg" style={{ fontSize: 'clamp(1rem, 2.5vw, 1.2rem)' }}>
+                                Jouw kans
+                              </p>
+                              <h3 className="text-bla-lime font-medium text-xl sm:text-2xl md:text-2xl" style={{ fontSize: 'clamp(1.25rem, 3.5vw, 1.7rem)' }}>
                                 {card.title}
                               </h3>
                             </div>
 
                             {/* Content */}
                             <div className="relative z-20 flex-1">
-                              <p className="text-white/80 leading-relaxed" style={{ fontSize: '1.2rem' }}>
+                              <p className="text-bla-text-gray leading-relaxed text-base sm:text-lg" style={{ fontSize: 'clamp(1rem, 2.5vw, 1.2rem)' }}>
                                 {card.description}
                               </p>
                             </div>

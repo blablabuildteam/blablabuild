@@ -74,7 +74,7 @@ export default function Footer() {
                 height={80}
                 className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20"
               />
-              <h2 className="font-sans text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight text-white">
+              <h2 className="font-sans text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight text-bla-white">
                 <span className="font-normal">blabla</span>
                 <span className="font-bold">build</span>
               </h2>

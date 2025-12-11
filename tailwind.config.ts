@@ -45,6 +45,8 @@ const config: Config = {
   				'text-light': 'var(--bla-text-light)',
   				'text-muted': 'var(--bla-text-muted)',
   				lavender: 'var(--bla-lavender)',
+  				white: 'var(--bla-white)',
+  				'text-gray': 'var(--bla-text-gray)',
   			},
   			// Semantic Chat Colors
   			chat: {

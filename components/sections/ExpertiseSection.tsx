@@ -96,7 +96,7 @@ export default function ExpertiseSection() {
                   align="center"
                   sideOffset={12}
                   collisionPadding={16}
-                  className="max-w-[300px] bg-bla-blue text-white text-sm md:text-base font-host px-5 py-4 rounded-2xl shadow-2xl border-2 border-white/20"
+                  className="max-w-[300px] bg-bla-blue text-bla-white text-sm md:text-base font-host px-5 py-4 rounded-2xl shadow-2xl border-2 border-bla-white/20"
                   style={{ 
                     transform: `rotate(${item.tilt}deg)`,
                   }}

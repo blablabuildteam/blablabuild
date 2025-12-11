@@ -121,7 +121,7 @@ function StepItem({ step, idx }: { step: typeof steps[0]; idx: number }) {
             {step.title}
           </motion.h3>
           <motion.p
-            className="font-host font-normal text-base md:text-lg text-white leading-relaxed"
+            className="font-host font-normal text-base md:text-lg text-bla-white leading-relaxed"
             variants={descriptionVariants}
           >
             {step.description}
@@ -166,10 +166,10 @@ export default function ApproachSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="font-host font-medium text-3xl md:text-[48px] text-white max-w-[512px] leading-tight">
+          <h2 className="font-host font-medium text-3xl md:text-[48px] text-bla-white max-w-[512px] leading-tight">
             Geen agency <span className="text-bla-lime">bullsh*t,</span> simpelweg resultaat
           </h2>
-          <p className="font-host font-medium text-lg md:text-2xl text-white max-w-[521px]">
+          <p className="font-host font-medium text-lg md:text-2xl text-bla-white max-w-[521px]">
             Een simpele aanpak dat ervoor zorgt dat we snel impact kunnen maken
           </p>
         </motion.div>
