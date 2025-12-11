@@ -28,6 +28,10 @@ const config: Config = {
   				'Host Grotesk',
   				'system-ui',
   				'sans-serif'
+  			],
+  			'bad-script': [
+  				'Bad Script',
+  				'cursive'
   			]
   		},
   		colors: {
