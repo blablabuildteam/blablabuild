@@ -9,64 +9,45 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Mobile: stacked 2-column grid, Desktop: 3x3 scattered pattern
+// Mobile: stacked 2-column grid, Desktop: 2x3 scattered pattern
 const postItCases = [
   // Row 1
   {
     id: 1,
     text: <><strong>Stel vragen aan je data</strong> in gewone taal, en krijg direct antwoord om beslissingen te nemen.</>,
     rotation: -5,
-    positionClass: 'left-[3%] top-[2%] md:left-[5%] md:top-[8%]',
+    positionClass: 'left-[3%] top-[2%] md:left-[5%] md:top-[5%]',
   },
   {
     id: 2,
     text: <><strong>Eén duidelijk dashboard</strong> met alle voorraad- en verkoopcijfers.</>,
     rotation: 4,
-    positionClass: 'left-[52%] top-[2%] md:left-[38%] md:top-[5%]',
+    positionClass: 'left-[52%] top-[2%] md:left-[38%] md:top-[2%]',
   },
   {
     id: 3,
     text: <><strong>Automatische waarschuwingen</strong> als de voorraad kritiek wordt of de omzet daalt.</>,
     rotation: -3,
-    positionClass: 'left-[3%] top-[26%] md:left-[70%] md:top-[10%]',
+    positionClass: 'left-[3%] top-[35%] md:left-[70%] md:top-[8%]',
   },
   // Row 2
   {
     id: 4,
     text: <><strong>Automatisch website-pagina's maken</strong> voor elke stad of locatie.</>,
     rotation: 5,
-    positionClass: 'left-[52%] top-[26%] md:left-[8%] md:top-[38%]',
+    positionClass: 'left-[52%] top-[35%] md:left-[8%] md:top-[50%]',
   },
   {
     id: 5,
     text: <><strong>Haal meer aanvragen</strong> uit je huidige websitebezoekers.</>,
     rotation: -4,
-    positionClass: 'left-[3%] top-[50%] md:left-[40%] md:top-[35%]',
+    positionClass: 'left-[3%] top-[68%] md:left-[40%] md:top-[48%]',
   },
   {
     id: 6,
     text: <>Een <strong>slimme chatbot</strong> die klanten adviseert en producten vindt.</>,
     rotation: 6,
-    positionClass: 'left-[52%] top-[50%] md:left-[72%] md:top-[40%]',
-  },
-  // Row 3
-  {
-    id: 7,
-    text: <><strong>Stop met gissen:</strong> Weet welke marketing écht geld oplevert.</>,
-    rotation: -6,
-    positionClass: 'left-[3%] top-[74%] md:left-[5%] md:top-[68%]',
-  },
-  {
-    id: 8,
-    text: <>Producten van leveranciers <strong>automatisch matchen</strong> met je eigen webshop.</>,
-    rotation: 3,
-    positionClass: 'left-[52%] top-[74%] md:left-[38%] md:top-[65%]',
-  },
-  {
-    id: 9,
-    text: <><strong>Automatisch inkoop- en facturatieprocessen</strong> aan elkaar koppelen.</>,
-    rotation: -4,
-    positionClass: 'left-[28%] top-[98%] md:left-[70%] md:top-[70%]',
+    positionClass: 'left-[52%] top-[68%] md:left-[72%] md:top-[52%]',
   },
 ];
 
@@ -109,7 +90,7 @@ export default function CasesSection() {
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: '+=200%',
+          end: '+=150%',
           pin: pinWrap,
           scrub: 1,
           anticipatePin: 1,
@@ -146,7 +127,7 @@ export default function CasesSection() {
     <section
       ref={sectionRef}
       id="oplossingen"
-      className="relative min-h-[350vh] w-full overflow-visible"
+      className="relative min-h-[250vh] w-full overflow-visible"
       style={{ backgroundColor: '#fdfdfd' }}
     >
       <div
@@ -161,7 +142,7 @@ export default function CasesSection() {
         {/* Post-it Cards - Stacked grid on mobile, scattered on desktop */}
         <div 
           ref={cardsContainerRef} 
-          className="relative w-full flex-1 overflow-visible px-4 md:px-8 lg:px-12 pb-[120px]"
+          className="relative w-full flex-1 overflow-visible px-4 md:px-8 lg:px-12 pb-[60px]"
         >
           {postItCases.map((postIt, index) => (
             <div
