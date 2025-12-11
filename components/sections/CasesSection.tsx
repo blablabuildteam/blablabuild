@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ArrowUpRight } from 'lucide-react';
 
 // Register ScrollTrigger plugin
 if (typeof window !== 'undefined') {
@@ -13,135 +14,120 @@ if (typeof window !== 'undefined') {
   });
 }
 
-// Mobile: stacked 2-column grid, Desktop: 2x3 scattered pattern
-const postItCases = [
-  // Row 1
+type BadgeType = 'Inzicht' | 'Omzet' | 'Snelheid';
+
+interface SolutionCard {
+  id: number;
+  text: React.ReactNode;
+  badges: BadgeType[];
+  isCTACard?: boolean;
+  title?: string;
+  body?: string;
+}
+
+// 9 solution cards with badges
+const solutionCards: SolutionCard[] = [
   {
     id: 1,
     text: <><strong>Stel vragen aan je data</strong> in gewone taal, en krijg direct antwoord om beslissingen te nemen.</>,
-    rotation: -5,
-    positionClass: 'left-[3%] top-[2%] md:left-[5%] md:top-[5%]',
+    badges: ['Inzicht', 'Snelheid'],
   },
   {
     id: 2,
     text: <><strong>Eén duidelijk dashboard</strong> met alle voorraad- en verkoopcijfers.</>,
-    rotation: 4,
-    positionClass: 'left-[52%] top-[2%] md:left-[38%] md:top-[2%]',
+    badges: ['Inzicht', 'Omzet'],
   },
   {
     id: 3,
     text: <><strong>Automatische waarschuwingen</strong> als de voorraad kritiek wordt of de omzet daalt.</>,
-    rotation: -3,
-    positionClass: 'left-[3%] top-[35%] md:left-[70%] md:top-[8%]',
+    badges: ['Inzicht', 'Omzet', 'Snelheid'],
   },
-  // Row 2
   {
     id: 4,
     text: <><strong>Automatisch website-pagina's maken</strong> voor elke stad of locatie.</>,
-    rotation: 5,
-    positionClass: 'left-[52%] top-[35%] md:left-[8%] md:top-[50%]',
+    badges: ['Omzet', 'Snelheid'],
   },
   {
     id: 5,
     text: <><strong>Haal meer aanvragen</strong> uit je huidige websitebezoekers.</>,
-    rotation: -4,
-    positionClass: 'left-[3%] top-[68%] md:left-[40%] md:top-[48%]',
+    badges: ['Omzet'],
   },
   {
     id: 6,
     text: <>Een <strong>slimme chatbot</strong> die klanten adviseert en producten vindt.</>,
-    rotation: 6,
-    positionClass: 'left-[52%] top-[68%] md:left-[72%] md:top-[52%]',
+    badges: ['Omzet', 'Snelheid'],
+  },
+  {
+    id: 7,
+    text: <><strong>Voorspel trends</strong> en anticipeer op veranderingen in je markt met AI-analyse.</>,
+    badges: ['Inzicht', 'Snelheid'],
+  },
+  {
+    id: 8,
+    text: <><strong>Automatiseer repetitieve taken</strong> zodat je team zich kan focussen op wat echt belangrijk is.</>,
+    badges: ['Snelheid'],
+  },
+  {
+    id: 9,
+    text: <>Er zijn <strong>veel meer oplossingen</strong> die we al hebben geleverd aan onze klanten. Neem contact met ons op of doe de AI intake om jouw behoeften te delen.</>,
+    badges: [],
+    isCTACard: true,
+    title: 'Heb jij wat anders nodig?',
+    body: 'Neem contact met ons op of doe de AI intake.',
   },
 ];
 
 export default function CasesSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const pinWrapRef = useRef<HTMLDivElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const section = sectionRef.current;
-    const pinWrap = pinWrapRef.current;
     const cardsContainer = cardsContainerRef.current;
 
-    if (!section || !pinWrap || !cardsContainer) return;
+    if (!section || !cardsContainer) return;
 
-    const cards = cardsContainer.querySelectorAll('.post-it-card');
+    const cards = cardsContainer.querySelectorAll('.solution-card');
     if (cards.length === 0) return;
 
     let ctx: gsap.Context;
 
     const initScrollTrigger = () => {
       ctx = gsap.context(() => {
-        // Set initial state for all cards (hidden and off-screen)
-        cards.forEach((card, i) => {
-          const fromLeft = i % 2 === 0;
-          const startX = fromLeft ? -400 : 400;
-          const startY = 400 + (i * 30);
-          const startRotation = postItCases[i]?.rotation || 0;
-          
+        // Set initial state for all cards (hidden and slightly below)
+        cards.forEach((card) => {
           gsap.set(card, {
             opacity: 0,
-            x: startX,
-            y: startY,
-            scale: 0.3,
-            rotation: startRotation + (fromLeft ? -60 : 60),
+            y: 20,
           });
         });
 
-        // Create main timeline with scroll scrub
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            start: 'top top',
-            end: '+=100%',
-            pin: pinWrap,
-            scrub: 1,
-            invalidateOnRefresh: true,
+        // Create scroll trigger animation
+        ScrollTrigger.create({
+          trigger: section,
+          start: 'top 85%',
+          onEnter: () => {
+            gsap.to(cards, {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              stagger: 0.08,
+              ease: 'power1.out',
+            });
           },
         });
-
-        // Cards fly in one by one - alternating left then right pattern
-        cards.forEach((card, i) => {
-          const startRotation = postItCases[i]?.rotation || 0;
-
-          tl.to(
-            card,
-            {
-              opacity: 1,
-              x: 0,
-              y: 0,
-              scale: 1,
-              rotation: startRotation,
-              duration: 0.15,
-              ease: 'power2.out',
-            },
-            i * 0.13 // Stagger the animations
-          );
-        });
-
-        // Hold at the end
-        tl.to({}, { duration: 0.2 });
       }, section);
 
-      // Refresh ScrollTrigger multiple times to ensure correct positions
       ScrollTrigger.refresh();
     };
 
-    // Small delay to ensure DOM is ready, then initialize
     const initTimeout = setTimeout(() => {
       initScrollTrigger();
-      
-      // Additional refreshes to catch any late layout shifts
       setTimeout(() => ScrollTrigger.refresh(), 100);
-      setTimeout(() => ScrollTrigger.refresh(), 500);
-      setTimeout(() => ScrollTrigger.refresh(), 1000);
     }, 50);
 
-    // Also refresh on resize
     const handleResize = () => {
       ScrollTrigger.refresh();
     };
@@ -154,64 +140,89 @@ export default function CasesSection() {
     };
   }, []);
 
+  const getBadgeColor = (badge: BadgeType): string => {
+    // All badges have the same styling: smoky black background with volt (lime) text
+    return 'bg-black/80 text-bla-lime';
+  };
+
   return (
     <section
       ref={sectionRef}
       id="oplossingen"
-      className="relative min-h-[180vh] w-full overflow-hidden"
+      className="relative w-full py-20 md:py-32"
       style={{ backgroundColor: '#f5f5f5' }}
     >
-      <div
-        ref={pinWrapRef}
-        className="h-screen w-full flex flex-col items-center px-2 md:px-8 pt-20 md:pt-28 pb-20 md:pb-28"
-      >
-        {/* Header - Always visible */}
-        <h2 className="font-host font-medium text-base md:text-[28px] lg:text-[32px] text-text-primary text-center max-w-[300px] md:max-w-[560px] mx-auto leading-tight mb-2 md:mb-6 px-2">
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-8">
+        {/* Header */}
+        <h2 className="font-host font-medium text-base md:text-[28px] lg:text-[32px] text-text-primary text-center max-w-[300px] md:max-w-[560px] mx-auto leading-tight mb-12 md:mb-16">
           Oplossingen die jouw organisatie écht sneller maken
         </h2>
 
-        {/* Post-it Cards - Stacked grid on mobile, scattered on desktop */}
+        {/* 3-column Masonry Grid with 9 Cards */}
         <div 
           ref={cardsContainerRef} 
-          className="relative w-full flex-1 overflow-visible px-4 md:px-8 lg:px-12 pb-[60px]"
+          className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4"
         >
-          {postItCases.map((postIt, index) => (
+          {solutionCards.map((card) => (
             <div
-              key={postIt.id}
-              className={`post-it-card absolute ${postIt.positionClass}`}
-              style={{
-                zIndex: 100 + index,
-              }}
+              key={card.id}
+              className={`solution-card bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 flex flex-col transition-all duration-300 ${card.id === 9 ? 'col-span-2 md:col-span-1' : ''}`}
             >
-              <div
-                className="bg-bla-lime rounded-[14px] md:rounded-[22px] p-3 md:p-6 w-[45vw] max-w-[180px] md:max-w-none md:w-[240px] lg:w-[280px] h-[140px] md:h-[220px] lg:h-[260px] flex items-center justify-center cursor-pointer relative transition-all duration-300 hover:scale-110 hover:z-50 hover:shadow-2xl"
-                style={{
-                  boxShadow: '0 6px 20px rgba(0,0,0,0.1), 0 3px 8px rgba(0,0,0,0.06)',
-                }}
-              >
-                {/* Tape effect at top */}
-                <div
-                  className="absolute -top-1.5 md:-top-3 left-1/2 w-9 md:w-14 h-2.5 md:h-5 bg-white/50 rounded-sm"
-                  style={{
-                    transform: `translateX(-50%) rotate(${(index % 5 - 2) * 5}deg)`,
-                    backdropFilter: 'blur(2px)',
-                  }}
-                />
-                {/* Folded corner effect */}
-                <div
-                  className="absolute bottom-0 right-0 w-4 h-4 md:w-8 md:h-8"
-                  style={{
-                    background: 'linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.04) 50%)',
-                    borderRadius: '0 0 14px 0',
-                  }}
-                />
-                <p className="font-host font-normal text-[14px] md:text-[16px] lg:text-[18px] text-chat-user-text text-center leading-tight md:leading-snug px-1 md:px-1">
-                  {postIt.text}
-                </p>
-              </div>
+              {card.isCTACard ? (
+                <>
+                  {/* Title */}
+                  <h3 className="font-host font-medium text-lg md:text-xl lg:text-2xl text-text-primary mb-4">
+                    {card.title}
+                  </h3>
+                  
+                  {/* Body */}
+                  <p className="font-host font-normal text-sm md:text-base lg:text-lg text-text-primary leading-relaxed mb-6">
+                    {card.body}
+                  </p>
+                  
+                  {/* Separator */}
+                  <div className="border-t border-bla-border mb-6"></div>
+                  
+                  {/* CTA Link */}
+                  <div>
+                    <a
+                      href="mailto:hello@blablabuild.com"
+                      className="text-text-primary hover:text-bla-lime flex items-center gap-2 text-base md:text-lg transition-colors group"
+                    >
+                      Neem contact op
+                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Content */}
+                  <p className="font-host font-normal text-sm md:text-base lg:text-lg text-text-primary leading-relaxed flex-1">
+                    {card.text}
+                  </p>
+
+                  {/* Separator */}
+                  {card.badges.length > 0 && (
+                    <div className="border-t border-bla-border mt-4 mb-4"></div>
+                  )}
+
+                  {/* Badges */}
+                  {card.badges.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {card.badges.map((badge) => (
+                        <span
+                          key={badge}
+                          className={`px-3 py-1 rounded-full text-xs md:text-sm font-medium ${getBadgeColor(badge)}`}
+                        >
+                          {badge}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           ))}
-
         </div>
       </div>
     </section>

@@ -60,7 +60,8 @@ export default function HomePage() {
     const sectionElements: { id: string; element: HTMLElement }[] = [];
     let observer: IntersectionObserver | null = null;
     let rafId: number | null = null;
-    let isScrolling = false;
+    let ticking = false;
+    let lastScrollY = 0;
 
     const handleScroll = () => {
       const navHeight = 80;
@@ -131,14 +132,22 @@ export default function HomePage() {
 
       // Update state - can be empty string to clear active state
       setActiveSection(activeSection);
-      isScrolling = false;
+      ticking = false;
+      lastScrollY = window.scrollY;
     };
 
-    const throttledScroll = () => {
-      if (!isScrolling) {
-        isScrolling = true;
-        rafId = window.requestAnimationFrame(handleScroll);
+    const onScroll = () => {
+      // Cancel any pending frame to ensure we always process the latest scroll position
+      // This is especially important on mobile when direction changes rapidly
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
       }
+      
+      // Schedule a new frame - always allow this to ensure responsiveness
+      ticking = true;
+      rafId = window.requestAnimationFrame(() => {
+        handleScroll();
+      });
     };
 
     const timer = setTimeout(() => {
@@ -153,10 +162,12 @@ export default function HomePage() {
 
       if (sectionElements.length === 0) return;
 
+      lastScrollY = window.scrollY;
+
       observer = new IntersectionObserver(
         (entries) => {
           // Use scroll handler as primary, observer as fallback
-          handleScroll();
+          onScroll();
         },
         {
           threshold: [0, 0.1, 0.3, 0.5, 0.7, 1.0],
@@ -169,7 +180,7 @@ export default function HomePage() {
       });
 
       handleScroll();
-      window.addEventListener('scroll', throttledScroll, { passive: true });
+      window.addEventListener('scroll', onScroll, { passive: true });
     }, 100);
 
     return () => {
@@ -177,7 +188,7 @@ export default function HomePage() {
       if (rafId !== null) {
         window.cancelAnimationFrame(rafId);
       }
-      window.removeEventListener('scroll', throttledScroll);
+      window.removeEventListener('scroll', onScroll);
       if (observer) {
         observer.disconnect();
       }

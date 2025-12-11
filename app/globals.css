@@ -234,6 +234,8 @@
     position: relative;
     margin: 0;
     padding: 0;
+    /* Improve mobile scroll responsiveness */
+    -webkit-tap-highlight-color: transparent;
   }
   
   /* All elements use Matter font */
@@ -289,6 +291,8 @@ html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* Improve mobile scroll performance and responsiveness */
+  -webkit-tap-highlight-color: transparent;
 }
 
 *, *::before, *::after {
