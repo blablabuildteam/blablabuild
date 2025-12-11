@@ -11,9 +11,13 @@ interface NavigationProps {
 }
 
 export default function Navigation({ showNavCTA, activeSection }: NavigationProps) {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Transition range: smoothly transition from 0px to 100px scroll
+  const SCROLL_START = 0;
+  const SCROLL_END = 100;
 
   useEffect(() => {
     const handleResize = () => {
@@ -32,7 +36,9 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const scrollY = window.scrollY;
-          setIsScrolled(scrollY > 50);
+          // Calculate progress from 0 to 1 based on scroll position
+          const progress = Math.min(Math.max((scrollY - SCROLL_START) / (SCROLL_END - SCROLL_START), 0), 1);
+          setScrollProgress(progress);
           ticking = false;
         });
         ticking = true;
@@ -45,6 +51,50 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Helper function to interpolate between two values based on progress
+  const lerp = (start: number, end: number, progress: number) => {
+    return start + (end - start) * progress;
+  };
+
+  // Calculate interpolated values
+  const top = isMobile ? 0 : lerp(0, 38, scrollProgress);
+  const borderRadius = isMobile ? 0 : lerp(0, 24, scrollProgress);
+  const scale = isMobile ? 1 : lerp(1, 0.99, scrollProgress);
+  const blurAmount = isMobile ? 0 : lerp(0, 28, scrollProgress);
+  const shadowOpacity = isMobile ? 0 : lerp(0, 0.08, scrollProgress);
+  
+  // Calculate width and maxWidth for linear narrowing
+  // Start: 100% width (no constraint), End: 1312px width
+  // To ensure linear narrowing, we calculate the target width linearly
+  // and use consistent values for both width calculation and maxWidth constraint
+  const getNavWidth = () => {
+    if (isMobile) return { width: '100%', maxWidth: '100%' };
+    
+    // Get viewport width (with fallback for SSR)
+    if (typeof window === 'undefined') {
+      return { width: '100%', maxWidth: '100%' };
+    }
+    
+    const viewportWidth = window.innerWidth;
+    const finalWidth = 1312;
+    
+    // Linearly interpolate from viewport width to final width (1312px)
+    // This ensures constant narrowing rate throughout the scroll
+    const targetWidth = lerp(viewportWidth, finalWidth, scrollProgress);
+    
+    // Calculate the margin needed to achieve this width
+    // When at 0 progress: margin = 0, width = 100%
+    // When at 1 progress: margin = (viewportWidth - 1312) / 2, width = 1312px
+    const margin = Math.max(0, (viewportWidth - targetWidth) / 2);
+    
+    return {
+      width: `calc(100% - ${margin * 2}px)`,
+      maxWidth: `${Math.round(targetWidth)}px`
+    };
+  };
+  
+  const navDimensions = getNavWidth();
 
   const navLinks = [
     { id: 'oplossingen', label: 'Oplossingen' },
@@ -82,60 +132,58 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
     }
   };
 
+  // Get background color based on scroll progress
+  const getBackgroundColor = () => {
+    if (isMobile) {
+      return isMenuOpen ? '#ffffff' : '#f5f5f5';
+    }
+    // Interpolate between #f5f5f5 (rgb(245, 245, 245)) and rgba(255, 255, 255, 0.5)
+    // We'll interpolate the opacity of white over the f5f5f5 base
+    const baseOpacity = lerp(1, 0.5, scrollProgress);
+    // Blend between f5f5f5 and white based on progress
+    const r = Math.round(lerp(245, 255, scrollProgress));
+    const g = Math.round(lerp(245, 255, scrollProgress));
+    const b = Math.round(lerp(245, 255, scrollProgress));
+    return `rgba(${r}, ${g}, ${b}, ${baseOpacity})`;
+  };
+
   return (
     <>
       <motion.nav 
         className="fixed z-50"
         initial={false}
         animate={{
-          top: isMobile ? 0 : (isScrolled ? 38 : 0),
+          top: `${top}px`,
           left: '50%',
           x: '-50%',
-          width: isMobile ? '100%' : (isScrolled ? 'calc(100% - 128px)' : '100%'),
+          width: navDimensions.width,
         }}
         transition={{
-          duration: 0.6,
-          ease: [0.25, 0.1, 0.25, 1],
+          duration: 0,
         }}
         style={{
-          maxWidth: isMobile ? '100%' : (isScrolled ? '1312px' : '100%'),
+          maxWidth: navDimensions.maxWidth,
+          willChange: 'top, width',
         }}
       >
         <motion.div 
           className="px-4 md:px-8 py-2 flex items-center justify-between h-[72px]"
           initial={false}
           animate={{
-            backgroundColor: isMobile
-              ? (isMenuOpen ? '#ffffff' : '#f5f5f5')
-              : (isScrolled ? 'var(--nav-bg-scrolled)' : '#f5f5f5'),
-            borderRadius: isMobile 
-              ? '0px'
-              : (isScrolled ? 24 : 0),
-            scale: isMobile ? 1 : (isScrolled ? 0.99 : 1),
+            backgroundColor: getBackgroundColor(),
+            borderRadius: `${borderRadius}px`,
+            scale: scale,
           }}
           transition={{
-            duration: 0.6,
-            ease: [0.25, 0.1, 0.25, 1],
-            backgroundColor: {
-              duration: 0.5,
-              ease: [0.25, 0.1, 0.25, 1],
-            },
-            borderRadius: {
-              duration: 0.6,
-              ease: [0.25, 0.1, 0.25, 1],
-            },
-            scale: {
-              duration: 0.5,
-              ease: [0.34, 1.56, 0.64, 1],
-            },
+            duration: 0,
           }}
           style={{
-            backdropFilter: isMobile ? 'none' : (isScrolled ? 'blur(28px)' : 'none'),
-            WebkitBackdropFilter: isMobile ? 'none' : (isScrolled ? 'blur(28px)' : 'none'),
+            backdropFilter: isMobile ? 'none' : `blur(${blurAmount}px)`,
+            WebkitBackdropFilter: isMobile ? 'none' : `blur(${blurAmount}px)`,
             borderBottom: 'none',
-            boxShadow: isMobile ? 'none' : (isScrolled ? '0 8px 32px rgba(0, 0, 0, 0.08)' : 'none'),
+            boxShadow: isMobile ? 'none' : `0 8px 32px rgba(0, 0, 0, ${shadowOpacity})`,
             ...(isMobile && { borderRadius: '0px' }),
-            transition: 'backdrop-filter 0.5s cubic-bezier(0.25, 0.1, 0.25, 1), border-bottom 0.5s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.5s cubic-bezier(0.25, 0.1, 0.25, 1)',
+            willChange: 'transform, background-color, border-radius, backdrop-filter, box-shadow',
           }}
         >
           {/* Logo */}
