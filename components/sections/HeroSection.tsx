@@ -182,19 +182,19 @@ export default function HeroSection() {
                 {currentCardIndex > 0 && (
                   <button
                     onClick={prevCard}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-8 lg:-translate-x-12 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg hover:bg-white/90 transition-colors z-30"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-8 lg:-translate-x-12 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white/30 transition-all z-30"
                     aria-label="Previous card"
                   >
-                    <ArrowLeftIcon className="w-5 h-5 text-black" />
+                    <ArrowLeftIcon className="w-5 h-5 text-bla-lime" />
                   </button>
                 )}
                 {currentCardIndex < carouselCards.length - 1 && (
                   <button
                     onClick={nextCard}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 lg:translate-x-4 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg hover:bg-white/90 transition-colors z-30"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 lg:translate-x-4 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white/30 transition-all z-30"
                     aria-label="Next card"
                   >
-                    <ArrowRightIcon className="w-5 h-5 text-black" />
+                    <ArrowRightIcon className="w-5 h-5 text-bla-lime" />
                   </button>
                 )}
               </motion.div>
