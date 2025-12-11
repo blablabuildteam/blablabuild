@@ -1,14 +1,17 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { 
-  ArrowLeft01Icon as ArrowLeftIcon,
-  ArrowRight01Icon as ArrowRightIcon
-} from 'hugeicons-react';
 import { ContainerTextFlip } from '@/components/ui/container-text-flip';
 import { BubbleBackground } from '@/components/ui/bubble-background';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 
 interface CarouselCard {
   id: string;
@@ -40,16 +43,6 @@ const carouselCards: CarouselCard[] = [
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
-
-  // Carousel navigation
-  const nextCard = () => {
-    setCurrentCardIndex((prev) => (prev + 1) % carouselCards.length);
-  };
-
-  const prevCard = () => {
-    setCurrentCardIndex((prev) => (prev - 1 + carouselCards.length) % carouselCards.length);
-  };
 
   return (
     <section 
@@ -102,50 +95,23 @@ export default function HeroSection() {
             </div>
 
             {/* Right Side - Carousel */}
-            <div className="w-full lg:flex-1 lg:max-w-[45%] lg:pl-8 h-auto md:h-full flex items-start lg:items-center py-0 sm:py-0 md:py-0">
+            <div className="w-full lg:flex-1 lg:max-w-[45%] h-auto md:h-full flex items-start lg:items-center mt-4 sm:mt-6 md:mt-0 mb-0 sm:mb-0 md:mb-0">
               <motion.div
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
                 className="relative w-full"
               >
-                {/* Carousel Container */}
-                <div className="relative overflow-visible">
-                  <div className="flex gap-3 sm:gap-4 relative items-center w-full">
-                    {carouselCards.map((card, index) => {
-                      const isActive = index === currentCardIndex;
-                      const isLastCard = currentCardIndex === carouselCards.length - 1;
-                      const isNext = index === currentCardIndex + 1; // No modulo - don't wrap around
-                      const isVisible = isActive || isNext;
-                      
-                      return (
-                        <motion.div
-                          key={card.id}
-                          className={`flex-shrink-0 transition-all duration-500 flex ${
-                            // Mobile: active card 75%, next card 50% (peek)
-                            // Desktop: active card 75% (or full if last), next card 50%
-                            isActive 
-                              ? (isLastCard ? 'w-full' : 'w-[75%]') 
-                              : isNext 
-                                ? 'w-[50%]' 
-                                : 'w-0'
-                          }`}
-                          initial={false}
-                          animate={{
-                            opacity: isVisible ? 1 : 0,
-                            scale: isActive ? 1 : isNext ? 0.95 : 1,
-                          }}
-                        >
-                          <div className={`bg-[#1a1a1a] rounded-2xl sm:rounded-3xl pt-3 sm:pt-4 md:pt-6 px-4 sm:px-5 md:px-6 pb-3 sm:pb-4 md:pb-6 w-full ${
-                            isActive 
-                              ? 'shadow-[0_0_20px_rgba(206,255,0,0.3)]' 
-                              : 'shadow-[0_0_10px_rgba(206,255,0,0.15)]'
-                          } relative overflow-hidden flex flex-col`}>
-                            
+                <Carousel>
+                  <CarouselContent className="ml-0">
+                    {carouselCards.map((card) => (
+                      <CarouselItem key={card.id} className="pl-0">
+                        <div className="bg-[#1a1a1a] rounded-2xl sm:rounded-3xl pt-3 sm:pt-4 md:pt-5 px-5 sm:px-6 md:px-6 pb-3 sm:pb-4 md:pb-5 w-full relative overflow-visible flex flex-col [.carousel-active-card_&]:shadow-[0_0_20px_rgba(206,255,0,0.3)]">
+                          <div className="flex flex-col h-full">
                             {/* Icon and Title */}
-                            <div className="mb-2 sm:mb-3 md:mb-4 relative z-20 flex flex-col gap-1.5 sm:gap-2 md:gap-4">
-                              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-bla-lime flex items-center justify-center flex-shrink-0">
-                                <div className="w-5 h-5 sm:w-6 sm:h-6 relative">
+                            <div className="mb-2 sm:mb-3 relative z-20 flex flex-col gap-1.5 sm:gap-2 flex-shrink-0">
+                              <div className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-xl bg-bla-lime flex items-center justify-center flex-shrink-0">
+                                <div className="w-5 h-5 sm:w-5 sm:h-5 md:w-6 md:h-6 relative">
                                   <Image
                                     src={card.iconPath}
                                     alt={card.title}
@@ -155,46 +121,28 @@ export default function HeroSection() {
                                   />
                                 </div>
                               </div>
-                              <p className="text-bla-white leading-relaxed text-base sm:text-lg" style={{ fontSize: 'clamp(1rem, 2.5vw, 1.2rem)' }}>
+                              <p className="text-bla-white leading-relaxed text-xs sm:text-sm md:text-sm">
                                 Jouw kans
                               </p>
-                              <h3 className="text-bla-lime font-medium text-xl sm:text-2xl md:text-2xl" style={{ fontSize: 'clamp(1.25rem, 3.5vw, 1.7rem)' }}>
+                              <h3 className="text-bla-lime font-medium text-base sm:text-lg md:text-lg">
                                 {card.title}
                               </h3>
                             </div>
 
                             {/* Content */}
-                            <div className="relative z-20 flex-1">
-                              <p className="text-bla-text-gray leading-relaxed text-base sm:text-lg" style={{ fontSize: 'clamp(1rem, 2.5vw, 1.2rem)' }}>
+                            <div className="relative z-20 flex-1 overflow-visible">
+                              <p className="text-bla-text-gray leading-relaxed text-xs sm:text-sm md:text-sm">
                                 {card.description}
                               </p>
                             </div>
                           </div>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Navigation Arrows */}
-                {currentCardIndex > 0 && (
-                  <button
-                    onClick={prevCard}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-8 lg:-translate-x-12 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white/30 transition-all z-30"
-                    aria-label="Previous card"
-                  >
-                    <ArrowLeftIcon className="w-5 h-5 text-bla-lime" />
-                  </button>
-                )}
-                {currentCardIndex < carouselCards.length - 1 && (
-                  <button
-                    onClick={nextCard}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 lg:translate-x-4 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white/30 transition-all z-30"
-                    aria-label="Next card"
-                  >
-                    <ArrowRightIcon className="w-5 h-5 text-bla-lime" />
-                  </button>
-                )}
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="left-0 translate-x-2 lg:translate-x-4" />
+                  <CarouselNext className="right-0 translate-x-2 lg:translate-x-4" />
+                </Carousel>
               </motion.div>
             </div>
           </div>
