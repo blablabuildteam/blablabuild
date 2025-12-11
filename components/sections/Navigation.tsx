@@ -106,8 +106,8 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
           initial={false}
           animate={{
             backgroundColor: isMobile
-              ? (isMenuOpen ? '#ffffff' : '#fdfdfd')
-              : (isScrolled ? 'var(--nav-bg-scrolled)' : '#fdfdfd'),
+              ? (isMenuOpen ? '#ffffff' : '#f5f5f5')
+              : (isScrolled ? 'var(--nav-bg-scrolled)' : '#f5f5f5'),
             borderRadius: isMobile 
               ? '0px'
               : (isScrolled ? 24 : 0),

@@ -159,7 +159,7 @@ export default function CasesSection() {
       ref={sectionRef}
       id="oplossingen"
       className="relative min-h-[180vh] w-full overflow-hidden"
-      style={{ backgroundColor: '#fdfdfd' }}
+      style={{ backgroundColor: '#f5f5f5' }}
     >
       <div
         ref={pinWrapRef}
