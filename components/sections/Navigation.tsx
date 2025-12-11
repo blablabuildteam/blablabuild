@@ -73,8 +73,8 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
       initial={false}
       animate={{
         top: isScrolled ? 38 : 0,
-        left: isScrolled ? '50%' : 0,
-        x: isScrolled ? '-50%' : 0,
+        left: '50%',
+        x: '-50%',
         width: isScrolled ? (isMobile ? 'calc(100% - 32px)' : 'calc(100% - 128px)') : '100%',
       }}
       transition={{
@@ -86,7 +86,7 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
       }}
     >
       <motion.div 
-        className="px-4 md:px-8 py-2 flex items-center justify-between h-[72px]"
+        className="px-4 md:px-8 pt-2 flex items-center justify-between h-[72px]"
         initial={false}
         animate={{
           backgroundColor: isScrolled ? 'var(--nav-bg-scrolled)' : (!isMobile ? '#fdfdfd' : 'var(--nav-bg)'),
