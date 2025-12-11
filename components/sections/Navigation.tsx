@@ -5,8 +5,6 @@ import { motion } from 'framer-motion';
 import { trackEvent } from '@/lib/analytics';
 import Image from 'next/image';
 
-import { BorderBeam } from '@/components/ui/border-beam';
-
 interface NavigationProps {
   showNavCTA: boolean;
   activeSection: string;
@@ -151,30 +149,17 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
             </a>
           ))}
           
-          {/* CTA Button with Border Beam Animation */}
-          <div className="relative inline-flex items-center flex-shrink-0 ml-2 md:ml-4 rounded-full overflow-hidden">
-            {/* Crisp Border Beam (Thin) */}
-            <BorderBeam 
-              duration={6} 
-              size={300} 
-              borderWidth={2} 
-              colorFrom="rgba(150, 200, 0, 1)" 
-              colorTo="transparent" 
-              className="z-20"
-            />
-
-            <button
-              onClick={() => {
-                trackEvent('cta_nav_clicked');
-                // Dispatch custom event to trigger the chat widget
-                window.dispatchEvent(new CustomEvent('openChatWidget'));
-              }}
-              className="relative bg-bla-lime px-4 md:px-6 h-10 rounded-full font-sans font-semibold text-sm md:text-base text-black tracking-[-0.48px] hover:bg-bla-lime/90 transition-colors flex items-center z-10 m-[2px]"
-              style={{ transform: 'none' }}
-            >
-              Gratis AI Advies
-            </button>
-          </div>
+          {/* CTA Button */}
+          <button
+            onClick={() => {
+              trackEvent('cta_nav_clicked');
+              // Dispatch custom event to trigger the chat widget
+              window.dispatchEvent(new CustomEvent('openChatWidget'));
+            }}
+            className="bg-bla-lime px-4 md:px-6 h-10 rounded-full font-sans font-semibold text-sm md:text-base text-black tracking-[-0.48px] hover:bg-bla-lime/90 transition-colors flex items-center ml-2 md:ml-4 flex-shrink-0"
+          >
+            Gratis AI Advies
+          </button>
         </div>
       </motion.div>
     </motion.nav>

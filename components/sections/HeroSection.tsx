@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { 
@@ -8,6 +8,7 @@ import {
   ArrowRight01Icon as ArrowRightIcon
 } from 'hugeicons-react';
 import { ContainerTextFlip } from '@/components/ui/container-text-flip';
+import { BubbleBackground } from '@/components/ui/bubble-background';
 
 interface CarouselCard {
   id: string;
@@ -39,20 +40,7 @@ const carouselCards: CarouselCard[] = [
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const [scrollY, setScrollY] = useState(0);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-
-  // Parallax effect - video moves as you scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Calculate parallax offset
-  const parallaxOffset = scrollY * 0.3;
 
   // Carousel navigation
   const nextCard = () => {
@@ -66,33 +54,18 @@ export default function HeroSection() {
   return (
     <section 
       ref={sectionRef}
-      className="h-screen min-h-[900px] flex relative overflow-hidden"
+      className="relative h-screen p-[10px] pt-[82px]"
     >
-      {/* Main Container with Rounded Edges and Spacing - 100% width with 10px gap */}
-      <div className="relative z-10 w-full flex items-center px-[10px] mt-[40px]">
-        <div className="w-full h-[calc(100vh-120px)] rounded-3xl overflow-hidden bg-black/40 backdrop-blur-sm border border-white/10 shadow-2xl">
-          {/* Video Backdrop inside container */}
-          <div 
-            className="absolute inset-0 z-0 rounded-3xl overflow-hidden"
-            style={{
-              transform: `translateY(${parallaxOffset * 0.5}px)`,
-              willChange: 'transform',
-            }}
-          >
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-[120%] object-cover object-center"
-              style={{
-                objectPosition: `center ${30 + (scrollY * 0.02)}%`,
-              }}
-            >
-              <source src="/desktopvideo.mp4" type="video/mp4" />
-            </video>
-            <div className="absolute inset-0 bg-black/30" />
-          </div>
+      {/* Main Container with Rounded Edges and Spacing */}
+      <div className="relative z-10 w-full h-full">
+        <div className="w-full h-full rounded-3xl overflow-hidden border border-white/10 relative">
+          {/* Animated Gradient Background */}
+          <BubbleBackground
+            className="absolute inset-0 z-0 rounded-3xl pointer-events-none"
+            backgroundColor="#070800"
+            blueColor="17,37,255"
+            voltColor="206,255,0"
+          />
 
           {/* Content Container */}
           <div className="relative z-10 h-full flex flex-col lg:flex-row items-center justify-center px-6 sm:px-8 lg:px-12 py-12">
