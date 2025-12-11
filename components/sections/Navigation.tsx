@@ -200,7 +200,7 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
               height={37}
               className="w-[40px] h-[40px] md:w-[37px] md:h-[37px]"
             />
-            <span className="font-sans text-base md:text-xl text-black hidden sm:block">
+            <span className="font-sans text-base md:text-xl text-black">
               <span className="font-normal">blabla</span>
               <span className="font-bold">build</span>
             </span>
