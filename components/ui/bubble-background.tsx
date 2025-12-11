@@ -41,10 +41,10 @@ function BubbleBackground({
               transform: translate(0, 0) scale(1);
             }
             33% {
-              transform: translate(50px, -30px) scale(1.1);
+              transform: translate(80px, -50px) scale(1.2);
             }
             66% {
-              transform: translate(-20px, 20px) scale(1.05);
+              transform: translate(-40px, 40px) scale(1.1);
             }
           }
           
@@ -53,10 +53,10 @@ function BubbleBackground({
               transform: translate(0, 0) scale(1);
             }
             33% {
-              transform: translate(-40px, 40px) scale(1.05);
+              transform: translate(-70px, 70px) scale(1.15);
             }
             66% {
-              transform: translate(30px, -20px) scale(0.95);
+              transform: translate(50px, -35px) scale(0.9);
             }
           }
           
@@ -65,10 +65,10 @@ function BubbleBackground({
               transform: translate(0, 0) scale(1);
             }
             33% {
-              transform: translate(-60px, 30px) scale(1.15);
+              transform: translate(-90px, 50px) scale(1.25);
             }
             66% {
-              transform: translate(20px, -40px) scale(1.05);
+              transform: translate(40px, -60px) scale(1.1);
             }
           }
           
@@ -77,27 +77,27 @@ function BubbleBackground({
               transform: translate(0, 0) scale(1);
             }
             33% {
-              transform: translate(40px, -50px) scale(1.1);
+              transform: translate(70px, -80px) scale(1.2);
             }
             66% {
-              transform: translate(-30px, 30px) scale(0.95);
+              transform: translate(-50px, 50px) scale(0.9);
             }
           }
           
           .blob-1 {
-            animation: blob-drift-1 20s ease-in-out infinite;
+            animation: blob-drift-1 10s ease-in-out infinite;
           }
           
           .blob-2 {
-            animation: blob-drift-2 25s ease-in-out infinite;
+            animation: blob-drift-2 12s ease-in-out infinite;
           }
           
           .blob-3 {
-            animation: blob-drift-3 22s ease-in-out infinite;
+            animation: blob-drift-3 11s ease-in-out infinite;
           }
           
           .blob-4 {
-            animation: blob-drift-4 18s ease-in-out infinite;
+            animation: blob-drift-4 9s ease-in-out infinite;
           }
         `}
       </style>
