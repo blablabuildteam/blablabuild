@@ -21,19 +21,19 @@ const carouselCards: CarouselCard[] = [
   {
     id: 'inzicht',
     title: 'Meer Inzicht',
-    description: 'Jij krijgt één helder overzicht van al je data, zodat je direct weet waar je kansen liggen en welke beslissingen je moet nemen.',
+    description: 'Krijg één helder overzicht van al je data, zodat je direct weet waar je kansen liggen.',
     iconPath: '/icons/insights.svg'
   },
   {
     id: 'groei',
     title: 'Meer Omzet',
-    description: 'Wij focussen op de snelste winst: het optimaliseren van de weg van bezoeker naar betalende klant. Dit zorgt direct voor meetbare groei.',
+    description: 'Optimaliseer de weg van bezoeker naar betalende klant voor direct meetbare groei.',
     iconPath: '/icons/growth.svg'
   },
   {
     id: 'snelheid',
     title: 'Meer Snelheid',
-    description: 'Onze aanpak elimineert het saaie, repetitieve werk door slimme automatisering, zodat je weer tijd hebt om te ondernemen in plaats van te administreren.',
+    description: 'Elimineer saai, repetitief werk door slimme automatisering, en win tijd om te ondernemen.',
     iconPath: '/icons/speed.svg'
   }
 ];
