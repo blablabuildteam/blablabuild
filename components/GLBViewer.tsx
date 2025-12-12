@@ -1,9 +1,9 @@
 'use client';
 
-import { Suspense, useRef, useEffect, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Suspense, useRef, useEffect, useState, useMemo } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Html } from '@react-three/drei';
-import { Mesh } from 'three';
+import { Group, Box3, Vector3, PerspectiveCamera } from 'three';
 
 interface GLBViewerProps {
   src: string;
@@ -16,7 +16,7 @@ function LoadingIndicator() {
   return (
     <Html center>
       <div className="flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-bla-lime border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-2 border-bla-lime border-t-transparent rounded-full animate-spin"></div>
       </div>
     </Html>
   );
@@ -24,39 +24,70 @@ function LoadingIndicator() {
 
 function Model({ src, autoRotate = true, rotationSpeed = 0.5 }: { src: string; autoRotate?: boolean; rotationSpeed?: number }) {
   const { scene } = useGLTF(src);
-  const meshRef = useRef<Mesh>(null);
+  const groupRef = useRef<Group>(null);
+  const { camera } = useThree();
+  
+  // Clone and center the scene
+  const { clonedScene, center, size } = useMemo(() => {
+    const clone = scene.clone(true);
+    
+    // Calculate bounding box
+    const box = new Box3().setFromObject(clone);
+    const center = new Vector3();
+    const size = new Vector3();
+    box.getCenter(center);
+    box.getSize(size);
+    
+    // Center the model at origin
+    clone.position.sub(center);
+    
+    return { clonedScene: clone, center, size };
+  }, [scene]);
 
-  // Keep original materials - no override
+  // Adjust camera to fit model
+  useEffect(() => {
+    if (camera instanceof PerspectiveCamera) {
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const fov = camera.fov * (Math.PI / 180);
+      let cameraZ = maxDim / (2 * Math.tan(fov / 2));
+      cameraZ *= 1.5; // Add some padding
+      camera.position.set(0, 0, cameraZ);
+      camera.updateProjectionMatrix();
+    }
+  }, [camera, size]);
 
   useFrame((state, delta) => {
-    if (meshRef.current && autoRotate) {
-      meshRef.current.rotation.y += delta * rotationSpeed;
+    if (groupRef.current && autoRotate) {
+      groupRef.current.rotation.y += delta * rotationSpeed;
     }
   });
 
-  return <primitive object={scene} ref={meshRef} />;
+  return (
+    <group ref={groupRef}>
+      <primitive object={clonedScene} />
+    </group>
+  );
 }
 
 function Scene({ src, autoRotate, rotationSpeed }: { src: string; autoRotate: boolean; rotationSpeed: number }) {
   return (
     <>
-      <ambientLight intensity={0.8} />
-      <directionalLight position={[10, 10, 5]} intensity={1.5} />
-      <pointLight position={[-10, -10, -5]} intensity={0.8} />
-      <pointLight position={[0, 10, 0]} intensity={0.5} />
+      {/* Neutral lighting to preserve original material colors */}
+      <ambientLight intensity={2} />
+      <directionalLight position={[5, 5, 5]} intensity={0.5} color="#ffffff" />
+      <directionalLight position={[-5, 5, -5]} intensity={0.3} color="#ffffff" />
+      
       <Suspense fallback={<LoadingIndicator />}>
         <Model src={src} autoRotate={autoRotate} rotationSpeed={rotationSpeed} />
       </Suspense>
+      
       <OrbitControls
         enableZoom={false}
         enablePan={false}
-        autoRotate={autoRotate}
-        autoRotateSpeed={rotationSpeed * 10}
+        autoRotate={false}
         minPolarAngle={Math.PI / 3}
         maxPolarAngle={Math.PI / 1.5}
       />
-      {/* Environment removed to avoid CORS issues with external HDR files */}
-      {/* Lighting is handled by ambient, directional, and point lights above */}
     </>
   );
 }
@@ -70,8 +101,8 @@ export default function GLBViewer({ src, className = '', autoRotate = true, rota
 
   if (!mounted) {
     return (
-      <div className={`w-full h-full ${className} flex items-center justify-center bg-gray-200`}>
-        <div className="w-16 h-16 border-4 border-bla-lime border-t-transparent rounded-full animate-spin"></div>
+      <div className={`w-full h-full ${className} flex items-center justify-center`}>
+        <div className="w-8 h-8 border-2 border-bla-lime border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -80,7 +111,7 @@ export default function GLBViewer({ src, className = '', autoRotate = true, rota
     <div className={`w-full h-full ${className}`}>
       <Canvas
         camera={{ position: [0, 0, 5], fov: 50 }}
-        gl={{ antialias: true, alpha: true }}
+        gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
         className="w-full h-full"
       >
         <Scene src={src} autoRotate={autoRotate} rotationSpeed={rotationSpeed} />
