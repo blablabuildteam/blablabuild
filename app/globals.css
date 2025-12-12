@@ -225,6 +225,7 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     font-family: 'Matter', system-ui, sans-serif;
     overflow-x: hidden;
+    overflow-y: visible;
     overscroll-behavior-x: none;
     overscroll-behavior-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -236,8 +237,6 @@
     padding: 0;
     /* Improve mobile scroll responsiveness */
     -webkit-tap-highlight-color: transparent;
-    /* Smooth scrolling on mobile */
-    scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -295,6 +294,7 @@
 /* HTML base styles */
 html {
   overflow-x: hidden;
+  overflow-y: auto;
   overscroll-behavior-x: none;
   overscroll-behavior-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -306,6 +306,8 @@ html {
   box-sizing: border-box;
   /* Improve mobile scroll performance and responsiveness */
   -webkit-tap-highlight-color: transparent;
+  /* Smooth scrolling (anchors, scrollTo) */
+  scroll-behavior: smooth;
 }
 
 *, *::before, *::after {
@@ -371,3 +373,12 @@ html {
   animation: borderBeamRotate 3s linear infinite;
 }
 
+
+
+/* Prevent a “second” scrollbar on some browsers that render both html + body scrollbars */
+body::-webkit-scrollbar {
+  display: none;
+}
+body {
+  scrollbar-width: none; /* Firefox */
+}
