@@ -3,30 +3,36 @@
 import * as React from 'react';
 import { ArrowLeft01Icon, ArrowRight01Icon } from 'hugeicons-react';
 
-interface CarouselProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
 interface CarouselContextValue {
   currentIndex: number;
-  setCurrentIndex: (index: number) => void;
   totalSlides: number;
+  goNext: () => void;
+  goPrev: () => void;
+  registerSlides: (count: number) => void;
 }
 
 const CarouselContext = React.createContext<CarouselContextValue | undefined>(undefined);
 
-export function Carousel({ children, className = '' }: CarouselProps) {
+export function Carousel({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [totalSlides, setTotalSlides] = React.useState(0);
 
-  React.useEffect(() => {
-    const slides = React.Children.count(children);
-    setTotalSlides(slides);
-  }, [children]);
+  const goNext = React.useCallback(() => {
+    if (totalSlides === 0) return;
+    setCurrentIndex(prev => (prev + 1) % totalSlides);
+  }, [totalSlides]);
+
+  const goPrev = React.useCallback(() => {
+    if (totalSlides === 0) return;
+    setCurrentIndex(prev => (prev - 1 + totalSlides) % totalSlides);
+  }, [totalSlides]);
+
+  const registerSlides = React.useCallback((count: number) => {
+    setTotalSlides(count);
+  }, []);
 
   return (
-    <CarouselContext.Provider value={{ currentIndex, setCurrentIndex, totalSlides }}>
+    <CarouselContext.Provider value={{ currentIndex, totalSlides, goNext, goPrev, registerSlides }}>
       <div className={`relative ${className}`}>
         {children}
       </div>
@@ -38,98 +44,132 @@ export function CarouselContent({ children, className = '' }: { children: React.
   const context = React.useContext(CarouselContext);
   if (!context) throw new Error('CarouselContent must be used within Carousel');
 
-  const { currentIndex, totalSlides } = context;
+  const { currentIndex, totalSlides, registerSlides } = context;
   const slides = React.Children.toArray(children);
 
-  // Calculate which cards to show (previous, current, next)
-  const getCardIndex = (offset: number) => {
-    const index = currentIndex + offset;
-    if (index < 0) return totalSlides - 1;
-    if (index >= totalSlides) return 0;
-    return index;
+  // Register slide count on mount and when children change
+  React.useEffect(() => {
+    registerSlides(slides.length);
+  }, [slides.length, registerSlides]);
+
+  // Calculate offset for infinite loop - finds shortest path
+  const getOffset = (cardIndex: number): number => {
+    if (totalSlides === 0) return cardIndex;
+    
+    let offset = cardIndex - currentIndex;
+    
+    // Wrap around for infinite loop - take shortest path
+    const halfSlides = totalSlides / 2;
+    if (offset > halfSlides) offset -= totalSlides;
+    if (offset < -halfSlides) offset += totalSlides;
+    
+    return offset;
   };
 
-  const prevCardIndex = getCardIndex(-1);
-  const nextCardIndex = getCardIndex(1);
-
-  // Fixed rotation values for playful tilt (no increment on navigation)
+  // Fixed rotation values (matching original)
   const leftRotation = -4;
   const centerRotation = 2;
   const rightRotation = 4;
 
+  // Get styles based on offset from center
+  const getCardStyles = (offset: number): React.CSSProperties => {
+    const baseTransition = 'all 500ms cubic-bezier(0.4, 0, 0.2, 1)';
+    
+    if (offset === 0) {
+      // Center card - scaled up, slight rotation
+      return {
+        transform: `translateX(-50%) translateY(-50%) scale(1.2) rotate(${centerRotation}deg)`,
+        opacity: 1,
+        zIndex: 20,
+        transition: baseTransition,
+      };
+    } else if (offset === -1) {
+      // Left card - rotated left, faded, masked
+      return {
+        transform: `translateX(calc(-50% - 70%)) translateY(-50%) rotate(${leftRotation}deg)`,
+        opacity: 0.5,
+        zIndex: 10,
+        maskImage: 'linear-gradient(to right, transparent, black 40%)',
+        WebkitMaskImage: 'linear-gradient(to right, transparent, black 40%)',
+        transition: baseTransition,
+      };
+    } else if (offset === 1) {
+      // Right card - rotated right, faded, masked
+      return {
+        transform: `translateX(calc(-50% + 70%)) translateY(-50%) rotate(${rightRotation}deg)`,
+        opacity: 0.5,
+        zIndex: 10,
+        maskImage: 'linear-gradient(to left, transparent, black 40%)',
+        WebkitMaskImage: 'linear-gradient(to left, transparent, black 40%)',
+        transition: baseTransition,
+      };
+    } else {
+      // Hidden cards (off-screen) - for smooth infinite loop
+      const direction = offset > 0 ? 1 : -1;
+      return {
+        transform: `translateX(calc(-50% + ${direction * 150}%)) translateY(-50%) rotate(0deg)`,
+        opacity: 0,
+        zIndex: 0,
+        pointerEvents: 'none',
+        transition: baseTransition,
+      };
+    }
+  };
+
+  // Get width class based on offset (matching original widths)
+  const getWidthClass = (offset: number): string => {
+    if (offset === 0) {
+      return 'w-[40%] sm:w-[40%] md:w-[40%]';
+    }
+    return 'w-[38%] sm:w-[32%] md:w-[30%]';
+  };
+
   return (
     <div className={`relative overflow-visible ${className}`}>
       <div 
-        className="flex items-center justify-center gap-0 relative w-full pt-5 pb-10 md:pt-0 md:pb-0" 
+        className="relative w-full pt-5 pb-10 md:pt-0 md:pb-0"
         style={{ 
           margin: '0 auto',
+          minHeight: '280px',
         }}
       >
-        {/* Previous card (left) with fade */}
-        <div 
-          className="carousel-side-card w-[38%] sm:w-[32%] md:w-[30%] flex-shrink-0 relative transition-opacity duration-500 ease-in-out"
-          style={{
-            opacity: 0.5,
-            maskImage: 'linear-gradient(to right, transparent, black 40%)',
-            WebkitMaskImage: 'linear-gradient(to right, transparent, black 40%)',
-            transform: `rotate(${leftRotation}deg)`,
-            marginRight: '-6%',
-            zIndex: 10,
-          }}
-        >
-          {slides[prevCardIndex]}
-        </div>
-        
-        {/* Current card (center) - highlighted, 20% larger (scale 1.2), and overlapping */}
-        <div 
-          className="carousel-active-card w-[40%] sm:w-[40%] md:w-[40%] flex-shrink-0 opacity-100 z-20 relative transition-opacity duration-500 ease-in-out"
-          style={{
-            transform: `scale(1.2) rotate(${centerRotation}deg)`,
-            transformOrigin: 'center',
-          }}
-        >
-          {slides[currentIndex]}
-        </div>
-        
-        {/* Next card (right) with fade */}
-        <div 
-          className="carousel-side-card w-[38%] sm:w-[32%] md:w-[30%] flex-shrink-0 relative transition-opacity duration-500 ease-in-out"
-          style={{
-            opacity: 0.5,
-            maskImage: 'linear-gradient(to left, transparent, black 40%)',
-            WebkitMaskImage: 'linear-gradient(to left, transparent, black 40%)',
-            transform: `rotate(${rightRotation}deg)`,
-            marginLeft: '-6%',
-            zIndex: 10,
-          }}
-        >
-          {slides[nextCardIndex]}
-        </div>
+        {slides.map((slide, index) => {
+          const offset = getOffset(index);
+          const styles = getCardStyles(offset);
+          const widthClass = getWidthClass(offset);
+          const isActive = offset === 0;
+          
+          return (
+            <div
+              key={index}
+              className={`absolute left-1/2 top-1/2 ${widthClass} ${isActive ? 'carousel-active-card' : 'carousel-side-card'}`}
+              style={styles}
+            >
+              {slide}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-export function CarouselItem({ children, className = '', isActive = false }: { children: React.ReactNode; className?: string; isActive?: boolean }) {
-  return <div className={className} data-active={isActive}>{children}</div>;
+export function CarouselItem({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return <div className={className}>{children}</div>;
 }
 
 export function CarouselPrevious({ className = '' }: { className?: string }) {
   const context = React.useContext(CarouselContext);
   if (!context) throw new Error('CarouselPrevious must be used within Carousel');
 
-  const { currentIndex, setCurrentIndex, totalSlides } = context;
-
-  const handlePrev = () => {
-    setCurrentIndex(currentIndex > 0 ? currentIndex - 1 : totalSlides - 1);
-  };
+  const { totalSlides, goPrev } = context;
 
   if (totalSlides <= 1) return null;
 
   return (
     <button
-      onClick={handlePrev}
-      className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white/30 transition-all ${className}`}
+      onClick={goPrev}
+      className={`absolute left-0 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white/30 transition-all ${className}`}
       aria-label="Previous slide"
     >
       <ArrowLeft01Icon className="w-5 h-5 text-bla-lime" />
@@ -141,18 +181,14 @@ export function CarouselNext({ className = '' }: { className?: string }) {
   const context = React.useContext(CarouselContext);
   if (!context) throw new Error('CarouselNext must be used within Carousel');
 
-  const { currentIndex, setCurrentIndex, totalSlides } = context;
-
-  const handleNext = () => {
-    setCurrentIndex(currentIndex < totalSlides - 1 ? currentIndex + 1 : 0);
-  };
+  const { totalSlides, goNext } = context;
 
   if (totalSlides <= 1) return null;
 
   return (
     <button
-      onClick={handleNext}
-      className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white/30 transition-all ${className}`}
+      onClick={goNext}
+      className={`absolute right-0 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white/30 transition-all ${className}`}
       aria-label="Next slide"
     >
       <ArrowRight01Icon className="w-5 h-5 text-bla-lime" />
