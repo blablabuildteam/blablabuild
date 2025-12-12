@@ -149,8 +149,8 @@ export default function CasesSection() {
   }, []);
 
   const getBadgeColor = (badge: BadgeType): string => {
-    // All badges have the same styling: smoky black background with volt (lime) text
-    return 'bg-black/80 text-bla-lime';
+    // All badges have the same styling: footer-style dark background with volt (lime) text
+    return 'bg-bla-dark text-bla-lime';
   };
 
   return (
@@ -250,9 +250,17 @@ export default function CasesSection() {
                       {card.badges.map((badge) => (
                         <span
                           key={badge}
-                          className={`px-3 py-1 rounded-full text-xs md:text-sm font-medium ${getBadgeColor(badge)}`}
+                          className={`px-3 py-1 rounded-lg text-xs md:text-sm font-medium ${getBadgeColor(badge)} relative`}
                         >
-                          {badge}
+                          {/* Grain effect overlay */}
+                          <div 
+                            className="absolute inset-0 rounded-lg opacity-[0.2] pointer-events-none"
+                            style={{
+                              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+                              backgroundSize: '200px 200px',
+                            }}
+                          />
+                          <span className="relative z-10">{badge}</span>
                         </span>
                       ))}
                     </div>
