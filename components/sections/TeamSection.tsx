@@ -162,12 +162,12 @@ export default function TeamSection() {
                   {/* Mobile: Row layout with image left, text right */}
                   <div className="flex flex-row md:flex-col gap-4 md:gap-0">
                   {/* Video display - Left on mobile, top on desktop */}
-                  <div className="flex-shrink-0 w-[160px] md:w-full aspect-[160/200] md:aspect-[416/529] rounded-xl overflow-hidden md:mb-4 bg-white relative">
+                  <div className="flex-shrink-0 w-[35%] md:w-full aspect-[160/200] md:aspect-[416/529] rounded-xl overflow-hidden md:mb-4 bg-white relative">
                     <FounderVideo videoSrc={founder.video} name={founder.name} backgroundImage={founder.backgroundImage} />
                   </div>
 
                   {/* Info - Right on mobile, below on desktop */}
-                  <div className="flex-1 md:mt-6 min-w-0 flex flex-col">
+                  <div className="w-[65%] md:w-full md:mt-6 min-w-0 flex flex-col">
                     <div className="flex items-start md:items-center gap-2 mb-2">
                       <h3 className="font-host font-bold text-base md:text-lg lg:text-xl text-text-primary">
                         {founder.name}
