@@ -1,7 +1,16 @@
 import posthog from 'posthog-js';
+import { hasConsent, trackGAEvent } from './consent';
 
 export const initAnalytics = () => {
   if (typeof window === 'undefined') return;
+  
+  // Only initialize PostHog if user has given analytics consent
+  if (!hasConsent('analytics')) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Analytics] Not initialized: No consent given');
+    }
+    return;
+  }
   
   const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
   
@@ -19,6 +28,10 @@ export const initAnalytics = () => {
       loaded: (posthog) => {
         if (process.env.NODE_ENV === 'development') posthog.debug();
       },
+      // Respect Do Not Track
+      respect_dnt: true,
+      // Disable automatic pageview tracking (we handle it manually)
+      capture_pageview: false,
     });
   } catch (error) {
     console.error('[Analytics] Failed to initialize PostHog:', error);
@@ -28,18 +41,33 @@ export const initAnalytics = () => {
 export const trackEvent = (eventName: string, properties?: Record<string, any>) => {
   if (typeof window === 'undefined') return;
   
-  // Only track if PostHog is configured
-  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
-  
-  try {
-    // Check if PostHog is initialized (has been loaded)
-    if (posthog && typeof posthog.capture === 'function') {
-      posthog.capture(eventName, properties);
-    }
-  } catch (error) {
-    // Silently fail in production, log in development
+  // Check consent before tracking
+  if (!hasConsent('analytics')) {
     if (process.env.NODE_ENV === 'development') {
-      console.warn('[Analytics] Failed to track event:', eventName, error);
+      console.log('[Analytics] Event not tracked (no consent):', eventName);
+    }
+    return;
+  }
+  
+  // Track in PostHog if configured
+  if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+    try {
+      if (posthog && typeof posthog.capture === 'function') {
+        posthog.capture(eventName, properties);
+      }
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('[Analytics] Failed to track event in PostHog:', eventName, error);
+      }
+    }
+  }
+  
+  // Also track in Google Analytics
+  try {
+    trackGAEvent(eventName, 'general', properties?.label, properties?.value);
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[Analytics] Failed to track event in GA:', eventName, error);
     }
   }
 };
@@ -49,5 +77,21 @@ export const trackWidgetEvent = (sessionId: string, event: string, data?: any) =
     session_id: sessionId,
     ...data,
   });
+  
+  // Also send to GA with widget category
+  if (hasConsent('analytics')) {
+    trackGAEvent(event, 'chat_widget', sessionId);
+  }
 };
+
+// Track page view (call from components that need it)
+export const trackPageView = (url: string) => {
+  if (!hasConsent('analytics')) return;
+  
+  // PostHog
+  if (process.env.NEXT_PUBLIC_POSTHOG_KEY && posthog && typeof posthog.capture === 'function') {
+    posthog.capture('$pageview', { $current_url: url });
+  }
+};
+
 

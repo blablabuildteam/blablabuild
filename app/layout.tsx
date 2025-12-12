@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import PasswordGate from "@/components/PasswordGate";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
+import CookieBanner from "@/components/CookieBanner";
 
 export const metadata: Metadata = {
   title: "blablabuild | AI Innovaties voor Snelle Groei",
@@ -25,9 +28,13 @@ export default function RootLayout({
   return (
     <html lang="nl">
       <body>
+        <Suspense fallback={null}>
+          <GoogleAnalytics />
+        </Suspense>
         <PasswordGate>
           {children}
         </PasswordGate>
+        <CookieBanner />
       </body>
     </html>
   );

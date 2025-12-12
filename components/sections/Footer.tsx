@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 import PrivacyModal from '@/components/ui/privacy-modal';
+import CookieSettingsButton from '@/components/CookieSettingsButton';
 
 const footerData = {
   heading: 'blablabuild',
@@ -135,7 +136,7 @@ export default function Footer() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <nav className="flex flex-wrap gap-x-6 gap-y-3">
+            <nav className="flex flex-wrap items-center gap-x-6 gap-y-3">
               {footerData.navLinks.map((link) => (
                 <a
                   key={link.label}
@@ -146,6 +147,7 @@ export default function Footer() {
                   {link.label}
                 </a>
               ))}
+              <CookieSettingsButton />
             </nav>
 
             <div className="text-text-muted text-sm">

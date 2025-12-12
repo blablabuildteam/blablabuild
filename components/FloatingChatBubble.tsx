@@ -14,6 +14,22 @@ interface Message {
   timestamp: Date;
 }
 
+// Helper to render markdown bold (**text** or *text*) as <strong>
+function renderBoldText(text: string): React.ReactNode {
+  // First handle **text**, then *text*
+  // Pattern matches **text** or *text* (but not inside already matched **)
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+      return <strong key={i} className="font-semibold">{part.slice(1, -1)}</strong>;
+    }
+    return part;
+  });
+}
+
 export default function FloatingChatBubble() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -50,6 +66,15 @@ export default function FloatingChatBubble() {
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    if (contentRef.current && messages.length > 0) {
+      setTimeout(() => {
+        contentRef.current?.scrollTo({ top: contentRef.current.scrollHeight, behavior: 'smooth' });
+      }, 100);
+    }
+  }, [messages, isLoading]);
 
   // Show bubble only after scrolling past the header section
   useEffect(() => {
@@ -101,38 +126,48 @@ export default function FloatingChatBubble() {
     };
   }, [isVisible]);
 
-  // Initialize chat session
-  const initializeSession = async (initialIdea?: string) => {
+  // Initialize chat session and immediately send the user's first message
+  const initializeSession = async (initialIdea: string) => {
     try {
-      const response = await fetch('/api/init', {
+      // First, show the user's message immediately
+      setMessages([{ role: 'user', content: initialIdea, timestamp: new Date() }]);
+      setIsLoading(true);
+      setLoadingMessage('Je uitdaging wordt geanalyseerd...');
+
+      // Create session by sending the first message directly to /api/chat
+      // This way the AI responds TO the user's input, not with a generic welcome
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          utm_source: new URLSearchParams(window.location.search).get('utm_source'),
-          utm_medium: new URLSearchParams(window.location.search).get('utm_medium'),
-          utm_campaign: new URLSearchParams(window.location.search).get('utm_campaign'),
+          message: initialIdea,
+          // No sessionId - will create new one
         }),
       });
 
       const data: ChatResponse = await response.json();
       setSessionId(data.sessionId);
       setCurrentQuestion(data.message);
-      setMessages([{ role: 'assistant', content: data.message, timestamp: new Date() }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.message, timestamp: new Date() }]);
       setProgress(data.progress || 0);
+      setQuestionNumber(1);
       if (data.step) {
         setCurrentStep(data.step);
       }
-
-      // If we have an initial idea, send it as the first message
-      if (initialIdea) {
-        setTimeout(() => {
-          setInput(initialIdea);
-          // Will be sent by the next tick
-          setTimeout(() => sendMessageWithValue(initialIdea, data.sessionId), 100);
-        }, 500);
+      if (data.options) {
+        setQuestionOptions(data.options);
+      }
+      if (data.complete) {
+        setIsComplete(true);
+        setCurrentStep('complete');
+        setShowLeadForm(true);
       }
     } catch (error) {
       console.error('Error initializing session:', error);
+      setCurrentQuestion('Er ging iets mis bij het starten. Probeer het opnieuw.');
+    } finally {
+      setIsLoading(false);
+      setLoadingMessage('Verwerken...');
     }
   };
 
@@ -228,7 +263,7 @@ export default function FloatingChatBubble() {
       setQuestionNumber(userMessageCount);
       
       setTimeout(() => {
-        contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+        contentRef.current?.scrollTo({ top: contentRef.current.scrollHeight, behavior: 'smooth' });
       }, 100);
       
       if (data.complete) {
@@ -471,7 +506,7 @@ export default function FloatingChatBubble() {
                           />
                           <button
                             type="submit"
-                            className="absolute right-2 md:right-3 bg-bla-lime rounded-[12px] px-4 md:px-6 py-2 md:py-2.5 flex items-center justify-center hover:bg-bla-lime/90 transition-all hover:scale-105 font-host font-normal text-base md:text-[18px] text-chat-user-text min-w-[100px] md:min-w-[128px]"
+                            className="absolute right-2 md:right-3 bg-bla-lime rounded-full px-4 md:px-6 py-2 md:py-2.5 flex items-center justify-center hover:bg-bla-lime/90 transition-all hover:scale-105 font-host font-normal text-base md:text-[18px] text-chat-user-text min-w-[100px] md:min-w-[128px]"
                           >
                             Verstuur
                           </button>
@@ -480,256 +515,144 @@ export default function FloatingChatBubble() {
                     </div>
                   ) : (
                     /* Chat View */
-                    <div className="flex flex-col flex-1 relative">
+                    <div className="flex flex-col h-full overflow-hidden relative">
                       {/* Chat Header */}
-                      <div className="p-4 border-b border-black/10 bg-chat-header-bg flex items-center gap-3">
+                      <div className="flex-shrink-0 p-4 border-b border-black/10 bg-chat-header-bg flex items-center gap-3 z-10">
                         <div className="w-8 h-8 bg-bla-lime rounded-lg flex items-center justify-center">
                           <Image src="/icon.svg" alt="" width={20} height={20} className="w-5 h-5" />
                         </div>
                         <div className="flex-1">
                           <h3 className="font-host font-medium text-sm text-black">AI Intake</h3>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-black/60">
-                              Vraag {actualQuestionNumber} van ~{maxQuestions}
-                            </span>
-                            <div className="flex-1 h-1 bg-black/10 rounded-full overflow-hidden max-w-[100px]">
-                              <motion.div 
-                                className="h-full bg-bla-lime"
-                                initial={{ width: 0 }}
-                                animate={{ width: `${progress}%` }}
-                                transition={{ duration: 0.5 }}
-                              />
-                            </div>
-                          </div>
                         </div>
                       </div>
 
-                      {/* Chat Content */}
-                      <div ref={contentRef} className="flex-1 overflow-y-auto p-4 pb-28 space-y-4">
-                        {/* Loading State */}
-                        {isLoading && !currentQuestion && (
-                          <div className="bg-chat-assistant-bg rounded-2xl p-4">
-                            <div className="flex items-center gap-3 mb-3">
-                              <BlablablaAnimation size="md" />
-                              <p className="text-sm font-light text-black">{loadingMessage}</p>
-                            </div>
-                            <div className="space-y-2">
-                              <div className="h-3 bg-bla-border rounded w-3/4 animate-pulse" />
-                              <div className="h-3 bg-bla-border rounded w-full animate-pulse" />
-                              <div className="h-3 bg-bla-border rounded w-5/6 animate-pulse" />
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Email Prompt */}
-                        {showEmailPrompt && !emailCaptured && !isComplete && (
+                      {/* Chat Content - iMessage Style - Scrollable */}
+                      <div 
+                        ref={contentRef} 
+                        className="flex-1 overflow-y-auto overscroll-contain p-4 pb-36 space-y-3"
+                        style={{ minHeight: 0, WebkitOverflowScrolling: 'touch' }}
+                      >
+                        {/* Show messages only when not showing lead form */}
+                        {!(isComplete && showLeadForm) && messages.map((message, idx) => (
                           <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="bg-bla-lime/10 border border-bla-lime/30 rounded-2xl p-4"
+                            key={idx}
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 0.2, delay: idx * 0.05 }}
+                            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                           >
-                            <div className="flex items-start gap-3">
-                              <Mail className="w-5 h-5 text-black flex-shrink-0 mt-0.5" />
-                              <div className="flex-1">
-                                <p className="text-sm font-light text-black mb-2">
-                                  Laat je email achter zodat we je intake kunnen voortzetten als je tussendoor stopt.
-                                </p>
-                                <div className="flex gap-2">
-                                  <input
-                                    type="email"
-                                    value={leadForm.email}
-                                    onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-                                    placeholder="jouw@email.nl"
-                                    className="flex-1 px-3 py-2 border border-chat-input-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
-                                    onKeyPress={(e) => {
-                                      if (e.key === 'Enter' && leadForm.email.trim()) {
-                                        handleEarlyEmailCapture();
-                                      }
-                                    }}
-                                  />
-                                  <button
-                                    onClick={handleEarlyEmailCapture}
-                                    disabled={!leadForm.email.trim()}
-                                    className="px-4 py-2 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-full text-xs font-medium transition-all disabled:opacity-40"
-                                  >
-                                    Opslaan
-                                  </button>
-                                  <button
-                                    onClick={() => setShowEmailPrompt(false)}
-                                    className="px-3 py-2 text-xs text-black/60 hover:text-black transition-colors"
-                                  >
-                                    Later
-                                  </button>
-                                </div>
+                            <div
+                              className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                                message.role === 'user'
+                                  ? 'bg-bla-lime text-black rounded-br-md'
+                                  : 'bg-chat-assistant-bg border border-chat-assistant-border text-black rounded-bl-md'
+                              }`}
+                            >
+                              <p className="text-sm font-light leading-relaxed whitespace-pre-wrap">
+                                {renderBoldText(message.content)}
+                              </p>
+                            </div>
+                          </motion.div>
+                        ))}
+
+                        {/* Loading State - hide when showing lead form */}
+                        {isLoading && !(isComplete && showLeadForm) && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex justify-start"
+                          >
+                            <div className="max-w-[80%] bg-chat-assistant-bg border border-chat-assistant-border rounded-2xl rounded-bl-md px-4 py-3">
+                              <div className="flex items-center gap-3">
+                                <BlablablaAnimation size="md" />
+                                <p className="text-sm font-light text-black/60">{loadingMessage}</p>
                               </div>
                             </div>
                           </motion.div>
                         )}
 
-                        {/* Current Question */}
-                        {currentQuestion && !isComplete && (
+                        {/* Multiple Choice Options - Only show after last assistant message */}
+                        {!isComplete && !isLoading && questionOptions && questionOptions.length > 0 && (
                           <motion.div
-                            key={`question-${questionKey}`}
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="space-y-4"
+                            transition={{ delay: 0.2 }}
+                            className="space-y-2 pl-4"
                           >
-                            {currentQuestion.split('\n\n').filter(q => q.trim()).map((part, idx) => (
-                              <motion.div 
-                                key={`${currentQuestion.substring(0, 30)}-${idx}`}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: idx * 0.05, duration: 0.3 }}
-                                className="bg-chat-assistant-bg rounded-2xl border border-chat-assistant-border p-4"
-                              >
-                                <p className="text-sm font-light leading-relaxed text-black whitespace-pre-wrap">
-                                  {part}
-                                </p>
-                              </motion.div>
-                            ))}
-
-                            {/* Multiple Choice Options */}
-                            {questionOptions && questionOptions.length > 0 && (
-                              <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3 }}
-                                className="space-y-2"
-                              >
-                                <p className="text-xs text-black/60 mb-2">
-                                  Kies een optie of typ je eigen antwoord:
-                                </p>
-                                <div className="grid grid-cols-1 gap-2">
-                                  {questionOptions.map((option, idx) => (
-                                    <motion.button
-                                      key={idx}
-                                      whileHover={{ scale: 1.02 }}
-                                      whileTap={{ scale: 0.98 }}
-                                      onClick={() => {
-                                        setInput(option);
-                                        setTimeout(() => sendMessage(), 50);
-                                      }}
-                                      disabled={isLoading}
-                                      className="w-full px-4 py-3 text-left bg-surface-overlay hover:bg-surface border border-chat-input-border hover:border-bla-lime/50 rounded-xl text-sm font-light text-black transition-all disabled:opacity-40"
-                                    >
-                                      {option}
-                                    </motion.button>
-                                  ))}
-                                </div>
-                              </motion.div>
-                            )}
+                            <p className="text-xs text-black/60 mb-2">
+                              Kies een optie of typ je eigen antwoord:
+                            </p>
+                            <div className="grid grid-cols-1 gap-2">
+                              {questionOptions.map((option, idx) => (
+                                <motion.button
+                                  key={idx}
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                  onClick={() => {
+                                    setInput(option);
+                                    setTimeout(() => sendMessage(), 50);
+                                  }}
+                                  disabled={isLoading}
+                                  className="w-full px-4 py-3 text-left bg-surface-overlay hover:bg-surface border border-chat-input-border hover:border-bla-lime/50 rounded-xl text-sm font-light text-black transition-all disabled:opacity-40"
+                                >
+                                  {option}
+                                </motion.button>
+                              ))}
+                            </div>
                           </motion.div>
                         )}
 
-                        {/* Previous Answers */}
-                        {messages.length > 1 && !isComplete && (
-                          <div className="space-y-2 mt-4 pt-4 border-t border-black/10">
-                            <p className="text-xs text-black/60 mb-2">Eerdere antwoorden:</p>
-                            {messages.slice(0, -1).reverse().map((message, idx) => (
-                              message.role === 'user' && (
-                                <div
-                                  key={idx}
-                                  className="bg-chat-user-bg rounded-xl border border-chat-user-border p-3 shadow-sm"
-                                >
-                                  <div className="flex items-start gap-2">
-                                    <div className="w-4 h-4 bg-black/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                      <Check className="w-2.5 h-2.5 text-black" />
-                                    </div>
-                                    <p className="text-xs font-medium text-black leading-relaxed flex-1">
-                                      {message.content}
-                                    </p>
-                                  </div>
-                                </div>
-                              )
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Complete State - Lead Form */}
+                        {/* Complete State - Show last advice message + Simple Contact Form */}
                         {isComplete && showLeadForm && (
                           <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             className="space-y-4"
                           >
-                            <div className="bg-chat-assistant-bg rounded-2xl border border-bla-lime/30 p-6 text-center">
-                              <div className="w-12 h-12 bg-bla-lime/20 border border-bla-lime/30 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <Check className="w-6 h-6 text-black" />
+                            {/* Show the last AI message (the advice) */}
+                            {messages.length > 0 && messages[messages.length - 1].role === 'assistant' && (
+                              <div className="bg-chat-assistant-bg border border-chat-assistant-border rounded-2xl rounded-bl-md px-4 py-3">
+                                <p className="text-sm font-light leading-relaxed whitespace-pre-wrap text-black">
+                                  {renderBoldText(messages[messages.length - 1].content)}
+                                </p>
                               </div>
-                              <h3 className="text-lg font-medium mb-2 text-black">Analyse Compleet! 🎉</h3>
-                              <p className="text-sm font-light text-black leading-relaxed">
-                                {currentQuestion || 'Laat je gegevens achter zodat we de volledige analyse kunnen sturen.'}
-                              </p>
-                            </div>
+                            )}
 
-                            {/* Lead Form */}
-                            <div className="bg-chat-assistant-bg rounded-2xl border border-chat-input-border p-4 space-y-3">
-                              <div className="flex items-center gap-2 mb-3">
-                                <User className="w-4 h-4 text-black/60" />
-                                <h4 className="text-sm font-medium text-black">Jouw gegevens</h4>
+                            {/* Simple Contact Form */}
+                            <div className="bg-chat-assistant-bg rounded-2xl border border-bla-lime/30 p-4 space-y-3">
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-6 h-6 bg-bla-lime/20 border border-bla-lime/30 rounded-full flex items-center justify-center">
+                                  <Check className="w-3 h-3 text-black" />
+                                </div>
+                                <h3 className="text-sm font-medium text-black">Laten we kennismaken!</h3>
                               </div>
 
                               <div>
-                                <label className="flex items-center gap-2 text-xs text-black/60 mb-1">
-                                  <User className="w-3 h-3" /> Naam <span className="text-red-400">*</span>
-                                </label>
                                 <input
                                   type="text"
                                   value={leadForm.name}
                                   onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                                  placeholder="Jan Jansen"
-                                  className="w-full px-4 py-2.5 border border-chat-input-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
+                                  placeholder="Je naam"
+                                  className="w-full px-4 py-2.5 border border-chat-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
                                   disabled={isSubmittingLead}
                                 />
                               </div>
 
                               <div>
-                                <label className="flex items-center gap-2 text-xs text-black/60 mb-1">
-                                  <Mail className="w-3 h-3" /> Email <span className="text-red-400">*</span>
-                                </label>
                                 <input
                                   type="email"
                                   value={leadForm.email}
                                   onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-                                  placeholder="jouw@email.nl"
-                                  className="w-full px-4 py-2.5 border border-chat-input-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
-                                  disabled={isSubmittingLead}
-                                />
-                              </div>
-
-                              <div>
-                                <label className="flex items-center gap-2 text-xs text-black/60 mb-1">
-                                  <Building className="w-3 h-3" /> Bedrijfsnaam
-                                </label>
-                                <input
-                                  type="text"
-                                  value={leadForm.companyName}
-                                  onChange={(e) => setLeadForm({ ...leadForm, companyName: e.target.value })}
-                                  placeholder="Jouw Bedrijf B.V."
-                                  className="w-full px-4 py-2.5 border border-chat-input-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
-                                  disabled={isSubmittingLead}
-                                />
-                              </div>
-
-                              <div>
-                                <label className="flex items-center gap-2 text-xs text-black/60 mb-1">
-                                  <Phone className="w-3 h-3" /> Telefoonnummer
-                                </label>
-                                <input
-                                  type="tel"
-                                  value={leadForm.phone}
-                                  onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
-                                  placeholder="+31 6 12345678"
-                                  className="w-full px-4 py-2.5 border border-chat-input-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
+                                  placeholder="Je e-mailadres"
+                                  className="w-full px-4 py-2.5 border border-chat-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
                                   disabled={isSubmittingLead}
                                 />
                               </div>
 
                               <button
                                 onClick={async () => {
-                                  if (!leadForm.name.trim() || !leadForm.email.trim()) {
-                                    alert('Naam en email zijn verplicht');
+                                  if (!leadForm.email.trim()) {
+                                    alert('Email is verplicht');
                                     return;
                                   }
 
@@ -742,16 +665,16 @@ export default function FloatingChatBubble() {
                                         sessionId,
                                         name: leadForm.name,
                                         email: leadForm.email,
-                                        companyName: leadForm.companyName,
-                                        phone: leadForm.phone,
-                                        role: leadForm.role,
-                                        notes: leadForm.notes,
                                       }),
                                     });
 
                                     if (!response.ok) throw new Error('Failed to save lead');
 
-                                    setCurrentQuestion(`Perfect ${leadForm.name}! Ik stuur de samenvatting en gouden tip binnen enkele minuten naar ${leadForm.email}.\n\nEen van ons (Daniel, Kevin of Xennith) neemt binnenkort persoonlijk contact met je op.\n\nTot snel!`);
+                                    setMessages(prev => [...prev, { 
+                                      role: 'assistant', 
+                                      content: `Top${leadForm.name ? ` ${leadForm.name}` : ''}! We nemen snel contact met je op via ${leadForm.email}.\n\nTot snel! 🎉`,
+                                      timestamp: new Date() 
+                                    }]);
                                     setShowLeadForm(false);
                                   } catch (error) {
                                     console.error('Error saving lead:', error);
@@ -760,8 +683,8 @@ export default function FloatingChatBubble() {
                                     setIsSubmittingLead(false);
                                   }
                                 }}
-                                disabled={!leadForm.name.trim() || !leadForm.email.trim() || isSubmittingLead}
-                                className="w-full px-6 py-3 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-full text-sm font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-40 mt-4"
+                                disabled={!leadForm.email.trim() || isSubmittingLead}
+                                className="w-full px-5 py-2.5 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-full text-sm font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-40"
                               >
                                 {isSubmittingLead ? (
                                   <>
@@ -770,42 +693,37 @@ export default function FloatingChatBubble() {
                                   </>
                                 ) : (
                                   <>
-                                    <span>Verstuur & Ontvang Analyse</span>
+                                    <span>Verstuur</span>
                                     <ArrowRight className="w-4 h-4" />
                                   </>
                                 )}
                               </button>
 
-                              {/* Privacy Notice */}
-                              <p className="text-[10px] text-black/50 text-center mt-3 leading-relaxed">
-                                🔒 Je gegevens worden veilig verwerkt en alleen gebruikt om contact met je op te nemen. 
-                                We delen je gegevens nooit met derden. Door te versturen ga je akkoord met onze privacyvoorwaarden.
+                              <p className="text-[10px] text-black/40 text-center leading-relaxed">
+                                🔒 Je gegevens worden veilig verwerkt.
                               </p>
                             </div>
                           </motion.div>
                         )}
 
-                        {/* Final Success */}
+                        {/* Final Success Indicator */}
                         {isComplete && !showLeadForm && (
                           <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="bg-chat-assistant-bg rounded-2xl border border-bla-lime/30 p-6 text-center"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex justify-center py-4"
                           >
-                            <div className="w-12 h-12 bg-bla-lime/20 border border-bla-lime/30 rounded-full flex items-center justify-center mx-auto mb-3">
-                              <Check className="w-6 h-6 text-black" />
+                            <div className="flex items-center gap-2 px-4 py-2 bg-bla-lime/20 border border-bla-lime/30 rounded-full">
+                              <Check className="w-4 h-4 text-black" />
+                              <span className="text-sm font-medium text-black">Gesprek afgerond</span>
                             </div>
-                            <h3 className="text-lg font-medium mb-2 text-black">Alles geregeld! ✅</h3>
-                            <p className="text-sm font-light text-black leading-relaxed whitespace-pre-wrap">
-                              {currentQuestion}
-                            </p>
                           </motion.div>
                         )}
                       </div>
 
                       {/* Chat Input - Fixed at bottom */}
                       {!isComplete && (
-                        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-black/10 rounded-b-[24px]">
+                        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-black/10 rounded-b-[24px] bg-surface-glass backdrop-blur-md z-10">
                           <div className="relative flex items-center">
                             <textarea
                               ref={inputRef}
@@ -814,21 +732,18 @@ export default function FloatingChatBubble() {
                               onKeyPress={handleKeyPress}
                               placeholder={questionOptions?.length > 0 ? "Of typ je eigen antwoord..." : "Je antwoord..."}
                               rows={2}
-                              className="w-full px-4 py-3 pr-32 border border-chat-input-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 transition-all resize-none text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
+                              className="w-full px-4 py-3 pr-16 border border-chat-input-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 transition-all resize-none text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
                               disabled={isLoading}
                             />
                             <button
                               onClick={sendMessage}
                               disabled={!input.trim() || isLoading}
-                              className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-xl text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-40"
+                              className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-full flex items-center justify-center transition-all disabled:opacity-40"
                             >
                               {isLoading ? (
                                 <BlablablaAnimation size="sm" />
                               ) : (
-                                <>
-                                  <span>Volgende</span>
-                                  <ArrowRight className="w-4 h-4" />
-                                </>
+                                <ArrowRight className="w-5 h-5" />
                               )}
                             </button>
                           </div>

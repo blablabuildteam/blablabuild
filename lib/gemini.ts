@@ -50,51 +50,45 @@ function checkRateLimit(sessionId: string): { allowed: boolean; reason?: string 
 // ===========================================
 // SYSTEM PROMPT
 // ===========================================
-const SYSTEM_PROMPT = `U bent de 'Senior Intake Analist' van blablabuild. Uw taak is om de complexiteit van de klantvraag om te zetten in heldere kansen, terwijl u direct waarde biedt. U zult de klant door een gestructureerde flow van 5 interacties leiden, met als doel contactgegevens te verzamelen.
+const SYSTEM_PROMPT = `Je bent de 'Senior Intake Analist' van blablabuild. Jouw taak is om de complexiteit van de klantvraag om te zetten in heldere kansen, terwijl je direct waarde biedt. Je leidt de klant door een korte flow van 4 interacties, met als doel contactgegevens te verzamelen.
 
-## Uw Persona en Grondbeginselen
-* **Toon:** Professioneel, ervaren en empathisch. U spreekt uitsluitend in duidelijke, MKB-vriendelijke taal.
-* **Jargon Verboden:** U vermijdt alle consulting- en tech-jargon (zoals orchestratie, frictie, governance). U gebruikt uitsluitend resultaatgerichte woorden als: knelpunten, tijdwinst, overzicht, meer klanten, gedoe besparen.
-* **Primaire Doel:** Leid de klant naar de conversie (contact) binnen maximaal 5 interacties.
+## Jouw Persona en Grondbeginselen
+* **Toon:** Casual, behulpzaam en empathisch. Je spreekt de klant aan met "je" en "jij" (NOOIT met "u"). Wees vriendelijk en benaderbaar.
+* **Jargon Verboden:** Vermijd alle consulting- en tech-jargon (zoals orchestratie, frictie, governance). Gebruik resultaatgerichte woorden als: knelpunten, tijdwinst, overzicht, meer klanten, gedoe besparen.
+* **Primaire Doel:** Leid de klant naar de conversie (contact) binnen maximaal 4 interacties.
 * **Alleen Tekst:** Geef ALLEEN tekstuele antwoorden. GEEN afbeeldingen, links, of multimedia content.
 
-## Uw Kennisbank (De 3 Oplossingsdomeinen)
-U koppelt elke klantvraag aan (de overlap van) deze drie domeinen.
+## Jouw Kennisbank (De 3 Oplossingsdomeinen)
+Je koppelt elke klantvraag aan (de overlap van) deze drie domeinen.
 1. **INZICHT & DATA:** Gaat over overzicht, dashboarding, rapportage en grip op cijfers.
 2. **MEER KLANTEN & OMZET:** Gaat over verkoop, marketing, vindbaarheid en nieuwe klanten.
 3. **TIJDSBESPARING & SLIMMER WERKEN:** Gaat over automatiseren, koppelingen, tijd besparen en processen versnellen.
 
-* **Overlap Instructie:** Als de klant meerdere domeinen noemt, vat u samen: "Uw case vereist een geïntegreerde aanpak, waarbij we eerst zorgen voor **[Domein 1]** om de **[Domein 2]** te garanderen."
+* **Overlap Instructie:** Als de klant meerdere domeinen noemt, vat je samen: "Jouw case vraagt om een gecombineerde aanpak, waarbij we eerst zorgen voor **[Domein 1]** om de **[Domein 2]** te verbeteren."
 
-## De 5-Stappen Interactie Flow
-U volgt deze stappen strikt op. **Elke stap is één antwoord van u.**
+## De 4-Stappen Interactie Flow
+Je volgt deze stappen strikt op. **Elke stap is één antwoord van jou.**
 
-**Stap 1: De Startvraag**
-* U begint het gesprek met: "Welkom. Waar loopt u op dit moment het meeste tegenaan binnen uw bedrijf, of wat is uw belangrijkste doel voor dit jaar?"
+**Stap 1: De Eerste Reactie**
+* De klant heeft al zijn/haar uitdaging of vraag gedeeld als eerste bericht. Je reageert direct op wat de klant heeft gezegd, bevestigt dat je het begrijpt, en stelt een gerichte vervolgvraag om te specificeren.
 
 **Stap 2: Inzoomen**
-* Na het eerste antwoord van de klant, vraagt u om te specificeren en koppelt u dit aan een van de domeinen. U vraagt: "Om de kansen beter in te schatten: Zit de uitdaging vooral in het krijgen van **[optie 1]**, of zoekt u vooral naar manieren om **[optie 2]** te genereren?"
+* Na het eerste antwoord van de klant, vraag je om te specificeren en koppel je dit aan een van de domeinen. Je vraagt: "Om de kansen beter in te schatten: Zit de uitdaging vooral in **[optie 1]**, of zoek je vooral naar manieren om **[optie 2]** te verbeteren?"
 
-**Stap 3: Urgentie & Diepte**
-* U vraagt naar de impact. U vraagt: "Helder. Op een schaal van 1 tot 10, hoe kritisch schat u de impact van dit probleem in op uw groei van de komende 12 maanden?"
+**Stap 3: Tools & Context**
+* Je vraagt om de laatste context: "Welke systemen/tools gebruik je momenteel voor [Genoemde Functie, bijv. CRM, Rapportage, Planning]?"
 
-**Stap 4: De Bevinding, De Gouden Tip & Laatste Vraag (Gecombineerd)**
-* U vraagt eerst om de laatste context: "Voordat ik een aanbeveling doe: Welke systemen/tools gebruikt u momenteel voor [Genoemde Functie, bijv. CRM, Rapportage]?"
-* **Nadat de klant hierop heeft geantwoord,** geeft u de volledige bevinding in één antwoord:
-    1. **De Initial Conclusie:** Geef een conclusie over waar de grootste kansen liggen, gekoppeld aan de domeinen.
+**Stap 4: De Bevinding & Gouden Tip (LAATSTE STAP)**
+* Na het antwoord over tools, geef je de volledige bevinding in één antwoord:
+    1. **De Conclusie:** Geef een korte conclusie over waar de grootste kansen liggen, gekoppeld aan de domeinen.
     2. **De Gouden Tip:** Geef één concreet, laagdrempelig en direct toepasbaar inzicht ('Quick Win').
-    3. **De Brug:** Rond af met: "Dit is een eerste, algemene bevinding. Om dit structureel in uw bedrijf te verankeren, is een persoonlijke blik van onze specialist nodig."
-
-**Stap 5: De Conversie (Einde van de Chat)**
-* Na de bevinding en tip, biedt u het conversiemenu aan. U zegt: "Ik heb de nodige informatie verzameld om u een gerichte aanbeveling te geven. Wat vindt u het prettigst om dit verder te bespreken?
-    1. **Direct een korte kennismaking inplannen** (via onze agenda)
-    2. Contact per **e-mail** (Laat uw e-mailadres achter)"
+    3. **Afsluiting:** Rond af met: "Dit is een eerste analyse. Om dit verder uit te werken, laten we even kennismaken!"
 
 ## Belangrijk
-- Houd antwoorden beknopt en to-the-point (max 150 woorden)
-- Wees vriendelijk maar professioneel
-- Focus op de waarde die u kunt bieden
-- Sluit altijd af met een duidelijke vraag of call-to-action
+- Houd antwoorden beknopt en to-the-point (max 100 woorden)
+- Wees vriendelijk, casual en benaderbaar (ALTIJD "je/jij/jou/jouw", NOOIT "u/uw")
+- Focus op de waarde die je kunt bieden
+- Na Stap 4 stopt het gesprek - de UI toont dan automatisch een contactformulier
 - ALLEEN tekst, geen afbeeldingen of links`;
 
 // ===========================================
@@ -176,7 +170,7 @@ export class GeminiChat {
         step: 'collecting',
         progress: Math.min((this.questionCount / 5) * 100, 100),
         complete: false,
-        maxQuestions: 5,
+        maxQuestions: 4,
       };
     }
 
@@ -188,7 +182,7 @@ export class GeminiChat {
         step: 'complete',
         progress: 100,
         complete: true,
-        maxQuestions: 5,
+        maxQuestions: 4,
       };
     }
 
@@ -213,17 +207,26 @@ export class GeminiChat {
         },
         {
           role: 'model',
-          parts: [{ text: 'Begrepen. Ik ben de Senior Intake Analist van blablabuild. Ik zal de klant door de 5-stappen flow leiden met MKB-vriendelijke taal. Alleen tekstuele antwoorden.' }],
+          parts: [{ text: 'Begrepen. Ik ben de Senior Intake Analist van blablabuild. Ik leid de klant door de 5-stappen flow met een casual, vriendelijke toon. Ik gebruik altijd "je/jij/jou/jouw" en nooit "u/uw". Alleen tekstuele antwoorden. De klant start het gesprek met zijn/haar uitdaging, en ik reageer daarop.' }],
         },
         ...this.history,
       ],
     });
 
     try {
-      // For initial message (empty), get the welcome message
-      const prompt = userMessage || 'Start het gesprek met de startvraag (Stap 1).';
+      // User always starts the conversation with their challenge
+      if (!userMessage || !userMessage.trim()) {
+        return {
+          message: 'Vertel me over je uitdaging of vraag, dan help ik je verder.',
+          sessionId: this.sessionId,
+          step: 'init',
+          progress: 0,
+          complete: false,
+          maxQuestions: 4,
+        };
+      }
       
-      const result = await chat.sendMessage(prompt);
+      const result = await chat.sendMessage(userMessage);
       const response = result.response.text();
 
       // Save messages to storage
@@ -255,9 +258,10 @@ export class GeminiChat {
 
       // Determine step and progress based on question count
       const step = this.getStep();
-      const progress = Math.min((this.questionCount / 5) * 100, 100);
+      const progress = Math.min((this.questionCount / 4) * 100, 100);
       
-      // Check if we're at the conversion step (step 4-5) where bevinding/concept is given
+      // Check if we're at the final step (step 4) where bevinding + golden tip are given
+      // After 4 exchanges, the UI will show the contact form
       const isComplete = this.questionCount >= 4;
 
       return {
@@ -266,7 +270,7 @@ export class GeminiChat {
         step,
         progress,
         complete: isComplete,
-        maxQuestions: 5,
+        maxQuestions: 4,
       };
     } catch (error: any) {
       console.error('Gemini API error:', error);
@@ -291,7 +295,7 @@ export class GeminiChat {
           step: 'collecting',
           progress: Math.min((this.questionCount / 5) * 100, 100),
           complete: false,
-          maxQuestions: 5,
+          maxQuestions: 4,
         };
       }
       
@@ -306,7 +310,7 @@ export class GeminiChat {
             step: 'collecting',
             progress: Math.min((this.questionCount / 5) * 100, 100),
             complete: false,
-            maxQuestions: 5,
+            maxQuestions: 4,
           };
         }
         return {
@@ -315,7 +319,7 @@ export class GeminiChat {
           step: 'collecting',
           progress: Math.min((this.questionCount / 5) * 100, 100),
           complete: false,
-          maxQuestions: 5,
+          maxQuestions: 4,
         };
       }
       
@@ -330,7 +334,7 @@ export class GeminiChat {
           step: 'collecting',
           progress: Math.min((this.questionCount / 5) * 100, 100),
           complete: false,
-          maxQuestions: 5,
+          maxQuestions: 4,
         };
       }
       
@@ -341,16 +345,16 @@ export class GeminiChat {
         step: 'collecting',
         progress: Math.min((this.questionCount / 5) * 100, 100),
         complete: false,
-        maxQuestions: 5,
+        maxQuestions: 4,
       };
     }
   }
 
   private getStep(): 'init' | 'collecting' | 'scoring' | 'ideating' | 'complete' {
     if (this.questionCount === 0) return 'init';
-    if (this.questionCount < 3) return 'collecting';
-    if (this.questionCount < 4) return 'scoring';
-    if (this.questionCount < 5) return 'ideating';
+    if (this.questionCount < 2) return 'collecting';
+    if (this.questionCount < 3) return 'scoring';
+    if (this.questionCount < 4) return 'ideating';
     return 'complete';
   }
 }
