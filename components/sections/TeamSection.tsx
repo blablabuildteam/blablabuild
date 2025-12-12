@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useMemo, useRef, useEffect } from 'react';
+import { useMemo } from 'react';
+import Image from 'next/image';
 import { LinkedinIcon } from '@/components/ui/icons/il-linkedin';
 
 const foundersData = [
@@ -12,8 +13,7 @@ const foundersData = [
     linkedin: 'https://www.linkedin.com/in/danieldevos/',
     cardRotation: 3.886,
     cardSkew: 1.267,
-    video: '/video/daniel.mp4',
-    backgroundImage: undefined, // Optional: path to background image (e.g., '/images/daniel-bg.jpg')
+    image: '/img/daniel.png',
   },
   {
     name: 'Xennith Oosterveer',
@@ -22,8 +22,7 @@ const foundersData = [
     linkedin: 'https://www.linkedin.com/in/xennith/',
     cardRotation: 4.359,
     cardSkew: 1.42,
-    video: '/video/xennith.mp4',
-    backgroundImage: undefined, // Optional: path to background image
+    image: '/img/xennith.png',
   },
   {
     name: 'Kevin Roos van Raadshooven',
@@ -32,8 +31,7 @@ const foundersData = [
     linkedin: 'https://www.linkedin.com/in/941b9732/',
     cardRotation: -4.331,
     cardSkew: -1.411,
-    video: '/video/kevin.mp4',
-    backgroundImage: undefined, // Optional: path to background image
+    image: '/img/kevin.png',
   },
 ];
 
@@ -45,64 +43,6 @@ function shuffleArray<T>(array: T[]): T[] {
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled;
-}
-
-// Video component that plays once when fully in viewport
-function FounderVideo({ videoSrc, name, backgroundImage }: { videoSrc: string; name: string; backgroundImage?: string }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const hasPlayedRef = useRef(false);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    const container = containerRef.current;
-    if (!video || !container) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.9 && !hasPlayedRef.current) {
-            // Video is fully in viewport (90% visible) and hasn't played yet
-            video.play().catch((error) => {
-              console.log('Video autoplay prevented:', error);
-            });
-            hasPlayedRef.current = true;
-          }
-        });
-      },
-      {
-        threshold: 0.9, // Trigger when 90% of video is visible
-        rootMargin: '0px',
-      }
-    );
-
-    observer.observe(container);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  return (
-    <div ref={containerRef} className="w-full h-full relative">
-      {/* Background image layer - shows behind video if video has transparency */}
-      {backgroundImage && (
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${backgroundImage})` }}
-        />
-      )}
-      <video
-        ref={videoRef}
-        src={videoSrc}
-        className="w-full h-full object-cover relative z-10"
-        muted
-        playsInline
-        preload="auto"
-        aria-label={`${name} video`}
-      />
-    </div>
-  );
 }
 
 export default function TeamSection() {
@@ -167,9 +107,15 @@ export default function TeamSection() {
                 >
                   {/* Mobile: Row layout with image left, text right */}
                   <div className="flex flex-row md:flex-col gap-4 md:gap-0">
-                  {/* Video display - Left on mobile, top on desktop */}
+                  {/* Image display - Left on mobile, top on desktop */}
                   <div className="flex-shrink-0 w-[35%] md:w-full aspect-[160/200] md:aspect-[416/529] rounded-xl overflow-hidden md:mb-4 bg-white relative">
-                    <FounderVideo videoSrc={founder.video} name={founder.name} backgroundImage={founder.backgroundImage} />
+                    <Image
+                      src={founder.image}
+                      alt={founder.name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 35vw, 33vw"
+                    />
                   </div>
 
                   {/* Info - Right on mobile, below on desktop */}

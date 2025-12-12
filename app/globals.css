@@ -292,10 +292,8 @@ html {
   padding: 0;
   box-sizing: border-box;
   scrollbar-width: none; /* Firefox */
-  /* Prevent overscroll bounce/rubber-banding which can interfere with scroll direction detection */
-  overscroll-behavior: none;
-  overscroll-behavior-y: none;
-  -webkit-overflow-scrolling: touch;
+  /* Prevent overscroll bounce at top/bottom of page */
+  overscroll-behavior-y: contain;
 }
 
 *, *::before, *::after {
