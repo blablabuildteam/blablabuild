@@ -34,28 +34,28 @@ const solutionCards: SolutionCard[] = [
   },
   {
     id: 2,
-    text: <><strong>Eén duidelijk dashboard</strong> met alle voorraad- en verkoopcijfers.</>,
-    badges: ['Inzicht', 'Omzet'],
+    text: <>Laat AI automatisch alle belangrijke info uit documenten halen en <strong>bespaar uren mailverkeer</strong>.</>,
+    badges: ['Inzicht', 'Snelheid'],
   },
   {
     id: 3,
-    text: <><strong>Automatische waarschuwingen</strong> als de voorraad kritiek wordt of de omzet daalt.</>,
-    badges: ['Inzicht', 'Omzet', 'Snelheid'],
+    text: <>Zorg dat jouw bedrijf gevonden én <strong>aanbevolen wordt door ChatGPT</strong> en andere AI-tools.</>,
+    badges: ['Omzet'],
   },
   {
     id: 4,
-    text: <><strong>Automatisch website-pagina's maken</strong> voor elke stad of locatie.</>,
+    text: <><strong>Al je content op je webpagina's</strong> tegelijkertijd aanpassen en vertalen, zonder handwerk.</>,
     badges: ['Omzet', 'Snelheid'],
   },
   {
     id: 5,
-    text: <><strong>Haal meer aanvragen</strong> uit je huidige websitebezoekers.</>,
+    text: <>Zet je huidige bezoekers vaker om in betalende klanten met een <strong>slimme AI chatbot</strong>.</>,
     badges: ['Omzet'],
   },
   {
     id: 6,
-    text: <>Een <strong>slimme chatbot</strong> die klanten adviseert en producten vindt.</>,
-    badges: ['Omzet', 'Snelheid'],
+    text: <>Krijg <strong>meer gratis bezoekers op je website</strong> zonder extra te betalen voor advertenties.</>,
+    badges: ['Omzet'],
   },
   {
     id: 7,
@@ -64,7 +64,7 @@ const solutionCards: SolutionCard[] = [
   },
   {
     id: 8,
-    text: <><strong>Automatiseer repetitieve taken</strong> zodat je team zich kan focussen op wat echt belangrijk is.</>,
+    text: <><strong>Een eigen tool</strong> om repetitieve taken te automatiseren zodat jij kan focussen op wat echt belangrijk is.</>,
     badges: ['Snelheid'],
   },
   {
