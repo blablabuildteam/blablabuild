@@ -209,7 +209,7 @@ export default function HomePage() {
   return (
     <div 
       className="min-h-screen w-full" 
-      style={{ margin: 0, padding: 0, touchAction: 'pan-y' }}
+      style={{ margin: 0, padding: 0, touchAction: 'pan-y', overflowX: 'hidden' }}
     >
       <Navigation showNavCTA={showNavCTA} activeSection={activeSection} />
       <HeroSection />
