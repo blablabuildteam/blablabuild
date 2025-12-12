@@ -78,20 +78,20 @@ export default function HeroSection() {
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="space-y-[0.80rem] sm:space-y-2 md:space-y-5 lg:space-y-6 w-full"
+                className="space-y-5 sm:space-y-3 md:space-y-5 lg:space-y-6 w-full"
               >
-                <div className="inline-block px-3 py-1.5 md:px-4 md:py-2 mb-1 sm:mb-2 md:mb-3 lg:mb-4 sm:mt-0" style={{ backgroundColor: '#070800', borderRadius: '10px', marginTop: '1.0rem' }}>
+                <div className="inline-block px-3 py-1.5 md:px-4 md:py-2 mb-3 sm:mb-2 md:mb-3 lg:mb-4 sm:mt-0" style={{ backgroundColor: '#070800', borderRadius: '10px', marginTop: '1.5rem' }}>
                   <span className="text-bla-lime font-normal" style={{ fontSize: '1.2rem' }}>Talk less, build more</span>
                 </div>
-                <h2 className="font-sans text-[4rem] sm:text-[4.32rem] md:text-[5.4rem] lg:text-[6.48rem] xl:text-[8.64rem] font-bold tracking-tight text-bla-white mt-4 sm:mt-6 md:mt-0 leading-none mb-0" style={{ lineHeight: '1' }}>
+                <h2 className="font-sans text-[4rem] sm:text-[4.32rem] md:text-[5.4rem] lg:text-[6.48rem] xl:text-[8.64rem] font-bold tracking-tight text-bla-white mt-6 sm:mt-6 md:mt-0 leading-none mb-0" style={{ lineHeight: '1' }}>
                   <span className="font-normal">blabla</span>
                   <span className="font-bold">build</span>
                 </h2>
-                <h1 className="font-host font-medium md:text-5xl lg:text-6xl xl:text-[64px] leading-tight text-bla-white" style={{ fontSize: '1.8rem', lineHeight: '2.5rem' }}>
+                <h1 className="font-host font-medium md:text-5xl lg:text-6xl xl:text-[64px] leading-tight text-bla-white mt-4 sm:mt-0" style={{ fontSize: '1.8rem', lineHeight: '2.5rem' }}>
                   <span className="block">Voor jouw <span className="text-bla-lime">AI</span> innovaties</span>
                 </h1>
                 
-                <p className="text-lg md:text-xl max-w-xl mb-0 sm:mb-0 md:mb-0 mt-2 sm:mt-0">
+                <p className="text-lg md:text-xl max-w-xl mb-0 sm:mb-0 md:mb-0 mt-5 sm:mt-0">
                   <span className="text-bla-white">Wij helpen je bedrijf om AI-gericht te werken,</span> <span className="text-bla-text-gray">leggen de koppeling tussen je processen en omzet, en maken je onderneming winstgevender.</span>
                 </p>
               </motion.div>

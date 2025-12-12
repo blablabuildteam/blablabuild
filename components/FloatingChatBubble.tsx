@@ -510,10 +510,10 @@ export default function FloatingChatBubble() {
                           transition={{ duration: 0.15 }}
                         >
                           <h3 className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-text-primary">
-                            Wat is jouw Uitdaging?
+                            Wat is jouw uitdaging?
                           </h3>
                           <p className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-text-primary">
-                            Ontdek hoe we jouw kunnen helpen.
+                            Ontdek hoe wij je kunnen helpen.
                           </p>
                         </motion.div>
                       </div>

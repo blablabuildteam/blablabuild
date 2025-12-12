@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       messages: messages || [],
     });
 
-    // Send email via Resend if configured
+    // Send internal notification email to team
     const resend = getResendClient();
     if (resend) {
       try {
@@ -52,20 +52,11 @@ export async function POST(req: NextRequest) {
         const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
         const internalEmail = process.env.RESEND_INTERNAL_EMAIL || 'team@blablabuild.com';
         
-        // Send to customer
-        const customerResult = await resend.emails.send({
-          from: `blablabuild <${fromEmail}>`,
-          to: email,
-          subject: 'Jouw Intake Samenvatting & Gouden Tip 🚀',
-          html: emailHtml,
-        });
-        console.log('✅ Customer email sent:', customerResult);
-
-        // Send internal notification with lead info
-        const internalResult = await resend.emails.send({
+        // Send internal notification with lead info and chat content
+        const result = await resend.emails.send({
           from: `blablabuild <${fromEmail}>`,
           to: internalEmail,
-          subject: `Nieuwe lead: ${companyName || name || email}`,
+          subject: `🎯 Nieuwe lead: ${companyName || name || email}`,
           html: generateInternalNotificationHtml({
             email,
             name,
@@ -76,7 +67,7 @@ export async function POST(req: NextRequest) {
             messages: messages || [],
           }),
         });
-        console.log('✅ Internal notification sent:', internalResult);
+        console.log('✅ Lead notification sent to team:', result);
       } catch (emailError: any) {
         console.error('❌ Error sending email via Resend:', emailError.message || emailError);
         // Don't throw - we still want to save the lead even if email fails
