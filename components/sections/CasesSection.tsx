@@ -29,41 +29,49 @@ interface SolutionCard {
 const solutionCards: SolutionCard[] = [
   {
     id: 1,
+    title: 'Praat met je data',
     text: <><strong>Stel vragen aan je data</strong> in gewone taal, en krijg direct antwoord om beslissingen te nemen.</>,
     badges: ['Inzicht', 'Snelheid'],
   },
   {
     id: 2,
+    title: 'Stop met zoeken',
     text: <>Laat AI automatisch alle belangrijke info uit documenten halen en <strong>bespaar uren mailverkeer</strong>.</>,
     badges: ['Inzicht', 'Snelheid'],
   },
   {
     id: 3,
+    title: 'Zichtbaar in AI',
     text: <>Zorg dat jouw bedrijf gevonden én <strong>aanbevolen wordt door ChatGPT</strong> en andere AI-tools.</>,
     badges: ['Omzet'],
   },
   {
     id: 4,
+    title: 'Content in één keer',
     text: <><strong>Al je content op je webpagina's</strong> tegelijkertijd aanpassen en vertalen, zonder handwerk.</>,
     badges: ['Omzet', 'Snelheid'],
   },
   {
     id: 5,
+    title: 'Meer conversie',
     text: <>Zet je huidige bezoekers vaker om in betalende klanten met een <strong>slimme AI chatbot</strong>.</>,
     badges: ['Omzet'],
   },
   {
     id: 6,
+    title: 'Gratis verkeer',
     text: <>Krijg <strong>meer gratis bezoekers op je website</strong> zonder extra te betalen voor advertenties.</>,
     badges: ['Omzet'],
   },
   {
     id: 7,
+    title: 'Blijf voorop',
     text: <><strong>Voorspel trends</strong> en anticipeer op veranderingen in je markt met AI-analyse.</>,
     badges: ['Inzicht', 'Snelheid'],
   },
   {
     id: 8,
+    title: 'Tijdwinst op maat',
     text: <><strong>Een eigen tool</strong> om repetitieve taken te automatiseren zodat jij kan focussen op wat echt belangrijk is.</>,
     badges: ['Snelheid'],
   },
@@ -73,7 +81,7 @@ const solutionCards: SolutionCard[] = [
     badges: [],
     isCTACard: true,
     title: 'Heb jij wat anders nodig?',
-    body: 'Neem contact met ons op of doe de AI intake.',
+    body: 'Er is bijna geen uitdaging waar we geen oplossing voor vinden. Neem contact op voor gratis advies op maat.',
   },
 ];
 
@@ -166,28 +174,52 @@ export default function CasesSection() {
           {solutionCards.map((card) => (
             <div
               key={card.id}
-              className={`solution-card bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 flex flex-col transition-all duration-300 ${card.id === 9 ? 'col-span-2 md:col-span-1' : ''}`}
+              className={`solution-card rounded-2xl md:rounded-3xl p-6 md:p-8 flex flex-col transition-all duration-300 relative ${
+                card.id === 9 
+                  ? 'col-span-2 md:col-span-1 bg-bla-dark' 
+                  : 'bg-white'
+              }`}
             >
+              {/* Grain effect overlay for CTA card */}
+              {card.id === 9 && (
+                <div 
+                  className="absolute inset-0 rounded-2xl md:rounded-3xl opacity-[0.2] pointer-events-none"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+                    backgroundSize: '200px 200px',
+                  }}
+                />
+              )}
               {card.isCTACard ? (
                 <>
                   {/* Title */}
-                  <h3 className="font-host font-medium text-lg md:text-xl lg:text-2xl text-text-primary mb-4">
+                  <h3 className={`font-host font-medium text-lg md:text-xl lg:text-2xl mb-4 relative z-10 ${
+                    card.id === 9 ? 'text-bla-white' : 'text-text-primary'
+                  }`}>
                     {card.title}
                   </h3>
                   
                   {/* Body */}
-                  <p className="font-host font-normal text-sm md:text-base lg:text-lg text-text-primary leading-relaxed mb-6">
+                  <p className={`font-host font-normal text-sm md:text-base lg:text-lg leading-relaxed mb-6 relative z-10 ${
+                    card.id === 9 ? 'text-bla-text-light' : 'text-text-primary'
+                  }`}>
                     {card.body}
                   </p>
                   
                   {/* Separator */}
-                  <div className="border-t border-bla-border mb-6"></div>
+                  <div className={`border-t mb-6 relative z-10 ${
+                    card.id === 9 ? 'border-white/10' : 'border-bla-border'
+                  }`}></div>
                   
                   {/* CTA Link */}
-                  <div>
+                  <div className="relative z-10">
                     <a
                       href="mailto:team@blablabuild.com"
-                      className="text-text-primary hover:text-bla-lime flex items-center gap-2 text-base md:text-lg transition-colors group"
+                      className={`flex items-center gap-2 text-base md:text-lg transition-colors group ${
+                        card.id === 9 
+                          ? 'text-bla-lime hover:text-white/90' 
+                          : 'text-text-primary hover:text-bla-lime'
+                      }`}
                     >
                       Neem contact op
                       <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -196,6 +228,12 @@ export default function CasesSection() {
                 </>
               ) : (
                 <>
+                  {/* Title */}
+                  {card.title && (
+                    <h3 className="font-host font-medium text-lg md:text-xl lg:text-2xl text-text-primary mb-3">
+                      {card.title}
+                    </h3>
+                  )}
                   {/* Content */}
                   <p className="font-host font-normal text-sm md:text-base lg:text-lg text-text-primary leading-relaxed flex-1">
                     {card.text}
