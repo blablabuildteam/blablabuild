@@ -73,22 +73,22 @@ export default function CookieBanner() {
                 </p>
 
                 {/* Quick Actions */}
-                <div className="flex flex-wrap gap-2">
+                <div className="flex gap-2">
                   <button
                     onClick={handleAcceptAll}
-                    className="px-4 py-2 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-full text-xs font-medium transition-all"
+                    className="flex-1 px-4 py-2 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-full text-xs font-medium transition-all"
                   >
                     Accepteren
                   </button>
                   <button
                     onClick={handleAcceptNecessary}
-                    className="px-4 py-2 bg-black/5 hover:bg-black/10 text-black rounded-full text-xs font-medium transition-all"
+                    className="flex-1 px-4 py-2 bg-black/5 hover:bg-black/10 text-black rounded-full text-xs font-medium transition-all"
                   >
                     Weigeren
                   </button>
                   <button
                     onClick={() => setShowDetails(!showDetails)}
-                    className="px-4 py-2 text-black/60 hover:text-black text-xs font-medium transition-all flex items-center gap-1"
+                    className="flex-1 px-4 py-2 text-black/60 hover:text-black text-xs font-medium transition-all flex items-center justify-center gap-1"
                   >
                     Meer
                     {showDetails ? (

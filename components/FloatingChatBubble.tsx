@@ -451,7 +451,7 @@ export default function FloatingChatBubble() {
                   {/* Close button */}
                   <button
                     onClick={toggleExpand}
-                    className="absolute top-4 right-4 w-10 h-10 rounded-full bg-surface-overlay hover:bg-surface flex items-center justify-center transition-all hover:scale-110 z-10"
+                    className="absolute top-4 right-4 w-10 h-10 rounded-full bg-surface-overlay hover:bg-surface flex items-center justify-center transition-all hover:scale-110 z-50"
                   >
                     <X className="w-5 h-5 text-text-secondary" />
                   </button>
@@ -501,14 +501,14 @@ export default function FloatingChatBubble() {
                             value={idea}
                             onChange={(e) => setIdea(e.target.value)}
                             placeholder="Jouw uitdaging..."
-                            className="w-full h-full bg-transparent rounded-[12px] px-6 md:px-8 pr-32 md:pr-40 text-base md:text-[18px] font-host text-text-primary placeholder:text-text-muted focus:outline-none"
+                            className="w-full h-full bg-transparent rounded-[12px] px-6 md:px-8 pr-14 md:pr-18 text-base md:text-[18px] font-host text-text-primary placeholder:text-text-muted focus:outline-none"
                             autoFocus
                           />
                           <button
                             type="submit"
-                            className="absolute right-2 md:right-3 bg-bla-lime rounded-full px-4 md:px-6 py-2 md:py-2.5 flex items-center justify-center hover:bg-bla-lime/90 transition-all hover:scale-105 font-host font-normal text-base md:text-[18px] text-chat-user-text min-w-[100px] md:min-w-[128px]"
+                            className="absolute right-2 md:right-3 w-10 h-10 md:w-12 md:h-12 bg-bla-lime rounded-full flex items-center justify-center hover:bg-bla-lime/90 transition-all hover:scale-105"
                           >
-                            Verstuur
+                            <ArrowRight className="w-5 h-5 md:w-6 md:h-6 text-black" />
                           </button>
                         </div>
                       </motion.form>

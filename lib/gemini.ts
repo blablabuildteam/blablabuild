@@ -12,6 +12,55 @@ const RATE_LIMIT = {
   maxMessagesPerSession: 10,       // Max messages per session
 };
 
+// ===========================================
+// RETRY CONFIGURATION
+// ===========================================
+const RETRY_CONFIG = {
+  maxRetries: 3,
+  baseDelayMs: 1000,  // Start with 1 second
+  maxDelayMs: 10000,  // Max 10 seconds
+};
+
+async function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  retries = RETRY_CONFIG.maxRetries
+): Promise<T> {
+  let lastError: any;
+  
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (error: any) {
+      lastError = error;
+      
+      // Check if it's a rate limit error (429) that we should retry
+      const isRateLimit = error.status === 429 || 
+        error.status === 'RESOURCE_EXHAUSTED' ||
+        error.message?.includes('rate') ||
+        error.message?.includes('quota');
+      
+      if (!isRateLimit || attempt === retries) {
+        throw error;
+      }
+      
+      // Exponential backoff with jitter
+      const delay = Math.min(
+        RETRY_CONFIG.baseDelayMs * Math.pow(2, attempt) + Math.random() * 1000,
+        RETRY_CONFIG.maxDelayMs
+      );
+      
+      console.log(`⏳ Rate limited, retrying in ${Math.round(delay)}ms (attempt ${attempt + 1}/${retries})`);
+      await sleep(delay);
+    }
+  }
+  
+  throw lastError;
+}
+
 // Simple in-memory rate limiter (for production, use Redis)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 const dailyRequestCount = { count: 0, resetTime: Date.now() + 24 * 60 * 60 * 1000 };
@@ -226,7 +275,8 @@ export class GeminiChat {
         };
       }
       
-      const result = await chat.sendMessage(userMessage);
+      // Use retry with exponential backoff for rate limit handling
+      const result = await retryWithBackoff(() => chat.sendMessage(userMessage));
       const response = result.response.text();
 
       // Save messages to storage
