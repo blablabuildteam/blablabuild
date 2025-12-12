@@ -162,8 +162,8 @@ export default function CasesSection() {
     >
       <div className="w-full max-w-7xl mx-auto px-4 md:px-8">
         {/* Header */}
-        <h2 className="font-host font-medium text-3xl md:text-[48px] text-text-primary text-center max-w-[300px] md:max-w-[560px] mx-auto leading-tight mb-12 md:mb-16">
-          Oplossingen die jouw organisatie écht sneller maken
+        <h2 className="font-host font-medium text-3xl md:text-[48px] text-text-primary text-center max-w-[863px] mx-auto leading-tight mb-12 md:mb-16">
+          Directe oplossingen voor complexe uitdagingen
         </h2>
 
         {/* 3-column Masonry Grid with 9 Cards */}

@@ -97,7 +97,7 @@ export default function ExpertiseSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          De Skills waarmee wij de knelpunten oplossen
+          De skills waarmee wij de knelpunten oplossen
         </motion.h2>
 
         <div className="w-full max-w-[871px] flex flex-col items-center">

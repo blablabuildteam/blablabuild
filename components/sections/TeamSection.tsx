@@ -124,7 +124,7 @@ export default function TeamSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          Ruim 40 jaar digitale ervaring. Die senioriteit staat klaar om de mouwen op te stropen.
+          Meer dan 40 jaar digitale ervaring tot jouw beschikking
         </motion.h2>
 
         {/* Team Cards */}

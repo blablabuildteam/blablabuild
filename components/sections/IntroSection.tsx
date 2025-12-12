@@ -29,11 +29,10 @@ export default function IntroSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <span>Wij verbinden data, merk en processen zodat jouw organisatie </span>
-          <span className="text-bla-blue">sneller</span>
-          <span> werkt en </span>
-          <span className="text-bla-blue">minder handmatig gedoe</span>
-          <span> heeft.</span>
+          <span>Wij zorgen dat jouw organisatie </span>
+          <span className="text-bla-blue">beter</span>
+          <span> presteert met </span>
+          <span className="text-bla-blue">minder gedoe</span>
         </motion.h2>
         
         {/* Expertise Ticker */}

@@ -80,7 +80,7 @@ export default function HeroSection() {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="space-y-[0.80rem] sm:space-y-2 md:space-y-5 lg:space-y-6 w-full"
               >
-                <div className="inline-block px-3 py-1.5 md:px-4 md:py-2 mb-1 sm:mb-2 md:mb-3 lg:mb-4 sm:mt-0" style={{ backgroundColor: '#070800', borderRadius: '5px', marginTop: '1.0rem' }}>
+                <div className="inline-block px-3 py-1.5 md:px-4 md:py-2 mb-1 sm:mb-2 md:mb-3 lg:mb-4 sm:mt-0" style={{ backgroundColor: '#070800', borderRadius: '10px', marginTop: '1.0rem' }}>
                   <span className="text-bla-lime font-normal" style={{ fontSize: '1.2rem' }}>Talk less, build more</span>
                 </div>
                 <h2 className="font-sans text-[4rem] sm:text-[4.32rem] md:text-[5.4rem] lg:text-[6.48rem] xl:text-[8.64rem] font-bold tracking-tight text-bla-white mt-4 sm:mt-6 md:mt-0 leading-none mb-0" style={{ lineHeight: '1' }}>
