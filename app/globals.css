@@ -371,3 +371,14 @@ html {
   animation: borderBeamRotate 3s linear infinite;
 }
 
+/* Carousel mask effects for side cards */
+.carousel-mask-left {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 40%);
+  mask-image: linear-gradient(to right, transparent, black 40%);
+}
+
+.carousel-mask-right {
+  -webkit-mask-image: linear-gradient(to left, transparent, black 40%);
+  mask-image: linear-gradient(to left, transparent, black 40%);
+}
+
