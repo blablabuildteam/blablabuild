@@ -224,7 +224,18 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     font-family: 'Matter', system-ui, sans-serif;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+    overscroll-behavior-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    width: 100%;
+    max-width: 100vw;
     position: relative;
+    margin: 0;
+    padding: 0;
+    /* Improve mobile scroll responsiveness */
+    -webkit-tap-highlight-color: transparent;
     /* Smooth scrolling on mobile */
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
@@ -234,11 +245,12 @@
   /* All elements use Matter font */
   * {
     font-family: 'Matter', system-ui, sans-serif;
+    max-width: 100%;
   }
   
   /* Prevent horizontal overflow on sections and media */
   section {
-    max-width: 100%;
+    max-width: 100vw;
     overflow-x: hidden;
   }
   
@@ -281,19 +293,18 @@
 }
 
 /* HTML base styles */
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  overflow-x: hidden;
-}
-
 html {
+  overflow-x: hidden;
   overscroll-behavior-x: none;
   overscroll-behavior-y: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
+  width: 100%;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
+  /* Improve mobile scroll performance and responsiveness */
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -358,48 +369,5 @@ html {
 
 .border-beam-animation {
   animation: borderBeamRotate 3s linear infinite;
-}
-
-/* Carousel mask effects for side cards */
-.carousel-mask-left {
-  -webkit-mask-image: linear-gradient(to right, transparent, black 40%);
-  mask-image: linear-gradient(to right, transparent, black 40%);
-}
-
-.carousel-mask-right {
-  -webkit-mask-image: linear-gradient(to left, transparent, black 40%);
-  mask-image: linear-gradient(to left, transparent, black 40%);
-}
-
-/* Carousel slide animations */
-@keyframes slideInFromRight {
-  from {
-    opacity: 0.3;
-    transform: translateX(20%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInFromLeft {
-  from {
-    opacity: 0.3;
-    transform: translateX(-20%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0.5;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
