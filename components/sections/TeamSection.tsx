@@ -139,7 +139,19 @@ export default function TeamSection() {
               transition={{ duration: 0.3 }}
             >
               {/* White container with rounded edges */}
-              <div className="bg-white rounded-xl p-4 md:p-6 flex flex-col flex-1 h-full">
+              <div className="bg-white rounded-xl p-4 md:p-6 flex flex-col flex-1 h-full relative">
+                {/* LinkedIn icon - Top right on mobile, inline with name on desktop */}
+                {founder.linkedin && (
+                  <a
+                    href={founder.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="md:hidden absolute top-4 right-4 text-bla-blue hover:text-bla-lime transition-colors z-10"
+                    aria-label={`${founder.name} LinkedIn profiel`}
+                  >
+                    <LinkedinIcon size={20} className="w-5 h-5" />
+                  </a>
+                )}
                 <motion.div
                   className="relative flex flex-col md:flex-col"
                   initial={{ opacity: 0, y: 50 }}
@@ -171,10 +183,10 @@ export default function TeamSection() {
                           href={founder.linkedin}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-bla-blue hover:text-bla-lime transition-colors flex-shrink-0 mt-0.5 md:mt-0"
+                          className="hidden md:block text-bla-blue hover:text-bla-lime transition-colors flex-shrink-0"
                           aria-label={`${founder.name} LinkedIn profiel`}
                         >
-                          <LinkedinIcon size={20} className="w-4 h-4 md:w-5 md:h-5" />
+                          <LinkedinIcon size={20} className="w-5 h-5" />
                         </a>
                       )}
                     </div>
