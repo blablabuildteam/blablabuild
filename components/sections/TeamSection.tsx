@@ -118,7 +118,7 @@ export default function TeamSection() {
         </motion.h2>
 
         {/* Team Cards */}
-        <div className="grid md:grid-cols-3 gap-8 md:gap-6">
+        <div className="flex flex-col md:grid md:grid-cols-3 gap-8 md:gap-6">
           {founders.map((founder, idx) => (
             <div key={founder.name} className="group cursor-pointer relative">
               {/* Yellow Background Card - Rotated - Shows on Hover */}
@@ -135,7 +135,7 @@ export default function TeamSection() {
               />
 
               <motion.div
-                className="relative"
+                className="relative flex flex-col md:flex-col"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
@@ -147,35 +147,38 @@ export default function TeamSection() {
                   damping: 15
                 }}
               >
-                {/* Video display */}
-                <div className="aspect-[416/529] w-full rounded-xl overflow-hidden mb-4 bg-gray-100 relative">
-                  <FounderVideo videoSrc={founder.video} name={founder.name} />
-                </div>
-
-                {/* Info */}
-                <div className="mt-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="font-host font-bold text-lg md:text-xl text-text-primary">
-                      {founder.name}
-                    </h3>
-                    {founder.linkedin && (
-                      <a
-                        href={founder.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-bla-blue hover:text-bla-lime transition-colors"
-                        aria-label={`${founder.name} LinkedIn profiel`}
-                      >
-                        <LinkedinIcon size={20} className="w-5 h-5" />
-                      </a>
-                    )}
+                {/* Mobile: Row layout with image left, text right */}
+                <div className="flex flex-row md:flex-col gap-4 md:gap-0">
+                  {/* Video display - Left on mobile, top on desktop */}
+                  <div className="flex-shrink-0 w-[160px] md:w-full aspect-[160/200] md:aspect-[416/529] rounded-xl overflow-hidden md:mb-4 bg-gray-100 relative">
+                    <FounderVideo videoSrc={founder.video} name={founder.name} />
                   </div>
-                  <p className="font-host font-normal text-lg md:text-xl text-bla-blue mb-4">
-                    {founder.role}
-                  </p>
-                  <p className="font-host font-normal text-sm md:text-base text-text-muted leading-relaxed">
-                    {founder.description}
-                  </p>
+
+                  {/* Info - Right on mobile, below on desktop */}
+                  <div className="flex-1 md:mt-6 min-w-0">
+                    <div className="flex items-start md:items-center gap-2 mb-2">
+                      <h3 className="font-host font-bold text-base md:text-lg lg:text-xl text-text-primary">
+                        {founder.name}
+                      </h3>
+                      {founder.linkedin && (
+                        <a
+                          href={founder.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-bla-blue hover:text-bla-lime transition-colors flex-shrink-0 mt-0.5 md:mt-0"
+                          aria-label={`${founder.name} LinkedIn profiel`}
+                        >
+                          <LinkedinIcon size={20} className="w-4 h-4 md:w-5 md:h-5" />
+                        </a>
+                      )}
+                    </div>
+                    <p className="font-host font-normal text-sm md:text-lg lg:text-xl text-bla-blue mb-2 md:mb-4">
+                      {founder.role}
+                    </p>
+                    <p className="font-host font-normal text-xs md:text-sm lg:text-base text-text-muted leading-relaxed">
+                      {founder.description}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             </div>

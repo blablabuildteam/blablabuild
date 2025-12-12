@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Tooltip,
@@ -62,6 +63,25 @@ const expertiseItems = [
 ];
 
 export default function ExpertiseSection() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [openTooltip, setOpenTooltip] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const handleTooltipClick = (itemTitle: string) => {
+    if (isMobile) {
+      setOpenTooltip(openTooltip === itemTitle ? null : itemTitle);
+    }
+  };
+
   return (
     <TooltipProvider delayDuration={100}>
       <section id="expertise" className="min-h-[800px] snap-start flex flex-col items-center justify-center px-4 md:px-16 py-16 md:py-24" style={{ backgroundColor: '#e7e8ff' }}>
@@ -78,8 +98,18 @@ export default function ExpertiseSection() {
         <div className="w-full max-w-[871px] flex flex-col items-center">
           {expertiseItems.map((item, index) => {
             const isLeft = index % 2 === 0;
+            const isOpen = isMobile ? openTooltip === item.title : undefined;
+            
             return (
-              <Tooltip key={item.title}>
+              <Tooltip 
+                key={item.title}
+                open={isOpen}
+                onOpenChange={(open) => {
+                  if (isMobile) {
+                    setOpenTooltip(open ? item.title : null);
+                  }
+                }}
+              >
                 <TooltipTrigger asChild>
                   <motion.span
                     className="inline-block font-host font-medium text-2xl md:text-[42px] leading-relaxed text-text-muted hover:text-bla-blue transition-colors duration-200 cursor-pointer"
@@ -87,18 +117,19 @@ export default function ExpertiseSection() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-50px" }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
+                    onClick={() => handleTooltipClick(item.title)}
                   >
                     {item.title}
                   </motion.span>
                 </TooltipTrigger>
                 <TooltipContent 
-                  side={isLeft ? "left" : "right"}
+                  side={isMobile ? "bottom" : (isLeft ? "left" : "right")}
                   align="center"
                   sideOffset={12}
                   collisionPadding={16}
                   className="max-w-[300px] bg-bla-blue text-bla-white text-sm md:text-base font-host px-5 py-4 rounded-2xl shadow-2xl border-2 border-bla-white/20"
                   style={{ 
-                    transform: `rotate(${item.tilt}deg)`,
+                    transform: isMobile ? 'none' : `rotate(${item.tilt}deg)`,
                   }}
                 >
                   <span className="block font-semibold text-bla-lime text-lg mb-1">💡 {item.title}</span>
