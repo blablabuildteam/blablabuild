@@ -713,7 +713,6 @@ export default function AIWidget() {
                       </motion.button>
                     </div>
                   </motion.div>
-                </motion.div>
               )}
 
 

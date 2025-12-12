@@ -330,18 +330,18 @@ export default function FloatingChatBubble() {
   const actualQuestionNumber = messages.filter(m => m.role === 'user').length + 1;
 
   // Blablabla Animation Component
+  const BLABLABLA_LETTERS = ['b', 'l', 'a', 'b', 'l', 'a', 'b', 'l', 'a'];
   const BlablablaAnimation = ({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) => {
     const textSize = size === 'sm' ? 'text-xs' : size === 'lg' ? 'text-lg' : 'text-sm';
     const letterSpacing = size === 'sm' ? 'tracking-tight' : 'tracking-wide';
     const [visibleChars, setVisibleChars] = useState(0);
-    const letters = ['b', 'l', 'a', 'b', 'l', 'a', 'b', 'l', 'a'];
     
     useEffect(() => {
       setVisibleChars(0);
       let timeoutId: NodeJS.Timeout;
       const interval = setInterval(() => {
         setVisibleChars((prev) => {
-          if (prev >= letters.length) {
+          if (prev >= BLABLABLA_LETTERS.length) {
             timeoutId = setTimeout(() => setVisibleChars(0), 1000);
             return prev;
           }
@@ -361,7 +361,7 @@ export default function FloatingChatBubble() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        {letters.map((letter, index) => (
+        {BLABLABLA_LETTERS.map((letter, index) => (
           <motion.span
             key={index}
             initial={{ opacity: 0, scale: 0.5, y: 10 }}
