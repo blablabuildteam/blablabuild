@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
-import PasswordGate from "@/components/PasswordGate";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import CookieBanner from "@/components/CookieBanner";
 
@@ -31,9 +30,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <GoogleAnalytics />
         </Suspense>
-        <PasswordGate>
-          {children}
-        </PasswordGate>
+        {children}
         <CookieBanner />
       </body>
     </html>
