@@ -291,28 +291,16 @@ html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  scrollbar-width: none; /* Firefox */
 }
 
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-/* Minimal scrollbar */
+/* Hide scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #333333;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(206, 255, 0, 0.5);
+  width: 0px;
 }
 
 /* Selection color - neon lime */
