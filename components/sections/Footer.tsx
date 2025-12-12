@@ -52,7 +52,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="pt-4 pb-4 md:pt-24 md:pb-6 px-[10px]">
+    <footer className="pt-4 pb-[10px] md:pt-24 md:pb-[10px] px-[10px]">
       <div className="w-full">
         {/* Main Footer Card */}
         <motion.div 
