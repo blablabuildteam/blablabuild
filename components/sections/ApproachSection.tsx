@@ -147,7 +147,7 @@ function StepItem({ step, idx }: { step: typeof steps[0]; idx: number }) {
 
 export default function ApproachSection() {
   return (
-    <section id="aanpak" className="min-h-screen snap-start overflow-hidden py-[10px] px-[10px]">
+    <section id="aanpak" className="min-h-screen overflow-hidden py-[10px] px-[10px]">
       <div className="w-full h-full rounded-3xl overflow-hidden bg-bla-blue py-16 md:py-24 px-4 md:px-16 relative">
         {/* Grain effect overlay */}
         <div 

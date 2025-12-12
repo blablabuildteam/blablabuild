@@ -20,7 +20,7 @@ const expertises = [
 
 export default function IntroSection() {
   return (
-    <section className="min-h-[688px] snap-start flex items-center justify-center bg-bla-lavender px-8 md:px-16 py-24 md:py-36 overflow-hidden">
+    <section className="min-h-[688px] flex items-center justify-center bg-bla-lavender px-8 md:px-16 py-24 md:py-36 overflow-hidden">
       <div className="mx-auto w-full max-w-[863px] text-center">
         <motion.h2
           className="font-host font-medium text-3xl md:text-[48px] leading-tight text-text-primary mb-10 md:mb-12"

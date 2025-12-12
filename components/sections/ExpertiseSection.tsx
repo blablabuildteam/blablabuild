@@ -89,7 +89,7 @@ export default function ExpertiseSection() {
 
   return (
     <TooltipProvider delayDuration={100}>
-      <section id="expertise" className="min-h-[800px] snap-start flex flex-col items-center justify-center px-4 md:px-16 py-16 md:py-24" style={{ backgroundColor: '#e7e8ff' }}>
+      <section id="expertise" className="min-h-[800px] flex flex-col items-center justify-center px-4 md:px-16 py-16 md:py-24" style={{ backgroundColor: '#e7e8ff' }}>
         <motion.h2
           className="font-host font-medium text-3xl md:text-[48px] text-text-primary text-center mb-8"
           initial={{ opacity: 0, y: 30 }}

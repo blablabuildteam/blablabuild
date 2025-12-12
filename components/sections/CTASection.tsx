@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 
 export default function CTASection() {
   return (
-    <section className="snap-start flex items-center justify-center bg-white px-4 md:px-content py-12 md:py-16 lg:py-20">
+    <section className="flex items-center justify-center bg-white px-4 md:px-content py-12 md:py-16 lg:py-20">
       <motion.div 
         className="mx-auto w-full text-center"
         initial={{ opacity: 0, y: 40 }}
