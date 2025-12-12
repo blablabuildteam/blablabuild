@@ -73,6 +73,9 @@ export const trackEvent = (eventName: string, properties?: Record<string, any>) 
 };
 
 export const trackWidgetEvent = (sessionId: string, event: string, data?: any) => {
+  // Skip tracking on server-side
+  if (typeof window === 'undefined') return;
+  
   trackEvent(`widget_${event}`, {
     session_id: sessionId,
     ...data,
@@ -86,6 +89,7 @@ export const trackWidgetEvent = (sessionId: string, event: string, data?: any) =
 
 // Track page view (call from components that need it)
 export const trackPageView = (url: string) => {
+  if (typeof window === 'undefined') return;
   if (!hasConsent('analytics')) return;
   
   // PostHog

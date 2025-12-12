@@ -448,6 +448,7 @@ export default function FloatingChatBubble() {
       {/* Backdrop overlay - click to close */}
       {isVisible && isExpanded && (
         <motion.div
+          key="chat-backdrop"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -458,7 +459,7 @@ export default function FloatingChatBubble() {
       )}
 
       {isVisible && (
-        <div className={`fixed left-1/2 -translate-x-1/2 z-[9999] ${isExpanded ? 'bottom-24' : 'bottom-8'}`}>
+        <div key="chat-container" className={`fixed left-1/2 -translate-x-1/2 z-[9999] ${isExpanded ? 'bottom-24' : 'bottom-8'}`}>
           <AnimatePresence mode="wait">
             {isExpanded ? (
               <motion.div

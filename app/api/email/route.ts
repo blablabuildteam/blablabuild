@@ -47,29 +47,40 @@ export async function POST(req: NextRequest) {
     // Send email via Resend if configured
     const resend = getResendClient();
     if (resend) {
-      // Send to customer
-      await resend.emails.send({
-        from: 'blablabuild <team@blablabuild.com>',
-        to: email,
-        subject: 'Jouw Intake Samenvatting & Gouden Tip 🚀',
-        html: emailHtml,
-      });
+      try {
+        // Use verified domain or Resend's test domain
+        const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+        const internalEmail = process.env.RESEND_INTERNAL_EMAIL || 'team@blablabuild.com';
+        
+        // Send to customer
+        const customerResult = await resend.emails.send({
+          from: `blablabuild <${fromEmail}>`,
+          to: email,
+          subject: 'Jouw Intake Samenvatting & Gouden Tip 🚀',
+          html: emailHtml,
+        });
+        console.log('✅ Customer email sent:', customerResult);
 
-      // Send internal notification with lead info
-      await resend.emails.send({
-        from: 'blablabuild <team@blablabuild.com>',
-        to: 'team@blablabuild.com',
-        subject: `Nieuwe lead: ${companyName || name || email}`,
-        html: generateInternalNotificationHtml({
-          email,
-          name,
-          companyName,
-          phone,
-          sessionId,
-          summary,
-          messages: messages || [],
-        }),
-      });
+        // Send internal notification with lead info
+        const internalResult = await resend.emails.send({
+          from: `blablabuild <${fromEmail}>`,
+          to: internalEmail,
+          subject: `Nieuwe lead: ${companyName || name || email}`,
+          html: generateInternalNotificationHtml({
+            email,
+            name,
+            companyName,
+            phone,
+            sessionId,
+            summary,
+            messages: messages || [],
+          }),
+        });
+        console.log('✅ Internal notification sent:', internalResult);
+      } catch (emailError: any) {
+        console.error('❌ Error sending email via Resend:', emailError.message || emailError);
+        // Don't throw - we still want to save the lead even if email fails
+      }
     } else {
       console.warn('Resend API key not configured - email sending skipped');
     }
