@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       // Send internal notification with lead info
       await resend.emails.send({
         from: 'blablabuild <team@blablabuild.com>',
-        to: 'daniel@blablabuild.com',
+        to: 'team@blablabuild.com',
         subject: `Nieuwe lead: ${companyName || name || email}`,
         html: generateInternalNotificationHtml({
           email,
