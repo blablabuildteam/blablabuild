@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Brain, Network, Box, ShoppingCart, Heart, TrendingUp, Map, Building2, Target, Zap } from 'lucide-react';
+import { Brain, Network, Box, ShoppingCart, Heart, TrendingUp, Map, Building2, Target, Zap, Search } from 'lucide-react';
 import Marquee, { MarqueeItem } from '@/components/ui/marquee';
 
 const expertises = [
@@ -9,6 +9,7 @@ const expertises = [
   { name: "AI & Data workflows", icon: Network },
   { name: "Prototyping", icon: Box },
   { name: "E-commerce & conversie", icon: ShoppingCart },
+  { name: "Search optimalisatie", icon: Search },
   { name: "Merkopbouw & emotie", icon: Heart },
   { name: "Data-gedreven groei", icon: TrendingUp },
   { name: "Pijn naar plan", icon: Map },

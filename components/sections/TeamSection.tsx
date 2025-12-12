@@ -130,20 +130,14 @@ export default function TeamSection() {
         {/* Team Cards */}
         <div className="flex flex-col md:grid md:grid-cols-3 gap-8 md:gap-6 md:items-stretch">
           {founders.map((founder, idx) => (
-            <div key={founder.name} className="group cursor-pointer relative flex flex-col">
-              {/* Yellow Background Card - Rotated - Shows on Hover */}
-              <div
-                className="absolute bg-bla-lime rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out pointer-events-none"
-                style={{
-                  transform: `rotate(${founder.cardRotation}deg) skewX(${founder.cardSkew}deg)`,
-                  top: '-12px',
-                  left: '-12px',
-                  right: '-12px',
-                  bottom: '-12px',
-                  zIndex: -1,
-                }}
-              />
-
+            <motion.div 
+              key={founder.name} 
+              className="relative flex flex-col"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.3 }}
+            >
               {/* White container with rounded edges */}
               <div className="bg-white rounded-xl p-4 md:p-6 flex flex-col flex-1 h-full">
                 <motion.div
@@ -194,7 +188,7 @@ export default function TeamSection() {
                 </div>
                 </motion.div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

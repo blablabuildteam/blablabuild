@@ -31,6 +31,11 @@ const expertiseItems = [
     tilt: 2,
   },
   {
+    title: 'Search optimalisatie',
+    description: 'Vandaag de dag is alleen gevonden worden in Google niet meer genoeg. Je moet ook vindbaar zijn in nieuwe AI-tools zoals ChatGPT, die jouw bedrijf aanbevelen aan hun gebruikers. Veel bedrijven laten deze gratis stroom aan bezoekers liggen.',
+    tilt: 3,
+  },
+  {
     title: 'Merkopbouw & emotie',
     description: 'Creëer authentieke merkbeleving die resoneert met je doelgroep en loyaliteit opbouwt.',
     tilt: -2,
