@@ -160,6 +160,13 @@ function getGeminiClient(): GoogleGenerativeAI {
   return genAI;
 }
 
+// Request options with Referer header for Vercel serverless environment
+const requestOptions = {
+  customHeaders: {
+    'Referer': process.env.NEXT_PUBLIC_SITE_URL || 'https://blablabuild.com',
+  },
+};
+
 // Safety settings - block harmful content
 const safetySettings = [
   { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
@@ -240,7 +247,7 @@ export class GeminiChat {
       model: 'gemini-2.0-flash', // Use available stable version
       safetySettings,
       generationConfig,
-    });
+    }, requestOptions);
 
     // Increment question count for user messages
     if (userMessage) {
@@ -437,7 +444,7 @@ export async function generateConversationSummary(sessionId: string): Promise<{
       ...generationConfig,
       maxOutputTokens: 500, // Smaller for summary
     },
-  });
+  }, requestOptions);
 
   // Get conversation history
   const { data: messages } = await messageStore.getBySession(sessionId);
