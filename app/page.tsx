@@ -137,17 +137,28 @@ export default function HomePage() {
     };
 
     const onScroll = () => {
-      // Cancel any pending frame to ensure we always process the latest scroll position
-      // This is especially important on mobile when direction changes rapidly
-      if (rafId !== null) {
-        window.cancelAnimationFrame(rafId);
-      }
+      // On mobile, use simpler throttling for better responsiveness
+      const isMobile = window.innerWidth < 768;
       
-      // Schedule a new frame - always allow this to ensure responsiveness
-      ticking = true;
-      rafId = window.requestAnimationFrame(() => {
-        handleScroll();
-      });
+      if (isMobile) {
+        // For mobile: simpler throttling without RAF to reduce delay
+        if (!ticking) {
+          ticking = true;
+          setTimeout(() => {
+            handleScroll();
+            ticking = false;
+          }, 16); // ~60fps throttle
+        }
+      } else {
+        // For desktop: use RAF for smoother animations
+        if (rafId !== null) {
+          window.cancelAnimationFrame(rafId);
+        }
+        ticking = true;
+        rafId = window.requestAnimationFrame(() => {
+          handleScroll();
+        });
+      }
     };
 
     const timer = setTimeout(() => {
@@ -197,8 +208,8 @@ export default function HomePage() {
 
   return (
     <div 
-      className="min-h-screen overflow-hidden w-full" 
-      style={{ margin: 0, padding: 0, touchAction: 'pan-y' }}
+      className="min-h-screen w-full" 
+      style={{ margin: 0, padding: 0, touchAction: 'pan-y', overflowX: 'hidden' }}
     >
       <Navigation showNavCTA={showNavCTA} activeSection={activeSection} />
       <HeroSection />

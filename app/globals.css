@@ -236,6 +236,10 @@
     padding: 0;
     /* Improve mobile scroll responsiveness */
     -webkit-tap-highlight-color: transparent;
+    /* Smooth scrolling on mobile */
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
   /* All elements use Matter font */
