@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { motion } from 'framer-motion';
 import { ArrowLeft01Icon, ArrowRight01Icon } from 'hugeicons-react';
 
 interface CarouselProps {
@@ -11,9 +10,8 @@ interface CarouselProps {
 
 interface CarouselContextValue {
   currentIndex: number;
-  setCurrentIndex: (index: number, direction: number) => void;
+  setCurrentIndex: (index: number) => void;
   totalSlides: number;
-  direction: number;
 }
 
 const CarouselContext = React.createContext<CarouselContextValue | undefined>(undefined);
@@ -21,20 +19,14 @@ const CarouselContext = React.createContext<CarouselContextValue | undefined>(un
 export function Carousel({ children, className = '' }: CarouselProps) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [totalSlides, setTotalSlides] = React.useState(0);
-  const [direction, setDirection] = React.useState(0);
 
   React.useEffect(() => {
     const slides = React.Children.count(children);
     setTotalSlides(slides);
   }, [children]);
 
-  const handleSetIndex = (newIndex: number, dir: number) => {
-    setDirection(dir);
-    setCurrentIndex(newIndex);
-  };
-
   return (
-    <CarouselContext.Provider value={{ currentIndex, setCurrentIndex: handleSetIndex, totalSlides, direction }}>
+    <CarouselContext.Provider value={{ currentIndex, setCurrentIndex, totalSlides }}>
       <div className={`relative ${className}`}>
         {children}
       </div>
@@ -46,7 +38,7 @@ export function CarouselContent({ children, className = '' }: { children: React.
   const context = React.useContext(CarouselContext);
   if (!context) throw new Error('CarouselContent must be used within Carousel');
 
-  const { currentIndex, totalSlides, direction } = context;
+  const { currentIndex, totalSlides } = context;
   const slides = React.Children.toArray(children);
 
   // Calculate which cards to show (previous, current, next)
@@ -65,20 +57,8 @@ export function CarouselContent({ children, className = '' }: { children: React.
   const centerRotation = 2;
   const rightRotation = 4;
 
-  // Slide animation variants
-  const slideVariants = {
-    enter: (dir: number) => ({
-      x: dir > 0 ? 40 : -40,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-  };
-
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative overflow-visible ${className}`}>
       <div 
         className="flex items-center justify-center gap-0 relative w-full pt-5 pb-10 md:pt-0 md:pb-0" 
         style={{ 
@@ -95,16 +75,7 @@ export function CarouselContent({ children, className = '' }: { children: React.
             zIndex: 10,
           }}
         >
-          <motion.div
-            key={`left-${prevCardIndex}`}
-            custom={direction}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            {slides[prevCardIndex]}
-          </motion.div>
+          {slides[prevCardIndex]}
         </div>
         
         {/* Current card (center) - highlighted, 20% larger (scale 1.2), and overlapping */}
@@ -115,16 +86,7 @@ export function CarouselContent({ children, className = '' }: { children: React.
             transformOrigin: 'center',
           }}
         >
-          <motion.div
-            key={`center-${currentIndex}`}
-            custom={direction}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            {slides[currentIndex]}
-          </motion.div>
+          {slides[currentIndex]}
         </div>
         
         {/* Next card (right) with fade */}
@@ -137,16 +99,7 @@ export function CarouselContent({ children, className = '' }: { children: React.
             zIndex: 10,
           }}
         >
-          <motion.div
-            key={`right-${nextCardIndex}`}
-            custom={direction}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            {slides[nextCardIndex]}
-          </motion.div>
+          {slides[nextCardIndex]}
         </div>
       </div>
     </div>
@@ -164,8 +117,7 @@ export function CarouselPrevious({ className = '' }: { className?: string }) {
   const { currentIndex, setCurrentIndex, totalSlides } = context;
 
   const handlePrev = () => {
-    const newIndex = currentIndex > 0 ? currentIndex - 1 : totalSlides - 1;
-    setCurrentIndex(newIndex, -1); // -1 = going backwards
+    setCurrentIndex(currentIndex > 0 ? currentIndex - 1 : totalSlides - 1);
   };
 
   if (totalSlides <= 1) return null;
@@ -188,8 +140,7 @@ export function CarouselNext({ className = '' }: { className?: string }) {
   const { currentIndex, setCurrentIndex, totalSlides } = context;
 
   const handleNext = () => {
-    const newIndex = currentIndex < totalSlides - 1 ? currentIndex + 1 : 0;
-    setCurrentIndex(newIndex, 1); // 1 = going forwards
+    setCurrentIndex(currentIndex < totalSlides - 1 ? currentIndex + 1 : 0);
   };
 
   if (totalSlides <= 1) return null;
