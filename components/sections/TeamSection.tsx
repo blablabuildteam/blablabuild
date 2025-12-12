@@ -13,6 +13,7 @@ const foundersData = [
     cardRotation: 3.886,
     cardSkew: 1.267,
     video: '/video/daniel.mp4',
+    backgroundImage: undefined, // Optional: path to background image (e.g., '/images/daniel-bg.jpg')
   },
   {
     name: 'Xennith Oosterveer',
@@ -22,6 +23,7 @@ const foundersData = [
     cardRotation: 4.359,
     cardSkew: 1.42,
     video: '/video/xennith.mp4',
+    backgroundImage: undefined, // Optional: path to background image
   },
   {
     name: 'Kevin Roos van Raadshooven',
@@ -31,6 +33,7 @@ const foundersData = [
     cardRotation: -4.331,
     cardSkew: -1.411,
     video: '/video/kevin.mp4',
+    backgroundImage: undefined, // Optional: path to background image
   },
 ];
 
@@ -45,7 +48,7 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 // Video component that plays once when fully in viewport
-function FounderVideo({ videoSrc, name }: { videoSrc: string; name: string }) {
+function FounderVideo({ videoSrc, name, backgroundImage }: { videoSrc: string; name: string; backgroundImage?: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const hasPlayedRef = useRef(false);
@@ -81,11 +84,18 @@ function FounderVideo({ videoSrc, name }: { videoSrc: string; name: string }) {
   }, []);
 
   return (
-    <div ref={containerRef} className="w-full h-full">
+    <div ref={containerRef} className="w-full h-full relative">
+      {/* Background image layer - shows behind video if video has transparency */}
+      {backgroundImage && (
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${backgroundImage})` }}
+        />
+      )}
       <video
         ref={videoRef}
         src={videoSrc}
-        className="w-full h-full object-cover"
+        className="w-full h-full object-cover relative z-10"
         muted
         playsInline
         preload="auto"
@@ -118,9 +128,9 @@ export default function TeamSection() {
         </motion.h2>
 
         {/* Team Cards */}
-        <div className="flex flex-col md:grid md:grid-cols-3 gap-8 md:gap-6">
+        <div className="flex flex-col md:grid md:grid-cols-3 gap-8 md:gap-6 md:items-stretch">
           {founders.map((founder, idx) => (
-            <div key={founder.name} className="group cursor-pointer relative">
+            <div key={founder.name} className="group cursor-pointer relative flex flex-col">
               {/* Yellow Background Card - Rotated - Shows on Hover */}
               <div
                 className="absolute bg-bla-lime rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out pointer-events-none"
@@ -134,28 +144,30 @@ export default function TeamSection() {
                 }}
               />
 
-              <motion.div
-                className="relative flex flex-col md:flex-col"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ 
-                  duration: 0.6,
-                  delay: idx * 0.15,
-                  type: "spring",
-                  stiffness: 100,
-                  damping: 15
-                }}
-              >
-                {/* Mobile: Row layout with image left, text right */}
-                <div className="flex flex-row md:flex-col gap-4 md:gap-0">
+              {/* White container with rounded edges */}
+              <div className="bg-white rounded-xl p-4 md:p-6 flex flex-col flex-1 h-full">
+                <motion.div
+                  className="relative flex flex-col md:flex-col"
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ 
+                    duration: 0.6,
+                    delay: idx * 0.15,
+                    type: "spring",
+                    stiffness: 100,
+                    damping: 15
+                  }}
+                >
+                  {/* Mobile: Row layout with image left, text right */}
+                  <div className="flex flex-row md:flex-col gap-4 md:gap-0">
                   {/* Video display - Left on mobile, top on desktop */}
-                  <div className="flex-shrink-0 w-[160px] md:w-full aspect-[160/200] md:aspect-[416/529] rounded-xl overflow-hidden md:mb-4 bg-gray-100 relative">
-                    <FounderVideo videoSrc={founder.video} name={founder.name} />
+                  <div className="flex-shrink-0 w-[160px] md:w-full aspect-[160/200] md:aspect-[416/529] rounded-xl overflow-hidden md:mb-4 bg-white relative">
+                    <FounderVideo videoSrc={founder.video} name={founder.name} backgroundImage={founder.backgroundImage} />
                   </div>
 
                   {/* Info - Right on mobile, below on desktop */}
-                  <div className="flex-1 md:mt-6 min-w-0">
+                  <div className="flex-1 md:mt-6 min-w-0 flex flex-col">
                     <div className="flex items-start md:items-center gap-2 mb-2">
                       <h3 className="font-host font-bold text-base md:text-lg lg:text-xl text-text-primary">
                         {founder.name}
@@ -175,12 +187,13 @@ export default function TeamSection() {
                     <p className="font-host font-normal text-sm md:text-lg lg:text-xl text-bla-blue mb-2 md:mb-4">
                       {founder.role}
                     </p>
-                    <p className="font-host font-normal text-xs md:text-sm lg:text-base text-text-muted leading-relaxed">
+                    <p className="font-host font-normal text-xs md:text-sm lg:text-base text-text-muted leading-relaxed flex-1">
                       {founder.description}
                     </p>
                   </div>
                 </div>
-              </motion.div>
+                </motion.div>
+              </div>
             </div>
           ))}
         </div>
