@@ -60,8 +60,6 @@ export default function HomePage() {
     const sectionElements: { id: string; element: HTMLElement }[] = [];
     let observer: IntersectionObserver | null = null;
     let rafId: number | null = null;
-    let ticking = false;
-    let lastScrollY = 0;
 
     const handleScroll = () => {
       const navHeight = 80;
@@ -132,33 +130,17 @@ export default function HomePage() {
 
       // Update state - can be empty string to clear active state
       setActiveSection(activeSection);
-      ticking = false;
-      lastScrollY = window.scrollY;
     };
 
     const onScroll = () => {
-      // On mobile, use simpler throttling for better responsiveness
-      const isMobile = window.innerWidth < 768;
-      
-      if (isMobile) {
-        // For mobile: simpler throttling without RAF to reduce delay
-        if (!ticking) {
-          ticking = true;
-          setTimeout(() => {
-            handleScroll();
-            ticking = false;
-          }, 16); // ~60fps throttle
-        }
-      } else {
-        // For desktop: use RAF for smoother animations
-        if (rafId !== null) {
-          window.cancelAnimationFrame(rafId);
-        }
-        ticking = true;
-        rafId = window.requestAnimationFrame(() => {
-          handleScroll();
-        });
+      // Use RAF for both mobile and desktop - cancel previous and schedule new
+      // This ensures direction changes are always registered
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
       }
+      rafId = window.requestAnimationFrame(() => {
+        handleScroll();
+      });
     };
 
     const timer = setTimeout(() => {
@@ -172,8 +154,6 @@ export default function HomePage() {
       });
 
       if (sectionElements.length === 0) return;
-
-      lastScrollY = window.scrollY;
 
       observer = new IntersectionObserver(
         (entries) => {
