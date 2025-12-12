@@ -47,7 +47,7 @@ export default function HeroSection() {
   return (
     <section 
       ref={sectionRef}
-      className="relative h-auto md:h-[100dvh] p-1 sm:p-[10px] pt-[76px] sm:pt-[80px] md:pt-[82px]"
+      className="relative h-auto md:h-[100dvh] p-1 sm:p-[10px] pt-[76px] sm:pt-[80px] md:pt-[82px] overflow-hidden"
       style={{ minHeight: 'auto' }}
     >
       {/* Main Container with Rounded Edges and Spacing */}
@@ -109,7 +109,7 @@ export default function HeroSection() {
                   <CarouselContent className="ml-0">
                     {carouselCards.map((card) => (
                       <CarouselItem key={card.id} className="pl-0">
-                        <div className="bg-[#1a1a1a] rounded-2xl sm:rounded-3xl pt-3 sm:pt-4 md:pt-5 px-5 sm:px-6 md:px-6 pb-3 sm:pb-4 md:pb-5 w-full relative overflow-visible flex flex-col [.carousel-active-card_&]:shadow-[0_0_20px_rgba(206,255,0,0.3)]">
+                        <div className="bg-[#1a1a1a] rounded-2xl sm:rounded-3xl pt-3 sm:pt-4 md:pt-5 px-5 sm:px-6 md:px-6 pb-3 sm:pb-4 md:pb-5 w-full relative overflow-visible flex flex-col">
                           <div className="flex flex-col h-full">
                             {/* Icon and Title */}
                             <div className="mb-2 sm:mb-3 relative z-20 flex flex-col gap-1.5 sm:gap-2 flex-shrink-0">
