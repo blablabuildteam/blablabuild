@@ -18,7 +18,7 @@ const footerData = {
   navLinks: [
     { label: 'Oplossingen', href: '#oplossingen' },
     { label: 'Aanpak', href: '#aanpak' },
-    { label: 'Expertise', href: '#expertise' },
+    { label: 'Skills', href: '#expertise' },
     { label: 'Over ons', href: '#over-ons' },
     { label: 'Privacy', href: '/privacy' },
   ],

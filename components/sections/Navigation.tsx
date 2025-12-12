@@ -99,7 +99,7 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
   const navLinks = [
     { id: 'oplossingen', label: 'Oplossingen' },
     { id: 'aanpak', label: 'Aanpak' },
-    { id: 'expertise', label: 'Expertise' },
+    { id: 'expertise', label: 'Skills' },
     { id: 'over-ons', label: 'Team' },
   ];
 
