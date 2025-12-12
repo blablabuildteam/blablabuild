@@ -277,6 +277,15 @@
   .snap-center {
     scroll-snap-align: center;
   }
+  
+}
+
+/* Aanpak section body text - larger font size on desktop */
+@media (min-width: 768px) {
+  #aanpak p[class*="md:text-lg"] {
+    font-size: 1.2rem;
+    line-height: 1.75rem;
+  }
 }
 
 /* HTML base styles */

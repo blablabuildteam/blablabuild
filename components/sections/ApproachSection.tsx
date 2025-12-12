@@ -113,7 +113,7 @@ function StepItem({ step, idx }: { step: typeof steps[0]; idx: number }) {
 
       <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-12 py-8 md:py-12">
         {/* Title & Description */}
-        <div className="flex-1 max-w-[416px]">
+        <div className="flex-1 max-w-[460px]">
           <motion.h3
             className={`font-host ${step.fontWeight} text-2xl md:text-[32px] leading-[34px] text-bla-lime mb-4`}
             variants={titleVariants}
@@ -130,7 +130,7 @@ function StepItem({ step, idx }: { step: typeof steps[0]; idx: number }) {
 
         {/* Image */}
         <motion.div
-          className="flex-shrink-0 w-[200px] h-[200px] md:w-[280px] md:h-[280px] ml-auto hidden md:block relative"
+          className="flex-shrink-0 w-[200px] h-[200px] md:w-[280px] md:h-[160px] ml-auto hidden md:block relative"
           variants={imageVariants}
         >
           <Image
