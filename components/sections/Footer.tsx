@@ -56,7 +56,8 @@ export default function Footer() {
       <div className="w-full">
         {/* Main Footer Card */}
         <motion.div 
-          className="bg-bla-dark rounded-3xl p-8 md:p-16 relative"
+          className="rounded-3xl p-8 md:p-16 relative"
+          style={{ backgroundColor: '#070800' }}
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}

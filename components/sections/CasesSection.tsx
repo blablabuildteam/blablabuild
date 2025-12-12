@@ -149,8 +149,8 @@ export default function CasesSection() {
   }, []);
 
   const getBadgeColor = (badge: BadgeType): string => {
-    // All badges have the same styling: footer-style dark background with volt (lime) text
-    return 'bg-bla-dark text-bla-lime';
+    // All badges have the same styling: smoky black background with volt (lime) text
+    return 'text-bla-lime';
   };
 
   return (
@@ -176,9 +176,10 @@ export default function CasesSection() {
               key={card.id}
               className={`solution-card rounded-2xl md:rounded-3xl p-6 md:p-8 flex flex-col transition-all duration-300 relative ${
                 card.id === 9 
-                  ? 'col-span-2 md:col-span-1 bg-bla-dark' 
+                  ? 'col-span-2 md:col-span-1' 
                   : 'bg-white'
               }`}
+              style={card.id === 9 ? { backgroundColor: '#070800' } : undefined}
             >
               {/* Grain effect overlay for CTA card */}
               {card.id === 9 && (
@@ -251,6 +252,7 @@ export default function CasesSection() {
                         <span
                           key={badge}
                           className={`px-3 py-1 rounded-lg text-xs md:text-sm font-medium ${getBadgeColor(badge)} relative`}
+                          style={{ backgroundColor: '#070800' }}
                         >
                           {/* Grain effect overlay */}
                           <div 

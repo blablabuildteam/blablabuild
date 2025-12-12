@@ -80,17 +80,8 @@ export default function HeroSection() {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="space-y-[0.80rem] sm:space-y-2 md:space-y-5 lg:space-y-6 w-full"
               >
-                <div className="inline-block px-3 py-1.5 md:px-4 md:py-2 mb-1 sm:mb-2 md:mb-3 lg:mb-4 sm:mt-0 bg-bla-dark relative" style={{ borderRadius: '5px', marginTop: '1.0rem' }}>
-                  {/* Grain effect overlay */}
-                  <div 
-                    className="absolute inset-0 opacity-[0.2] pointer-events-none"
-                    style={{
-                      borderRadius: '5px',
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-                      backgroundSize: '200px 200px',
-                    }}
-                  />
-                  <span className="text-bla-lime font-normal relative z-10" style={{ fontSize: '1.2rem' }}>Talk less, build more</span>
+                <div className="inline-block px-3 py-1.5 md:px-4 md:py-2 mb-1 sm:mb-2 md:mb-3 lg:mb-4 sm:mt-0" style={{ backgroundColor: '#070800', borderRadius: '5px', marginTop: '1.0rem' }}>
+                  <span className="text-bla-lime font-normal" style={{ fontSize: '1.2rem' }}>Talk less, build more</span>
                 </div>
                 <h2 className="font-sans text-[4rem] sm:text-[4.32rem] md:text-[5.4rem] lg:text-[6.48rem] xl:text-[8.64rem] font-bold tracking-tight text-bla-white mt-4 sm:mt-6 md:mt-0 leading-none mb-0" style={{ lineHeight: '1' }}>
                   <span className="font-normal">blabla</span>
