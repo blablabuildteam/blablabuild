@@ -231,6 +231,9 @@
     padding: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Enable smooth vertical scrolling on touch devices */
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
   }
   
   /* All elements use Matter font */
@@ -292,8 +295,15 @@ html {
   padding: 0;
   box-sizing: border-box;
   scrollbar-width: none; /* Firefox */
-  /* Prevent overscroll bounce at top/bottom of page */
-  overscroll-behavior-y: contain;
+  /* Smooth momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile touch optimization - only apply overscroll-behavior on desktop */
+@media (hover: hover) and (pointer: fine) {
+  html {
+    overscroll-behavior-y: contain;
+  }
 }
 
 *, *::before, *::after {

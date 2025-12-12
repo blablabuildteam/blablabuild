@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, ArrowRight, Check, Mail, Building, Phone, User, FileText } from 'lucide-react';
+import { MessageCircle, X, ArrowRight, Check } from 'lucide-react';
 import { trackEvent, trackWidgetEvent } from '@/lib/analytics';
 import { ChatResponse } from '@/lib/types';
 import Image from 'next/image';
@@ -75,6 +75,23 @@ export default function FloatingChatBubble() {
       }, 100);
     }
   }, [messages, isLoading]);
+
+  // Handle ESC key to close expanded chat
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isExpanded) {
+        setIsExpanded(false);
+      }
+    };
+
+    if (isExpanded) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isExpanded]);
 
   // Show bubble only after scrolling past the header section
   useEffect(() => {
@@ -428,6 +445,18 @@ export default function FloatingChatBubble() {
 
   return (
     <AnimatePresence>
+      {/* Backdrop overlay - click to close */}
+      {isVisible && isExpanded && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9998]"
+          onClick={() => setIsExpanded(false)}
+        />
+      )}
+
       {isVisible && (
         <div className={`fixed left-1/2 -translate-x-1/2 z-[9999] ${isExpanded ? 'bottom-24' : 'bottom-8'}`}>
           <AnimatePresence mode="wait">
@@ -447,6 +476,7 @@ export default function FloatingChatBubble() {
                   initial={{ y: 20 }}
                   animate={{ y: 0 }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
+                  onClick={(e) => e.stopPropagation()}
                 >
                   {/* Close button */}
                   <button
