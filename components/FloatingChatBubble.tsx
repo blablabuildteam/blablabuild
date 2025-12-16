@@ -763,7 +763,7 @@ export default function FloatingChatBubble() {
                               onKeyPress={handleKeyPress}
                               placeholder={questionOptions?.length > 0 ? "Of typ je eigen antwoord..." : "Je antwoord..."}
                               rows={2}
-                              className="w-full px-4 py-3 pr-16 border border-chat-input-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 transition-all resize-none text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
+                              className="w-full px-4 py-3 pr-20 border border-chat-input-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 transition-all resize-none text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40 overflow-wrap break-words"
                               disabled={isLoading}
                             />
                             <button
