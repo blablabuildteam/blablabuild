@@ -515,6 +515,9 @@ export default function FloatingChatBubble() {
                           <p className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-text-primary">
                             Ontdek hoe wij je kunnen helpen.
                           </p>
+                          <p className="font-host font-normal text-base md:text-lg leading-6 text-black mt-3 md:mt-4">
+                            Dit duurt ongeveer 1 tot 2 minuten
+                          </p>
                         </motion.div>
                       </div>
 
@@ -763,7 +766,8 @@ export default function FloatingChatBubble() {
                               onKeyPress={handleKeyPress}
                               placeholder={questionOptions?.length > 0 ? "Of typ je eigen antwoord..." : "Je antwoord..."}
                               rows={2}
-                              className="w-full px-4 py-3 pr-20 border border-chat-input-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 transition-all resize-none text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40 overflow-wrap break-words"
+                              className="w-full px-4 py-3 pr-20 md:px-8 md:pr-[4.5rem] border border-chat-input-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 transition-all resize-none text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40 overflow-wrap break-words"
+                              style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}
                               disabled={isLoading}
                             />
                             <button
