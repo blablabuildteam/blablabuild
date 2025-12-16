@@ -317,15 +317,17 @@ export class GeminiChat {
       const step = this.getStep();
       const progress = Math.min((this.questionCount / 4) * 100, 100);
       
-      // Check if we're at the final step (step 4) where bevinding + golden tip are given
-      // After 4 exchanges, the UI will show the contact form
-      const isComplete = this.questionCount >= 4;
+      // Check if we're at the final step where bevinding + golden tip are given
+      // The AI signals completion by including the closing phrase in Dutch
+      // Also complete after 4 exchanges as a fallback
+      const responseContainsClosing = this.detectConversationComplete(response);
+      const isComplete = responseContainsClosing || this.questionCount >= 4;
 
       return {
         message: response,
         sessionId: this.sessionId,
-        step,
-        progress,
+        step: isComplete ? 'complete' : step,
+        progress: isComplete ? 100 : progress,
         complete: isComplete,
         maxQuestions: 4,
       };
@@ -413,6 +415,51 @@ export class GeminiChat {
     if (this.questionCount < 3) return 'scoring';
     if (this.questionCount < 4) return 'ideating';
     return 'complete';
+  }
+
+  /**
+   * Detect if the AI response indicates the conversation is complete.
+   * The AI signals completion by using closing phrases like "laten we even kennismaken"
+   * or by providing all three elements: Conclusie, Gouden Tip, and Afsluiting.
+   */
+  private detectConversationComplete(response: string): boolean {
+    const lowerResponse = response.toLowerCase();
+    
+    // Check for the specific closing phrase mentioned in the system prompt
+    const closingPhrases = [
+      'laten we even kennismaken',
+      'laten we kennismaken',
+      'om dit verder uit te werken',
+      'dit is een eerste analyse',
+    ];
+    
+    // Check if any closing phrase is present
+    const hasClosingPhrase = closingPhrases.some(phrase => lowerResponse.includes(phrase));
+    
+    // Also check for the presence of key elements of the final advice
+    const hasConclusion = lowerResponse.includes('conclusie') || lowerResponse.includes('de conclusie');
+    const hasGoldenTip = lowerResponse.includes('gouden tip') || lowerResponse.includes('quick win');
+    const hasAfsluiting = lowerResponse.includes('afsluiting') || lowerResponse.includes('kennismaken');
+    
+    // If the response has the closing phrase, it's complete
+    if (hasClosingPhrase) {
+      console.log('🎯 Detected conversation complete via closing phrase');
+      return true;
+    }
+    
+    // If the response has all three elements (Conclusie + Gouden Tip + Afsluiting), it's complete
+    if (hasConclusion && hasGoldenTip && hasAfsluiting) {
+      console.log('🎯 Detected conversation complete via all three elements');
+      return true;
+    }
+    
+    // If it has at least Conclusie and Gouden Tip (the main value), consider it complete
+    if (hasConclusion && hasGoldenTip) {
+      console.log('🎯 Detected conversation complete via Conclusie + Gouden Tip');
+      return true;
+    }
+    
+    return false;
   }
 }
 
