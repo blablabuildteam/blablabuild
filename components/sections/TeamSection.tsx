@@ -13,7 +13,7 @@ const foundersData = [
     linkedin: 'https://www.linkedin.com/in/danieldevos/',
     cardRotation: 3.886,
     cardSkew: 1.267,
-    image: '/img/daniel.png',
+    image: '/img/daniel-profile.png',
   },
   {
     name: 'Xennith Oosterveer',
@@ -22,7 +22,7 @@ const foundersData = [
     linkedin: 'https://www.linkedin.com/in/xennith/',
     cardRotation: 4.359,
     cardSkew: 1.42,
-    image: '/img/xennith.png',
+    image: '/img/xennith-profile.png',
   },
   {
     name: 'Kevin Roos van Raadshooven',
@@ -31,7 +31,7 @@ const foundersData = [
     linkedin: 'https://www.linkedin.com/in/941b9732/',
     cardRotation: -4.331,
     cardSkew: -1.411,
-    image: '/img/kevin.png',
+    image: '/img/kevin-profile.png',
   },
 ];
 
@@ -113,7 +113,7 @@ export default function TeamSection() {
                       src={founder.image}
                       alt={founder.name}
                       fill
-                      className="object-cover"
+                      className="object-cover object-top"
                       sizes="(max-width: 768px) 35vw, 33vw"
                     />
                   </div>
