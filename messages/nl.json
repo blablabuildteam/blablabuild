@@ -242,6 +242,57 @@
     "title": "blablabuild | AI Innovaties voor Snelle Groei",
     "description": "We transformeren complexiteit naar flow. AI-gedreven oplossingen voor moderne bedrijven.",
     "keywords": "AI, automatisering, business transformation, data, tech"
+  },
+  "intake": {
+    "backToHome": "Terug naar home",
+    "hero": {
+      "title": "Waar loop je tegenaan?",
+      "subtitle": "Gebruik deze intake om binnen 2 minuten helder te krijgen waar je grootste groeikans ligt. Geen salesgesprek, wel direct inzicht.",
+      "duration": "± 1–2 minuten"
+    },
+    "chatModule": {
+      "title": "Wat is jouw uitdaging?",
+      "subtitle": "Ontdek hoe wij je kunnen helpen...",
+      "placeholder1": "Mijn voorraadbeheer in Excel loopt vast...",
+      "placeholder2": "Onze data staat verspreid over 5 tools...",
+      "placeholder3": "Ik wil processen automatiseren, maar waar begin ik?",
+      "send": "Verstuur"
+    },
+    "process": {
+      "step1": "1. Jij deelt je uitdaging",
+      "step2": "2. AI analyseert direct",
+      "step3": "3. Je krijgt een eerste richting"
+    },
+    "socialProof": {
+      "title": "Zij versnelden hun groei al met ons:"
+    },
+    "recognition": {
+      "title": "Herken je dit?",
+      "point1": "Handmatig werk? Elke maandag nog data overtikken uit Excel? Dat automatiseren we.",
+      "point2": "Losse systemen? Tools die niet praten en alles dubbel? Wij bouwen de brug.",
+      "point3": "Data zonder inzicht? Een berg cijfers, maar geen idee wat het betekent? Wij maken het visueel.",
+      "point4": "Software die remt? Oude systemen die groei tegenhouden? Wij zorgen voor schaalbaarheid."
+    },
+    "results": {
+      "card1": {
+        "title": "Meer grip op je business",
+        "description": "Van buikgevoel naar real-time dashboards."
+      },
+      "card2": {
+        "title": "Slimmere processen",
+        "description": "Minder fouten, meer tijd voor kernactiviteiten."
+      },
+      "card3": {
+        "title": "Versnelde groei",
+        "description": "Technologie die meegroeit, niet tegenwerkt."
+      }
+    },
+    "transformation": {
+      "title": "Van pijnpunt naar oplossing",
+      "point1": "\"Alles draaide op Excel.\" → Wij automatiseren zonder je operatie te verstoren.",
+      "point2": "\"Onze software werkte, maar remde ons af.\" → Wij bouwen schaalbare systemen.",
+      "point3": "\"We hadden data, maar geen inzicht.\" → Wij maken dashboards die wél gebruikt worden."
+    }
   }
 }
 

@@ -293,9 +293,28 @@ export default function AIWidget() {
     trigger.onclick = () => handleOpen();
     document.body.appendChild(trigger);
 
+    // Listen for custom event to open chat widget with optional initial message
+    const handleOpenWidget = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const initialMessage = customEvent.detail?.initialMessage;
+      
+      handleOpen();
+      
+      if (initialMessage) {
+        // Set the initial message after a short delay to ensure widget is open
+        setTimeout(() => {
+          setInput(initialMessage);
+        }, 500);
+      }
+    };
+
+    window.addEventListener('openChatWidget', handleOpenWidget);
+
     return () => {
       trigger.remove();
+      window.removeEventListener('openChatWidget', handleOpenWidget);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Calculate question number from actual user messages

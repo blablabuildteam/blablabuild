@@ -242,6 +242,57 @@
     "title": "blablabuild | AI Innovations for Fast Growth",
     "description": "We transform complexity into flow. AI-driven solutions for modern businesses.",
     "keywords": "AI, automation, business transformation, data, tech"
+  },
+  "intake": {
+    "backToHome": "Back to home",
+    "hero": {
+      "title": "What are you struggling with?",
+      "subtitle": "Use this intake to get clarity on where your biggest growth opportunity lies within 2 minutes. No sales pitch, just immediate insight.",
+      "duration": "± 1–2 minutes"
+    },
+    "chatModule": {
+      "title": "What is your challenge?",
+      "subtitle": "Discover how we can help you...",
+      "placeholder1": "My inventory management in Excel is failing...",
+      "placeholder2": "Our data is spread across 5 tools...",
+      "placeholder3": "I want to automate processes, but where do I start?",
+      "send": "Send"
+    },
+    "process": {
+      "step1": "1. You share your challenge",
+      "step2": "2. AI analyzes immediately",
+      "step3": "3. You get an initial direction"
+    },
+    "socialProof": {
+      "title": "They already accelerated their growth with us:"
+    },
+    "recognition": {
+      "title": "Do you recognize this?",
+      "point1": "Manual work? Still copying data from Excel every Monday? We automate that.",
+      "point2": "Separate systems? Tools that don't talk and everything duplicated? We build the bridge.",
+      "point3": "Data without insight? A mountain of numbers, but no idea what it means? We make it visual.",
+      "point4": "Software that slows you down? Old systems hindering growth? We ensure scalability."
+    },
+    "results": {
+      "card1": {
+        "title": "More grip on your business",
+        "description": "From gut feeling to real-time dashboards."
+      },
+      "card2": {
+        "title": "Smarter processes",
+        "description": "Fewer errors, more time for core activities."
+      },
+      "card3": {
+        "title": "Accelerated growth",
+        "description": "Technology that grows with you, not against you."
+      }
+    },
+    "transformation": {
+      "title": "From pain point to solution",
+      "point1": "\"Everything ran on Excel.\" → We automate without disrupting your operation.",
+      "point2": "\"Our software worked, but slowed us down.\" → We build scalable systems.",
+      "point3": "\"We had data, but no insight.\" → We create dashboards that are actually used."
+    }
   }
 }
 
