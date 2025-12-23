@@ -53,15 +53,15 @@ export default function LanguageSwitcher() {
   };
 
   return (
-    <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-full p-1 border border-white/20">
+    <div className="relative inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full p-1 border border-white/20">
       {locales.map((loc) => (
         <button
           key={loc}
           onClick={() => switchLocale(loc)}
-          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+          className={`relative px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 z-10 ${
             locale === loc
               ? 'bg-bla-lime text-black shadow-sm'
-              : 'text-text-primary hover:text-bla-blue hover:bg-white/5'
+              : 'text-text-primary hover:text-bla-blue'
           }`}
           aria-label={`Switch to ${localeNames[loc]}`}
           aria-pressed={locale === loc}
