@@ -1,0 +1,247 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "accept": "Accept",
+    "reject": "Reject",
+    "more": "More",
+    "contact": "Contact",
+    "contactUs": "Contact us",
+    "email": "team@blablabuild.com",
+    "location": "Built in Amsterdam",
+    "locatie": "Location"
+  },
+  "nav": {
+    "solutions": "Solutions",
+    "approach": "Approach",
+    "skills": "Skills",
+    "team": "Team",
+    "aboutUs": "About us",
+    "privacy": "Privacy",
+    "freeAIAdvice": "Free AI Advice"
+  },
+  "hero": {
+    "tagline": "Talk less, build more",
+    "heading": "For your {ai} innovations",
+    "ai": "AI",
+    "description": "We help your company work AI-driven, connect your processes and revenue, and make your business more profitable.",
+    "yourChance": "Your opportunity",
+    "moreInsight": {
+      "title": "More Insight",
+      "description": "Get one clear overview of all your data, so you immediately know where your opportunities lie."
+    },
+    "moreRevenue": {
+      "title": "More Revenue",
+      "description": "Optimize the path from visitor to paying customer for directly measurable growth."
+    },
+    "moreSpeed": {
+      "title": "More Speed",
+      "description": "Eliminate boring, repetitive work through smart automation, and gain time to build your business."
+    }
+  },
+  "intro": {
+    "heading": "We ensure your organization performs {better} with {lessHassle}",
+    "better": "better",
+    "lessHassle": "less hassle",
+    "description": "With our mix of AI, data, tech and customer experience, you get solutions that really deliver: more speed, fewer errors and systems that finally work together.",
+    "expertise": {
+      "aiStrategy": "AI Strategy",
+      "aiDataWorkflows": "AI & Data workflows",
+      "prototyping": "Prototyping",
+      "ecommerce": "E-commerce & conversion",
+      "searchOptimization": "Search optimization",
+      "brandBuilding": "Brand building & emotion",
+      "dataDrivenGrowth": "Data-driven growth",
+      "painToPlan": "Pain to plan",
+      "enterpriseStrategy": "Enterprise strategy & experience",
+      "measurableGrowth": "Measurable growth focus",
+      "operationalEfficiency": "Operational efficiency"
+    }
+  },
+  "cases": {
+    "heading": "Direct solutions for complex challenges",
+    "badges": {
+      "insight": "Insight",
+      "revenue": "Revenue",
+      "speed": "Speed"
+    },
+    "cards": {
+      "talkToData": {
+        "title": "Talk to your data",
+        "text": "**Ask questions to your data** in plain language, and get immediate answers to make decisions."
+      },
+      "stopSearching": {
+        "title": "Stop searching",
+        "text": "Let AI automatically extract all important information from documents and **save hours of email traffic**."
+      },
+      "visibleInAI": {
+        "title": "Visible in AI",
+        "text": "Make sure your company is found and **recommended by ChatGPT** and other AI tools."
+      },
+      "contentAtOnce": {
+        "title": "Content at once",
+        "text": "**All your content on your web pages** simultaneously update and translate, without manual work."
+      },
+      "moreConversion": {
+        "title": "More conversion",
+        "text": "Convert your current visitors more often into paying customers with a **smart AI chatbot**."
+      },
+      "freeTraffic": {
+        "title": "Free traffic",
+        "text": "Get **more free visitors to your website** without paying extra for advertisements."
+      },
+      "stayAhead": {
+        "title": "Stay ahead",
+        "text": "**Predict trends** and anticipate changes in your market with AI analysis."
+      },
+      "customTimeSavings": {
+        "title": "Custom time savings",
+        "text": "**A custom tool** to automate repetitive tasks so you can focus on what really matters."
+      },
+      "needSomethingElse": {
+        "title": "Need something else?",
+        "body": "There's almost no challenge we can't find a solution for. Contact us for free customized advice.",
+        "text": "There are **many more solutions** we've already delivered to our clients. Contact us or do the AI intake to share your needs.",
+        "contact": "Contact us"
+      }
+    }
+  },
+  "approach": {
+    "heading": "No agency {bullshit}, simply results",
+    "bullshit": "bullsh*t",
+    "subheading": "A simple approach that ensures we can make an impact quickly",
+    "steps": {
+      "blabla": {
+        "title": "blabla",
+        "description": "A coffee and a short conversation is all we need to sharpen the plan for the first concrete solution. We waste as little time as possible."
+      },
+      "build": {
+        "title": "build",
+        "description": "Here we put our skills to work immediately. No long trajectories; we go straight to building to deliver measurable results and positive impact within just a few weeks."
+      },
+      "scale": {
+        "title": "scale",
+        "description": "Our ultimate end goal. When achieving the intended results, we stay on as your innovation partner to ensure scaled success."
+      }
+    }
+  },
+  "expertise": {
+    "heading": "The skills we use to solve bottlenecks",
+    "items": {
+      "aiStrategy": {
+        "title": "AI Strategy",
+        "description": "Develop a clear AI roadmap that aligns with your business goals and creates competitive advantage."
+      },
+      "aiDataWorkflows": {
+        "title": "AI & Data workflows",
+        "description": "Automate processes and optimize data flows for maximum efficiency and scalability."
+      },
+      "prototyping": {
+        "title": "Prototyping",
+        "description": "From idea to working prototype in weeks, not months. Test, learn and iterate quickly."
+      },
+      "ecommerce": {
+        "title": "E-commerce & conversion",
+        "description": "Increase your online revenue with data-driven optimizations and personalized customer experiences."
+      },
+      "searchOptimization": {
+        "title": "Search optimization",
+        "description": "Today, just being found in Google is no longer enough. You also need to be findable in new AI tools like ChatGPT, which recommend your company to their users. Many companies are missing out on this free stream of visitors."
+      },
+      "brandBuilding": {
+        "title": "Brand building & emotion",
+        "description": "Create authentic brand experiences that resonate with your target audience and build loyalty."
+      },
+      "dataDrivenGrowth": {
+        "title": "Data-driven growth",
+        "description": "Transform raw data into actionable insights that drive growth and innovation."
+      },
+      "painToPlan": {
+        "title": "Pain to plan",
+        "description": "From complex challenges to concrete solutions with measurable results."
+      },
+      "enterpriseStrategy": {
+        "title": "Enterprise strategy & experience",
+        "description": "Scalable solutions for large organizations with focus on integration and governance."
+      },
+      "measurableGrowth": {
+        "title": "Measurable growth focus",
+        "description": "KPI-driven approach where every investment measurably contributes to your growth objectives."
+      },
+      "operationalEfficiency": {
+        "title": "Operational efficiency",
+        "description": "Streamline your operations and reduce costs through smart automation and process optimization."
+      }
+    }
+  },
+  "team": {
+    "heading": "More than 40 years of digital experience at your disposal",
+    "founders": {
+      "daniel": {
+        "name": "Daniel de Vos",
+        "role": "Strategic Data & AI Overview",
+        "description": "Brings the knowledge of large companies to SMEs. He makes unclear data and smart technology directly workable for your organization. He specializes in quickly testing solutions and eliminating internal red tape. The result: you save time and have a future-proof strategy.",
+        "linkedinLabel": "Daniel de Vos LinkedIn profile"
+      },
+      "xennith": {
+        "name": "Xennith Oosterveer",
+        "role": "Structure & Operational Time Savings",
+        "description": "This specialist is the bridge between technology and your daily practice. With more than a decade of strategic experience, he translates complex challenges into a clear, step-by-step plan. The result: immediate 'quick wins' (time savings) and an efficient internal way of working, so you can grow without the overhead of a large agency.",
+        "linkedinLabel": "Xennith Oosterveer LinkedIn profile"
+      },
+      "kevin": {
+        "name": "Kevin Roos van Raadshooven",
+        "role": "Measurable Growth & Online Profit",
+        "description": "An entrepreneur who thinks along and participates. This specialist builds profitable online brands by focusing on the customer and what really sells on your website. He combines data, psychology and marketing to build a strong brand that ensures sustainable, measurable revenue growth.",
+        "linkedinLabel": "Kevin Roos van Raadshooven LinkedIn profile"
+      }
+    }
+  },
+  "cta": {
+    "heading": "Ready to get started?",
+    "description": "Answer 7 questions and receive a personalized AI analysis within 5 minutes.",
+    "button": "Start your free analysis"
+  },
+  "cookies": {
+    "banner": {
+      "message": "🍪 We use cookies to improve your experience.",
+      "accept": "Accept",
+      "reject": "Reject",
+      "more": "More"
+    },
+    "settings": {
+      "necessary": "Necessary",
+      "alwaysOn": "Always on",
+      "analytics": "Analytics",
+      "marketing": "Marketing",
+      "save": "Save"
+    }
+  },
+  "passwordGate": {
+    "title": "Under Construction",
+    "message1": "This is going to be HUGE! We're building something TREMENDOUS here, folks.",
+    "message2": "The best AI platform you've ever seen. Nobody builds better than us. Nobody.",
+    "message3": "This will be YUUUGE - believe me!",
+    "placeholder": "Enter password",
+    "verifying": "Verifying...",
+    "enter": "Enter",
+    "error": "Incorrect password"
+  },
+  "chat": {
+    "processing": "Processing...",
+    "start": "Start",
+    "questions": "Questions",
+    "analyzing": "Analyzing",
+    "ideas": "Ideas",
+    "complete": "Complete"
+  },
+  "metadata": {
+    "title": "blablabuild | AI Innovations for Fast Growth",
+    "description": "We transform complexity into flow. AI-driven solutions for modern businesses.",
+    "keywords": "AI, automation, business transformation, data, tech"
+  }
+}
+

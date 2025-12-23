@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowUpRight } from 'lucide-react';
@@ -14,7 +15,7 @@ if (typeof window !== 'undefined') {
   });
 }
 
-type BadgeType = 'Inzicht' | 'Omzet' | 'Snelheid';
+type BadgeType = 'insight' | 'revenue' | 'speed';
 
 interface SolutionCard {
   id: number;
@@ -25,69 +26,82 @@ interface SolutionCard {
   body?: string;
 }
 
-// 9 solution cards with badges
-const solutionCards: SolutionCard[] = [
-  {
-    id: 1,
-    title: 'Praat met je data',
-    text: <><strong>Stel vragen aan je data</strong> in gewone taal, en krijg direct antwoord om beslissingen te nemen.</>,
-    badges: ['Inzicht', 'Snelheid'],
-  },
-  {
-    id: 2,
-    title: 'Stop met zoeken',
-    text: <>Laat AI automatisch alle belangrijke info uit documenten halen en <strong>bespaar uren mailverkeer</strong>.</>,
-    badges: ['Inzicht', 'Snelheid'],
-  },
-  {
-    id: 3,
-    title: 'Zichtbaar in AI',
-    text: <>Zorg dat jouw bedrijf gevonden én <strong>aanbevolen wordt door ChatGPT</strong> en andere AI-tools.</>,
-    badges: ['Omzet'],
-  },
-  {
-    id: 4,
-    title: 'Content in één keer',
-    text: <><strong>Al je content op je webpagina's</strong> tegelijkertijd aanpassen en vertalen, zonder handwerk.</>,
-    badges: ['Omzet', 'Snelheid'],
-  },
-  {
-    id: 5,
-    title: 'Meer conversie',
-    text: <>Zet je huidige bezoekers vaker om in betalende klanten met een <strong>slimme AI chatbot</strong>.</>,
-    badges: ['Omzet'],
-  },
-  {
-    id: 6,
-    title: 'Gratis verkeer',
-    text: <>Krijg <strong>meer gratis bezoekers op je website</strong> zonder extra te betalen voor advertenties.</>,
-    badges: ['Omzet'],
-  },
-  {
-    id: 7,
-    title: 'Blijf voorop',
-    text: <><strong>Voorspel trends</strong> en anticipeer op veranderingen in je markt met AI-analyse.</>,
-    badges: ['Inzicht', 'Snelheid'],
-  },
-  {
-    id: 8,
-    title: 'Tijdwinst op maat',
-    text: <><strong>Een eigen tool</strong> om repetitieve taken te automatiseren zodat jij kan focussen op wat echt belangrijk is.</>,
-    badges: ['Snelheid'],
-  },
-  {
-    id: 9,
-    text: <>Er zijn <strong>veel meer oplossingen</strong> die we al hebben geleverd aan onze klanten. Neem contact met ons op of doe de AI intake om jouw behoeften te delen.</>,
-    badges: [],
-    isCTACard: true,
-    title: 'Heb jij wat anders nodig?',
-    body: 'Er is bijna geen uitdaging waar we geen oplossing voor vinden. Neem contact op voor gratis advies op maat.',
-  },
-];
-
 export default function CasesSection() {
+  const t = useTranslations('cases');
+  const tCommon = useTranslations('common');
   const sectionRef = useRef<HTMLElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
+
+  // Helper to render text with bold markers (**text**)
+  const renderText = (text: string) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={i}>{part.slice(2, -2)}</strong>;
+      }
+      return part;
+    });
+  };
+
+  // 9 solution cards with badges - moved inside component to use translations
+  const solutionCards: SolutionCard[] = [
+    {
+      id: 1,
+      title: t('cards.talkToData.title'),
+      text: renderText(t('cards.talkToData.text')),
+      badges: ['insight', 'speed'],
+    },
+    {
+      id: 2,
+      title: t('cards.stopSearching.title'),
+      text: renderText(t('cards.stopSearching.text')),
+      badges: ['insight', 'speed'],
+    },
+    {
+      id: 3,
+      title: t('cards.visibleInAI.title'),
+      text: renderText(t('cards.visibleInAI.text')),
+      badges: ['revenue'],
+    },
+    {
+      id: 4,
+      title: t('cards.contentAtOnce.title'),
+      text: renderText(t('cards.contentAtOnce.text')),
+      badges: ['revenue', 'speed'],
+    },
+    {
+      id: 5,
+      title: t('cards.moreConversion.title'),
+      text: renderText(t('cards.moreConversion.text')),
+      badges: ['revenue'],
+    },
+    {
+      id: 6,
+      title: t('cards.freeTraffic.title'),
+      text: renderText(t('cards.freeTraffic.text')),
+      badges: ['revenue'],
+    },
+    {
+      id: 7,
+      title: t('cards.stayAhead.title'),
+      text: renderText(t('cards.stayAhead.text')),
+      badges: ['insight', 'speed'],
+    },
+    {
+      id: 8,
+      title: t('cards.customTimeSavings.title'),
+      text: renderText(t('cards.customTimeSavings.text')),
+      badges: ['speed'],
+    },
+    {
+      id: 9,
+      text: renderText(t('cards.needSomethingElse.text')),
+      badges: [],
+      isCTACard: true,
+      title: t('cards.needSomethingElse.title'),
+      body: t('cards.needSomethingElse.body'),
+    },
+  ];
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -163,7 +177,7 @@ export default function CasesSection() {
       <div className="w-full max-w-7xl mx-auto px-4 md:px-8">
         {/* Header */}
         <h2 className="font-host font-medium text-3xl md:text-[48px] text-text-primary text-center max-w-[863px] mx-auto leading-tight mb-12 md:mb-16">
-          Directe oplossingen voor complexe uitdagingen
+          {t('heading')}
         </h2>
 
         {/* 3-column Masonry Grid with 9 Cards */}
@@ -222,7 +236,7 @@ export default function CasesSection() {
                           : 'text-text-primary hover:text-bla-lime'
                       }`}
                     >
-                      Neem contact op
+                      {t('cards.needSomethingElse.contact')}
                       <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     </a>
                   </div>
@@ -262,7 +276,7 @@ export default function CasesSection() {
                               backgroundSize: '200px 200px',
                             }}
                           />
-                          <span className="relative z-10">{badge}</span>
+                          <span className="relative z-10">{t(`badges.${badge}`)}</span>
                         </span>
                       ))}
                     </div>

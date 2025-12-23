@@ -2,38 +2,9 @@
 
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { LinkedinIcon } from '@/components/ui/icons/il-linkedin';
-
-const foundersData = [
-  {
-    name: 'Daniel de Vos',
-    role: 'Strategisch Data & AI Overzicht',
-    description: 'Brengt de kennis van grote bedrijven naar het MKB. Hij maakt onduidelijke data en slimme technologie direct werkend voor jouw organisatie. Hij is gespecialiseerd in het snel testen van oplossingen en het elimineren van interne rompslomp. Het resultaat: je wint tijd en hebt een toekomstbestendige strategie.',
-    linkedin: 'https://www.linkedin.com/in/danieldevos/',
-    cardRotation: 3.886,
-    cardSkew: 1.267,
-    image: '/img/daniel-profile.png',
-  },
-  {
-    name: 'Xennith Oosterveer',
-    role: 'Structuur & Operationele Tijdwinst',
-    description: 'Deze specialist is de brug tussen technologie en je dagelijkse praktijk. Met meer dan een decennium aan strategische ervaring, vertaalt hij complexe uitdagingen naar een duidelijk, stapsgewijs plan. Het resultaat: directe \'quick wins\' (tijdwinst) en een efficiënte interne werkwijze, zodat je kunt groeien zonder de overhead van een groot bureau.',
-    linkedin: 'https://www.linkedin.com/in/xennith/',
-    cardRotation: 4.359,
-    cardSkew: 1.42,
-    image: '/img/xennith-profile.png',
-  },
-  {
-    name: 'Kevin Roos van Raadshooven',
-    role: 'Meetbare Groei & Online Winst',
-    description: 'Een ondernemer die meedenkt en meedoet. Deze specialist bouwt winstgevende online merken door te focussen op de klant en wat écht verkoopt op jouw website. Hij combineert data, psychologie en marketing om een sterk merk neer te zetten dat zorgt voor duurzame, meetbare omzetgroei.',
-    linkedin: 'https://www.linkedin.com/in/941b9732/',
-    cardRotation: -4.331,
-    cardSkew: -1.411,
-    image: '/img/kevin-profile.png',
-  },
-];
 
 // Fisher-Yates shuffle algorithm
 function shuffleArray<T>(array: T[]): T[] {
@@ -46,8 +17,43 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 export default function TeamSection() {
+  const t = useTranslations('team');
+  
+  const foundersData = [
+    {
+      name: t('founders.daniel.name'),
+      role: t('founders.daniel.role'),
+      description: t('founders.daniel.description'),
+      linkedin: 'https://www.linkedin.com/in/danieldevos/',
+      cardRotation: 3.886,
+      cardSkew: 1.267,
+      image: '/img/daniel-profile.png',
+      linkedinLabel: t('founders.daniel.linkedinLabel'),
+    },
+    {
+      name: t('founders.xennith.name'),
+      role: t('founders.xennith.role'),
+      description: t('founders.xennith.description'),
+      linkedin: 'https://www.linkedin.com/in/xennith/',
+      cardRotation: 4.359,
+      cardSkew: 1.42,
+      image: '/img/xennith-profile.png',
+      linkedinLabel: t('founders.xennith.linkedinLabel'),
+    },
+    {
+      name: t('founders.kevin.name'),
+      role: t('founders.kevin.role'),
+      description: t('founders.kevin.description'),
+      linkedin: 'https://www.linkedin.com/in/941b9732/',
+      cardRotation: -4.331,
+      cardSkew: -1.411,
+      image: '/img/kevin-profile.png',
+      linkedinLabel: t('founders.kevin.linkedinLabel'),
+    },
+  ];
+
   // Randomize founders order on each page load/refresh
-  const founders = useMemo(() => shuffleArray(foundersData), []);
+  const founders = useMemo(() => shuffleArray(foundersData), [t]);
 
   return (
     <section 
@@ -64,7 +70,7 @@ export default function TeamSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          Meer dan 40 jaar digitale ervaring tot jouw beschikking
+          {t('heading')}
         </motion.h2>
 
         {/* Team Cards */}
@@ -87,7 +93,7 @@ export default function TeamSection() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="md:hidden absolute top-4 right-4 text-bla-blue hover:text-bla-lime transition-colors z-10"
-                    aria-label={`${founder.name} LinkedIn profiel`}
+                    aria-label={founder.linkedinLabel}
                   >
                     <LinkedinIcon size={20} className="w-5 h-5" />
                   </a>
@@ -130,7 +136,7 @@ export default function TeamSection() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="hidden md:block text-bla-blue hover:text-bla-lime transition-colors flex-shrink-0"
-                          aria-label={`${founder.name} LinkedIn profiel`}
+                          aria-label={founder.linkedinLabel}
                         >
                           <LinkedinIcon size={20} className="w-5 h-5" />
                         </a>

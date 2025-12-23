@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { trackEvent } from '@/lib/analytics';
 import Image from 'next/image';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface NavigationProps {
   showNavCTA: boolean;
@@ -11,6 +13,8 @@ interface NavigationProps {
 }
 
 export default function Navigation({ showNavCTA, activeSection }: NavigationProps) {
+  const t = useTranslations('nav');
+  const tCommon = useTranslations('common');
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -97,10 +101,10 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
   const navDimensions = getNavWidth();
 
   const navLinks = [
-    { id: 'oplossingen', label: 'Oplossingen' },
-    { id: 'aanpak', label: 'Aanpak' },
-    { id: 'expertise', label: 'Skills' },
-    { id: 'over-ons', label: 'Team' },
+    { id: 'oplossingen', label: t('solutions') },
+    { id: 'aanpak', label: t('approach') },
+    { id: 'expertise', label: t('skills') },
+    { id: 'over-ons', label: t('team') },
   ];
 
   const handleNavClick = (id: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -223,12 +227,15 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
               </a>
             ))}
             
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+            
             {/* CTA Button */}
             <button
               onClick={handleCTAClick}
               className="bg-bla-lime px-4 md:px-6 h-10 rounded-full font-sans font-semibold text-sm md:text-base text-black tracking-[-0.48px] hover:bg-bla-lime/90 transition-colors flex items-center ml-2 md:ml-4 flex-shrink-0"
             >
-              Gratis AI Advies
+              {t('freeAIAdvice')}
             </button>
           </div>
 
@@ -298,20 +305,25 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
                 ))}
               </div>
 
+              {/* Language Switcher */}
+              <div className="flex justify-center">
+                <LanguageSwitcher />
+              </div>
+
               {/* CTA Button */}
               <div className="flex justify-center">
                 <button
                   onClick={handleCTAClick}
                   className="bg-bla-lime px-8 h-12 rounded-full font-sans font-semibold text-base text-black tracking-[-0.48px] hover:bg-bla-lime/90 transition-colors"
                 >
-                  Gratis AI Advies
+                  {t('freeAIAdvice')}
                 </button>
               </div>
 
               {/* Contact Section */}
               <div className="pt-6 border-t border-bla-border space-y-2 text-center">
                 <p className="text-sm font-sans font-normal" style={{ color: 'var(--text-muted)' }}>
-                  Contact ons
+                  {tCommon('contactUs')}
                 </p>
                 <a
                   href="mailto:team@blablabuild.com"

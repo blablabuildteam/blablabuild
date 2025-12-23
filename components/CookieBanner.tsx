@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { X, Cookie, ChevronDown, ChevronUp } from 'lucide-react';
 import {
   getConsentState,
@@ -12,6 +13,8 @@ import {
 } from '@/lib/consent';
 
 export default function CookieBanner() {
+  const t = useTranslations('cookies.banner');
+  const tSettings = useTranslations('cookies.settings');
   const [isVisible, setIsVisible] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [preferences, setPreferences] = useState<ConsentPreferences>({
@@ -69,7 +72,7 @@ export default function CookieBanner() {
               {/* Content */}
               <div className="flex-1">
                 <p className="text-sm text-black leading-relaxed mb-3">
-                  🍪 We gebruiken cookies om je ervaring te verbeteren.
+                  {t('message')}
                 </p>
 
                 {/* Quick Actions */}
@@ -78,19 +81,19 @@ export default function CookieBanner() {
                     onClick={handleAcceptAll}
                     className="flex-1 px-4 py-2 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-full text-xs font-medium transition-all"
                   >
-                    Accepteren
+                    {t('accept')}
                   </button>
                   <button
                     onClick={handleAcceptNecessary}
                     className="flex-1 px-4 py-2 bg-black/5 hover:bg-black/10 text-black rounded-full text-xs font-medium transition-all"
                   >
-                    Weigeren
+                    {t('reject')}
                   </button>
                   <button
                     onClick={() => setShowDetails(!showDetails)}
                     className="flex-1 px-4 py-2 text-black/60 hover:text-black text-xs font-medium transition-all flex items-center justify-center gap-1"
                   >
-                    Meer
+                    {t('more')}
                     {showDetails ? (
                       <ChevronUp className="w-3 h-3" />
                     ) : (
@@ -116,8 +119,8 @@ export default function CookieBanner() {
                   {/* Necessary */}
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-black">Noodzakelijk</span>
-                      <span className="text-[10px] px-1.5 py-0.5 bg-black/10 text-black/60 rounded">Altijd aan</span>
+                      <span className="text-xs text-black">{tSettings('necessary')}</span>
+                      <span className="text-[10px] px-1.5 py-0.5 bg-black/10 text-black/60 rounded">{tSettings('alwaysOn')}</span>
                     </div>
                     <div className="w-8 h-4 bg-bla-lime rounded-full flex items-center justify-end px-0.5">
                       <div className="w-3 h-3 bg-white rounded-full shadow-sm" />
@@ -126,7 +129,7 @@ export default function CookieBanner() {
 
                   {/* Analytics */}
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs text-black">Analytisch</span>
+                    <span className="text-xs text-black">{tSettings('analytics')}</span>
                     <button
                       onClick={() => togglePreference('analytics')}
                       className={`w-8 h-4 rounded-full flex items-center px-0.5 transition-colors ${
@@ -139,7 +142,7 @@ export default function CookieBanner() {
 
                   {/* Marketing */}
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs text-black">Marketing</span>
+                    <span className="text-xs text-black">{tSettings('marketing')}</span>
                     <button
                       onClick={() => togglePreference('marketing')}
                       className={`w-8 h-4 rounded-full flex items-center px-0.5 transition-colors ${
@@ -155,7 +158,7 @@ export default function CookieBanner() {
                     onClick={handleSavePreferences}
                     className="w-full mt-2 px-4 py-2 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-full text-xs font-medium transition-all"
                   >
-                    Opslaan
+                    {tSettings('save')}
                   </button>
                 </div>
               </motion.div>

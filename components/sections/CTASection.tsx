@@ -1,12 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
 
 export default function CTASection() {
+  const t = useTranslations('cta');
   return (
     <section className="flex items-center justify-center bg-white px-4 md:px-content py-12 md:py-16 lg:py-20">
       <motion.div 
@@ -23,7 +25,7 @@ export default function CTASection() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          Klaar om te starten?
+          {t('heading')}
           <Image 
             src="/3dobjects/png/Ribbed triangle.png" 
             alt="Ribbed triangle" 
@@ -39,7 +41,7 @@ export default function CTASection() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          Beantwoord 7 vragen en ontvang binnen 5 minuten een gepersonaliseerde AI-analyse.
+          {t('description')}
         </motion.p>
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
@@ -57,7 +59,7 @@ export default function CTASection() {
             variant="lime"
             className="text-sm font-semibold"
           >
-            Start je gratis analyse
+            {t('button')}
             <ArrowRight className="w-3.5 h-3.5" />
           </Button>
         </motion.div>

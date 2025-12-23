@@ -2,31 +2,34 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 import PrivacyModal from '@/components/ui/privacy-modal';
 import CookieSettingsButton from '@/components/CookieSettingsButton';
 
-const footerData = {
-  heading: 'blablabuild',
-  email: {
-    label: 'team@blablabuild.com',
-    href: 'mailto:team@blablabuild.com',
-  },
-  location: {
-    label: 'Built in Amsterdam',
-  },
-  navLinks: [
-    { label: 'Oplossingen', href: '#oplossingen' },
-    { label: 'Aanpak', href: '#aanpak' },
-    { label: 'Skills', href: '#expertise' },
-    { label: 'Over ons', href: '#over-ons' },
-    { label: 'Privacy', href: '/privacy' },
-  ],
-};
-
 export default function Footer() {
+  const t = useTranslations('nav');
+  const tCommon = useTranslations('common');
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+
+  const footerData = {
+    heading: 'blablabuild',
+    email: {
+      label: tCommon('email'),
+      href: `mailto:${tCommon('email')}`,
+    },
+    location: {
+      label: tCommon('location'),
+    },
+    navLinks: [
+      { label: t('solutions'), href: '#oplossingen' },
+      { label: t('approach'), href: '#aanpak' },
+      { label: t('skills'), href: '#expertise' },
+      { label: t('aboutUs'), href: '#over-ons' },
+      { label: t('privacy'), href: '/privacy' },
+    ],
+  };
 
   const handleNavClick = (href: string, label: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -120,7 +123,7 @@ export default function Footer() {
             {/* Location Section */}
             <div className="flex flex-col items-start gap-3">
               <h3 className="text-bla-lime text-sm font-semibold uppercase tracking-widest">
-                Locatie
+                {tCommon('locatie')}
               </h3>
               <span className="text-bla-text-light text-base md:text-lg">
                 {footerData.location.label}

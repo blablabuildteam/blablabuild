@@ -1,0 +1,247 @@
+{
+  "common": {
+    "loading": "Laden...",
+    "error": "Fout",
+    "close": "Sluiten",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "accept": "Accepteren",
+    "reject": "Weigeren",
+    "more": "Meer",
+    "contact": "Contact",
+    "contactUs": "Contact ons",
+    "email": "team@blablabuild.com",
+    "location": "Built in Amsterdam",
+    "locatie": "Locatie"
+  },
+  "nav": {
+    "solutions": "Oplossingen",
+    "approach": "Aanpak",
+    "skills": "Skills",
+    "team": "Team",
+    "aboutUs": "Over ons",
+    "privacy": "Privacy",
+    "freeAIAdvice": "Gratis AI Advies"
+  },
+  "hero": {
+    "tagline": "Talk less, build more",
+    "heading": "Voor jouw {ai} innovaties",
+    "ai": "AI",
+    "description": "Wij helpen je bedrijf om AI-gericht te werken, leggen de koppeling tussen je processen en omzet, en maken je onderneming winstgevender.",
+    "yourChance": "Jouw kans",
+    "moreInsight": {
+      "title": "Meer Inzicht",
+      "description": "Krijg één helder overzicht van al je data, zodat je direct weet waar je kansen liggen."
+    },
+    "moreRevenue": {
+      "title": "Meer Omzet",
+      "description": "Optimaliseer de weg van bezoeker naar betalende klant voor direct meetbare groei."
+    },
+    "moreSpeed": {
+      "title": "Meer Snelheid",
+      "description": "Elimineer saai, repetitief werk door slimme automatisering, en win tijd om te ondernemen."
+    }
+  },
+  "intro": {
+    "heading": "Wij zorgen dat jouw organisatie {better} presteert met {lessHassle}",
+    "better": "beter",
+    "lessHassle": "minder gedoe",
+    "description": "Met onze mix van AI, data, tech en klantervaring krijg je oplossingen die écht iets opleveren: meer snelheid, minder fouten en systemen die eindelijk samenwerken.",
+    "expertise": {
+      "aiStrategy": "AI-Strategie",
+      "aiDataWorkflows": "AI & Data workflows",
+      "prototyping": "Prototyping",
+      "ecommerce": "E-commerce & conversie",
+      "searchOptimization": "Search optimalisatie",
+      "brandBuilding": "Merkopbouw & emotie",
+      "dataDrivenGrowth": "Data-gedreven groei",
+      "painToPlan": "Pijn naar plan",
+      "enterpriseStrategy": "Enterprise strategie & ervaring",
+      "measurableGrowth": "Meetbaar groei focus",
+      "operationalEfficiency": "Operationele efficiëntie"
+    }
+  },
+  "cases": {
+    "heading": "Directe oplossingen voor complexe uitdagingen",
+    "badges": {
+      "insight": "Inzicht",
+      "revenue": "Omzet",
+      "speed": "Snelheid"
+    },
+    "cards": {
+      "talkToData": {
+        "title": "Praat met je data",
+        "text": "**Stel vragen aan je data** in gewone taal, en krijg direct antwoord om beslissingen te nemen."
+      },
+      "stopSearching": {
+        "title": "Stop met zoeken",
+        "text": "Laat AI automatisch alle belangrijke info uit documenten halen en **bespaar uren mailverkeer**."
+      },
+      "visibleInAI": {
+        "title": "Zichtbaar in AI",
+        "text": "Zorg dat jouw bedrijf gevonden én **aanbevolen wordt door ChatGPT** en andere AI-tools."
+      },
+      "contentAtOnce": {
+        "title": "Content in één keer",
+        "text": "**Al je content op je webpagina's** tegelijkertijd aanpassen en vertalen, zonder handwerk."
+      },
+      "moreConversion": {
+        "title": "Meer conversie",
+        "text": "Zet je huidige bezoekers vaker om in betalende klanten met een **slimme AI chatbot**."
+      },
+      "freeTraffic": {
+        "title": "Gratis verkeer",
+        "text": "Krijg **meer gratis bezoekers op je website** zonder extra te betalen voor advertenties."
+      },
+      "stayAhead": {
+        "title": "Blijf voorop",
+        "text": "**Voorspel trends** en anticipeer op veranderingen in je markt met AI-analyse."
+      },
+      "customTimeSavings": {
+        "title": "Tijdwinst op maat",
+        "text": "**Een eigen tool** om repetitieve taken te automatiseren zodat jij kan focussen op wat echt belangrijk is."
+      },
+      "needSomethingElse": {
+        "title": "Heb jij wat anders nodig?",
+        "body": "Er is bijna geen uitdaging waar we geen oplossing voor vinden. Neem contact op voor gratis advies op maat.",
+        "text": "Er zijn **veel meer oplossingen** die we al hebben geleverd aan onze klanten. Neem contact met ons op of doe de AI intake om jouw behoeften te delen.",
+        "contact": "Neem contact op"
+      }
+    }
+  },
+  "approach": {
+    "heading": "Geen agency {bullshit}, simpelweg resultaat",
+    "bullshit": "bullsh*t",
+    "subheading": "Een simpele aanpak dat ervoor zorgt dat we snel impact kunnen maken",
+    "steps": {
+      "blabla": {
+        "title": "blabla",
+        "description": "Een koffietje en een kort gesprek is alles wat we nodig hebben om het plan voor de eerste concrete oplossing scherp te krijgen. We verspillen zo min mogelijk tijd."
+      },
+      "build": {
+        "title": "build",
+        "description": "Hier zetten we onze skills direct in. Geen lange trajecten; we gaan direct over tot bouwen om al binnen enkele weken meetbare resultaten en positieve impact te leveren."
+      },
+      "scale": {
+        "title": "scale",
+        "description": "Ons ultieme einddoel. Bij het behalen van beoogde resultaten blijven we aan als jouw innovatie partner om geschaald success te verzekeren."
+      }
+    }
+  },
+  "expertise": {
+    "heading": "De skills waarmee wij de knelpunten oplossen",
+    "items": {
+      "aiStrategy": {
+        "title": "AI-Strategie",
+        "description": "Ontwikkel een duidelijke AI-roadmap die aansluit bij je bedrijfsdoelen en concurrentievoordeel creëert."
+      },
+      "aiDataWorkflows": {
+        "title": "AI & Data workflows",
+        "description": "Automatiseer processen en optimaliseer datastromen voor maximale efficiëntie en schaalbaarheid."
+      },
+      "prototyping": {
+        "title": "Prototyping",
+        "description": "Van idee naar werkend prototype in weken, niet maanden. Test, leer en itereer snel."
+      },
+      "ecommerce": {
+        "title": "E-commerce & conversie",
+        "description": "Verhoog je online omzet met data-gedreven optimalisaties en gepersonaliseerde klantervaringen."
+      },
+      "searchOptimization": {
+        "title": "Search optimalisatie",
+        "description": "Vandaag de dag is alleen gevonden worden in Google niet meer genoeg. Je moet ook vindbaar zijn in nieuwe AI-tools zoals ChatGPT, die jouw bedrijf aanbevelen aan hun gebruikers. Veel bedrijven laten deze gratis stroom aan bezoekers liggen."
+      },
+      "brandBuilding": {
+        "title": "Merkopbouw & emotie",
+        "description": "Creëer authentieke merkbeleving die resoneert met je doelgroep en loyaliteit opbouwt."
+      },
+      "dataDrivenGrowth": {
+        "title": "Data-gedreven groei",
+        "description": "Transformeer ruwe data naar actionable insights die groei en innovatie aandrijven."
+      },
+      "painToPlan": {
+        "title": "Pijn naar plan",
+        "description": "Van complexe uitdagingen naar concrete oplossingen met meetbare resultaten."
+      },
+      "enterpriseStrategy": {
+        "title": "Enterprise strategie & ervaring",
+        "description": "Schaalbare oplossingen voor grote organisaties met focus op integratie en governance."
+      },
+      "measurableGrowth": {
+        "title": "Meetbaar groei focus",
+        "description": "KPI-gedreven aanpak waarbij elke investering meetbaar bijdraagt aan je groeidoelstellingen."
+      },
+      "operationalEfficiency": {
+        "title": "Operationele efficiëntie",
+        "description": "Stroomlijn je operaties en reduceer kosten door slimme automatisering en procesoptimalisatie."
+      }
+    }
+  },
+  "team": {
+    "heading": "Meer dan 40 jaar digitale ervaring tot jouw beschikking",
+    "founders": {
+      "daniel": {
+        "name": "Daniel de Vos",
+        "role": "Strategisch Data & AI Overzicht",
+        "description": "Brengt de kennis van grote bedrijven naar het MKB. Hij maakt onduidelijke data en slimme technologie direct werkend voor jouw organisatie. Hij is gespecialiseerd in het snel testen van oplossingen en het elimineren van interne rompslomp. Het resultaat: je wint tijd en hebt een toekomstbestendige strategie.",
+        "linkedinLabel": "Daniel de Vos LinkedIn profiel"
+      },
+      "xennith": {
+        "name": "Xennith Oosterveer",
+        "role": "Structuur & Operationele Tijdwinst",
+        "description": "Deze specialist is de brug tussen technologie en je dagelijkse praktijk. Met meer dan een decennium aan strategische ervaring, vertaalt hij complexe uitdagingen naar een duidelijk, stapsgewijs plan. Het resultaat: directe 'quick wins' (tijdwinst) en een efficiënte interne werkwijze, zodat je kunt groeien zonder de overhead van een groot bureau.",
+        "linkedinLabel": "Xennith Oosterveer LinkedIn profiel"
+      },
+      "kevin": {
+        "name": "Kevin Roos van Raadshooven",
+        "role": "Meetbare Groei & Online Winst",
+        "description": "Een ondernemer die meedenkt en meedoet. Deze specialist bouwt winstgevende online merken door te focussen op de klant en wat écht verkoopt op jouw website. Hij combineert data, psychologie en marketing om een sterk merk neer te zetten dat zorgt voor duurzame, meetbare omzetgroei.",
+        "linkedinLabel": "Kevin Roos van Raadshooven LinkedIn profiel"
+      }
+    }
+  },
+  "cta": {
+    "heading": "Klaar om te starten?",
+    "description": "Beantwoord 7 vragen en ontvang binnen 5 minuten een gepersonaliseerde AI-analyse.",
+    "button": "Start je gratis analyse"
+  },
+  "cookies": {
+    "banner": {
+      "message": "🍪 We gebruiken cookies om je ervaring te verbeteren.",
+      "accept": "Accepteren",
+      "reject": "Weigeren",
+      "more": "Meer"
+    },
+    "settings": {
+      "necessary": "Noodzakelijk",
+      "alwaysOn": "Altijd aan",
+      "analytics": "Analytisch",
+      "marketing": "Marketing",
+      "save": "Opslaan"
+    }
+  },
+  "passwordGate": {
+    "title": "Under Construction",
+    "message1": "This is going to be HUGE! We're building something TREMENDOUS here, folks.",
+    "message2": "The best AI platform you've ever seen. Nobody builds better than us. Nobody.",
+    "message3": "This will be YUUUGE - believe me!",
+    "placeholder": "Enter password",
+    "verifying": "Verifying...",
+    "enter": "Enter",
+    "error": "Incorrect password"
+  },
+  "chat": {
+    "processing": "Verwerken...",
+    "start": "Start",
+    "questions": "Vragen",
+    "analyzing": "Analyseren",
+    "ideas": "Ideeën",
+    "complete": "Klaar"
+  },
+  "metadata": {
+    "title": "blablabuild | AI Innovaties voor Snelle Groei",
+    "description": "We transformeren complexiteit naar flow. AI-gedreven oplossingen voor moderne bedrijven.",
+    "keywords": "AI, automatisering, business transformation, data, tech"
+  }
+}
+

@@ -1,35 +1,12 @@
 'use client';
 
 import { motion, useInView } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useRef } from 'react';
 
-const steps = [
-  {
-    number: 1,
-    title: 'blabla',
-    description: 'Een koffietje en een kort gesprek is alles wat we nodig hebben om het plan voor de eerste concrete oplossing scherp te krijgen. We verspillen zo min mogelijk tijd.',
-    image: '/3dobjects/png/Abstract.png',
-    fontWeight: 'font-light',
-  },
-  {
-    number: 2,
-    title: 'build',
-    description: 'Hier zetten we onze skills direct in. Geen lange trajecten; we gaan direct over tot bouwen om al binnen enkele weken meetbare resultaten en positieve impact te leveren.',
-    image: '/3dobjects/png/Chain.png',
-    fontWeight: 'font-bold',
-  },
-  {
-    number: 3,
-    title: 'scale',
-    description: 'Ons ultieme einddoel. Bij het behalen van beoogde resultaten blijven we aan als jouw innovatie partner om geschaald success te verzekeren.',
-    image: '/3dobjects/png/Plus.png',
-    fontWeight: 'font-light',
-  },
-];
-
 // Step item component with individual element animations
-function StepItem({ step, idx }: { step: typeof steps[0]; idx: number }) {
+function StepItem({ step, idx }: { step: { number: number; title: string; description: string; image: string; fontWeight: string }; idx: number }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px 0px" });
 
@@ -146,6 +123,32 @@ function StepItem({ step, idx }: { step: typeof steps[0]; idx: number }) {
 }
 
 export default function ApproachSection() {
+  const t = useTranslations('approach');
+
+  const steps = [
+    {
+      number: 1,
+      title: t('steps.blabla.title'),
+      description: t('steps.blabla.description'),
+      image: '/3dobjects/png/Abstract.png',
+      fontWeight: 'font-light',
+    },
+    {
+      number: 2,
+      title: t('steps.build.title'),
+      description: t('steps.build.description'),
+      image: '/3dobjects/png/Chain.png',
+      fontWeight: 'font-bold',
+    },
+    {
+      number: 3,
+      title: t('steps.scale.title'),
+      description: t('steps.scale.description'),
+      image: '/3dobjects/png/Plus.png',
+      fontWeight: 'font-light',
+    },
+  ];
+
   return (
     <section id="aanpak" className="min-h-screen overflow-hidden py-[10px] px-[10px]">
       <div className="w-full h-full rounded-3xl overflow-hidden bg-bla-blue py-16 md:py-24 px-4 md:px-16 relative">
@@ -167,10 +170,48 @@ export default function ApproachSection() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="font-host font-medium text-3xl md:text-[48px] text-bla-white max-w-[512px] leading-tight">
-            Geen agency <span className="text-bla-lime">bullsh*t,</span> simpelweg resultaat
+            {(() => {
+              try {
+                const heading = t('heading');
+                // Check if we got the key back instead of the translation
+                if (!heading || heading === 'approach.heading' || heading.startsWith('approach.')) {
+                  // Fallback based on locale
+                  const currentLocale = typeof window !== 'undefined' ? window.location.pathname.startsWith('/en') ? 'en' : 'nl' : 'nl';
+                  return currentLocale === 'en' ? (
+                    <>No agency <span className="text-bla-lime">bullsh*t,</span> simply results</>
+                  ) : (
+                    <>Geen agency <span className="text-bla-lime">bullsh*t,</span> simpelweg resultaat</>
+                  );
+                }
+                const parts = heading.split('{bullshit}');
+                return parts.length > 1 ? (
+                  <>
+                    {parts[0]}
+                    <span className="text-bla-lime">{t('bullshit')}</span>
+                    {parts[1]}
+                  </>
+                ) : heading;
+              } catch (error) {
+                // Fallback if translation fails
+                return <>Geen agency <span className="text-bla-lime">bullsh*t,</span> simpelweg resultaat</>;
+              }
+            })()}
           </h2>
           <p className="font-host font-medium text-lg md:text-2xl text-bla-white max-w-[521px]">
-            Een simpele aanpak dat ervoor zorgt dat we snel impact kunnen maken
+            {(() => {
+              try {
+                const subheading = t('subheading');
+                if (!subheading || subheading === 'approach.subheading' || subheading.startsWith('approach.')) {
+                  const currentLocale = typeof window !== 'undefined' ? window.location.pathname.startsWith('/en') ? 'en' : 'nl' : 'nl';
+                  return currentLocale === 'en' 
+                    ? 'A simple approach that ensures we can make an impact quickly'
+                    : 'Een simpele aanpak dat ervoor zorgt dat we snel impact kunnen maken';
+                }
+                return subheading;
+              } catch (error) {
+                return 'Een simpele aanpak dat ervoor zorgt dat we snel impact kunnen maken';
+              }
+            })()}
           </p>
         </motion.div>
 

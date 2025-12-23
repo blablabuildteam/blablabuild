@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import {
   Tooltip,
   TooltipContent,
@@ -9,65 +10,77 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-const expertiseItems = [
-  {
-    title: 'AI-Strategie',
-    description: 'Ontwikkel een duidelijke AI-roadmap die aansluit bij je bedrijfsdoelen en concurrentievoordeel creëert.',
-    tilt: -2,
-  },
-  {
-    title: 'AI & Data workflows',
-    description: 'Automatiseer processen en optimaliseer datastromen voor maximale efficiëntie en schaalbaarheid.',
-    tilt: 3,
-  },
-  {
-    title: 'Prototyping',
-    description: 'Van idee naar werkend prototype in weken, niet maanden. Test, leer en itereer snel.',
-    tilt: -3,
-  },
-  {
-    title: 'E-commerce & conversie',
-    description: 'Verhoog je online omzet met data-gedreven optimalisaties en gepersonaliseerde klantervaringen.',
-    tilt: 2,
-  },
-  {
-    title: 'Search optimalisatie',
-    description: 'Vandaag de dag is alleen gevonden worden in Google niet meer genoeg. Je moet ook vindbaar zijn in nieuwe AI-tools zoals ChatGPT, die jouw bedrijf aanbevelen aan hun gebruikers. Veel bedrijven laten deze gratis stroom aan bezoekers liggen.',
-    tilt: 3,
-  },
-  {
-    title: 'Merkopbouw & emotie',
-    description: 'Creëer authentieke merkbeleving die resoneert met je doelgroep en loyaliteit opbouwt.',
-    tilt: -2,
-  },
-  {
-    title: 'Data-gedreven groei',
-    description: 'Transformeer ruwe data naar actionable insights die groei en innovatie aandrijven.',
-    tilt: 3,
-  },
-  {
-    title: 'Pijn naar plan',
-    description: 'Van complexe uitdagingen naar concrete oplossingen met meetbare resultaten.',
-    tilt: -3,
-  },
-  {
-    title: 'Enterprise strategie & ervaring',
-    description: 'Schaalbare oplossingen voor grote organisaties met focus op integratie en governance.',
-    tilt: 2,
-  },
-  {
-    title: 'Meetbaar groei focus',
-    description: 'KPI-gedreven aanpak waarbij elke investering meetbaar bijdraagt aan je groeidoelstellingen.',
-    tilt: -2,
-  },
-  {
-    title: 'Operationele efficiëntie',
-    description: 'Stroomlijn je operaties en reduceer kosten door slimme automatisering en procesoptimalisatie.',
-    tilt: 3,
-  },
-];
-
 export default function ExpertiseSection() {
+  const t = useTranslations('expertise');
+
+  const expertiseItems = [
+    {
+      key: 'aiStrategy',
+      title: t('items.aiStrategy.title'),
+      description: t('items.aiStrategy.description'),
+      tilt: -2,
+    },
+    {
+      key: 'aiDataWorkflows',
+      title: t('items.aiDataWorkflows.title'),
+      description: t('items.aiDataWorkflows.description'),
+      tilt: 3,
+    },
+    {
+      key: 'prototyping',
+      title: t('items.prototyping.title'),
+      description: t('items.prototyping.description'),
+      tilt: -3,
+    },
+    {
+      key: 'ecommerce',
+      title: t('items.ecommerce.title'),
+      description: t('items.ecommerce.description'),
+      tilt: 2,
+    },
+    {
+      key: 'searchOptimization',
+      title: t('items.searchOptimization.title'),
+      description: t('items.searchOptimization.description'),
+      tilt: 3,
+    },
+    {
+      key: 'brandBuilding',
+      title: t('items.brandBuilding.title'),
+      description: t('items.brandBuilding.description'),
+      tilt: -2,
+    },
+    {
+      key: 'dataDrivenGrowth',
+      title: t('items.dataDrivenGrowth.title'),
+      description: t('items.dataDrivenGrowth.description'),
+      tilt: 3,
+    },
+    {
+      key: 'painToPlan',
+      title: t('items.painToPlan.title'),
+      description: t('items.painToPlan.description'),
+      tilt: -3,
+    },
+    {
+      key: 'enterpriseStrategy',
+      title: t('items.enterpriseStrategy.title'),
+      description: t('items.enterpriseStrategy.description'),
+      tilt: 2,
+    },
+    {
+      key: 'measurableGrowth',
+      title: t('items.measurableGrowth.title'),
+      description: t('items.measurableGrowth.description'),
+      tilt: -2,
+    },
+    {
+      key: 'operationalEfficiency',
+      title: t('items.operationalEfficiency.title'),
+      description: t('items.operationalEfficiency.description'),
+      tilt: 3,
+    },
+  ];
   const [isMobile, setIsMobile] = useState(false);
   const [openTooltip, setOpenTooltip] = useState<string | null>(null);
 
@@ -81,9 +94,9 @@ export default function ExpertiseSection() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleTooltipClick = (itemTitle: string) => {
+  const handleTooltipClick = (itemKey: string) => {
     if (isMobile) {
-      setOpenTooltip(openTooltip === itemTitle ? null : itemTitle);
+      setOpenTooltip(openTooltip === itemKey ? null : itemKey);
     }
   };
 
@@ -97,21 +110,21 @@ export default function ExpertiseSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          De skills waarmee wij de knelpunten oplossen
+          {t('heading')}
         </motion.h2>
 
         <div className="w-full max-w-[871px] flex flex-col items-center">
           {expertiseItems.map((item, index) => {
             const isLeft = index % 2 === 0;
-            const isOpen = isMobile ? openTooltip === item.title : undefined;
+            const isOpen = isMobile ? openTooltip === item.key : undefined;
             
             return (
               <Tooltip 
-                key={item.title}
+                key={item.key}
                 open={isOpen}
                 onOpenChange={(open) => {
                   if (isMobile) {
-                    setOpenTooltip(open ? item.title : null);
+                    setOpenTooltip(open ? item.key : null);
                   }
                 }}
               >
@@ -122,7 +135,7 @@ export default function ExpertiseSection() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-50px" }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
-                    onClick={() => handleTooltipClick(item.title)}
+                    onClick={() => handleTooltipClick(item.key)}
                   >
                     {item.title}
                   </motion.span>
