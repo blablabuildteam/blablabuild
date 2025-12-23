@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { locales, type Locale, defaultLocale } from '@/i18n/request';
 import { useState } from 'react';
@@ -14,23 +14,32 @@ const localeNames: Record<Locale, string> = {
 export default function LanguageSwitcher() {
   const locale = useLocale() as Locale;
   const router = useRouter();
+  // usePathname from next-intl returns pathname WITHOUT locale prefix
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
   const switchLocale = (newLocale: Locale) => {
     // Get the pathname without locale prefix
-    // In next-intl with 'as-needed', default locale (nl) has no prefix
     let pathWithoutLocale = pathname;
     
-    // Remove locale prefix if it exists
+    // Remove locale prefix if it exists (for non-default locales like /en)
     for (const loc of locales) {
-      if (pathname.startsWith(`/${loc}/`) || pathname === `/${loc}`) {
-        pathWithoutLocale = pathname.replace(`/${loc}`, '') || '/';
-        break;
+      if (loc !== defaultLocale) {
+        // Check if pathname starts with this locale
+        if (pathname === `/${loc}`) {
+          pathWithoutLocale = '/';
+          break;
+        } else if (pathname.startsWith(`/${loc}/`)) {
+          pathWithoutLocale = pathname.replace(`/${loc}`, '') || '/';
+          break;
+        }
       }
     }
     
     // Ensure path starts with /
+    if (!pathWithoutLocale || pathWithoutLocale === '') {
+      pathWithoutLocale = '/';
+    }
     if (!pathWithoutLocale.startsWith('/')) {
       pathWithoutLocale = '/' + pathWithoutLocale;
     }
