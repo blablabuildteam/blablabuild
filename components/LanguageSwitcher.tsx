@@ -15,8 +15,7 @@ export default function LanguageSwitcher() {
   const pathname = usePathname();
 
   const switchLocale = (newLocale: Locale) => {
-    // Don't switch if already on this locale
-    if (newLocale === locale) return;
+    // Allow clicking even if already on this locale (no-op but still clickable)
     
     // Get the pathname without locale prefix
     let pathWithoutLocale = pathname;
