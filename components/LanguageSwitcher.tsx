@@ -13,13 +13,11 @@ const localeNames: Record<Locale, string> = {
 export default function LanguageSwitcher() {
   const locale = useLocale() as Locale;
   const router = useRouter();
-  const [currentPath, setCurrentPath] = useState('/');
+  const [isMounted, setIsMounted] = useState(false);
 
-  // Get the actual browser pathname (includes locale prefix if present)
+  // Ensure component is mounted before accessing window
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setCurrentPath(window.location.pathname);
-    }
+    setIsMounted(true);
   }, []);
 
   const switchLocale = (newLocale: Locale) => {
@@ -29,7 +27,7 @@ export default function LanguageSwitcher() {
     }
     
     // Get the actual browser pathname
-    const browserPath = typeof window !== 'undefined' ? window.location.pathname : currentPath;
+    const browserPath = isMounted && typeof window !== 'undefined' ? window.location.pathname : '/';
     
     // Extract path without locale prefix
     let pathWithoutLocale = browserPath;
@@ -67,17 +65,35 @@ export default function LanguageSwitcher() {
 
   // Calculate the position of the sliding indicator
   const activeIndex = locales.indexOf(locale);
-  const indicatorPosition = activeIndex === 0 ? '0%' : '100%';
+  const isNL = activeIndex === 0;
+
+  // Prevent hydration mismatch by not rendering indicator until mounted
+  if (!isMounted) {
+    return (
+      <div className="relative inline-flex items-center">
+        <div className="relative bg-white/10 backdrop-blur-sm rounded-full p-1 border border-white/20 flex items-center">
+          {locales.map((loc) => (
+            <button
+              key={loc}
+              className="relative px-4 py-1.5 rounded-full text-sm font-medium min-w-[44px] text-text-primary"
+              disabled
+            >
+              {localeNames[loc]}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative inline-flex items-center">
       <div className="relative bg-white/10 backdrop-blur-sm rounded-full p-1 border border-white/20 flex items-center">
         {/* Sliding indicator */}
         <div
-          className="absolute top-1 bottom-1 w-1/2 bg-bla-lime rounded-full transition-all duration-300 ease-in-out shadow-sm z-0"
+          className="absolute top-1 bottom-1 bg-bla-lime rounded-full transition-all duration-300 ease-in-out shadow-sm z-0"
           style={{
-            left: indicatorPosition === '0%' ? '4px' : 'calc(50% - 2px)',
-            transform: indicatorPosition === '0%' ? 'translateX(0)' : 'translateX(0)',
+            left: isNL ? '4px' : 'calc(50% + 2px)',
             width: 'calc(50% - 4px)',
           }}
         />
