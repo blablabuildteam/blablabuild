@@ -61,9 +61,7 @@ export default function IntakePage() {
     trackEvent('calendly_clicked', { page: 'intake' });
     if (window.Calendly) {
       window.Calendly.initPopupWidget({
-        // TODO: Replace with actual daniel@blablabuild.com Calendly URL when account is set up
-        // Using demo URL for testing: https://calendly.com/acme-sales
-        url: 'https://calendly.com/acme-sales?hide_gdpr_banner=1&primary_color=b4f702'
+        url: 'https://calendly.com/team-blablabuild/30min?hide_gdpr_banner=1&primary_color=b4f702'
       });
     }
   };
