@@ -65,23 +65,40 @@ export default function LanguageSwitcher() {
     router.refresh();
   };
 
+  // Calculate the position of the sliding indicator
+  const activeIndex = locales.indexOf(locale);
+  const indicatorPosition = activeIndex === 0 ? '0%' : '100%';
+
   return (
-    <div className="relative inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full p-1 border border-white/20">
-      {locales.map((loc) => (
-        <button
-          key={loc}
-          onClick={() => switchLocale(loc)}
-          className={`relative px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 z-10 ${
-            locale === loc
-              ? 'bg-bla-lime text-black shadow-sm'
-              : 'text-text-primary hover:text-bla-blue'
-          }`}
-          aria-label={`Switch to ${localeNames[loc]}`}
-          aria-pressed={locale === loc}
-        >
-          {localeNames[loc]}
-        </button>
-      ))}
+    <div className="relative inline-flex items-center">
+      <div className="relative bg-white/10 backdrop-blur-sm rounded-full p-1 border border-white/20 flex items-center">
+        {/* Sliding indicator */}
+        <div
+          className="absolute top-1 bottom-1 w-1/2 bg-bla-lime rounded-full transition-all duration-300 ease-in-out shadow-sm z-0"
+          style={{
+            left: indicatorPosition === '0%' ? '4px' : 'calc(50% - 2px)',
+            transform: indicatorPosition === '0%' ? 'translateX(0)' : 'translateX(0)',
+            width: 'calc(50% - 4px)',
+          }}
+        />
+        
+        {/* Language buttons */}
+        {locales.map((loc, index) => (
+          <button
+            key={loc}
+            onClick={() => switchLocale(loc)}
+            className={`relative px-4 py-1.5 rounded-full text-sm font-medium transition-colors duration-200 z-10 min-w-[44px] ${
+              locale === loc
+                ? 'text-black font-semibold'
+                : 'text-text-primary hover:text-bla-blue'
+            }`}
+            aria-label={`Switch to ${localeNames[loc]}`}
+            aria-pressed={locale === loc}
+          >
+            {localeNames[loc]}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
