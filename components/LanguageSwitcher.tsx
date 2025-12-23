@@ -1,8 +1,9 @@
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { locales, type Locale, defaultLocale } from '@/i18n/request';
+import { useState, useEffect } from 'react';
 
 const localeNames: Record<Locale, string> = {
   nl: 'NL',
@@ -12,7 +13,14 @@ const localeNames: Record<Locale, string> = {
 export default function LanguageSwitcher() {
   const locale = useLocale() as Locale;
   const router = useRouter();
-  const pathname = usePathname();
+  const [currentPath, setCurrentPath] = useState('/');
+
+  // Get the actual browser pathname (includes locale prefix if present)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setCurrentPath(window.location.pathname);
+    }
+  }, []);
 
   const switchLocale = (newLocale: Locale) => {
     // Don't do anything if already on this locale
@@ -20,38 +28,37 @@ export default function LanguageSwitcher() {
       return;
     }
     
-    // Get the current pathname (next-intl's usePathname might already strip the locale)
-    let currentPath = pathname;
+    // Get the actual browser pathname
+    const browserPath = typeof window !== 'undefined' ? window.location.pathname : currentPath;
     
-    // If pathname is empty or just '/', use '/'
-    if (!currentPath || currentPath === '/') {
-      currentPath = '/';
-    }
+    // Extract path without locale prefix
+    let pathWithoutLocale = browserPath;
     
-    // Ensure path starts with /
-    if (!currentPath.startsWith('/')) {
-      currentPath = '/' + currentPath;
-    }
-    
-    // Build new path based on target locale
-    let newPath: string;
-    
-    if (newLocale === defaultLocale) {
-      // Switching to default locale (NL) - no prefix needed
-      // If we're coming from a non-default locale, pathname is already without prefix
-      newPath = currentPath;
-    } else {
-      // Switching to non-default locale (EN) - add prefix
-      // Remove any existing locale prefix first
-      let cleanPath = currentPath;
-      for (const loc of locales) {
-        if (loc !== defaultLocale && cleanPath.startsWith(`/${loc}`)) {
-          cleanPath = cleanPath.replace(`/${loc}`, '') || '/';
+    // Remove any existing locale prefix
+    for (const loc of locales) {
+      if (loc !== defaultLocale) {
+        if (browserPath === `/${loc}`) {
+          pathWithoutLocale = '/';
+          break;
+        } else if (browserPath.startsWith(`/${loc}/`)) {
+          pathWithoutLocale = browserPath.replace(`/${loc}`, '') || '/';
           break;
         }
       }
-      newPath = `/${newLocale}${cleanPath}`;
     }
+    
+    // Ensure path starts with /
+    if (!pathWithoutLocale || pathWithoutLocale === '') {
+      pathWithoutLocale = '/';
+    }
+    if (!pathWithoutLocale.startsWith('/')) {
+      pathWithoutLocale = '/' + pathWithoutLocale;
+    }
+    
+    // Build new path based on target locale
+    const newPath = newLocale === defaultLocale 
+      ? pathWithoutLocale 
+      : `/${newLocale}${pathWithoutLocale}`;
     
     // Navigate to the new path
     router.push(newPath);

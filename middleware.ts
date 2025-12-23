@@ -4,7 +4,8 @@ import { locales, defaultLocale } from './i18n/request';
 export default createMiddleware({
   locales,
   defaultLocale,
-  localePrefix: 'as-needed' // Only show locale prefix for non-default locale
+  localePrefix: 'as-needed', // Only show locale prefix for non-default locale
+  localeDetection: false // Disable automatic locale detection - only use URL path
 });
 
 export const config = {
