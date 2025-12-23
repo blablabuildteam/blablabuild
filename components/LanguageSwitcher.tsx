@@ -15,38 +15,45 @@ export default function LanguageSwitcher() {
   const pathname = usePathname();
 
   const switchLocale = (newLocale: Locale) => {
-    // Allow clicking even if already on this locale (no-op but still clickable)
+    // Don't do anything if already on this locale
+    if (locale === newLocale) {
+      return;
+    }
     
-    // Get the pathname without locale prefix
-    let pathWithoutLocale = pathname;
+    // Get the current pathname (next-intl's usePathname might already strip the locale)
+    let currentPath = pathname;
     
-    // Remove locale prefix if it exists (for non-default locales like /en)
-    for (const loc of locales) {
-      if (loc !== defaultLocale) {
-        // Check if pathname starts with this locale
-        if (pathname === `/${loc}`) {
-          pathWithoutLocale = '/';
-          break;
-        } else if (pathname.startsWith(`/${loc}/`)) {
-          pathWithoutLocale = pathname.replace(`/${loc}`, '') || '/';
-          break;
-        }
-      }
+    // If pathname is empty or just '/', use '/'
+    if (!currentPath || currentPath === '/') {
+      currentPath = '/';
     }
     
     // Ensure path starts with /
-    if (!pathWithoutLocale || pathWithoutLocale === '') {
-      pathWithoutLocale = '/';
-    }
-    if (!pathWithoutLocale.startsWith('/')) {
-      pathWithoutLocale = '/' + pathWithoutLocale;
+    if (!currentPath.startsWith('/')) {
+      currentPath = '/' + currentPath;
     }
     
-    // Build new path: add locale prefix only for non-default locale
-    const newPath = newLocale === defaultLocale 
-      ? pathWithoutLocale 
-      : `/${newLocale}${pathWithoutLocale}`;
+    // Build new path based on target locale
+    let newPath: string;
     
+    if (newLocale === defaultLocale) {
+      // Switching to default locale (NL) - no prefix needed
+      // If we're coming from a non-default locale, pathname is already without prefix
+      newPath = currentPath;
+    } else {
+      // Switching to non-default locale (EN) - add prefix
+      // Remove any existing locale prefix first
+      let cleanPath = currentPath;
+      for (const loc of locales) {
+        if (loc !== defaultLocale && cleanPath.startsWith(`/${loc}`)) {
+          cleanPath = cleanPath.replace(`/${loc}`, '') || '/';
+          break;
+        }
+      }
+      newPath = `/${newLocale}${cleanPath}`;
+    }
+    
+    // Navigate to the new path
     router.push(newPath);
     router.refresh();
   };
