@@ -99,32 +99,9 @@ export default function HeroSection() {
                 </h2>
                 <h1 className="font-host font-medium md:text-5xl lg:text-6xl xl:text-[64px] leading-tight text-bla-white mt-4 sm:mt-0" style={{ fontSize: '1.8rem', lineHeight: '2.5rem' }}>
                   <span className="block">
-                    {(() => {
-                      try {
-                        const heading = t('heading');
-                        // Check if we got the key back instead of the translation
-                        if (!heading || heading === 'hero.heading' || heading.startsWith('hero.')) {
-                          // Fallback based on locale
-                          const currentLocale = typeof window !== 'undefined' ? window.location.pathname.startsWith('/en') ? 'en' : 'nl' : 'nl';
-                          return currentLocale === 'en' ? (
-                            <>For your <span className="text-bla-lime">AI</span> innovations</>
-                          ) : (
-                            <>Voor jouw <span className="text-bla-lime">AI</span> innovaties</>
-                          );
-                        }
-                        const parts = heading.split('{ai}');
-                        return parts.length > 1 ? (
-                          <>
-                            {parts[0]}
-                            <span className="text-bla-lime">{t('ai')}</span>
-                            {parts[1]}
-                          </>
-                        ) : heading;
-                      } catch (error) {
-                        // Fallback if translation fails
-                        return <>Voor jouw <span className="text-bla-lime">AI</span> innovaties</>;
-                      }
-                    })()}
+                    {t.rich('heading', {
+                      ai: (chunks) => <span className="text-bla-lime">{chunks}</span>
+                    })}
                   </span>
                 </h1>
                 

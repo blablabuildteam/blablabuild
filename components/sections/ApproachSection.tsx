@@ -170,32 +170,9 @@ export default function ApproachSection() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="font-host font-medium text-3xl md:text-[48px] text-bla-white max-w-[512px] leading-tight">
-            {(() => {
-              try {
-                const heading = t('heading');
-                // Check if we got the key back instead of the translation
-                if (!heading || heading === 'approach.heading' || heading.startsWith('approach.')) {
-                  // Fallback based on locale
-                  const currentLocale = typeof window !== 'undefined' ? window.location.pathname.startsWith('/en') ? 'en' : 'nl' : 'nl';
-                  return currentLocale === 'en' ? (
-                    <>No agency <span className="text-bla-lime">bullsh*t,</span> simply results</>
-                  ) : (
-                    <>Geen agency <span className="text-bla-lime">bullsh*t,</span> simpelweg resultaat</>
-                  );
-                }
-                const parts = heading.split('{bullshit}');
-                return parts.length > 1 ? (
-                  <>
-                    {parts[0]}
-                    <span className="text-bla-lime">{t('bullshit')}</span>
-                    {parts[1]}
-                  </>
-                ) : heading;
-              } catch (error) {
-                // Fallback if translation fails
-                return <>Geen agency <span className="text-bla-lime">bullsh*t,</span> simpelweg resultaat</>;
-              }
-            })()}
+            {t.rich('heading', {
+              bullshit: (chunks) => <span className="text-bla-lime">{chunks}</span>
+            })}
           </h2>
           <p className="font-host font-medium text-lg md:text-2xl text-bla-white max-w-[521px]">
             {(() => {

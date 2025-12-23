@@ -38,64 +38,10 @@ export default function IntroSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          {(() => {
-            try {
-              const heading = t('heading');
-              // Check if we got the key back instead of the translation
-              if (!heading || heading === 'intro.heading' || heading.startsWith('intro.')) {
-                // Fallback based on locale - check URL
-                const currentLocale = typeof window !== 'undefined' ? window.location.pathname.startsWith('/en') ? 'en' : 'nl' : 'nl';
-                return currentLocale === 'en' ? (
-                  <>
-                    <span>We ensure your organization performs </span>
-                    <span className="text-bla-blue">better</span>
-                    <span> with </span>
-                    <span className="text-bla-blue">less hassle</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Wij zorgen dat jouw organisatie </span>
-                    <span className="text-bla-blue">beter</span>
-                    <span> presteert met </span>
-                    <span className="text-bla-blue">minder gedoe</span>
-                  </>
-                );
-              }
-              const betterParts = heading.split('{better}');
-              if (betterParts.length > 1) {
-                const lessHassleParts = betterParts[1].split('{lessHassle}');
-                return (
-                  <>
-                    <span>{betterParts[0]}</span>
-                    <span className="text-bla-blue">{t('better')}</span>
-                    <span> {lessHassleParts[0] || ''}</span>
-                    <span className="text-bla-blue">{t('lessHassle')}</span>
-                    {lessHassleParts.length > 1 && <span>{lessHassleParts[1]}</span>}
-                  </>
-                );
-              }
-              // Fallback if format doesn't match
-              return <span>{heading}</span>;
-            } catch (error) {
-              // Fallback if translation fails - check locale
-              const currentLocale = typeof window !== 'undefined' ? window.location.pathname.startsWith('/en') ? 'en' : 'nl' : 'nl';
-              return currentLocale === 'en' ? (
-                <>
-                  <span>We ensure your organization performs </span>
-                  <span className="text-bla-blue">better</span>
-                  <span> with </span>
-                  <span className="text-bla-blue">less hassle</span>
-                </>
-              ) : (
-                <>
-                  <span>Wij zorgen dat jouw organisatie </span>
-                  <span className="text-bla-blue">beter</span>
-                  <span> presteert met </span>
-                  <span className="text-bla-blue">minder gedoe</span>
-                </>
-              );
-            }
-          })()}
+          {t.rich('heading', {
+            better: (chunks) => <span className="text-bla-blue">{chunks}</span>,
+            lessHassle: (chunks) => <span className="text-bla-blue">{chunks}</span>
+          })}
         </motion.h2>
         
         {/* Expertise Ticker */}
