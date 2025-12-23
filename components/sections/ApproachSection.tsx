@@ -170,9 +170,20 @@ export default function ApproachSection() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="font-host font-medium text-3xl md:text-[48px] text-bla-white max-w-[512px] leading-tight">
-            {t.rich('heading', {
-              bullshit: (chunks) => <span className="text-bla-lime">{chunks}</span>
-            })}
+            {(() => {
+              const heading = t('heading', { bullshit: t('bullshit') });
+              const parts = heading.split(t('bullshit'));
+              if (parts.length > 1) {
+                return (
+                  <>
+                    {parts[0]}
+                    <span className="text-bla-lime">{t('bullshit')}</span>
+                    {parts[1]}
+                  </>
+                );
+              }
+              return heading;
+            })()}
           </h2>
           <p className="font-host font-medium text-lg md:text-2xl text-bla-white max-w-[521px]">
             {(() => {

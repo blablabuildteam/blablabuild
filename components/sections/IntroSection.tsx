@@ -38,10 +38,23 @@ export default function IntroSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          {t.rich('heading', {
-            better: (chunks) => <span className="text-bla-blue">{chunks}</span>,
-            lessHassle: (chunks) => <span className="text-bla-blue">{chunks}</span>
-          })}
+          {(() => {
+            const heading = t('heading', { better: t('better'), lessHassle: t('lessHassle') });
+            const betterParts = heading.split(t('better'));
+            if (betterParts.length > 1) {
+              const lessHassleParts = betterParts[1].split(t('lessHassle'));
+              return (
+                <>
+                  {betterParts[0]}
+                  <span className="text-bla-blue">{t('better')}</span>
+                  {lessHassleParts[0] || ''}
+                  <span className="text-bla-blue">{t('lessHassle')}</span>
+                  {lessHassleParts.length > 1 && lessHassleParts[1]}
+                </>
+              );
+            }
+            return heading;
+          })()}
         </motion.h2>
         
         {/* Expertise Ticker */}

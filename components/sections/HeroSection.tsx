@@ -99,9 +99,20 @@ export default function HeroSection() {
                 </h2>
                 <h1 className="font-host font-medium md:text-5xl lg:text-6xl xl:text-[64px] leading-tight text-bla-white mt-4 sm:mt-0" style={{ fontSize: '1.8rem', lineHeight: '2.5rem' }}>
                   <span className="block">
-                    {t.rich('heading', {
-                      ai: (chunks) => <span className="text-bla-lime">{chunks}</span>
-                    })}
+                    {(() => {
+                      const heading = t('heading', { ai: t('ai') });
+                      const parts = heading.split(t('ai'));
+                      if (parts.length > 1) {
+                        return (
+                          <>
+                            {parts[0]}
+                            <span className="text-bla-lime">{t('ai')}</span>
+                            {parts[1]}
+                          </>
+                        );
+                      }
+                      return heading;
+                    })()}
                   </span>
                 </h1>
                 
