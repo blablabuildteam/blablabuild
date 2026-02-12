@@ -17,12 +17,13 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   const { locale } = params;
   const messages = await getMessages({ locale });
   const t = messages.metadata as any;
-  const socialTitle = "Talk Less, Build More";
+  const pageTitle = "AI innovaties voor Snelle Groei | blablabuild";
+  const socialTitle = "Talk less, build more";
   const socialImagePath = "/img/Preview%20image%201.png";
 
   return {
     metadataBase: new URL("https://blablabuild.com"),
-    title: socialTitle,
+    title: pageTitle,
     description: t?.description || "We transformeren complexiteit naar flow. AI-gedreven oplossingen voor moderne bedrijven.",
     keywords: t?.keywords || "AI, automatisering, business transformation, data, tech",
     icons: {
