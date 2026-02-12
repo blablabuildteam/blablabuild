@@ -17,9 +17,12 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   const { locale } = params;
   const messages = await getMessages({ locale });
   const t = messages.metadata as any;
+  const socialTitle = "Talk Less, Build More";
+  const socialImagePath = "/img/Preview%20image%201.png";
 
   return {
-    title: t?.title || "blablabuild | AI Innovaties voor Snelle Groei",
+    metadataBase: new URL("https://blablabuild.com"),
+    title: socialTitle,
     description: t?.description || "We transformeren complexiteit naar flow. AI-gedreven oplossingen voor moderne bedrijven.",
     keywords: t?.keywords || "AI, automatisering, business transformation, data, tech",
     icons: {
@@ -32,23 +35,23 @@ export async function generateMetadata({ params }: { params: { locale: string } 
       shortcut: "/favicon.ico",
     },
     openGraph: {
-      title: t?.title || "blablabuild | AI Innovaties voor Snelle Groei",
+      title: socialTitle,
       description: t?.description || "We transformeren complexiteit naar flow. AI-gedreven oplossingen voor moderne bedrijven.",
       images: [
         {
-          url: "/img/preview-image.jpg",
-          width: 1200,
-          height: 630,
-          alt: "blablabuild - talk less, build more",
+          url: socialImagePath,
+          width: 1024,
+          height: 537,
+          alt: "Talk Less, Build More",
         },
       ],
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: t?.title || "blablabuild | AI Innovaties voor Snelle Groei",
+      title: socialTitle,
       description: t?.description || "We transformeren complexiteit naar flow. AI-gedreven oplossingen voor moderne bedrijven.",
-      images: ["/img/preview-image.jpg"],
+      images: [socialImagePath],
     },
   };
 }
