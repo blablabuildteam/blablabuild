@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   const { locale } = params;
   const messages = await getMessages({ locale });
   const t = messages.metadata as any;
-  const pageTitle = "AI innovaties voor Snelle Groei | blablabuild";
+  const pageTitle = "blablabuild | Talk less, build more";
   const socialTitle = "Talk less, build more";
   const socialImagePath = "/img/Preview%20image%201.png";
 
