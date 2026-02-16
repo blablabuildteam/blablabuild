@@ -19,41 +19,44 @@ function shuffleArray<T>(array: T[]): T[] {
 export default function TeamSection() {
   const t = useTranslations('team');
   
-  const foundersData = [
-    {
-      name: t('founders.daniel.name'),
-      role: t('founders.daniel.role'),
-      description: t('founders.daniel.description'),
-      linkedin: 'https://www.linkedin.com/in/danieldevos/',
-      cardRotation: 3.886,
-      cardSkew: 1.267,
-      image: '/img/daniel-profile.png',
-      linkedinLabel: t('founders.daniel.linkedinLabel'),
-    },
-    {
-      name: t('founders.xennith.name'),
-      role: t('founders.xennith.role'),
-      description: t('founders.xennith.description'),
-      linkedin: 'https://www.linkedin.com/in/xennith/',
-      cardRotation: 4.359,
-      cardSkew: 1.42,
-      image: '/img/xennith-profile.png',
-      linkedinLabel: t('founders.xennith.linkedinLabel'),
-    },
-    {
-      name: t('founders.kevin.name'),
-      role: t('founders.kevin.role'),
-      description: t('founders.kevin.description'),
-      linkedin: 'https://www.linkedin.com/in/941b9732/',
-      cardRotation: -4.331,
-      cardSkew: -1.411,
-      image: '/img/kevin-profile.png',
-      linkedinLabel: t('founders.kevin.linkedinLabel'),
-    },
-  ];
+  const foundersData = useMemo(
+    () => [
+      {
+        name: t('founders.daniel.name'),
+        role: t('founders.daniel.role'),
+        description: t('founders.daniel.description'),
+        linkedin: 'https://www.linkedin.com/in/danieldevos/',
+        cardRotation: 3.886,
+        cardSkew: 1.267,
+        image: '/img/daniel-profile.png',
+        linkedinLabel: t('founders.daniel.linkedinLabel'),
+      },
+      {
+        name: t('founders.xennith.name'),
+        role: t('founders.xennith.role'),
+        description: t('founders.xennith.description'),
+        linkedin: 'https://www.linkedin.com/in/xennith/',
+        cardRotation: 4.359,
+        cardSkew: 1.42,
+        image: '/img/xennith-profile.png',
+        linkedinLabel: t('founders.xennith.linkedinLabel'),
+      },
+      {
+        name: t('founders.kevin.name'),
+        role: t('founders.kevin.role'),
+        description: t('founders.kevin.description'),
+        linkedin: 'https://www.linkedin.com/in/941b9732/',
+        cardRotation: -4.331,
+        cardSkew: -1.411,
+        image: '/img/kevin-profile.png',
+        linkedinLabel: t('founders.kevin.linkedinLabel'),
+      },
+    ],
+    [t]
+  );
 
   // Randomize founders order on each page load/refresh
-  const founders = useMemo(() => shuffleArray(foundersData), [t]);
+  const founders = useMemo(() => shuffleArray(foundersData), [foundersData]);
 
   return (
     <section 

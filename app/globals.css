@@ -354,11 +354,7 @@ html {
 
 .border-beam-animation {
   animation: borderBeamRotate 3s linear infinite;
-}
-
-
-
-/* Prevent a “second” scrollbar on some browsers that render both html + body scrollbars */
+}/* Prevent a “second” scrollbar on some browsers that render both html + body scrollbars */
 body::-webkit-scrollbar {
   display: none;
 }

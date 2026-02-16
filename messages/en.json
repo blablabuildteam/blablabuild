@@ -236,7 +236,44 @@
     "questions": "Questions",
     "analyzing": "Analyzing",
     "ideas": "Ideas",
-    "complete": "Complete"
+    "complete": "Complete",
+    "widget": {
+      "title": "AI Intake",
+      "processing": "Processing...",
+      "processingAnswer": "Your answer is being processed...",
+      "analyzing": "AI is analyzing your answer...",
+      "error": "Something went wrong. Please try again.",
+      "chooseOption": "Choose an option or type your own answer:",
+      "orTypeOwn": "Or type your own answer...",
+      "yourAnswer": "Your answer...",
+      "clear": "Clear",
+      "skip": "Skip",
+      "next": "Next",
+      "analysisComplete": "Analysis Complete! 🎉",
+      "ideasReady": "We have your ideas ready! Leave your details so we can send the full analysis.",
+      "yourDetails": "Your details",
+      "name": "Name",
+      "namePlaceholder": "John Doe",
+      "email": "Email address",
+      "emailPlaceholder": "your@email.com",
+      "companyName": "Company name",
+      "companyPlaceholder": "Your Company Inc.",
+      "phone": "Phone number",
+      "phonePlaceholder": "+1 555 1234567",
+      "role": "Role",
+      "rolePlaceholder": "CEO, Marketing Manager, etc.",
+      "notes": "Extra comments (optional)",
+      "notesPlaceholder": "Anything else you'd like to share?",
+      "submit": "Send & Receive Analysis",
+      "submitting": "Sending...",
+      "nameEmailRequired": "Name and email are required",
+      "invalidEmail": "Enter a valid email address",
+      "successMessage": "Perfect {name}! I'll send the summary and golden tip to {email} within a few minutes.\n\nOne of us (Daniel, Kevin or Xennith) will personally contact you soon to discuss the possibilities.\n\nSee you soon!",
+      "allSet": "All set! ✅",
+      "privacy": "🔒 Your data is processed securely and only used to contact you. We never share your data with third parties. By sending you agree to our privacy policy.",
+      "active": "Active:",
+      "secure": "Secure & Private"
+    }
   },
   "metadata": {
     "title": "blablabuild | AI Innovations for Fast Growth",
@@ -246,8 +283,8 @@
   "intake": {
     "backToHome": "Back to home",
     "hero": {
-      "title": "What are you struggling with?",
-      "subtitle": "Use this intake to get clarity on where your biggest growth opportunity lies within 2 minutes. No sales pitch, just immediate insight.",
+      "title": "Where is your business leaking time, money, or overview — without you realizing it?",
+      "subtitle": "Answer one question and get insight into your biggest process or data struggles within 2 minutes. No sales talk. Just clarity.",
       "duration": "± 1–2 minutes"
     },
     "chatModule": {
@@ -256,42 +293,66 @@
       "placeholder1": "My inventory management in Excel is failing...",
       "placeholder2": "Our data is spread across 5 tools...",
       "placeholder3": "I want to automate processes, but where do I start?",
-      "send": "Send"
+      "send": "Send",
+      "suggestions": {
+        "label": "Choose what comes closest (or type your own):",
+        "option1": "My team works with too many separate tools",
+        "option2": "We do a lot of manual work",
+        "option3": "We have data, but no overview",
+        "option4": "Our software is limiting further growth",
+        "option5": "Other, namely…"
+      },
+      "helperText": "No worries — a few words is enough.",
+      "normalizingText": "You don't need to have your problem clearly defined yet — we'll help with that.",
+      "inputPlaceholder": "Tell us briefly what frustrates you in your daily work…"
     },
     "process": {
       "step1": "1. You share your challenge",
       "step2": "2. AI analyzes immediately",
-      "step3": "3. You get an initial direction"
+      "step3": "3. You get an initial direction",
+      "progress": {
+        "step1": "Step 1",
+        "step2": "Step 2"
+      }
     },
     "socialProof": {
       "title": "They already accelerated their growth with us:"
     },
     "recognition": {
       "title": "Do you recognize this?",
-      "point1": "Manual work? Still copying data from Excel every Monday? We automate that.",
-      "point2": "Separate systems? Tools that don't talk and everything duplicated? We build the bridge.",
-      "point3": "Data without insight? A mountain of numbers, but no idea what it means? We make it visual.",
-      "point4": "Software that slows you down? Old systems hindering growth? We ensure scalability."
+      "point1": "**Manual work?** Your team spends hours every week on Excel tasks — and no one knows if the numbers are correct.",
+      "point2": "**Gut feeling decisions?** You have enough data, but decisions are still made based on gut feeling.",
+      "point3": "**Systems slowing you down?** Your systems were once useful, but now they slow down every new step you want to take.",
+      "point4": "**Double work?** You invest in tools, but they don't work together — causing your team to do double work."
     },
     "results": {
       "card1": {
         "title": "More grip on your business",
-        "description": "From gut feeling to real-time dashboards."
+        "description": "You see at a glance where time and money are leaking — without diving deep into dashboards."
       },
       "card2": {
         "title": "Smarter processes",
-        "description": "Fewer errors, more time for core activities."
+        "description": "Less manual work, fewer errors, and more time for work that truly adds value."
       },
       "card3": {
         "title": "Accelerated growth",
-        "description": "Technology that grows with you, not against you."
+        "description": "Systems that grow with your business, instead of slowing down every step."
       }
     },
     "transformation": {
       "title": "From pain point to solution",
-      "point1": "\"Everything ran on Excel.\" → We automate without disrupting your operation.",
-      "point2": "\"Our software worked, but slowed us down.\" → We build scalable systems.",
-      "point3": "\"We had data, but no insight.\" → We create dashboards that are actually used."
+      "point1": {
+        "problem": "\"Everything ran on Excel.\"",
+        "solution": "We automate without disrupting your operation."
+      },
+      "point2": {
+        "problem": "\"Our software worked, but slowed us down.\"",
+        "solution": "We build scalable systems."
+      },
+      "point3": {
+        "problem": "\"We had data, but no insight.\"",
+        "solution": "We create dashboards that are actually used."
+      }
     }
   }
 }

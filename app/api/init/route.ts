@@ -8,22 +8,23 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
-    const { utm_source, utm_medium, utm_campaign } = await req.json();
+    const { utm_source, utm_medium, utm_campaign, locale } = await req.json();
 
     // Create new session
     const sessionId = `session_${nanoid()}`;
     
     await sessionStore.insert({
       id: sessionId,
-      locale: 'nl',
+      locale: locale || 'nl',
       utm_source,
       utm_medium,
       utm_campaign,
       consent: true,
     });
 
-    // Initialize Gemini chat
-    const chat = new GeminiChat(sessionId);
+    // Initialize Gemini chat with locale
+    const sessionLocale = locale || 'nl';
+    const chat = new GeminiChat(sessionId, sessionLocale);
     
     // Get initial message (empty message triggers welcome)
     const response = await chat.chat('');

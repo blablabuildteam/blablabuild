@@ -104,31 +104,61 @@ export async function POST(req: NextRequest) {
         const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
         const internalEmail = process.env.RESEND_INTERNAL_EMAIL || 'team@blablabuild.com';
         
-        console.log('📤 Sending email to:', internalEmail, 'from:', fromEmail);
-        
-        // Send internal notification with lead info and chat content
-        const result = await resend.emails.send({
-          from: `blablabuild <${fromEmail}>`,
-          to: internalEmail,
-          subject: `🎯 Nieuwe lead: ${companyName || name || email}`,
-          html: generateInternalNotificationHtml({
-            email,
-            name,
-            companyName,
-            phone,
-            sessionId,
-            summary,
-            messages: messages || [],
-          }),
-        });
-        console.log('✅ Lead notification sent to team:', result);
+        // 1) Customer email (summary + CTA)
+        try {
+          const customerResult = await resend.emails.send({
+            from: `blablabuild <${fromEmail}>`,
+            to: email,
+            subject: 'Your instant insight from blablabuild',
+            html: generateCustomerSummaryHtml({
+              name,
+              companyName,
+              sessionId,
+              summary,
+            }),
+          });
+          console.log('✅ Summary email sent to customer:', customerResult);
+          await eventStore.insert({
+            session_id: sessionId,
+            type: 'email_sent_customer',
+            payload: { email, name, companyName, phone, to: email },
+          });
+        } catch (customerEmailError: any) {
+          console.error(
+            '❌ Error sending customer email:',
+            customerEmailError?.message || customerEmailError
+          );
+        }
 
-        // Track email sent event
-        await eventStore.insert({
-          session_id: sessionId,
-          type: 'email_sent',
-          payload: { email, name, companyName, phone, to: internalEmail },
-        });
+        // 2) Internal notification email (lead + full chat)
+        try {
+          console.log('📤 Sending internal lead email to:', internalEmail, 'from:', fromEmail);
+          const internalResult = await resend.emails.send({
+            from: `blablabuild <${fromEmail}>`,
+            to: internalEmail,
+            subject: `🎯 Nieuwe lead: ${companyName || name || email}`,
+            html: generateInternalNotificationHtml({
+              email,
+              name,
+              companyName,
+              phone,
+              sessionId,
+              summary,
+              messages: messages || [],
+            }),
+          });
+          console.log('✅ Lead notification sent to team:', internalResult);
+          await eventStore.insert({
+            session_id: sessionId,
+            type: 'email_sent_internal',
+            payload: { email, name, companyName, phone, to: internalEmail },
+          });
+        } catch (internalEmailError: any) {
+          console.error(
+            '❌ Error sending internal lead email:',
+            internalEmailError?.message || internalEmailError
+          );
+        }
       } else {
         console.warn('⚠️ Resend API key not configured - email sending skipped');
         console.log('💡 To enable email notifications, set RESEND_API_KEY in your environment variables');
@@ -238,4 +268,98 @@ function generateInternalNotificationHtml(data: InternalNotificationData): strin
 </body>
 </html>
   `;
+}
+
+interface CustomerSummaryEmailData {
+  name?: string;
+  companyName?: string;
+  sessionId: string;
+  summary: {
+    summary: string;
+    domains: string[];
+    goldenTip: string;
+    challenge: string;
+  };
+}
+
+function generateCustomerSummaryHtml(data: CustomerSummaryEmailData): string {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://blablabuild.com';
+  const displayName = (data.name || '').trim() || 'there';
+  const { summary } = data;
+
+  const domainsHtml =
+    summary.domains?.length > 0
+      ? summary.domains
+          .map((d) => `<span style="display:inline-block;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:999px;padding:6px 10px;font-size:12px;margin:0 6px 6px 0;">${d}</span>`)
+          .join('')
+      : '';
+
+  return `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your instant insight</title>
+  </head>
+  <body style="margin:0;padding:0;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#151F28;">
+    <div style="max-width:640px;margin:0 auto;padding:24px;">
+      <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;">
+        <div style="background:#CEFF00;padding:28px 24px;">
+          <div style="font-size:20px;font-weight:700;letter-spacing:0.2px;">blablabuild</div>
+          <div style="margin-top:6px;font-size:14px;opacity:0.9;">Your instant insight</div>
+        </div>
+
+        <div style="padding:24px;">
+          <p style="margin:0 0 16px;">Hi ${displayName},</p>
+          <p style="margin:0 0 18px;">Thanks for sharing your challenge. Here’s what we found in a nutshell.</p>
+
+          ${
+            summary.challenge
+              ? `<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin:0 0 12px;">
+                  <div style="font-weight:700;margin:0 0 6px;">Your challenge</div>
+                  <div style="font-size:14px;line-height:1.5;">${summary.challenge}</div>
+                </div>`
+              : ''
+          }
+
+          ${
+            domainsHtml
+              ? `<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin:0 0 12px;">
+                  <div style="font-weight:700;margin:0 0 8px;">Relevant domains</div>
+                  <div>${domainsHtml}</div>
+                </div>`
+              : ''
+          }
+
+          ${
+            summary.goldenTip
+              ? `<div style="background:#151F28;color:#FBFCFA;border-radius:12px;padding:16px;margin:0 0 12px;">
+                  <div style="font-weight:700;margin:0 0 6px;color:#CEFF00;">Golden tip</div>
+                  <div style="font-size:14px;line-height:1.5;">${summary.goldenTip}</div>
+                </div>`
+              : ''
+          }
+
+          ${
+            summary.summary
+              ? `<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin:0 0 18px;">
+                  <div style="font-weight:700;margin:0 0 6px;">Summary</div>
+                  <div style="font-size:14px;line-height:1.5;">${summary.summary}</div>
+                </div>`
+              : ''
+          }
+
+          <div style="text-align:center;margin:20px 0 8px;">
+            <a href="${appUrl}/book" style="display:inline-block;background:#1125FF;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:700;">
+              Plan a free call
+            </a>
+          </div>
+          <p style="margin:0;text-align:center;font-size:12px;color:#6b7280;">
+            Reference: ${data.sessionId}
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>`;
 }

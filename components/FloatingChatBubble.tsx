@@ -64,6 +64,7 @@ export default function FloatingChatBubble() {
     notes: '',
   });
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
+  const [isIntakeSource, setIsIntakeSource] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -144,20 +145,27 @@ export default function FloatingChatBubble() {
   }, [isVisible]);
 
   // Initialize chat session and immediately send the user's first message
-  const initializeSession = async (initialIdea: string) => {
+  const initializeSession = useCallback(async (initialIdea: string) => {
     try {
+      // Mark chat as started
+      setChatStarted(true);
       // First, show the user's message immediately
       setMessages([{ role: 'user', content: initialIdea, timestamp: new Date() }]);
       setIsLoading(true);
       setLoadingMessage('Je uitdaging wordt geanalyseerd...');
 
-      // Create session by sending the first message directly to /api/chat
+      // Use intake-chat endpoint if opened from intake page, otherwise use regular chat
+      const isFromIntake = isIntakeSource || (typeof window !== 'undefined' && window.location.pathname.includes('/intake'));
+      const apiEndpoint = isFromIntake ? '/api/intake-chat' : '/api/chat';
+      
+      // Create session by sending the first message directly to the appropriate endpoint
       // This way the AI responds TO the user's input, not with a generic welcome
-      const response = await fetch('/api/chat', {
+      const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: initialIdea,
+          locale: typeof window !== 'undefined' ? (window.location.pathname.startsWith('/en') ? 'en' : 'nl') : 'nl',
           // No sessionId - will create new one
         }),
       });
@@ -186,7 +194,7 @@ export default function FloatingChatBubble() {
       setIsLoading(false);
       setLoadingMessage('Verwerken...');
     }
-  };
+  }, [isIntakeSource]);
 
   // Handle initial idea submission (first step)
   const handleSubmit = async (e: React.FormEvent) => {
@@ -224,12 +232,15 @@ export default function FloatingChatBubble() {
     });
 
     try {
-      const response = await fetch('/api/chat', {
+      // Use intake-chat endpoint if opened from intake page, otherwise use regular chat
+      const apiEndpoint = isIntakeSource ? '/api/intake-chat' : '/api/chat';
+      const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userMessage,
           sessionId: sid,
+          locale: typeof window !== 'undefined' ? (window.location.pathname.startsWith('/en') ? 'en' : 'nl') : 'nl',
         }),
       });
 
@@ -367,16 +378,55 @@ export default function FloatingChatBubble() {
     setIsExpanded(true);
   }, []);
 
-  // Listen for external trigger events (from Navigation button, etc.)
+
+  // Listen for external trigger events (from Navigation button, intake page, etc.)
   useEffect(() => {
-    window.addEventListener('openChatWidget', openChat);
+    const handleOpenChatEvent = async (event: Event) => {
+      const customEvent = event as CustomEvent<{ initialMessage?: string; source?: string }>;
+      const isFromIntake = customEvent.detail?.source === 'intake' || window.location.pathname.includes('/intake');
+      
+      // Check if source is intake page
+      if (isFromIntake) {
+        setIsIntakeSource(true);
+      } else {
+        setIsIntakeSource(false);
+      }
+      
+      openChat();
+      
+      // If there's an initial message from intake, automatically send it
+      if (customEvent.detail?.initialMessage && isFromIntake) {
+        const initialMessage = customEvent.detail.initialMessage;
+        setInput(initialMessage);
+        setChatStarted(true);
+        
+        // Wait a bit for the chat to open, then automatically send
+        setTimeout(() => {
+          if (initialMessage.trim()) {
+            initializeSession(initialMessage).catch((error) => {
+              console.error('Error auto-sending intake message:', error);
+            });
+          }
+        }, 400);
+      } else if (customEvent.detail?.initialMessage) {
+        // For non-intake sources, just set the input
+        setInput(customEvent.detail.initialMessage);
+      }
+    };
+
+    window.addEventListener('openChatWidget', handleOpenChatEvent);
     (window as any).openChatWidget = openChat;
 
+    // Also check on mount if we're on intake page
+    if (window.location.pathname.includes('/intake')) {
+      setIsIntakeSource(true);
+    }
+
     return () => {
-      window.removeEventListener('openChatWidget', openChat);
+      window.removeEventListener('openChatWidget', handleOpenChatEvent);
       delete (window as any).openChatWidget;
     };
-  }, [openChat]);
+  }, [openChat, initializeSession]);
 
   // Calculate question number from actual user messages
   const actualQuestionNumber = messages.filter(m => m.role === 'user').length + 1;

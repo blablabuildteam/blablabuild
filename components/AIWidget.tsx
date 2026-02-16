@@ -17,6 +17,8 @@ import {
   AiUserIcon as UserIcon, 
   File01Icon as FileIcon 
 } from 'hugeicons-react';
+import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 import { ChatResponse } from '@/lib/types';
 import { trackWidgetEvent } from '@/lib/analytics';
 
@@ -27,11 +29,15 @@ interface Message {
 }
 
 export default function AIWidget() {
+  const t = useTranslations('chat.widget');
+  const params = useParams();
+  const locale = (params?.locale as string) || 'nl';
+  
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState<string>('Verwerken...');
+  const [loadingMessage, setLoadingMessage] = useState<string>(t('processing'));
   const [sessionId, setSessionId] = useState<string | null>(null);
   // Progress removed - no longer tracking progress bar
   const [isComplete, setIsComplete] = useState(false);
@@ -80,6 +86,7 @@ export default function AIWidget() {
           utm_source: new URLSearchParams(window.location.search).get('utm_source'),
           utm_medium: new URLSearchParams(window.location.search).get('utm_medium'),
           utm_campaign: new URLSearchParams(window.location.search).get('utm_campaign'),
+          locale: locale,
         }),
       });
 
@@ -125,7 +132,7 @@ export default function AIWidget() {
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMessage, timestamp: new Date() }]);
     setIsLoading(true);
-    setLoadingMessage('Je antwoord wordt verwerkt...');
+    setLoadingMessage(t('processingAnswer'));
     
     // Update question number
     const newQuestionNumber = messages.filter(m => m.role === 'user').length + 1;
@@ -143,6 +150,7 @@ export default function AIWidget() {
         body: JSON.stringify({
           message: userMessage,
           sessionId,
+          locale: locale,
         }),
       });
 
@@ -154,7 +162,7 @@ export default function AIWidget() {
         throw new Error(errorData.error || `API error: ${response.status}`);
       }
 
-      setLoadingMessage('AI analyseert je antwoord...');
+      setLoadingMessage(t('analyzing'));
       
       const data: ChatResponse = await response.json();
       console.log('✅ API Response data:', data);
@@ -229,7 +237,7 @@ export default function AIWidget() {
       }
     } catch (error) {
       console.error('❌ Error sending message:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Er ging iets mis. Probeer het opnieuw.';
+      const errorMessage = error instanceof Error ? error.message : t('error');
       console.log('⚠️ Setting error message:', errorMessage);
       setCurrentQuestion(`Sorry, ${errorMessage}`);
       setMessages(prev => [...prev, { 
@@ -240,7 +248,7 @@ export default function AIWidget() {
     } finally {
       console.log('🏁 sendMessage complete, setting isLoading to false');
       setIsLoading(false);
-      setLoadingMessage('Verwerken...');
+      setLoadingMessage(t('processing'));
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
@@ -252,7 +260,7 @@ export default function AIWidget() {
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(leadForm.email.trim())) {
-      alert('Voer een geldig email adres in');
+      alert(t('invalidEmail'));
       return;
     }
     
@@ -400,12 +408,13 @@ export default function AIWidget() {
   };
 
   // Process steps configuration
+  const tChat = useTranslations('chat');
   const processSteps = [
-    { id: 'init', label: 'Start', icon: SparklesIcon, color: 'bg-bla-lime' },
-    { id: 'collecting', label: 'Vragen', icon: MessageIcon, color: 'bg-blue-500' },
-    { id: 'scoring', label: 'Analyseren', icon: BrainIcon, color: 'bg-purple-500' },
-    { id: 'ideating', label: 'Ideeën', icon: LightbulbIcon, color: 'bg-yellow-500' },
-    { id: 'complete', label: 'Klaar', icon: CheckmarkCircleIcon, color: 'bg-green-500' },
+    { id: 'init', label: tChat('start'), icon: SparklesIcon, color: 'bg-bla-lime' },
+    { id: 'collecting', label: tChat('questions'), icon: MessageIcon, color: 'bg-blue-500' },
+    { id: 'scoring', label: tChat('analyzing'), icon: BrainIcon, color: 'bg-purple-500' },
+    { id: 'ideating', label: tChat('ideas'), icon: LightbulbIcon, color: 'bg-yellow-500' },
+    { id: 'complete', label: tChat('complete'), icon: CheckmarkCircleIcon, color: 'bg-green-500' },
   ];
 
   const getCurrentStepIndex = () => {
@@ -470,7 +479,7 @@ export default function AIWidget() {
                     <QuoteIcon className="w-5 h-5 text-bla-lime" />
                   </motion.div>
                   <div>
-                    <h2 className="text-base font-light text-bla-text-light tracking-wide">AI Intake</h2>
+                    <h2 className="text-base font-light text-bla-text-light tracking-wide">{t('title')}</h2>
                   </div>
                 </div>
                 <motion.button
@@ -631,7 +640,7 @@ export default function AIWidget() {
                         className="space-y-2"
                       >
                         <p className="text-xs font-extralight text-bla-text-muted mb-2">
-                          Kies een optie of typ je eigen antwoord:
+                          {t('chooseOption')}
                         </p>
                         <div className="grid grid-cols-1 gap-2">
                           {questionOptions.map((option, idx) => (
@@ -662,7 +671,7 @@ export default function AIWidget() {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        placeholder={questionOptions && questionOptions.length > 0 ? "Of typ je eigen antwoord..." : "Je antwoord..."}
+                        placeholder={questionOptions && questionOptions.length > 0 ? t('orTypeOwn') : t('yourAnswer')}
                         rows={4}
                         className="w-full px-4 py-3 border border-bla-charcoal-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 focus:border-bla-lime/50 transition-all resize-none text-sm font-light text-bla-text-light placeholder-bla-text-muted bg-bla-charcoal-light backdrop-blur-sm"
                         disabled={isLoading}
@@ -685,7 +694,7 @@ export default function AIWidget() {
                           onClick={() => setInput('')}
                           className="text-xs font-extralight text-bla-text-muted hover:text-bla-text-light transition-colors"
                         >
-                          Wis
+                          {t('clear')}
                         </button>
                         {/* Skip Button - only show if not first question */}
                         {actualQuestionNumber > 1 && (
@@ -693,13 +702,13 @@ export default function AIWidget() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={async () => {
-                              setInput('Overslaan');
+                              setInput(t('skip'));
                               await sendMessage();
                             }}
                             disabled={isLoading}
                             className="text-xs font-extralight text-bla-text-muted hover:text-bla-text-light transition-colors disabled:opacity-40"
                           >
-                            Overslaan
+                            {t('skip')}
                           </motion.button>
                         )}
                       </div>
@@ -720,7 +729,7 @@ export default function AIWidget() {
                           </>
                         ) : (
                           <>
-                            <span>Volgende</span>
+                            <span>{t('next')}</span>
                             <motion.div
                               animate={{ x: [0, 3, 0] }}
                               transition={{ repeat: Infinity, duration: 1.5 }}
@@ -763,7 +772,7 @@ export default function AIWidget() {
                       transition={{ delay: 0.3 }}
                       className="text-xl font-light mb-2 text-bla-text-light"
                     >
-                      Analyse Compleet! 🎉
+                      {t('analysisComplete')}
                     </motion.h3>
                     <motion.p
                       initial={{ opacity: 0 }}
@@ -771,7 +780,7 @@ export default function AIWidget() {
                       transition={{ delay: 0.4 }}
                       className="text-sm font-light text-bla-text-muted leading-relaxed mb-4"
                     >
-                      {currentQuestion || 'We hebben je ideeën klaar! Laat je gegevens achter zodat we de volledige analyse kunnen sturen.'}
+                      {currentQuestion || t('ideasReady')}
                     </motion.p>
                   </motion.div>
 
@@ -784,7 +793,7 @@ export default function AIWidget() {
                   >
                     <div className="flex items-center gap-2 mb-4">
                       <BuildingIcon className="w-4 h-4 text-bla-text-muted" />
-                      <h4 className="text-sm font-light text-bla-text-light">Jouw gegevens</h4>
+                      <h4 className="text-sm font-light text-bla-text-light">{t('yourDetails')}</h4>
                     </div>
 
                     <div className="space-y-3">
@@ -792,13 +801,13 @@ export default function AIWidget() {
                       <div>
                         <label className="flex items-center gap-2 text-xs font-extralight text-bla-text-muted mb-1.5">
                           <UserIcon className="w-3.5 h-3.5" />
-                          Naam <span className="text-red-400">*</span>
+                          {t('name')} <span className="text-red-400">*</span>
                         </label>
                         <input
                           type="text"
                           value={leadForm.name}
                           onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                          placeholder="Jan Jansen"
+                          placeholder={t('namePlaceholder')}
                           className="w-full px-4 py-3 border border-bla-charcoal-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 focus:border-bla-lime/50 transition-all text-sm font-light text-bla-text-light placeholder-bla-text-muted bg-bla-charcoal backdrop-blur-sm"
                           disabled={isSubmittingLead}
                         />
@@ -808,13 +817,13 @@ export default function AIWidget() {
                       <div>
                         <label className="flex items-center gap-2 text-xs font-extralight text-bla-text-muted mb-1.5">
                           <MailIcon className="w-3.5 h-3.5" />
-                          Email adres <span className="text-red-400">*</span>
+                          {t('email')} <span className="text-red-400">*</span>
                         </label>
                         <input
                           type="email"
                           value={leadForm.email}
                           onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-                          placeholder="jouw@email.nl"
+                          placeholder={t('emailPlaceholder')}
                           className="w-full px-4 py-3 border border-bla-charcoal-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 focus:border-bla-lime/50 transition-all text-sm font-light text-bla-text-light placeholder-bla-text-muted bg-bla-charcoal backdrop-blur-sm"
                           disabled={isSubmittingLead}
                         />
@@ -824,13 +833,13 @@ export default function AIWidget() {
                       <div>
                         <label className="flex items-center gap-2 text-xs font-extralight text-bla-text-muted mb-1.5">
                           <BuildingIcon className="w-3.5 h-3.5" />
-                          Bedrijfsnaam
+                          {t('companyName')}
                         </label>
                         <input
                           type="text"
                           value={leadForm.companyName}
                           onChange={(e) => setLeadForm({ ...leadForm, companyName: e.target.value })}
-                          placeholder="Jouw Bedrijf B.V."
+                          placeholder={t('companyPlaceholder')}
                           className="w-full px-4 py-3 border border-bla-charcoal-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 focus:border-bla-lime/50 transition-all text-sm font-light text-bla-text-light placeholder-bla-text-muted bg-bla-charcoal backdrop-blur-sm"
                           disabled={isSubmittingLead}
                         />
@@ -840,13 +849,13 @@ export default function AIWidget() {
                       <div>
                         <label className="flex items-center gap-2 text-xs font-extralight text-bla-text-muted mb-1.5">
                           <PhoneIcon className="w-3.5 h-3.5" />
-                          Telefoonnummer
+                          {t('phone')}
                         </label>
                         <input
                           type="tel"
                           value={leadForm.phone}
                           onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
-                          placeholder="+31 6 12345678"
+                          placeholder={t('phonePlaceholder')}
                           className="w-full px-4 py-3 border border-bla-charcoal-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 focus:border-bla-lime/50 transition-all text-sm font-light text-bla-text-light placeholder-bla-text-muted bg-bla-charcoal backdrop-blur-sm"
                           disabled={isSubmittingLead}
                         />
@@ -856,13 +865,13 @@ export default function AIWidget() {
                       <div>
                         <label className="flex items-center gap-2 text-xs font-extralight text-bla-text-muted mb-1.5">
                           <UserIcon className="w-3.5 h-3.5" />
-                          Functie
+                          {t('role')}
                         </label>
                         <input
                           type="text"
                           value={leadForm.role}
                           onChange={(e) => setLeadForm({ ...leadForm, role: e.target.value })}
-                          placeholder="CEO, Marketing Manager, etc."
+                          placeholder={t('rolePlaceholder')}
                           className="w-full px-4 py-3 border border-bla-charcoal-border rounded-full focus:outline-none focus:ring-2 focus:ring-bla-lime/30 focus:border-bla-lime/50 transition-all text-sm font-light text-bla-text-light placeholder-bla-text-muted bg-bla-charcoal backdrop-blur-sm"
                           disabled={isSubmittingLead}
                         />
@@ -872,12 +881,12 @@ export default function AIWidget() {
                       <div>
                         <label className="flex items-center gap-2 text-xs font-extralight text-bla-text-muted mb-1.5">
                           <FileIcon className="w-3.5 h-3.5" />
-                          Extra opmerkingen (optioneel)
+                          {t('notes')}
                         </label>
                         <textarea
                           value={leadForm.notes}
                           onChange={(e) => setLeadForm({ ...leadForm, notes: e.target.value })}
-                          placeholder="Iets wat je nog wilt delen?"
+                          placeholder={t('notesPlaceholder')}
                           rows={3}
                           className="w-full px-4 py-3 border border-bla-charcoal-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 focus:border-bla-lime/50 transition-all text-sm font-light text-bla-text-light placeholder-bla-text-muted resize-none bg-bla-charcoal backdrop-blur-sm"
                           disabled={isSubmittingLead}
@@ -891,7 +900,7 @@ export default function AIWidget() {
                       whileTap={{ scale: 0.98 }}
                       onClick={async () => {
                         if (!leadForm.name.trim() || !leadForm.email.trim()) {
-                          alert('Naam en email zijn verplicht');
+                          alert(t('nameEmailRequired'));
                           return;
                         }
 
@@ -916,15 +925,11 @@ export default function AIWidget() {
                           }
 
                           // Show success message
-                          setCurrentQuestion(`Perfect ${leadForm.name}! Ik stuur de samenvatting en gouden tip binnen enkele minuten naar ${leadForm.email}.
-
-Een van ons (Daniel, Kevin of Xennith) neemt binnenkort persoonlijk contact met je op om de mogelijkheden door te spreken.
-
-Tot snel!`);
+                          setCurrentQuestion(t('successMessage', { name: leadForm.name, email: leadForm.email }));
                           setShowLeadForm(false);
                         } catch (error) {
                           console.error('Error saving lead:', error);
-                          alert('Er ging iets mis. Probeer het opnieuw.');
+                          alert(t('error'));
                         } finally {
                           setIsSubmittingLead(false);
                         }
@@ -935,19 +940,18 @@ Tot snel!`);
                       {isSubmittingLead ? (
                         <>
                           <BlablablaAnimation size="sm" />
-                          <span>Verzenden...</span>
+                          <span>{t('submitting')}</span>
                         </>
                       ) : (
                         <>
-                          <span>Verstuur & Ontvang Analyse</span>
+                          <span>{t('submit')}</span>
                           <ArrowRightIcon className="w-4 h-4" />
                         </>
                       )}
                     </motion.button>
 
                     <p className="text-[10px] font-extralight text-bla-text-muted text-center leading-relaxed">
-                      🔒 Je gegevens worden veilig verwerkt en alleen gebruikt om contact met je op te nemen. 
-                      We delen je gegevens nooit met derden. Door te versturen ga je akkoord met onze privacyvoorwaarden.
+                      {t('privacy')}
                     </p>
                   </motion.div>
                 </motion.div>
@@ -976,7 +980,7 @@ Tot snel!`);
                       transition={{ delay: 0.3 }}
                       className="text-xl font-light mb-3 text-bla-text-light"
                     >
-                      Alles geregeld! ✅
+                      {t('allSet')}
                     </motion.h3>
                     <motion.p
                       initial={{ opacity: 0 }}
@@ -1015,7 +1019,7 @@ Tot snel!`);
                       className="flex items-center gap-1.5"
                     >
                       <span className="text-[10px] font-extralight text-bla-text-muted uppercase tracking-wider">
-                        Active:
+                        {t('active')}
                       </span>
                       <div className="flex items-center gap-1">
                         {activeAgents.slice(0, 2).map((agent, idx) => (
@@ -1037,7 +1041,7 @@ Tot snel!`);
                       </div>
                     </motion.div>
                   )}
-                  <span className="text-xs font-extralight text-bla-text-muted">Secure & Private</span>
+                  <span className="text-xs font-extralight text-bla-text-muted">{t('secure')}</span>
                 </div>
               </div>
             </motion.div>

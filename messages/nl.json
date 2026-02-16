@@ -236,7 +236,44 @@
     "questions": "Vragen",
     "analyzing": "Analyseren",
     "ideas": "Ideeën",
-    "complete": "Klaar"
+    "complete": "Klaar",
+    "widget": {
+      "title": "AI Intake",
+      "processing": "Verwerken...",
+      "processingAnswer": "Je antwoord wordt verwerkt...",
+      "analyzing": "AI analyseert je antwoord...",
+      "error": "Er ging iets mis. Probeer het opnieuw.",
+      "chooseOption": "Kies een optie of typ je eigen antwoord:",
+      "orTypeOwn": "Of typ je eigen antwoord...",
+      "yourAnswer": "Je antwoord...",
+      "clear": "Wis",
+      "skip": "Overslaan",
+      "next": "Volgende",
+      "analysisComplete": "Analyse Compleet! 🎉",
+      "ideasReady": "We hebben je ideeën klaar! Laat je gegevens achter zodat we de volledige analyse kunnen sturen.",
+      "yourDetails": "Jouw gegevens",
+      "name": "Naam",
+      "namePlaceholder": "Jan Jansen",
+      "email": "Email adres",
+      "emailPlaceholder": "jouw@email.nl",
+      "companyName": "Bedrijfsnaam",
+      "companyPlaceholder": "Jouw Bedrijf B.V.",
+      "phone": "Telefoonnummer",
+      "phonePlaceholder": "+31 6 12345678",
+      "role": "Functie",
+      "rolePlaceholder": "CEO, Marketing Manager, etc.",
+      "notes": "Extra opmerkingen (optioneel)",
+      "notesPlaceholder": "Iets wat je nog wilt delen?",
+      "submit": "Verstuur & Ontvang Analyse",
+      "submitting": "Verzenden...",
+      "nameEmailRequired": "Naam en email zijn verplicht",
+      "invalidEmail": "Voer een geldig email adres in",
+      "successMessage": "Perfect {name}! Ik stuur de samenvatting en gouden tip binnen enkele minuten naar {email}.\n\nEen van ons (Daniel, Kevin of Xennith) neemt binnenkort persoonlijk contact met je op om de mogelijkheden door te spreken.\n\nTot snel!",
+      "allSet": "Alles geregeld! ✅",
+      "privacy": "🔒 Je gegevens worden veilig verwerkt en alleen gebruikt om contact met je op te nemen. We delen je gegevens nooit met derden. Door te versturen ga je akkoord met onze privacyvoorwaarden.",
+      "active": "Active:",
+      "secure": "Secure & Private"
+    }
   },
   "metadata": {
     "title": "blablabuild | AI Innovaties voor Snelle Groei",
@@ -246,8 +283,8 @@
   "intake": {
     "backToHome": "Terug naar home",
     "hero": {
-      "title": "Waar loop je tegenaan?",
-      "subtitle": "Gebruik deze intake om binnen 2 minuten helder te krijgen waar je grootste groeikans ligt. Geen salesgesprek, wel direct inzicht.",
+      "title": "Waar lekt jouw business tijd, geld of overzicht — zonder dat je het doorhebt?",
+      "subtitle": "Beantwoord één vraag en krijg binnen 2 minuten inzicht in je grootste proces- of datastruggles. Geen salespraat. Wel duidelijkheid.",
       "duration": "± 1–2 minuten"
     },
     "chatModule": {
@@ -256,42 +293,66 @@
       "placeholder1": "Mijn voorraadbeheer in Excel loopt vast...",
       "placeholder2": "Onze data staat verspreid over 5 tools...",
       "placeholder3": "Ik wil processen automatiseren, maar waar begin ik?",
-      "send": "Verstuur"
+      "send": "Verstuur",
+      "suggestions": {
+        "label": "Kies wat het dichtst in de buurt komt (of typ zelf):",
+        "option1": "Mijn team werkt met te veel losse tools",
+        "option2": "We doen veel handmatig werk",
+        "option3": "We hebben data, maar geen overzicht",
+        "option4": "Onze software remt verdere groei",
+        "option5": "Anders, namelijk…"
+      },
+      "helperText": "Geen zorgen — een paar woorden is genoeg.",
+      "normalizingText": "Je hoeft je probleem nog niet scherp te hebben — daar helpen we bij.",
+      "inputPlaceholder": "Vertel kort wat je frustreert in je dagelijkse werk…"
     },
     "process": {
       "step1": "1. Jij deelt je uitdaging",
       "step2": "2. AI analyseert direct",
-      "step3": "3. Je krijgt een eerste richting"
+      "step3": "3. Je krijgt een eerste richting",
+      "progress": {
+        "step1": "Stap 1",
+        "step2": "Stap 2"
+      }
     },
     "socialProof": {
       "title": "Zij versnelden hun groei al met ons:"
     },
     "recognition": {
       "title": "Herken je dit?",
-      "point1": "Handmatig werk? Elke maandag nog data overtikken uit Excel? Dat automatiseren we.",
-      "point2": "Losse systemen? Tools die niet praten en alles dubbel? Wij bouwen de brug.",
-      "point3": "Data zonder inzicht? Een berg cijfers, maar geen idee wat het betekent? Wij maken het visueel.",
-      "point4": "Software die remt? Oude systemen die groei tegenhouden? Wij zorgen voor schaalbaarheid."
+      "point1": "**Handmatig werk?** Je team is elke week uren kwijt aan Excel-klusjes — en niemand weet of de cijfers kloppen.",
+      "point2": "**Onderbuikgevoel?** Je hebt genoeg data, maar beslissingen worden nog steeds genomen op onderbuikgevoel.",
+      "point3": "**Systemen die afremmen?** Je systemen waren ooit handig, maar remmen nu elke nieuwe stap die je wilt zetten.",
+      "point4": "**Dubbel werk?** Je investeert in tools, maar ze werken niet samen — waardoor je team dubbel werk doet."
     },
     "results": {
       "card1": {
         "title": "Meer grip op je business",
-        "description": "Van buikgevoel naar real-time dashboards."
+        "description": "Je ziet in één oogopslag waar tijd en geld weglekken — zonder diep in dashboards te duiken."
       },
       "card2": {
         "title": "Slimmere processen",
-        "description": "Minder fouten, meer tijd voor kernactiviteiten."
+        "description": "Minder handmatig werk, minder fouten en meer tijd voor werk dat écht waarde toevoegt."
       },
       "card3": {
         "title": "Versnelde groei",
-        "description": "Technologie die meegroeit, niet tegenwerkt."
+        "description": "Systemen die meegroeien met je bedrijf, in plaats van elke stap te vertragen."
       }
     },
     "transformation": {
       "title": "Van pijnpunt naar oplossing",
-      "point1": "\"Alles draaide op Excel.\" → Wij automatiseren zonder je operatie te verstoren.",
-      "point2": "\"Onze software werkte, maar remde ons af.\" → Wij bouwen schaalbare systemen.",
-      "point3": "\"We hadden data, maar geen inzicht.\" → Wij maken dashboards die wél gebruikt worden."
+      "point1": {
+        "problem": "\"Alles draaide op Excel.\"",
+        "solution": "Wij automatiseren zonder je operatie te verstoren."
+      },
+      "point2": {
+        "problem": "\"Onze software werkte, maar remde ons af.\"",
+        "solution": "Wij bouwen schaalbare systemen."
+      },
+      "point3": {
+        "problem": "\"We hadden data, maar geen inzicht.\"",
+        "solution": "Wij maken dashboards die wél gebruikt worden."
+      }
     }
   }
 }
