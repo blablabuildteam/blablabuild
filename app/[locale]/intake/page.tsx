@@ -8,6 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import Footer from '@/components/sections/Footer';
+import LogoCarousel from '@/components/sections/LogoCarousel';
 import { initAnalytics, trackEvent } from '@/lib/analytics';
 import { SuggestionChips, type SuggestionChip } from '@/components/ui/suggestion-chips';
 import { ProgressIndicator } from '@/components/ui/progress-indicator';
@@ -430,62 +431,8 @@ export default function IntakePage() {
           </motion.div>
         </section>
 
-        {/* Social Proof - marquee with container width + gradient fades */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 mb-12 md:mb-16 py-4 md:py-6">
-          <p className="text-xs sm:text-sm text-text-muted text-center mb-8 md:mb-10">{t('socialProof.title')}</p>
-          <div className="relative w-full overflow-hidden">
-            {/* Gradient fades on both ends */}
-            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-24 bg-gradient-to-r from-background to-transparent" aria-hidden />
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 sm:w-24 bg-gradient-to-l from-background to-transparent" aria-hidden />
-            <div className="flex items-center gap-10 sm:gap-14 md:gap-20 w-max animate-logo-marquee">
-              {[
-                { src: '/logos/655solero.png', alt: '655 Solero' },
-                { src: '/logos/Adsomnia.svg', alt: 'Adsomnia' },
-                { src: '/logos/FM_Group.png', alt: 'FM Group' },
-                { src: '/logos/client-1.svg', alt: 'Client' },
-                { src: '/logos/client-2.svg', alt: 'Client' },
-                { src: '/logos/confortzzzone.svg', alt: 'Comfortzzzone' },
-                { src: '/logos/vector-3.svg', alt: 'Partner' },
-              ].map((logo) => (
-                <div
-                  key={logo.src}
-                  className="flex-shrink-0 relative h-9 sm:h-10 md:h-12 w-auto max-w-[140px] opacity-90"
-                >
-                  <Image
-                    src={logo.src}
-                    alt={logo.alt}
-                    width={140}
-                    height={48}
-                    className="h-full w-auto object-contain object-center"
-                  />
-                </div>
-              ))}
-              {/* Duplicate set for seamless loop */}
-              {[
-                { src: '/logos/655solero.png', alt: '655 Solero' },
-                { src: '/logos/Adsomnia.svg', alt: 'Adsomnia' },
-                { src: '/logos/FM_Group.png', alt: 'FM Group' },
-                { src: '/logos/client-1.svg', alt: 'Client' },
-                { src: '/logos/client-2.svg', alt: 'Client' },
-                { src: '/logos/confortzzzone.svg', alt: 'Comfortzzzone' },
-                { src: '/logos/vector-3.svg', alt: 'Partner' },
-              ].map((logo, i) => (
-                <div
-                  key={`dup-${i}-${logo.src}`}
-                  className="flex-shrink-0 relative h-9 sm:h-10 md:h-12 w-auto max-w-[140px] opacity-90"
-                >
-                  <Image
-                    src={logo.src}
-                    alt={logo.alt}
-                    width={140}
-                    height={48}
-                    className="h-full w-auto object-contain object-center"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        {/* Social Proof - logo carousel */}
+        <LogoCarousel title={t('socialProof.title')} className="mb-12 md:mb-16" />
 
         {/* Problem Recognition */}
         <section className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 mb-12 md:mb-16">

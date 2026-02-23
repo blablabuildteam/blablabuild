@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { initAnalytics, trackEvent } from '@/lib/analytics';
 import Navigation from '@/components/sections/Navigation';
 import HeroSection from '@/components/sections/HeroSection';
 import IntroSection from '@/components/sections/IntroSection';
+import LogoCarousel from '@/components/sections/LogoCarousel';
 import CasesSection from '@/components/sections/CasesSection';
 import ApproachSection from '@/components/sections/ApproachSection';
 import ExpertiseSection from '@/components/sections/ExpertiseSection';
@@ -13,6 +15,7 @@ import Footer from '@/components/sections/Footer';
 import FloatingChatBubble from '@/components/FloatingChatBubble';
 
 export default function HomePage() {
+  const t = useTranslations('common');
   const [showNavCTA, setShowNavCTA] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('');
 
@@ -191,6 +194,9 @@ export default function HomePage() {
       <Navigation showNavCTA={showNavCTA} activeSection={activeSection} />
       <HeroSection />
       <IntroSection />
+      <section className="w-full min-h-[120px] py-[120px]" style={{ backgroundColor: '#f5f5f5' }}>
+        <LogoCarousel title={t('trustedBy')} containerClassName="max-w-7xl" className="mb-0 pb-0" />
+      </section>
       <CasesSection />
       <ApproachSection />
       <ExpertiseSection />
