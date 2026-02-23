@@ -2,9 +2,9 @@
 
 import Image from 'next/image';
 
-const LOGOS = [
-  { src: '/logos/655solero.png', alt: '655 Solero' },
-  { src: '/logos/Adsomnia.svg', alt: 'Adsomnia' },
+const LOGOS: { src: string; alt: string; size?: 'sm' }[] = [
+  { src: '/logos/655solero.svg', alt: '655 Solero' },
+  { src: '/logos/Adsomnia.svg', alt: 'Adsomnia', size: 'sm' },
   { src: '/logos/FM_Group.png', alt: 'FM Group' },
   { src: '/logos/client-1.svg', alt: 'Client' },
   { src: '/logos/client-2.svg', alt: 'Client' },
@@ -32,28 +32,36 @@ export default function LogoCarousel({ title, className = '', containerClassName
           {LOGOS.map((logo) => (
             <div
               key={logo.src}
-              className="flex-shrink-0 relative h-9 sm:h-10 md:h-12 w-auto max-w-[140px] opacity-90"
+              className={`flex-shrink-0 relative opacity-90 ${
+                logo.size === 'sm'
+                  ? 'h-7 sm:h-8 md:h-9 w-[72px] sm:w-[84px]'
+                  : 'h-10 sm:h-11 md:h-12 w-[120px] sm:w-[140px]'
+              }`}
             >
               <Image
                 src={logo.src}
                 alt={logo.alt}
-                width={140}
-                height={48}
-                className="h-full w-auto object-contain object-center"
+                fill
+                className="object-contain object-center"
+                sizes={logo.size === 'sm' ? '84px' : '140px'}
               />
             </div>
           ))}
           {LOGOS.map((logo, i) => (
             <div
               key={`dup-${i}-${logo.src}`}
-              className="flex-shrink-0 relative h-9 sm:h-10 md:h-12 w-auto max-w-[140px] opacity-90"
+              className={`flex-shrink-0 relative opacity-90 ${
+                logo.size === 'sm'
+                  ? 'h-7 sm:h-8 md:h-9 w-[72px] sm:w-[84px]'
+                  : 'h-10 sm:h-11 md:h-12 w-[120px] sm:w-[140px]'
+              }`}
             >
               <Image
                 src={logo.src}
                 alt={logo.alt}
-                width={140}
-                height={48}
-                className="h-full w-auto object-contain object-center"
+                fill
+                className="object-contain object-center"
+                sizes={logo.size === 'sm' ? '84px' : '140px'}
               />
             </div>
           ))}

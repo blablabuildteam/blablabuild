@@ -194,7 +194,7 @@ export default function HomePage() {
       <Navigation showNavCTA={showNavCTA} activeSection={activeSection} />
       <HeroSection />
       <IntroSection />
-      <section className="w-full min-h-[120px] py-[120px]" style={{ backgroundColor: '#f5f5f5' }}>
+      <section className="w-full py-[80px]" style={{ backgroundColor: '#f5f5f5' }}>
         <LogoCarousel title={t('trustedBy')} containerClassName="max-w-7xl" className="mb-0 pb-0" />
       </section>
       <CasesSection />
