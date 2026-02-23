@@ -32,8 +32,8 @@ export function TransformationCard({
       <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
         {/* Problem Side - Left */}
         <div className="flex-1 min-w-0 flex items-center gap-3">
-          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
-            <span className="text-bla-charcoal text-sm font-semibold">?</span>
+          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-800 border border-gray-700 shadow-sm flex items-center justify-center">
+            <span className="text-white text-sm font-semibold">?</span>
           </div>
           <p className="min-w-0 break-words text-text-primary text-sm md:text-base leading-relaxed">
             {problem}
@@ -49,7 +49,7 @@ export function TransformationCard({
 
         {/* Solution Side - Right */}
         <div className="flex-1 min-w-0 flex items-center gap-3">
-          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
+          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-800 border border-gray-700 shadow-sm flex items-center justify-center">
             <CheckCircle className="w-5 h-5 text-bla-lime" />
           </div>
           <p className="min-w-0 break-words text-text-primary text-sm md:text-base leading-relaxed font-semibold">

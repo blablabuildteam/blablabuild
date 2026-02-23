@@ -285,7 +285,7 @@
   }
 }
 
-/* HTML base styles */
+/* HTML base styles – document scroll lives here */
 html {
   overflow-x: hidden;
   overflow-y: auto;
@@ -294,15 +294,15 @@ html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  scrollbar-width: none; /* Firefox */
-  /* Smooth momentum scrolling on iOS */
+  scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
 
-/* Mobile touch optimization - only apply overscroll-behavior on desktop */
-@media (hover: hover) and (pointer: fine) {
+/* iOS Safari: force scroll container so touch scroll works (e.g. intake page) */
+@supports (-webkit-touch-callout: none) {
   html {
-    overscroll-behavior-y: contain;
+    overflow-y: scroll;
+    min-height: 100%;
   }
 }
 
@@ -354,10 +354,24 @@ html {
 
 .border-beam-animation {
   animation: borderBeamRotate 3s linear infinite;
-}/* Prevent a “second” scrollbar on some browsers that render both html + body scrollbars */
+}
+
+@keyframes logo-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-logo-marquee {
+  animation: logo-marquee 20s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-logo-marquee {
+    animation: none;
+  }
+}
+
+/* Prevent a “second” scrollbar on some browsers that render both html + body scrollbars */
 body::-webkit-scrollbar {
   display: none;
-}
-body {
-  scrollbar-width: none; /* Firefox */
 }

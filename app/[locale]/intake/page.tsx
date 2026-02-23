@@ -220,7 +220,14 @@ export default function IntakePage() {
   ];
 
   return (
-    <div className="min-h-screen w-full bg-[#f5f5f5] overflow-x-hidden">
+    <div
+      className="min-h-screen w-full bg-[#f5f5f5]"
+      style={{
+        // Avoid overflow-x-hidden on iOS – it can block touch scroll; html already clips horizontal overflow
+        touchAction: 'pan-y',
+        WebkitOverflowScrolling: 'touch',
+      }}
+    >
       {/* Simplified Navigation - Logo only */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#f5f5f5] md:bg-[#f5f5f5]/80 md:backdrop-blur-md border-b border-gray-200/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-3 md:py-4 flex items-center justify-between">
@@ -423,30 +430,59 @@ export default function IntakePage() {
           </motion.div>
         </section>
 
-        {/* Social Proof */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 mb-12 md:mb-16">
-          <div className="text-center">
-            <p className="text-xs sm:text-sm text-text-muted mb-4 md:mb-6">{t('socialProof.title')}</p>
-            {/* Client logos in grayscale */}
-            <div className="flex md:flex-wrap flex-nowrap items-center justify-start md:justify-center gap-6 sm:gap-8 md:gap-12 overflow-x-auto md:overflow-visible scrollbar-hide snap-x px-2 -mx-2 md:px-0 md:mx-0">
-              <div className="flex-shrink-0 snap-center relative h-8 sm:h-10 md:h-12 w-auto opacity-50 grayscale hover:opacity-70 transition-opacity">
-                <Image
-                  src="/logos/client-1.svg"
-                  alt="Client logo 1"
-                  width={150}
-                  height={54}
-                  className="h-full w-auto object-contain"
-                />
-              </div>
-              <div className="flex-shrink-0 snap-center relative h-8 sm:h-10 md:h-12 w-auto opacity-50 grayscale hover:opacity-70 transition-opacity">
-                <Image
-                  src="/logos/client-2.svg"
-                  alt="Client logo 2"
-                  width={82}
-                  height={48}
-                  className="h-full w-auto object-contain"
-                />
-              </div>
+        {/* Social Proof - marquee with container width + gradient fades */}
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 mb-12 md:mb-16 py-4 md:py-6">
+          <p className="text-xs sm:text-sm text-text-muted text-center mb-8 md:mb-10">{t('socialProof.title')}</p>
+          <div className="relative w-full overflow-hidden">
+            {/* Gradient fades on both ends */}
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-24 bg-gradient-to-r from-background to-transparent" aria-hidden />
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 sm:w-24 bg-gradient-to-l from-background to-transparent" aria-hidden />
+            <div className="flex items-center gap-10 sm:gap-14 md:gap-20 w-max animate-logo-marquee">
+              {[
+                { src: '/logos/655solero.png', alt: '655 Solero' },
+                { src: '/logos/Adsomnia.svg', alt: 'Adsomnia' },
+                { src: '/logos/FM_Group.png', alt: 'FM Group' },
+                { src: '/logos/client-1.svg', alt: 'Client' },
+                { src: '/logos/client-2.svg', alt: 'Client' },
+                { src: '/logos/confortzzzone.svg', alt: 'Comfortzzzone' },
+                { src: '/logos/vector-3.svg', alt: 'Partner' },
+              ].map((logo) => (
+                <div
+                  key={logo.src}
+                  className="flex-shrink-0 relative h-9 sm:h-10 md:h-12 w-auto max-w-[140px] opacity-90"
+                >
+                  <Image
+                    src={logo.src}
+                    alt={logo.alt}
+                    width={140}
+                    height={48}
+                    className="h-full w-auto object-contain object-center"
+                  />
+                </div>
+              ))}
+              {/* Duplicate set for seamless loop */}
+              {[
+                { src: '/logos/655solero.png', alt: '655 Solero' },
+                { src: '/logos/Adsomnia.svg', alt: 'Adsomnia' },
+                { src: '/logos/FM_Group.png', alt: 'FM Group' },
+                { src: '/logos/client-1.svg', alt: 'Client' },
+                { src: '/logos/client-2.svg', alt: 'Client' },
+                { src: '/logos/confortzzzone.svg', alt: 'Comfortzzzone' },
+                { src: '/logos/vector-3.svg', alt: 'Partner' },
+              ].map((logo, i) => (
+                <div
+                  key={`dup-${i}-${logo.src}`}
+                  className="flex-shrink-0 relative h-9 sm:h-10 md:h-12 w-auto max-w-[140px] opacity-90"
+                >
+                  <Image
+                    src={logo.src}
+                    alt={logo.alt}
+                    width={140}
+                    height={48}
+                    className="h-full w-auto object-contain object-center"
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -473,7 +509,7 @@ export default function IntakePage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
               >
-                <div className="flex-shrink-0 w-9 h-9 md:w-10 md:h-10 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
+                <div className="flex-shrink-0 w-9 h-9 md:w-10 md:h-10 rounded-full bg-gray-800 border border-gray-700 shadow-sm flex items-center justify-center">
                   <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-bla-lime" />
                 </div>
                 <p className="text-sm sm:text-base text-text-primary leading-relaxed">

@@ -12,7 +12,7 @@ interface PrivacyModalProps {
 export default function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Handle ESC key to close
+  // Handle ESC key to close and body scroll lock
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -22,8 +22,9 @@ export default function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
 
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
-      // Lock body scroll when modal is open
       document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
     }
 
     return () => {

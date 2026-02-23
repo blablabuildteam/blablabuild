@@ -159,6 +159,7 @@ export default function CasesSection() {
       clearTimeout(initTimeout);
       window.removeEventListener('resize', handleResize);
       if (ctx) ctx.revert();
+      ScrollTrigger.refresh();
     };
   }, []);
 
