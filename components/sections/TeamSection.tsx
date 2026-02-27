@@ -168,8 +168,9 @@ export default function TeamSection() {
                         </a>
                       )}
                     </div>
-                    <p className="font-host font-normal text-sm md:text-lg lg:text-xl text-bla-blue mb-2 md:mb-4">
-                      {founder.role}
+                    <p className="font-host text-xs md:text-sm text-bla-blue mb-2 md:mb-3 whitespace-nowrap overflow-hidden text-ellipsis">
+                      <span className="font-bold">{t('expertiseLabel')}:</span>{' '}
+                      <span className="font-normal">{founder.role}</span>
                     </p>
                     <div className="flex-1">
                       {(() => {
@@ -203,7 +204,7 @@ export default function TeamSection() {
                                     [founder.id]: !prev[founder.id],
                                   }))
                                 }
-                                className="mt-2 text-xs md:text-sm font-medium text-bla-blue hover:text-bla-lime transition-colors"
+                                className="mt-2 text-xs md:text-sm font-medium text-text-muted hover:text-text-primary transition-colors"
                               >
                                 {isExpanded ? t('readLess') : t('readMore')}
                               </button>
