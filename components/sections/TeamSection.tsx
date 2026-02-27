@@ -27,15 +27,16 @@ export default function TeamSection() {
       { src: '/profile-brand-logos/rabobank.png', alt: 'Rabobank' },
     ],
     xennith: [
-      { src: '/profile-brand-logos/starbucks.png', alt: 'Starbucks' },
+      { src: '/profile-brand-logos/starbucks2.png', alt: 'Starbucks' },
       { src: '/profile-brand-logos/adidas.png', alt: 'Adidas' },
       { src: '/profile-brand-logos/diageo.png', alt: 'Diageo' },
-      { src: '/profile-brand-logos/puig.png', alt: 'PUIG' },
+      { src: '/profile-brand-logos/action.svg.png', alt: 'Action' },
     ],
     daniel: [
       { src: '/profile-brand-logos/heineken.png', alt: 'Heineken' },
       { src: '/profile-brand-logos/us-airforce.png', alt: 'US Air Force' },
       { src: '/profile-brand-logos/mclaren.png', alt: 'McLaren' },
+      { src: '/profile-brand-logos/ajax.png', alt: 'Ajax' },
     ],
   };
   
