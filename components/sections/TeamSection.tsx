@@ -217,15 +217,18 @@ export default function TeamSection() {
                       <p className="font-host font-medium text-[11px] md:text-xs uppercase tracking-[0.08em] text-text-muted mb-2">
                         {t('experienceWithBrands')}
                       </p>
-                      <div className="flex items-center gap-3 flex-nowrap overflow-x-auto pb-1">
+                      <div className="flex items-center gap-2 md:gap-3 w-full min-w-0 pb-1">
                         {(founderBrandLogos[founder.id] || []).map((logo) => (
-                          <div key={`${founder.id}-${logo.alt}`} className="flex-shrink-0">
+                          <div
+                            key={`${founder.id}-${logo.alt}`}
+                            className="min-w-0 flex-1 flex items-center justify-center"
+                          >
                             <Image
                               src={logo.src}
                               alt={logo.alt}
                               width={68}
                               height={22}
-                              className="h-5 md:h-6 w-auto object-contain"
+                              className="h-5 md:h-6 w-full object-contain"
                             />
                           </div>
                         ))}
