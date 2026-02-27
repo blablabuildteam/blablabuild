@@ -180,6 +180,9 @@
   },
   "team": {
     "heading": "Meer dan 40 jaar digitale ervaring tot jouw beschikking",
+    "experienceWithBrands": "Ervaring met onder andere:",
+    "readMore": "Lees meer",
+    "readLess": "Lees minder",
     "founders": {
       "daniel": {
         "name": "Daniel de Vos",

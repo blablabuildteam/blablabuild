@@ -180,6 +180,9 @@
   },
   "team": {
     "heading": "More than 40 years of digital experience at your disposal",
+    "experienceWithBrands": "Experience with brands like:",
+    "readMore": "Read more",
+    "readLess": "Read less",
     "founders": {
       "daniel": {
         "name": "Daniel de Vos",

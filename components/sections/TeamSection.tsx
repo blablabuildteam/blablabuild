@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { LinkedinIcon } from '@/components/ui/icons/il-linkedin';
@@ -18,36 +18,53 @@ function shuffleArray<T>(array: T[]): T[] {
 
 export default function TeamSection() {
   const t = useTranslations('team');
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+
+  const founderBrandLogos: Record<string, { src: string; alt: string }[]> = {
+    kevin: [
+      { src: '/profile-brand-logos/eneco.png', alt: 'Eneco' },
+      { src: '/profile-brand-logos/bitvavo.png', alt: 'Bitvavo' },
+      { src: '/profile-brand-logos/rabobank.png', alt: 'Rabobank' },
+    ],
+    xennith: [
+      { src: '/profile-brand-logos/starbucks.png', alt: 'Starbucks' },
+      { src: '/profile-brand-logos/adidas.png', alt: 'Adidas' },
+      { src: '/profile-brand-logos/diageo.png', alt: 'Diageo' },
+      { src: '/profile-brand-logos/puig.png', alt: 'PUIG' },
+    ],
+    daniel: [
+      { src: '/profile-brand-logos/heineken.png', alt: 'Heineken' },
+      { src: '/profile-brand-logos/us-airforce.png', alt: 'US Air Force' },
+      { src: '/profile-brand-logos/mclaren.png', alt: 'McLaren' },
+    ],
+  };
   
   const foundersData = useMemo(
     () => [
       {
+        id: 'daniel',
         name: t('founders.daniel.name'),
         role: t('founders.daniel.role'),
         description: t('founders.daniel.description'),
         linkedin: 'https://www.linkedin.com/in/danieldevos/',
-        cardRotation: 3.886,
-        cardSkew: 1.267,
         image: '/img/daniel-profile.png',
         linkedinLabel: t('founders.daniel.linkedinLabel'),
       },
       {
+        id: 'xennith',
         name: t('founders.xennith.name'),
         role: t('founders.xennith.role'),
         description: t('founders.xennith.description'),
         linkedin: 'https://www.linkedin.com/in/xennith/',
-        cardRotation: 4.359,
-        cardSkew: 1.42,
         image: '/img/xennith-profile.png',
         linkedinLabel: t('founders.xennith.linkedinLabel'),
       },
       {
+        id: 'kevin',
         name: t('founders.kevin.name'),
         role: t('founders.kevin.role'),
         description: t('founders.kevin.description'),
         linkedin: 'https://www.linkedin.com/in/941b9732/',
-        cardRotation: -4.331,
-        cardSkew: -1.411,
         image: '/img/kevin-profile.png',
         linkedinLabel: t('founders.kevin.linkedinLabel'),
       },
@@ -55,8 +72,13 @@ export default function TeamSection() {
     [t]
   );
 
-  // Randomize founders order on each page load/refresh
-  const founders = useMemo(() => shuffleArray(foundersData), [foundersData]);
+  // Keep initial render deterministic to avoid SSR/client hydration mismatch.
+  // Then randomize once mounted on the client.
+  const [founders, setFounders] = useState(foundersData);
+
+  useEffect(() => {
+    setFounders(shuffleArray(foundersData));
+  }, [foundersData]);
 
   return (
     <section 
@@ -117,12 +139,12 @@ export default function TeamSection() {
                   {/* Mobile: Row layout with image left, text right */}
                   <div className="flex flex-row md:flex-col gap-4 md:gap-0">
                   {/* Image display - Left on mobile, top on desktop */}
-                  <div className="flex-shrink-0 w-[35%] md:w-full aspect-[160/200] md:aspect-[416/529] rounded-xl overflow-hidden md:mb-4 bg-white relative">
+                  <div className="flex-shrink-0 w-[35%] md:w-full aspect-square rounded-xl overflow-hidden md:mb-4 bg-white relative">
                     <Image
                       src={founder.image}
                       alt={founder.name}
                       fill
-                      className="object-cover object-top"
+                      className="object-cover object-top scale-[1.2]"
                       sizes="(max-width: 768px) 35vw, 33vw"
                     />
                   </div>
@@ -148,9 +170,65 @@ export default function TeamSection() {
                     <p className="font-host font-normal text-sm md:text-lg lg:text-xl text-bla-blue mb-2 md:mb-4">
                       {founder.role}
                     </p>
-                    <p className="font-host font-normal text-xs md:text-sm lg:text-base text-text-muted leading-relaxed flex-1">
-                      {founder.description}
-                    </p>
+                    <div className="flex-1">
+                      {(() => {
+                        const isExpanded = !!expandedCards[founder.id];
+                        const shouldTruncate = founder.description.length > 120;
+
+                        return (
+                          <>
+                            <p
+                              className={`font-host font-normal text-xs md:text-sm lg:text-base text-text-muted leading-relaxed ${
+                                isExpanded ? '' : 'overflow-hidden'
+                              }`}
+                              style={
+                                isExpanded
+                                  ? undefined
+                                  : {
+                                      display: '-webkit-box',
+                                      WebkitLineClamp: 2,
+                                      WebkitBoxOrient: 'vertical',
+                                    }
+                              }
+                            >
+                              {founder.description}
+                            </p>
+                            {shouldTruncate && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setExpandedCards((prev) => ({
+                                    ...prev,
+                                    [founder.id]: !prev[founder.id],
+                                  }))
+                                }
+                                className="mt-2 text-xs md:text-sm font-medium text-bla-blue hover:text-bla-lime transition-colors"
+                              >
+                                {isExpanded ? t('readLess') : t('readMore')}
+                              </button>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>
+                    <div className="mt-5 md:mt-6">
+                      <p className="font-host font-medium text-[11px] md:text-xs uppercase tracking-[0.08em] text-text-muted mb-2">
+                        {t('experienceWithBrands')}
+                      </p>
+                      <div className="flex items-center gap-3 flex-nowrap overflow-x-auto pb-1">
+                        {(founderBrandLogos[founder.id] || []).map((logo) => (
+                          <div key={`${founder.id}-${logo.alt}`} className="flex-shrink-0">
+                            <Image
+                              src={logo.src}
+                              alt={logo.alt}
+                              width={68}
+                              height={22}
+                              className="h-5 md:h-6 w-auto object-contain"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
                 </motion.div>
