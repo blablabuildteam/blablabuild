@@ -259,8 +259,9 @@ export default function CaseStudiesSection() {
             <h2 className="font-host font-medium text-3xl md:text-[48px] text-white leading-tight mb-4">
               {(() => {
                 const heading = t('heading');
-                const highlight = 'concrete waarde';
-                if (heading.includes(highlight)) {
+                const highlights = ['concrete waarde', 'concrete value'];
+                const highlight = highlights.find((value) => heading.includes(value));
+                if (highlight) {
                   const parts = heading.split(highlight);
                   return (
                     <>
