@@ -26,7 +26,11 @@ interface SolutionCard {
   body?: string;
 }
 
-export default function CasesSection() {
+interface CasesSectionProps {
+  embedded?: boolean;
+}
+
+export default function CasesSection({ embedded = false }: CasesSectionProps) {
   const t = useTranslations('cases');
   const tCommon = useTranslations('common');
   const sectionRef = useRef<HTMLElement>(null);
@@ -168,34 +172,21 @@ export default function CasesSection() {
     return 'text-bla-lime';
   };
 
-  return (
-    <section
-      ref={sectionRef}
-      id="oplossingen"
-      className="relative w-full py-20 md:py-32"
-      style={{ backgroundColor: '#f5f5f5' }}
+  const cardsGrid = (
+    <div 
+      ref={cardsContainerRef} 
+      className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4"
     >
-      <div className="w-full max-w-7xl mx-auto px-4 md:px-8">
-        {/* Header */}
-        <h2 className="font-host font-medium text-3xl md:text-[48px] text-text-primary text-center max-w-[863px] mx-auto leading-tight mb-12 md:mb-16">
-          {t('heading')}
-        </h2>
-
-        {/* 3-column Masonry Grid with 9 Cards */}
-        <div 
-          ref={cardsContainerRef} 
-          className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4"
+      {solutionCards.map((card) => (
+        <div
+          key={card.id}
+          className={`solution-card rounded-2xl md:rounded-3xl p-6 md:p-8 flex flex-col transition-all duration-300 relative ${
+            card.id === 9 
+              ? 'col-span-2 md:col-span-1' 
+              : 'bg-white'
+          }`}
+          style={card.id === 9 ? { backgroundColor: '#070800' } : undefined}
         >
-          {solutionCards.map((card) => (
-            <div
-              key={card.id}
-              className={`solution-card rounded-2xl md:rounded-3xl p-6 md:p-8 flex flex-col transition-all duration-300 relative ${
-                card.id === 9 
-                  ? 'col-span-2 md:col-span-1' 
-                  : 'bg-white'
-              }`}
-              style={card.id === 9 ? { backgroundColor: '#070800' } : undefined}
-            >
               {/* Grain effect overlay for CTA card */}
               {card.id === 9 && (
                 <div 
@@ -284,9 +275,28 @@ export default function CasesSection() {
                   )}
                 </>
               )}
-            </div>
-          ))}
         </div>
+      ))}
+    </div>
+  );
+
+  if (embedded) {
+    return (
+      <div ref={sectionRef} className="w-full max-w-7xl mx-auto mt-10 md:mt-12">
+        {cardsGrid}
+      </div>
+    );
+  }
+
+  return (
+    <section
+      ref={sectionRef}
+      id="oplossingen"
+      className="relative w-full pt-0 pb-20 md:pb-28"
+      style={{ backgroundColor: '#f5f5f5' }}
+    >
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-8">
+        {cardsGrid}
       </div>
     </section>
   );

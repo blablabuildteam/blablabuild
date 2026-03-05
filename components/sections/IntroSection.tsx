@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { Brain, Network, Box, ShoppingCart, Heart, TrendingUp, Map, Building2, Target, Zap, Search } from 'lucide-react';
 import Marquee, { MarqueeItem } from '@/components/ui/marquee';
+import CasesSection from '@/components/sections/CasesSection';
 
 export default function IntroSection() {
   const t = useTranslations('intro');
@@ -29,7 +30,7 @@ export default function IntroSection() {
   ];
 
   return (
-    <section className="min-h-[688px] flex items-center justify-center bg-bla-lavender px-8 md:px-16 py-24 md:py-36 overflow-hidden">
+    <section id="oplossingen" className="min-h-[688px] bg-[#f5f5f5] px-8 md:px-16 py-24 md:py-36 overflow-hidden">
       <div className="mx-auto w-full max-w-[863px] text-center">
         <motion.h2
           className="font-host font-medium text-3xl md:text-[48px] leading-tight text-text-primary mb-10 md:mb-12"
@@ -103,6 +104,7 @@ export default function IntroSection() {
           })()}
         </motion.p>
       </div>
+      <CasesSection embedded />
     </section>
   );
 }

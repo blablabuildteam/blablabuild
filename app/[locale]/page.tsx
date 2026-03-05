@@ -5,7 +5,6 @@ import { initAnalytics, trackEvent } from '@/lib/analytics';
 import Navigation from '@/components/sections/Navigation';
 import HeroSection from '@/components/sections/HeroSection';
 import IntroSection from '@/components/sections/IntroSection';
-import CasesSection from '@/components/sections/CasesSection';
 import CaseStudiesSection from '@/components/sections/CaseStudiesSection';
 import ApproachSection from '@/components/sections/ApproachSection';
 import ExpertiseSection from '@/components/sections/ExpertiseSection';
@@ -192,7 +191,6 @@ export default function HomePage() {
       <Navigation showNavCTA={showNavCTA} activeSection={activeSection} />
       <HeroSection />
       <IntroSection />
-      <CasesSection />
       <CaseStudiesSection />
       <ApproachSection />
       <ExpertiseSection />
