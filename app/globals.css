@@ -231,8 +231,8 @@
     padding: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Enable smooth vertical scrolling on touch devices */
-    touch-action: pan-y;
+    /* Keep native gestures enabled, including pinch zoom */
+    touch-action: auto;
     -webkit-overflow-scrolling: touch;
   }
   
