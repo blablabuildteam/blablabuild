@@ -34,6 +34,7 @@ export default function CasesSection({ embedded = false }: CasesSectionProps) {
   const t = useTranslations('cases');
   const tCommon = useTranslations('common');
   const sectionRef = useRef<HTMLElement>(null);
+  const embeddedRef = useRef<HTMLDivElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
 
   // Helper to render text with bold markers (**text**)
@@ -110,7 +111,7 @@ export default function CasesSection({ embedded = false }: CasesSectionProps) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const section = sectionRef.current;
+    const section = embedded ? embeddedRef.current : sectionRef.current;
     const cardsContainer = cardsContainerRef.current;
 
     if (!section || !cardsContainer) return;
@@ -165,7 +166,7 @@ export default function CasesSection({ embedded = false }: CasesSectionProps) {
       if (ctx) ctx.revert();
       ScrollTrigger.refresh();
     };
-  }, []);
+  }, [embedded]);
 
   const getBadgeColor = (badge: BadgeType): string => {
     // All badges have the same styling: smoky black background with volt (lime) text
@@ -282,7 +283,7 @@ export default function CasesSection({ embedded = false }: CasesSectionProps) {
 
   if (embedded) {
     return (
-      <div ref={sectionRef} className="w-full max-w-7xl mx-auto mt-10 md:mt-12">
+      <div ref={embeddedRef} className="w-full max-w-7xl mx-auto mt-10 md:mt-12">
         {cardsGrid}
       </div>
     );
