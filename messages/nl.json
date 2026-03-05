@@ -17,6 +17,7 @@
   },
   "nav": {
     "solutions": "Oplossingen",
+    "cases": "Cases",
     "approach": "Aanpak",
     "skills": "Skills",
     "team": "Team",
@@ -279,6 +280,16 @@
       "active": "Active:",
       "secure": "Secure & Private"
     }
+  },
+  "caseStudies": {
+    "heading": "Geen theorie, maar echte resultaten",
+    "subheading": "Hoe we bedrijven hebben geholpen met AI, data en technologie",
+    "context": "Context",
+    "problem": "Het probleem dat we oplosten",
+    "whyItMatters": "Waarom dit belangrijk is",
+    "howWeSolved": "Hoe we het oplosten",
+    "successCriteria": "Succescriteria",
+    "viewCase": "Bekijk case"
   },
   "metadata": {
     "title": "blablabuild | AI Innovaties voor Snelle Groei",

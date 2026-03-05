@@ -17,6 +17,7 @@
   },
   "nav": {
     "solutions": "Solutions",
+    "cases": "Cases",
     "approach": "Approach",
     "skills": "Skills",
     "team": "Team",
@@ -279,6 +280,16 @@
       "active": "Active:",
       "secure": "Secure & Private"
     }
+  },
+  "caseStudies": {
+    "heading": "How we solve complex challenges",
+    "subheading": "See how we help businesses with AI, data and technology",
+    "context": "Context",
+    "problem": "The problem we solved",
+    "whyItMatters": "Why it matters",
+    "howWeSolved": "How we solved it",
+    "successCriteria": "Success criteria",
+    "viewCase": "View case"
   },
   "metadata": {
     "title": "blablabuild | AI Innovations for Fast Growth",

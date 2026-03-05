@@ -24,6 +24,7 @@ export default function Footer() {
     },
     navLinks: [
       { label: t('solutions'), href: '#oplossingen' },
+      { label: t('cases'), href: '#cases' },
       { label: t('approach'), href: '#aanpak' },
       { label: t('skills'), href: '#expertise' },
       { label: t('aboutUs'), href: '#over-ons' },

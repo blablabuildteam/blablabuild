@@ -379,6 +379,9 @@ export default function FloatingChatBubble() {
   }, []);
 
 
+  // State to hide widget when case modal is open
+  const [isHiddenByModal, setIsHiddenByModal] = useState(false);
+
   // Listen for external trigger events (from Navigation button, intake page, etc.)
   useEffect(() => {
     const handleOpenChatEvent = async (event: Event) => {
@@ -413,8 +416,14 @@ export default function FloatingChatBubble() {
         setInput(customEvent.detail.initialMessage);
       }
     };
+    
+    // Listen for hide/show events from case modal
+    const handleHideWidget = () => setIsHiddenByModal(true);
+    const handleShowWidget = () => setIsHiddenByModal(false);
 
     window.addEventListener('openChatWidget', handleOpenChatEvent);
+    window.addEventListener('hideChatWidget', handleHideWidget);
+    window.addEventListener('showChatWidget', handleShowWidget);
     (window as any).openChatWidget = openChat;
 
     // Also check on mount if we're on intake page
@@ -424,6 +433,8 @@ export default function FloatingChatBubble() {
 
     return () => {
       window.removeEventListener('openChatWidget', handleOpenChatEvent);
+      window.removeEventListener('hideChatWidget', handleHideWidget);
+      window.removeEventListener('showChatWidget', handleShowWidget);
       delete (window as any).openChatWidget;
     };
   }, [openChat, initializeSession]);
@@ -508,7 +519,7 @@ export default function FloatingChatBubble() {
         />
       )}
 
-      {isVisible && (
+      {isVisible && !isHiddenByModal && (
         <div key="chat-container" className={`fixed left-1/2 -translate-x-1/2 z-[9999] ${isExpanded ? 'bottom-24' : 'bottom-8'}`}>
           <AnimatePresence mode="wait">
             {isExpanded ? (

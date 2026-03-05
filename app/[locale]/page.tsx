@@ -8,6 +8,7 @@ import HeroSection from '@/components/sections/HeroSection';
 import IntroSection from '@/components/sections/IntroSection';
 import LogoCarousel from '@/components/sections/LogoCarousel';
 import CasesSection from '@/components/sections/CasesSection';
+import CaseStudiesSection from '@/components/sections/CaseStudiesSection';
 import ApproachSection from '@/components/sections/ApproachSection';
 import ExpertiseSection from '@/components/sections/ExpertiseSection';
 import TeamSection from '@/components/sections/TeamSection';
@@ -59,7 +60,7 @@ export default function HomePage() {
 
   // Track active section for navigation highlighting
   useEffect(() => {
-    const sections = ['oplossingen', 'aanpak', 'expertise', 'over-ons'];
+    const sections = ['cases', 'oplossingen', 'aanpak', 'expertise', 'over-ons'];
     const sectionElements: { id: string; element: HTMLElement }[] = [];
     let observer: IntersectionObserver | null = null;
     let rafId: number | null = null;
@@ -197,6 +198,7 @@ export default function HomePage() {
       <section className="w-full py-[80px]" style={{ backgroundColor: '#f5f5f5' }}>
         <LogoCarousel title={t('trustedBy')} containerClassName="max-w-7xl" className="mb-0 pb-0" />
       </section>
+      <CaseStudiesSection />
       <CasesSection />
       <ApproachSection />
       <ExpertiseSection />
