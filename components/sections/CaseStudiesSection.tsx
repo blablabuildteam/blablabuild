@@ -257,7 +257,21 @@ export default function CaseStudiesSection() {
           {/* Header */}
           <div className="text-center mb-12 md:mb-16">
             <h2 className="font-host font-medium text-3xl md:text-[48px] text-white leading-tight mb-4">
-              {t('heading')}
+              {(() => {
+                const heading = t('heading');
+                const highlight = 'concrete waarde';
+                if (heading.includes(highlight)) {
+                  const parts = heading.split(highlight);
+                  return (
+                    <>
+                      {parts[0]}
+                      <span className="text-bla-lime">{highlight}</span>
+                      {parts[1]}
+                    </>
+                  );
+                }
+                return heading;
+              })()}
             </h2>
             <p className="font-host font-normal text-base md:text-lg text-white/70 max-w-2xl mx-auto">
               {t('subheading')}

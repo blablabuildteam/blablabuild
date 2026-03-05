@@ -45,41 +45,27 @@ export default function LogoCarousel({
             />
           </>
         )}
-        <div className="flex items-center gap-10 sm:gap-14 md:gap-20 w-max animate-logo-marquee">
-          {LOGOS.map((logo) => (
-            <div
-              key={logo.src}
-              className={`flex-shrink-0 relative opacity-90 ${
-                logo.size === 'sm'
-                  ? 'h-7 sm:h-8 md:h-9 w-[72px] sm:w-[84px]'
-                  : 'h-10 sm:h-11 md:h-12 w-[120px] sm:w-[140px]'
-              }`}
-            >
-              <Image
-                src={logo.src}
-                alt={logo.alt}
-                fill
-                className={`object-contain object-center ${theme === 'dark' ? 'brightness-0 invert' : ''}`}
-                sizes={logo.size === 'sm' ? '84px' : '140px'}
-              />
-            </div>
-          ))}
-          {LOGOS.map((logo, i) => (
-            <div
-              key={`dup-${i}-${logo.src}`}
-              className={`flex-shrink-0 relative opacity-90 ${
-                logo.size === 'sm'
-                  ? 'h-7 sm:h-8 md:h-9 w-[72px] sm:w-[84px]'
-                  : 'h-10 sm:h-11 md:h-12 w-[120px] sm:w-[140px]'
-              }`}
-            >
-              <Image
-                src={logo.src}
-                alt={logo.alt}
-                fill
-                className={`object-contain object-center ${theme === 'dark' ? 'brightness-0 invert' : ''}`}
-                sizes={logo.size === 'sm' ? '84px' : '140px'}
-              />
+        <div className="flex w-max animate-logo-marquee hover:[animation-play-state:paused] active:[animation-play-state:paused]">
+          {[0, 1].map((groupIndex) => (
+            <div key={`group-${groupIndex}`} className="flex items-center gap-10 sm:gap-14 md:gap-20 flex-shrink-0">
+              {LOGOS.map((logo, logoIndex) => (
+                <div
+                  key={`logo-${groupIndex}-${logoIndex}-${logo.src}`}
+                  className={`flex-shrink-0 relative opacity-90 ${
+                    logo.size === 'sm'
+                      ? 'h-7 sm:h-8 md:h-9 w-[72px] sm:w-[84px]'
+                      : 'h-10 sm:h-11 md:h-12 w-[120px] sm:w-[140px]'
+                  }`}
+                >
+                  <Image
+                    src={logo.src}
+                    alt={logo.alt}
+                    fill
+                    className={`object-contain object-center ${theme === 'dark' ? 'brightness-0 invert' : ''}`}
+                    sizes={logo.size === 'sm' ? '84px' : '140px'}
+                  />
+                </div>
+              ))}
             </div>
           ))}
         </div>
