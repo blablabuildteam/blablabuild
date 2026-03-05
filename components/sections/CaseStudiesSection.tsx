@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { X } from 'lucide-react';
+import LogoCarousel from '@/components/sections/LogoCarousel';
 
 type BadgeType = 'insight' | 'revenue' | 'speed' | 'cost' | 'control';
 
@@ -181,6 +182,7 @@ const badgeLabels: Record<BadgeType, { nl: string; en: string }> = {
 
 export default function CaseStudiesSection() {
   const t = useTranslations('caseStudies');
+  const tCommon = useTranslations('common');
   const [selectedCase, setSelectedCase] = useState<CaseStudy | null>(null);
   const [isClosing, setIsClosing] = useState(false);
   
@@ -344,6 +346,13 @@ export default function CaseStudiesSection() {
               );
             })}
           </div>
+
+          <LogoCarousel
+            title={tCommon('trustedBy')}
+            containerClassName="max-w-7xl"
+            className="mt-14 md:mt-16 mb-0 pb-0"
+            theme="dark"
+          />
         </div>
       </div>
 

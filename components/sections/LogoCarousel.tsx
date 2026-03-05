@@ -17,17 +17,30 @@ interface LogoCarouselProps {
   className?: string;
   /** Container width: default max-w-5xl (intake). Use "max-w-7xl" for homepage/site container. */
   containerClassName?: string;
+  /** Use dark styling (white text/logos) when placed on dark backgrounds. */
+  theme?: 'light' | 'dark';
 }
 
-export default function LogoCarousel({ title, className = '', containerClassName = 'max-w-5xl' }: LogoCarouselProps) {
+export default function LogoCarousel({
+  title,
+  className = '',
+  containerClassName = 'max-w-5xl',
+  theme = 'light',
+}: LogoCarouselProps) {
   return (
     <section className={`${containerClassName} mx-auto px-4 sm:px-6 md:px-8 py-4 md:py-6 ${className}`}>
       {title && (
-        <p className="text-xs sm:text-sm text-text-muted text-center mb-8 md:mb-10">{title}</p>
+        <p className={`text-xs sm:text-sm text-center mb-8 md:mb-10 ${theme === 'dark' ? 'text-white/70' : 'text-text-muted'}`}>{title}</p>
       )}
       <div className="relative w-full overflow-x-auto md:overflow-hidden scrollbar-hide touch-pan-x">
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-24 bg-gradient-to-r from-background to-transparent" aria-hidden />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 sm:w-24 bg-gradient-to-l from-background to-transparent" aria-hidden />
+        <div
+          className={`pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-24 bg-gradient-to-r to-transparent ${theme === 'dark' ? 'from-[#070800]' : 'from-background'}`}
+          aria-hidden
+        />
+        <div
+          className={`pointer-events-none absolute inset-y-0 right-0 z-10 w-16 sm:w-24 bg-gradient-to-l to-transparent ${theme === 'dark' ? 'from-[#070800]' : 'from-background'}`}
+          aria-hidden
+        />
         <div className="flex items-center gap-10 sm:gap-14 md:gap-20 w-max animate-logo-marquee">
           {LOGOS.map((logo) => (
             <div
@@ -42,7 +55,7 @@ export default function LogoCarousel({ title, className = '', containerClassName
                 src={logo.src}
                 alt={logo.alt}
                 fill
-                className="object-contain object-center"
+                className={`object-contain object-center ${theme === 'dark' ? 'brightness-0 invert' : ''}`}
                 sizes={logo.size === 'sm' ? '84px' : '140px'}
               />
             </div>
@@ -60,7 +73,7 @@ export default function LogoCarousel({ title, className = '', containerClassName
                 src={logo.src}
                 alt={logo.alt}
                 fill
-                className="object-contain object-center"
+                className={`object-contain object-center ${theme === 'dark' ? 'brightness-0 invert' : ''}`}
                 sizes={logo.size === 'sm' ? '84px' : '140px'}
               />
             </div>
