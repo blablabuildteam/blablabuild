@@ -25,7 +25,7 @@ export default function LogoCarousel({ title, className = '', containerClassName
       {title && (
         <p className="text-xs sm:text-sm text-text-muted text-center mb-8 md:mb-10">{title}</p>
       )}
-      <div className="relative w-full overflow-hidden">
+      <div className="relative w-full overflow-x-auto md:overflow-hidden scrollbar-hide touch-pan-x">
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-24 bg-gradient-to-r from-background to-transparent" aria-hidden />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 sm:w-24 bg-gradient-to-l from-background to-transparent" aria-hidden />
         <div className="flex items-center gap-10 sm:gap-14 md:gap-20 w-max animate-logo-marquee">

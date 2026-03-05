@@ -130,7 +130,7 @@ export default function HeroSection() {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 className="relative w-full"
               >
-                <Carousel>
+                <Carousel initialIndex={1}>
                   <CarouselContent className="ml-0">
                     {carouselCards.map((card) => (
                       <CarouselItem key={card.id} className="pl-0">

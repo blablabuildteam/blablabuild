@@ -13,8 +13,16 @@ interface CarouselContextValue {
 
 const CarouselContext = React.createContext<CarouselContextValue | undefined>(undefined);
 
-export function Carousel({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  const [currentIndex, setCurrentIndex] = React.useState(0);
+export function Carousel({
+  children,
+  className = '',
+  initialIndex = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  initialIndex?: number;
+}) {
+  const [currentIndex, setCurrentIndex] = React.useState(initialIndex);
   const [totalSlides, setTotalSlides] = React.useState(0);
 
   const goNext = React.useCallback(() => {
@@ -29,7 +37,15 @@ export function Carousel({ children, className = '' }: { children: React.ReactNo
 
   const registerSlides = React.useCallback((count: number) => {
     setTotalSlides(count);
-  }, []);
+    if (count > 0) {
+      setCurrentIndex((prev) => {
+        const normalizedInitial = ((initialIndex % count) + count) % count;
+        // Only force initial index before user navigation (or on first mount)
+        if (prev < 0 || prev >= count) return normalizedInitial;
+        return prev;
+      });
+    }
+  }, [initialIndex]);
 
   return (
     <CarouselContext.Provider value={{ currentIndex, totalSlides, goNext, goPrev, registerSlides }}>
@@ -44,8 +60,9 @@ export function CarouselContent({ children, className = '' }: { children: React.
   const context = React.useContext(CarouselContext);
   if (!context) throw new Error('CarouselContent must be used within Carousel');
 
-  const { currentIndex, totalSlides, registerSlides } = context;
+  const { currentIndex, totalSlides, registerSlides, goNext, goPrev } = context;
   const slides = React.Children.toArray(children);
+  const touchStartRef = React.useRef<{ x: number; y: number } | null>(null);
 
   // Register slide count on mount and when children change
   React.useEffect(() => {
@@ -124,8 +141,36 @@ export function CarouselContent({ children, className = '' }: { children: React.
     return 'w-[38%] sm:w-[32%] md:w-[30%]';
   };
 
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStartRef.current || totalSlides <= 1) return;
+
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStartRef.current.x;
+    const deltaY = touch.clientY - touchStartRef.current.y;
+    touchStartRef.current = null;
+
+    // Trigger only on intentional horizontal swipes
+    const minSwipeDistance = 40;
+    if (Math.abs(deltaX) < minSwipeDistance || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+
+    if (deltaX < 0) {
+      goNext();
+    } else {
+      goPrev();
+    }
+  };
+
   return (
-    <div className={`relative overflow-visible ${className}`}>
+    <div
+      className={`relative overflow-visible ${className}`}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <div 
         className="relative w-full pt-5 pb-10 md:pt-0 md:pb-0"
         style={{ 

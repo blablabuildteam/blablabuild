@@ -365,6 +365,12 @@ html {
   animation: logo-marquee 20s linear infinite;
 }
 
+@media (max-width: 767px) {
+  .animate-logo-marquee {
+    animation-duration: 14s;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-logo-marquee {
     animation: none;
