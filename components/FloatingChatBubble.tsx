@@ -6,7 +6,7 @@ import { MessageCircle, X, ArrowRight, Check, Keyboard, Brain, FileText, Clock }
 import { trackEvent, trackWidgetEvent } from '@/lib/analytics';
 import { ChatResponse } from '@/lib/types';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 import { BorderBeam } from '@/components/ui/border-beam';
 
 interface Message {
@@ -36,8 +36,9 @@ function renderBoldText(text: string): React.ReactNode {
 }
 
 export default function FloatingChatBubble({ variant = 'floating' }: FloatingChatBubbleProps) {
-  const pathname = usePathname();
-  const isEnglish = pathname?.startsWith('/en');
+  const locale = useLocale();
+  const tIntake = useTranslations('intake');
+  const tChat = useTranslations('chat.widget');
   const isInline = variant === 'inline';
   const [isExpanded, setIsExpanded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -51,7 +52,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState<string>('Verwerken...');
+  const [loadingMessage, setLoadingMessage] = useState<string>(tChat('processing'));
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -167,24 +168,18 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
   useEffect(() => {
     if (chatStarted || isIdeaFocused || idea.trim()) return;
 
-    const placeholders = isEnglish
-      ? [
-          'Our data is spread over different tools...',
-          'I want to automate processes, where do I start?',
-          'We lose too much time on repetitive admin work...',
-        ]
-      : [
-          'Onze data staat verspreid over verschillende tools...',
-          'Ik wil processen automatiseren, maar waar begin ik?',
-          'We verliezen te veel tijd aan repetitief handwerk...',
-        ];
+    const placeholders = [
+      tIntake('chatModule.placeholder1'),
+      tIntake('chatModule.placeholder2'),
+      tIntake('chatModule.placeholder3'),
+    ];
 
     const interval = setInterval(() => {
       setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [chatStarted, idea, isEnglish, isIdeaFocused]);
+  }, [chatStarted, idea, isIdeaFocused, tIntake]);
 
   // Initialize chat session and immediately send the user's first message
   const initializeSession = useCallback(async (initialIdea: string) => {
@@ -194,7 +189,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
       // First, show the user's message immediately
       setMessages([{ role: 'user', content: initialIdea, timestamp: new Date() }]);
       setIsLoading(true);
-      setLoadingMessage('Je uitdaging wordt geanalyseerd...');
+      setLoadingMessage(tChat('analyzing'));
 
       // Use intake-chat endpoint if opened from intake page, otherwise use regular chat
       const isFromIntake = isIntakeSource || (typeof window !== 'undefined' && window.location.pathname.includes('/intake'));
@@ -207,7 +202,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: initialIdea,
-          locale: typeof window !== 'undefined' ? (window.location.pathname.startsWith('/en') ? 'en' : 'nl') : 'nl',
+          locale,
           // No sessionId - will create new one
         }),
       });
@@ -231,12 +226,12 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
       }
     } catch (error) {
       console.error('Error initializing session:', error);
-      setCurrentQuestion('Er ging iets mis bij het starten. Probeer het opnieuw.');
+      setCurrentQuestion(tChat('error'));
     } finally {
       setIsLoading(false);
-      setLoadingMessage('Verwerken...');
+      setLoadingMessage(tChat('processing'));
     }
-  }, [isIntakeSource]);
+  }, [isIntakeSource, locale, tChat]);
 
   // Handle initial idea submission (first step)
   const handleSubmit = async (e: React.FormEvent) => {
@@ -260,7 +255,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMessage, timestamp: new Date() }]);
     setIsLoading(true);
-    setLoadingMessage('Je antwoord wordt verwerkt...');
+    setLoadingMessage(tChat('processingAnswer'));
     
     const newQuestionNumber = messages.filter(m => m.role === 'user').length + 1;
     setQuestionNumber(newQuestionNumber);
@@ -282,7 +277,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
         body: JSON.stringify({
           message: userMessage,
           sessionId: sid,
-          locale: typeof window !== 'undefined' ? (window.location.pathname.startsWith('/en') ? 'en' : 'nl') : 'nl',
+          locale,
         }),
       });
 
@@ -291,7 +286,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
         throw new Error(errorData.error || `API error: ${response.status}`);
       }
 
-      setLoadingMessage('AI analyseert je antwoord...');
+      setLoadingMessage(tChat('analyzing'));
       
       const data: ChatResponse = await response.json();
       
@@ -344,7 +339,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
       }
     } catch (error) {
       console.error('Error sending message:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Er ging iets mis. Probeer het opnieuw.';
+      const errorMessage = error instanceof Error ? error.message : tChat('error');
       setCurrentQuestion(`Sorry, ${errorMessage}`);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
@@ -353,7 +348,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
       }]);
     } finally {
       setIsLoading(false);
-      setLoadingMessage('Verwerken...');
+      setLoadingMessage(tChat('processing'));
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
@@ -546,20 +541,14 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
     );
   };
 
-  const placeholders = isEnglish
-    ? [
-        'Our data is spread over different tools...',
-        'I want to automate processes, where do I start?',
-        'We lose too much time on repetitive admin work...',
-      ]
-    : [
-        'Onze data staat verspreid over verschillende tools...',
-        'Ik wil processen automatiseren, maar waar begin ik?',
-        'We verliezen te veel tijd aan repetitief handwerk...',
-      ];
+  const placeholders = [
+    tIntake('chatModule.placeholder1'),
+    tIntake('chatModule.placeholder2'),
+    tIntake('chatModule.placeholder3'),
+  ];
 
   const dynamicIdeaPlaceholder = isIdeaFocused
-    ? (isEnglish ? 'Your challenge...' : 'Jouw uitdaging...')
+    ? tIntake('chatModule.inputPlaceholder')
     : placeholders[currentPlaceholder];
 
   return (
@@ -596,7 +585,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                 <motion.div 
                   className={[
                     'backdrop-blur-[20px] bg-surface-glass border border-card-border rounded-[24px] relative overflow-hidden shadow-lg flex flex-col',
-                    isInline ? 'w-full max-w-[1240px] mx-auto h-[60vh]' : 'w-[94vw] max-w-[1240px] h-[60vh]',
+                    isInline ? 'w-full max-w-[1240px] mx-auto h-[74vh] sm:h-[68vh] md:h-[60vh]' : 'w-[94vw] max-w-[1240px] h-[60vh]',
                   ].join(' ')}
                   style={{ WebkitBackdropFilter: 'blur(20px)' }}
                   initial={{ y: 20 }}
@@ -617,7 +606,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                   {!chatStarted ? (
                     /* Initial Input View */
                     <div className="p-6 md:p-12 flex flex-col items-center h-full justify-between">
-                      <div className="flex flex-col items-center gap-4 md:gap-6 mb-12 md:mb-16">
+                      <div className="flex flex-col items-center gap-4 md:gap-6 mb-6 md:mb-16">
                         {/* Logo Icon */}
                         <motion.div
                           initial={{ scale: 0, opacity: 0 }}
@@ -641,10 +630,10 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                             <span>1-2 min</span>
                           </div>
                           <h3 className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-text-primary">
-                            Wat is jouw uitdaging?
+                            {tIntake('chatModule.title')}
                           </h3>
                           <p className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-text-primary">
-                            Ontdek hoe wij je kunnen helpen.
+                            {tIntake('chatModule.subtitle')}
                           </p>
 
                           <div className="mt-4 md:mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 text-left">
@@ -652,21 +641,21 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
                                 <Keyboard className="w-4 h-4 text-bla-charcoal" />
                               </div>
-                              <p className="text-xs sm:text-sm text-text-primary leading-relaxed">1. Jij deelt je uitdaging</p>
+                              <p className="text-xs sm:text-sm text-text-primary leading-relaxed">{tIntake('process.step1')}</p>
                             </div>
 
                             <div className="flex items-center gap-2">
                               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
                                 <Brain className="w-4 h-4 text-bla-charcoal" />
                               </div>
-                              <p className="text-xs sm:text-sm text-text-primary leading-relaxed">2. AI analyseert direct</p>
+                              <p className="text-xs sm:text-sm text-text-primary leading-relaxed">{tIntake('process.step2')}</p>
                             </div>
 
                             <div className="flex items-center gap-2">
                               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
                                 <FileText className="w-4 h-4 text-bla-charcoal" />
                               </div>
-                              <p className="text-xs sm:text-sm text-text-primary leading-relaxed">3. Je krijgt een eerste richting</p>
+                              <p className="text-xs sm:text-sm text-text-primary leading-relaxed">{tIntake('process.step3')}</p>
                             </div>
                           </div>
                         </motion.div>
@@ -675,7 +664,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                       {/* Input Form - Positioned at bottom */}
                       <motion.form 
                         onSubmit={handleSubmit}
-                        className="w-full max-w-[1035px] mt-auto pt-12 md:pt-16"
+                        className="w-full max-w-[1035px] mt-auto pt-6 md:pt-16"
                         initial={{ y: 10, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.1, duration: 0.15 }}
@@ -776,9 +765,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                             transition={{ delay: 0.2 }}
                             className="space-y-2 pl-4"
                           >
-                            <p className="text-xs text-black/60 mb-2">
-                              Kies een optie of typ je eigen antwoord:
-                            </p>
+                            <p className="text-xs text-black/60 mb-2">{tChat('chooseOption')}</p>
                             <div className="grid grid-cols-1 gap-2">
                               {questionOptions.map((option, idx) => (
                                 <motion.button
@@ -821,7 +808,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                                 <div className="w-6 h-6 bg-bla-lime/20 border border-bla-lime/30 rounded-full flex items-center justify-center">
                                   <Check className="w-3 h-3 text-black" />
                                 </div>
-                                <h3 className="text-sm font-medium text-black">Laten we kennismaken!</h3>
+                                <h3 className="text-sm font-medium text-black">{tChat('contactPromptTitle')}</h3>
                               </div>
 
                               <div>
@@ -829,7 +816,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                                   type="text"
                                   value={leadForm.name}
                                   onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                                  placeholder="Je naam"
+                                  placeholder={tChat('name')}
                                   className="w-full px-4 py-2.5 border border-chat-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
                                   disabled={isSubmittingLead}
                                 />
@@ -840,7 +827,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                                   type="email"
                                   value={leadForm.email}
                                   onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-                                  placeholder="Je e-mailadres"
+                                  placeholder={tChat('email')}
                                   className="w-full px-4 py-2.5 border border-chat-input-border rounded-xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40"
                                   disabled={isSubmittingLead}
                                 />
@@ -849,7 +836,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                               <button
                                 onClick={async () => {
                                   if (!leadForm.email.trim()) {
-                                    alert('Email is verplicht');
+                                    alert(tChat('emailRequiredShort'));
                                     return;
                                   }
 
@@ -867,15 +854,16 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
 
                                     if (!response.ok) throw new Error('Failed to save lead');
 
+                                    const namePart = leadForm.name ? ` ${leadForm.name}` : '';
                                     setMessages(prev => [...prev, { 
                                       role: 'assistant', 
-                                      content: `Top${leadForm.name ? ` ${leadForm.name}` : ''}! We nemen snel contact met je op via ${leadForm.email}.\n\nTot snel! 🎉`,
+                                      content: tChat('quickLeadSuccess', { namePart, email: leadForm.email }),
                                       timestamp: new Date() 
                                     }]);
                                     setShowLeadForm(false);
                                   } catch (error) {
                                     console.error('Error saving lead:', error);
-                                    alert('Er ging iets mis. Probeer het opnieuw.');
+                                    alert(tChat('error'));
                                   } finally {
                                     setIsSubmittingLead(false);
                                   }
@@ -886,11 +874,11 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                                 {isSubmittingLead ? (
                                   <>
                                     <BlablablaAnimation size="sm" />
-                                    <span>Verzenden...</span>
+                                    <span>{tChat('submitting')}</span>
                                   </>
                                 ) : (
                                   <>
-                                    <span>Verstuur</span>
+                                    <span>{tChat('submit')}</span>
                                     <ArrowRight className="w-4 h-4" />
                                   </>
                                 )}
@@ -912,7 +900,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                           >
                             <div className="flex items-center gap-2 px-4 py-2 bg-bla-lime/20 border border-bla-lime/30 rounded-full">
                               <Check className="w-4 h-4 text-black" />
-                              <span className="text-sm font-medium text-black">Gesprek afgerond</span>
+                              <span className="text-sm font-medium text-black">{tChat('conversationComplete')}</span>
                             </div>
                           </motion.div>
                         )}
@@ -927,7 +915,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                               value={input}
                               onChange={(e) => setInput(e.target.value)}
                               onKeyPress={handleKeyPress}
-                              placeholder={questionOptions?.length > 0 ? "Of typ je eigen antwoord..." : "Je antwoord..."}
+                              placeholder={questionOptions?.length > 0 ? tChat('orTypeOwn') : tChat('yourAnswer')}
                               rows={2}
                               className="w-full px-4 py-3 pr-20 md:px-8 md:pr-[4.5rem] border border-chat-input-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 transition-all resize-none text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40 overflow-wrap break-words"
                               style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}

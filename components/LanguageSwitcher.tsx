@@ -71,11 +71,11 @@ export default function LanguageSwitcher() {
   if (!isMounted) {
     return (
       <div className="relative inline-flex items-center">
-        <div className="relative bg-white/10 backdrop-blur-sm rounded-full p-1 border border-white/20 flex items-center">
+        <div className="relative bg-gray-100 rounded-full p-1 border border-gray-300 shadow-sm flex items-center">
           {locales.map((loc) => (
             <button
               key={loc}
-              className="relative px-4 py-1.5 rounded-full text-sm font-medium min-w-[44px] text-text-primary"
+              className="relative px-4 py-1.5 rounded-full text-sm font-medium min-w-[44px] text-gray-700"
               disabled
             >
               {localeNames[loc]}
@@ -88,7 +88,7 @@ export default function LanguageSwitcher() {
 
   return (
     <div className="relative inline-flex items-center">
-      <div className="relative bg-white/10 backdrop-blur-sm rounded-full p-1 border border-white/20 flex items-center">
+      <div className="relative bg-gray-100 rounded-full p-1 border border-gray-300 shadow-sm flex items-center">
         {/* Sliding indicator */}
         <div
           className="absolute top-1 bottom-1 bg-bla-lime rounded-full transition-all duration-300 ease-in-out shadow-sm z-0"
@@ -106,7 +106,7 @@ export default function LanguageSwitcher() {
             className={`relative px-4 py-1.5 rounded-full text-sm font-medium transition-colors duration-200 z-10 min-w-[44px] ${
               locale === loc
                 ? 'text-black font-semibold'
-                : 'text-text-primary hover:text-bla-blue'
+                : 'text-gray-700 hover:text-black'
             }`}
             aria-label={`Switch to ${localeNames[loc]}`}
             aria-pressed={locale === loc}

@@ -10,6 +10,7 @@ import { useParams } from 'next/navigation';
 import Footer from '@/components/sections/Footer';
 import LogoCarousel from '@/components/sections/LogoCarousel';
 import FloatingChatBubble from '@/components/FloatingChatBubble';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { BubbleBackground } from '@/components/ui/bubble-background';
 import { initAnalytics, trackEvent } from '@/lib/analytics';
 import { TransformationCard } from '@/components/ui/transformation-card';
@@ -113,15 +114,19 @@ export default function IntakePage() {
               <span className="font-bold">build</span>
             </span>
           </Link>
-          
-          {/* Back to home button */}
-          <Link 
-            href={`/${locale}`}
-            className="flex items-center gap-1.5 sm:gap-2 text-text-primary hover:text-bla-blue active:text-bla-blue transition-colors font-sans font-medium text-xs sm:text-sm md:text-base touch-manipulation min-h-[44px] min-w-[44px] items-center justify-center"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span className="hidden sm:inline">{t('backToHome')}</span>
-          </Link>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Back to home button */}
+            <Link 
+              href={`/${locale}`}
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 min-h-[44px] rounded-full bg-gray-200/80 hover:bg-gray-300/80 active:bg-gray-300 text-text-primary transition-colors font-sans font-medium text-xs sm:text-sm md:text-base touch-manipulation items-center justify-center border border-gray-300/70"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">{t('backToHome')}</span>
+            </Link>
+
+            <LanguageSwitcher />
+          </div>
         </div>
       </nav>
 
