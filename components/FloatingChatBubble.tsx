@@ -79,7 +79,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when messages change
+  // Auto-scroll to bottom when messages/loading state change
   useEffect(() => {
     if (contentRef.current && messages.length > 0) {
       setTimeout(() => {
@@ -87,6 +87,15 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
       }, 100);
     }
   }, [messages, isLoading]);
+
+  // Ensure completion state (advice + lead form) is fully visible.
+  useEffect(() => {
+    if (!contentRef.current || !(isComplete && showLeadForm)) return;
+    const timer = setTimeout(() => {
+      contentRef.current?.scrollTo({ top: contentRef.current.scrollHeight, behavior: 'smooth' });
+    }, 120);
+    return () => clearTimeout(timer);
+  }, [isComplete, showLeadForm]);
 
   // Handle ESC key to close expanded chat
   useEffect(() => {
@@ -715,7 +724,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                       {/* Chat Content - iMessage Style - Scrollable */}
                       <div 
                         ref={contentRef} 
-                        className="flex-1 overflow-y-auto overscroll-contain p-4 pb-36 space-y-3"
+                        className={`flex-1 overflow-y-auto overscroll-contain p-4 ${isComplete ? 'pb-6' : 'pb-36'} space-y-3`}
                         style={{ minHeight: 0, WebkitOverflowScrolling: 'touch' }}
                       >
                         {/* Show messages only when not showing lead form */}
