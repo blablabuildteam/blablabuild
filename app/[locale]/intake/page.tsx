@@ -1,19 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { ArrowLeft, Send, Clock, Keyboard, Brain, FileText, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Clock, CheckCircle, Keyboard, Brain, FileText } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import Footer from '@/components/sections/Footer';
 import LogoCarousel from '@/components/sections/LogoCarousel';
+import FloatingChatBubble from '@/components/FloatingChatBubble';
 import { initAnalytics, trackEvent } from '@/lib/analytics';
-import { SuggestionChips, type SuggestionChip } from '@/components/ui/suggestion-chips';
-import { ProgressIndicator } from '@/components/ui/progress-indicator';
 import { TransformationCard } from '@/components/ui/transformation-card';
-import { IntakeChat } from '@/components/ui/intake-chat';
 
 // Calendly type declaration
 declare global {
@@ -51,13 +49,6 @@ export default function IntakePage() {
   const t = useTranslations('intake');
   const params = useParams();
   const locale = params.locale as string;
-  
-  const [message, setMessage] = useState('');
-  const [selectedSuggestion, setSelectedSuggestion] = useState<string | undefined>();
-  const [isInputFocused, setIsInputFocused] = useState(false);
-  const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
-  const [isChatMode, setIsChatMode] = useState(false);
-  const [chatInitialMessage, setChatInitialMessage] = useState('');
 
   useEffect(() => {
     initAnalytics();
@@ -90,135 +81,11 @@ export default function IntakePage() {
     trackEvent('calendly_clicked', { page: 'intake' });
     if (window.Calendly) {
       window.Calendly.initPopupWidget({
-        url: 'https://calendly.com/team-blablabuild/30min?hide_gdpr_banner=1&primary_color=b4f702'
+        url: 'https://calendly.com/blablabuild/discovery-call'
       });
     }
   };
 
-  // Rotating placeholder effect (only when not focused and no message)
-  useEffect(() => {
-    if (isInputFocused || message.trim()) return;
-    
-    const placeholders = [
-      t('chatModule.placeholder1'),
-      t('chatModule.placeholder2'),
-      t('chatModule.placeholder3'),
-    ];
-
-    const interval = setInterval(() => {
-      setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [t, isInputFocused, message]);
-
-  // Strategic tags (sharp selection)
-  const suggestions: SuggestionChip[] = [
-    { id: 'talk-to-my-data', label: 'Talk to my data', value: 'Talk to my data' },
-    { id: 'discoverable-in-chatgpt', label: 'Discoverable in ChatGPT', value: 'Discoverable in ChatGPT' },
-    { id: 'reduce-admin-overhead', label: 'Reduce administrative overhead', value: 'Reduce administrative overhead' },
-    { id: 'automation-where-to-start', label: 'Automation, but where to start?', value: 'Automation, but where to start?' },
-    { id: 'no-real-time-insights', label: 'No real-time insights', value: 'No real-time insights' },
-    { id: 'scale-without-hiring', label: 'Scale without hiring more people', value: 'Scale without hiring more people' },
-  ];
-
-  const submitIntakeMessage = async (messageToSend: string, suggestionId?: string) => {
-    if (!messageToSend.trim()) return;
-    
-    trackEvent('intake_submitted', { 
-      message_length: messageToSend.length,
-      has_suggestion: !!suggestionId 
-    });
-    
-    // Track via API
-    try {
-      await fetch('/api/intake', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'form_submitted',
-          message: messageToSend,
-          messageLength: messageToSend.length,
-          suggestionId: suggestionId,
-        }),
-      });
-    } catch (error) {
-      console.error('Error tracking submission:', error);
-    }
-    
-    // Start inline chat with the message
-    setChatInitialMessage(messageToSend);
-    setIsChatMode(true);
-    
-    setMessage('');
-    setSelectedSuggestion(undefined);
-  };
-
-  const handleChatReset = () => {
-    setIsChatMode(false);
-    setChatInitialMessage('');
-    setMessage('');
-    setSelectedSuggestion(undefined);
-  };
-
-  const handleSuggestionSelect = async (suggestion: SuggestionChip) => {
-    setSelectedSuggestion(suggestion.id);
-    if (suggestion.value) {
-      const messageValue = suggestion.value;
-      setMessage(messageValue);
-      trackEvent('suggestion_selected', { suggestion_id: suggestion.id });
-      
-      // Track via API
-      try {
-        await fetch('/api/intake', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'suggestion_selected',
-            suggestionId: suggestion.id,
-          }),
-        });
-      } catch (error) {
-        console.error('Error tracking suggestion:', error);
-      }
-      
-      // Auto-submit immediately with the value
-      setTimeout(() => {
-        submitIntakeMessage(messageValue, suggestion.id);
-        
-        // Scroll to chat container smoothly after transition
-        setTimeout(() => {
-          const chatContainer = document.querySelector('[data-chat-container]');
-          if (chatContainer) {
-            chatContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }, 500);
-      }, 100);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (message.trim()) {
-      await submitIntakeMessage(message, selectedSuggestion);
-    }
-  };
-
-  const placeholders = [
-    t('chatModule.placeholder1'),
-    t('chatModule.placeholder2'),
-    t('chatModule.placeholder3'),
-  ];
-
-  const dynamicPlaceholder = isInputFocused 
-    ? t('chatModule.inputPlaceholder')
-    : placeholders[currentPlaceholder];
-
-  // Progress steps for indicator
-  const progressSteps = [
-    { id: 'step1', label: t('process.progress.step1'), completed: false },
-    { id: 'step2', label: t('process.progress.step2'), completed: false },
-  ];
 
   return (
     <div
@@ -278,157 +145,81 @@ export default function IntakePage() {
             {t('hero.subtitle')}
           </motion.p>
           
-          <motion.div 
-            className="flex items-center justify-center gap-2 text-text-muted text-xs sm:text-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" />
-            <span>{t('hero.duration')}</span>
-          </motion.div>
         </section>
 
-        {/* AI Intake Module */}
-        <section className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8 mb-12 md:mb-16">
-          <motion.div
-            data-chat-container
-            className={[
-              'rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 relative overflow-hidden',
-              // Avoid backdrop-filter on this page (it repaints during scroll and feels jerky on some devices)
-              'bg-white/90 border border-gray-200 shadow-sm',
-              'md:bg-white/80 md:border-gray-200 md:shadow-[0_8px_32px_rgba(0,0,0,0.06)]',
-            ].join(' ')}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-          >
-            <AnimatePresence mode="wait">
-              {!isChatMode ? (
-                <motion.div
-                  key="intake-form"
-                  initial={{ opacity: 1 }}
-                  exit={{ opacity: 0, scale: 0.95, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {/* Progress Indicator */}
-                  <ProgressIndicator 
-                    steps={progressSteps} 
-                    currentStep={0}
-                    className="mb-4 md:mb-6"
+        {/* AI Intake + Calendly */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 mb-12 md:mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-[2fr_0.9fr] gap-4 md:gap-6 items-start">
+            <motion.div
+              data-chat-container
+              className={[
+                'rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 relative overflow-hidden',
+                'bg-white/90 border border-gray-200 shadow-sm md:shadow-[0_8px_32px_rgba(0,0,0,0.06)]',
+              ].join(' ')}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+            >
+              <h2 className="font-sans text-lg sm:text-xl md:text-2xl font-bold text-black mb-4 md:mb-5 px-2 text-center">
+                {locale === 'nl' ? 'Gebruik onze AI Intake' : 'Use our AI Intake'}
+              </h2>
+
+              <FloatingChatBubble variant="inline" />
+            </motion.div>
+
+            <motion.div
+              className={[
+                'rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 text-center',
+                'bg-white/90 border border-gray-200 shadow-sm',
+                'md:bg-white/80 md:shadow-[0_8px_32px_rgba(0,0,0,0.06)]',
+                'flex flex-col justify-center',
+              ].join(' ')}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <h2 className="font-sans text-lg sm:text-xl md:text-2xl font-bold text-black mb-3 md:mb-4 px-2">
+                {locale === 'nl' ? 'Of plan direct een gesprek' : 'Or schedule a call directly'}
+              </h2>
+              <p className="text-sm sm:text-base text-text-primary mb-6 md:mb-7 px-2">
+                {locale === 'nl'
+                  ? 'Liever direct contact? Plan een gratis kennismakingsgesprek in.'
+                  : 'Prefer direct contact? Schedule a free introductory call.'}
+              </p>
+
+              <motion.button
+                onClick={handleCalendlyClick}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="inline-flex items-center justify-center gap-2 px-5 md:px-6 py-3 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-full font-sans font-semibold text-sm md:text-base transition-all shadow-lg hover:shadow-xl touch-manipulation min-h-[44px]"
+              >
+                <span>{locale === 'nl' ? 'Plan een gesprek in' : 'Schedule a call'}</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
+                </svg>
+              </motion.button>
 
-                  <div className="text-center mb-6 md:mb-8">
-                    <h2 className="font-sans text-xl sm:text-2xl md:text-3xl font-bold text-black mb-2">
-                      {t('chatModule.title')}
-                    </h2>
-                    <p className="text-sm sm:text-base text-text-muted">
-                      {t('chatModule.subtitle')}
-                    </p>
+              <div className="mt-4 md:mt-6 flex flex-col items-center justify-center gap-2 text-xs sm:text-sm text-text-muted">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
+                    <Clock className="w-3.5 h-3.5 text-bla-charcoal" />
                   </div>
-
-                  {/* Normalizing Microcopy */}
-                  <motion.p
-                    className="text-center text-xs sm:text-sm text-text-muted mb-4 md:mb-6 px-2"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                  >
-                    {t('chatModule.normalizingText')}
-                  </motion.p>
-
-                  <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
-                    {/* Input Field */}
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={message}
-                        onChange={(e) => {
-                          setMessage(e.target.value);
-                          if (e.target.value && selectedSuggestion) {
-                            setSelectedSuggestion(undefined);
-                          }
-                        }}
-                        onFocus={() => setIsInputFocused(true)}
-                        onBlur={() => setIsInputFocused(false)}
-                        placeholder={dynamicPlaceholder}
-                        className="w-full px-4 md:px-6 py-3 md:py-4 pr-14 md:pr-16 rounded-2xl md:rounded-full border-2 border-gray-200 focus:border-bla-lime focus:outline-none transition-colors text-sm md:text-base bg-white/80 font-sans"
-                      />
-                      <button
-                        type="submit"
-                        disabled={!message.trim()}
-                        aria-label={t('chatModule.send')}
-                        className="hidden md:flex absolute right-3 top-1/2 -translate-y-1/2 bg-bla-lime hover:bg-bla-lime/90 active:scale-95 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-full p-3 transition-all shadow-lg disabled:shadow-none items-center justify-center"
-                      >
-                        <Send className="w-4 h-4 md:w-5 md:h-5 text-black" />
-                      </button>
-                    </div>
-
-                    {/* Strategic Tags (mobile-first) */}
-                    <SuggestionChips
-                      suggestions={suggestions}
-                      onSelect={handleSuggestionSelect}
-                      selectedId={selectedSuggestion}
-                      className="mb-0"
-                    />
-
-                    {/* CTA Button (mobile) */}
-                    <button
-                      type="submit"
-                      disabled={!message.trim()}
-                      className="md:hidden w-full py-3.5 bg-bla-lime hover:bg-bla-lime/90 active:scale-[0.99] disabled:bg-gray-300 disabled:cursor-not-allowed rounded-2xl font-sans font-semibold text-black transition-all shadow-lg disabled:shadow-none touch-manipulation min-h-[44px]"
-                    >
-                      Get instant insight
-                    </button>
-
-                    {/* Helper Text */}
-                    <p className="text-xs text-text-muted text-center px-2">
-                      {t('chatModule.helperText')}
-                    </p>
-                  </form>
-
-                  {/* Process Steps */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-8 md:mt-12 pt-6 md:pt-8 border-t border-gray-200">
-                    <div className="flex items-center gap-2 md:gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
-                        <Keyboard className="w-4 h-4 md:w-5 md:h-5 text-bla-charcoal" />
-                      </div>
-                      <p className="text-xs sm:text-sm text-text-primary leading-relaxed">{t('process.step1')}</p>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 md:gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
-                        <Brain className="w-4 h-4 md:w-5 md:h-5 text-bla-charcoal" />
-                      </div>
-                      <p className="text-xs sm:text-sm text-text-primary leading-relaxed">{t('process.step2')}</p>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 md:gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
-                        <FileText className="w-4 h-4 md:w-5 md:h-5 text-bla-charcoal" />
-                      </div>
-                      <p className="text-xs sm:text-sm text-text-primary leading-relaxed">{t('process.step3')}</p>
-                    </div>
+                  <span>{locale === 'nl' ? '30 minuten' : '30 minutes'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
+                    <CheckCircle className="w-3.5 h-3.5 text-bla-lime" />
                   </div>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="intake-chat"
-                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.4, ease: 'easeOut' }}
-                  className="min-h-[500px]"
-                >
-                  <IntakeChat
-                    initialMessage={chatInitialMessage}
-                    locale={locale}
-                    onReset={handleChatReset}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
+                  <span>{locale === 'nl' ? 'Gratis & vrijblijvend' : 'Free & non-binding'}</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </section>
 
         {/* Social Proof - logo carousel */}
@@ -587,70 +378,6 @@ export default function IntakePage() {
           </div>
         </section>
 
-        {/* Calendly Popup CTA */}
-        <section className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 mb-12 md:mb-16">
-          <motion.div
-            className={[
-              'rounded-2xl sm:rounded-3xl p-8 sm:p-10 md:p-12 lg:p-16 text-center',
-              // Keep this section performant during scroll (no backdrop-filter)
-              'bg-white/90 border border-gray-200 shadow-sm',
-              'md:bg-white/80 md:shadow-[0_8px_32px_rgba(0,0,0,0.06)]',
-            ].join(' ')}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-          >
-            <h2 className="font-sans text-xl sm:text-2xl md:text-3xl font-bold text-black mb-3 md:mb-4 px-2">
-              {locale === 'nl' ? 'Of plan direct een gesprek' : 'Or schedule a call directly'}
-            </h2>
-            <p className="text-sm sm:text-base md:text-lg text-text-primary mb-6 md:mb-8 px-2">
-              {locale === 'nl' 
-                ? 'Liever direct contact? Plan een gratis kennismakingsgesprek in.' 
-                : 'Prefer direct contact? Schedule a free introductory call.'}
-            </p>
-            
-            {/* Calendly Popup Button */}
-            <motion.button
-              onClick={handleCalendlyClick}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-full font-sans font-semibold text-base md:text-lg transition-all shadow-lg hover:shadow-xl touch-manipulation min-h-[44px]"
-            >
-              <span>{locale === 'nl' ? 'Plan een gesprek in' : 'Schedule a call'}</span>
-              <svg 
-                className="w-4 h-4 md:w-5 md:h-5" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" 
-                />
-              </svg>
-            </motion.button>
-            
-            {/* Optional: Add trust indicators */}
-            <div className="mt-4 md:mt-6 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-text-muted">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
-                  <Clock className="w-3.5 h-3.5 text-bla-charcoal" />
-                </div>
-                <span>{locale === 'nl' ? '30 minuten' : '30 minutes'}</span>
-              </div>
-              <div className="hidden sm:block w-px h-4 bg-gray-300" />
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
-                  <CheckCircle className="w-3.5 h-3.5 text-bla-lime" />
-                </div>
-                <span>{locale === 'nl' ? 'Gratis & vrijblijvend' : 'Free & non-binding'}</span>
-              </div>
-            </div>
-          </motion.div>
-        </section>
       </main>
 
       <Footer />

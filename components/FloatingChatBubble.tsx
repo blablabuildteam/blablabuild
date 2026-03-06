@@ -2,16 +2,21 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, ArrowRight, Check } from 'lucide-react';
+import { MessageCircle, X, ArrowRight, Check, Keyboard, Brain, FileText, Clock } from 'lucide-react';
 import { trackEvent, trackWidgetEvent } from '@/lib/analytics';
 import { ChatResponse } from '@/lib/types';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { BorderBeam } from '@/components/ui/border-beam';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+}
+
+interface FloatingChatBubbleProps {
+  variant?: 'floating' | 'inline';
 }
 
 // Helper to render markdown bold (**text** or *text*) as <strong>
@@ -30,10 +35,15 @@ function renderBoldText(text: string): React.ReactNode {
   });
 }
 
-export default function FloatingChatBubble() {
+export default function FloatingChatBubble({ variant = 'floating' }: FloatingChatBubbleProps) {
+  const pathname = usePathname();
+  const isEnglish = pathname?.startsWith('/en');
+  const isInline = variant === 'inline';
   const [isExpanded, setIsExpanded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [idea, setIdea] = useState('');
+  const [isIdeaFocused, setIsIdeaFocused] = useState(false);
+  const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [isAnimatingAttention, setIsAnimatingAttention] = useState(false);
   
   // Chat state (migrated from AIWidget)
@@ -79,6 +89,8 @@ export default function FloatingChatBubble() {
 
   // Handle ESC key to close expanded chat
   useEffect(() => {
+    if (isInline) return;
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isExpanded) {
         setIsExpanded(false);
@@ -92,10 +104,17 @@ export default function FloatingChatBubble() {
     return () => {
       document.removeEventListener('keydown', handleEscape);
     };
-  }, [isExpanded]);
+  }, [isExpanded, isInline]);
 
   // Show bubble only after scrolling past the header section
   useEffect(() => {
+    if (isInline) {
+      // Inline mode should render immediately as a regular page component.
+      setIsVisible(true);
+      setIsExpanded(true);
+      return;
+    }
+
     if (isVisible) return; // Once visible, stay visible
 
     let rafId: number | null = null;
@@ -142,7 +161,30 @@ export default function FloatingChatBubble() {
       }
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [isVisible]);
+  }, [isInline, isVisible]);
+
+  // Rotating example queries in initial input.
+  useEffect(() => {
+    if (chatStarted || isIdeaFocused || idea.trim()) return;
+
+    const placeholders = isEnglish
+      ? [
+          'Our data is spread over different tools...',
+          'I want to automate processes, where do I start?',
+          'We lose too much time on repetitive admin work...',
+        ]
+      : [
+          'Onze data staat verspreid over verschillende tools...',
+          'Ik wil processen automatiseren, maar waar begin ik?',
+          'We verliezen te veel tijd aan repetitief handwerk...',
+        ];
+
+    const interval = setInterval(() => {
+      setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [chatStarted, idea, isEnglish, isIdeaFocused]);
 
   // Initialize chat session and immediately send the user's first message
   const initializeSession = useCallback(async (initialIdea: string) => {
@@ -504,10 +546,26 @@ export default function FloatingChatBubble() {
     );
   };
 
+  const placeholders = isEnglish
+    ? [
+        'Our data is spread over different tools...',
+        'I want to automate processes, where do I start?',
+        'We lose too much time on repetitive admin work...',
+      ]
+    : [
+        'Onze data staat verspreid over verschillende tools...',
+        'Ik wil processen automatiseren, maar waar begin ik?',
+        'We verliezen te veel tijd aan repetitief handwerk...',
+      ];
+
+  const dynamicIdeaPlaceholder = isIdeaFocused
+    ? (isEnglish ? 'Your challenge...' : 'Jouw uitdaging...')
+    : placeholders[currentPlaceholder];
+
   return (
     <AnimatePresence>
       {/* Backdrop overlay - click to close */}
-      {isVisible && isExpanded && (
+      {!isInline && isVisible && isExpanded && (
         <motion.div
           key="chat-backdrop"
           initial={{ opacity: 0 }}
@@ -519,13 +577,16 @@ export default function FloatingChatBubble() {
         />
       )}
 
-      {isVisible && !isHiddenByModal && (
-        <div key="chat-container" className={`fixed left-1/2 -translate-x-1/2 z-[9999] ${isExpanded ? 'bottom-24' : 'bottom-8'}`}>
+      {isVisible && (isInline || !isHiddenByModal) && (
+        <div
+          key="chat-container"
+          className={isInline ? 'relative w-full' : `fixed left-1/2 -translate-x-1/2 z-[9999] ${isExpanded ? 'bottom-24' : 'bottom-8'}`}
+        >
           <AnimatePresence mode="wait">
             {isExpanded ? (
               <motion.div
                 key="expanded"
-                className="relative pb-16"
+                className={isInline ? 'relative' : 'relative pb-16'}
                 initial={{ scale: 0, opacity: 0, borderRadius: 30 }}
                 animate={{ scale: 1, opacity: 1, borderRadius: 24 }}
                 exit={{ scale: 0, opacity: 0, borderRadius: 30 }}
@@ -533,7 +594,10 @@ export default function FloatingChatBubble() {
               >
                 {/* Glass Card Container */}
                 <motion.div 
-                  className="w-[90vw] max-w-[1078px] h-[60vh] backdrop-blur-[20px] bg-surface-glass border border-card-border rounded-[24px] relative overflow-hidden shadow-lg flex flex-col"
+                  className={[
+                    'backdrop-blur-[20px] bg-surface-glass border border-card-border rounded-[24px] relative overflow-hidden shadow-lg flex flex-col',
+                    isInline ? 'w-full max-w-[1240px] mx-auto h-[60vh]' : 'w-[94vw] max-w-[1240px] h-[60vh]',
+                  ].join(' ')}
                   style={{ WebkitBackdropFilter: 'blur(20px)' }}
                   initial={{ y: 20 }}
                   animate={{ y: 0 }}
@@ -541,12 +605,14 @@ export default function FloatingChatBubble() {
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Close button */}
-                  <button
-                    onClick={toggleExpand}
-                    className="absolute top-4 right-4 w-10 h-10 rounded-full bg-surface-overlay hover:bg-surface flex items-center justify-center transition-all hover:scale-110 z-50"
-                  >
-                    <X className="w-5 h-5 text-text-secondary" />
-                  </button>
+                  {!isInline && (
+                    <button
+                      onClick={toggleExpand}
+                      className="absolute top-4 right-4 w-10 h-10 rounded-full bg-surface-overlay hover:bg-surface flex items-center justify-center transition-all hover:scale-110 z-50"
+                    >
+                      <X className="w-5 h-5 text-text-secondary" />
+                    </button>
+                  )}
 
                   {!chatStarted ? (
                     /* Initial Input View */
@@ -570,15 +636,39 @@ export default function FloatingChatBubble() {
                           animate={{ y: 0, opacity: 1 }}
                           transition={{ duration: 0.15 }}
                         >
+                          <div className="flex items-center justify-center gap-1.5 text-text-muted text-xs sm:text-sm mb-3">
+                            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600" />
+                            <span>1-2 min</span>
+                          </div>
                           <h3 className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-text-primary">
                             Wat is jouw uitdaging?
                           </h3>
                           <p className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-text-primary">
                             Ontdek hoe wij je kunnen helpen.
                           </p>
-                          <p className="font-host font-normal text-base md:text-lg leading-6 text-black mt-3 md:mt-4">
-                            Dit duurt ongeveer 1 tot 2 minuten
-                          </p>
+
+                          <div className="mt-4 md:mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 text-left">
+                            <div className="flex items-center gap-2">
+                              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
+                                <Keyboard className="w-4 h-4 text-bla-charcoal" />
+                              </div>
+                              <p className="text-xs sm:text-sm text-text-primary leading-relaxed">1. Jij deelt je uitdaging</p>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
+                                <Brain className="w-4 h-4 text-bla-charcoal" />
+                              </div>
+                              <p className="text-xs sm:text-sm text-text-primary leading-relaxed">2. AI analyseert direct</p>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
+                                <FileText className="w-4 h-4 text-bla-charcoal" />
+                              </div>
+                              <p className="text-xs sm:text-sm text-text-primary leading-relaxed">3. Je krijgt een eerste richting</p>
+                            </div>
+                          </div>
                         </motion.div>
                       </div>
 
@@ -590,13 +680,25 @@ export default function FloatingChatBubble() {
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.1, duration: 0.15 }}
                       >
-                        <div className="relative flex items-center bg-chat-input-bg rounded-[12px] h-[60px] md:h-[78px] shadow-sm">
+                        <div
+                          className={[
+                            'relative flex items-center h-[60px] md:h-[78px]',
+                            isInline
+                              ? 'bg-white border-2 border-gray-300 rounded-[14px] shadow-[0_8px_24px_rgba(0,0,0,0.08)]'
+                              : 'bg-chat-input-bg rounded-[12px] shadow-sm',
+                          ].join(' ')}
+                        >
                           <input
                             type="text"
                             value={idea}
                             onChange={(e) => setIdea(e.target.value)}
-                            placeholder="Jouw uitdaging..."
-                            className="w-full h-full bg-transparent rounded-[12px] px-6 md:px-8 pr-14 md:pr-18 text-base md:text-[18px] font-host text-text-primary placeholder:text-text-muted focus:outline-none"
+                            onFocus={() => setIsIdeaFocused(true)}
+                            onBlur={() => setIsIdeaFocused(false)}
+                            placeholder={dynamicIdeaPlaceholder}
+                            className={[
+                              'w-full h-full bg-transparent px-6 md:px-8 pr-14 md:pr-18 text-base md:text-[18px] font-host text-text-primary focus:outline-none',
+                              isInline ? 'rounded-[14px] placeholder:text-gray-500' : 'rounded-[12px] placeholder:text-text-muted',
+                            ].join(' ')}
                             autoFocus
                           />
                           <button
@@ -849,7 +951,7 @@ export default function FloatingChatBubble() {
                   )}
                 </motion.div>
               </motion.div>
-            ) : (
+            ) : !isInline ? (
               /* Collapsed Bubble with Border Beam */
               <motion.div
                 key="collapsed"
@@ -908,7 +1010,7 @@ export default function FloatingChatBubble() {
                   </motion.div>
                 )}
               </motion.div>
-            )}
+            ) : null}
           </AnimatePresence>
         </div>
       )}
