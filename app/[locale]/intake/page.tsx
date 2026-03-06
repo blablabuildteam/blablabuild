@@ -10,6 +10,7 @@ import { useParams } from 'next/navigation';
 import Footer from '@/components/sections/Footer';
 import LogoCarousel from '@/components/sections/LogoCarousel';
 import FloatingChatBubble from '@/components/FloatingChatBubble';
+import { BubbleBackground } from '@/components/ui/bubble-background';
 import { initAnalytics, trackEvent } from '@/lib/analytics';
 import { TransformationCard } from '@/components/ui/transformation-card';
 
@@ -126,25 +127,43 @@ export default function IntakePage() {
 
       <main className="pt-20 md:pt-24 pb-8 md:pb-12">
         {/* Hero Section */}
-        <section className="max-w-4xl mx-auto px-4 md:px-8 py-8 md:py-12 lg:py-20 text-center">
-          <motion.h1 
-            className="font-sans text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-4 md:mb-6 leading-tight px-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            {t('hero.title')}
-          </motion.h1>
-          
-          <motion.p 
-            className="text-base sm:text-lg md:text-xl text-text-primary mb-3 md:mb-4 max-w-2xl mx-auto px-2 leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            {t('hero.subtitle')}
-          </motion.p>
-          
+        <section className="max-w-6xl mx-auto px-4 md:px-8 py-4 md:py-6 lg:py-8">
+          <div className="relative rounded-3xl overflow-hidden border border-white/10">
+            <BubbleBackground
+              className="absolute inset-0 z-0 pointer-events-none"
+              backgroundColor="#070800"
+              blueColor="17,37,255"
+              voltColor="206,255,0"
+            />
+
+            <div
+              className="absolute inset-0 opacity-[0.25] pointer-events-none z-[1]"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+                backgroundSize: '200px 200px',
+              }}
+            />
+
+            <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-8 py-8 md:py-12 lg:py-16 text-center">
+              <motion.h1
+                className="font-sans text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-bla-white mb-4 md:mb-6 leading-tight px-2"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                {t('hero.title')}
+              </motion.h1>
+
+              <motion.p
+                className="text-base sm:text-lg md:text-xl text-bla-text-light mb-3 md:mb-4 max-w-2xl mx-auto px-2 leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
+                {t('hero.subtitle')}
+              </motion.p>
+            </div>
+          </div>
         </section>
 
         {/* AI Intake + Calendly */}

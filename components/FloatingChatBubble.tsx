@@ -636,8 +636,8 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                           animate={{ y: 0, opacity: 1 }}
                           transition={{ duration: 0.15 }}
                         >
-                          <div className="flex items-center justify-center gap-1.5 text-text-muted text-xs sm:text-sm mb-3">
-                            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600" />
+                          <div className="flex items-center justify-center gap-1.5 text-black text-xs sm:text-sm mb-3">
+                            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black" />
                             <span>1-2 min</span>
                           </div>
                           <h3 className="font-host font-medium text-2xl md:text-[32px] leading-[34px] text-text-primary">
@@ -699,7 +699,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                               'w-full h-full bg-transparent px-6 md:px-8 pr-14 md:pr-18 text-base md:text-[18px] font-host text-text-primary focus:outline-none',
                               isInline ? 'rounded-[14px] placeholder:text-gray-500' : 'rounded-[12px] placeholder:text-text-muted',
                             ].join(' ')}
-                            autoFocus
+                            autoFocus={!isInline}
                           />
                           <button
                             type="submit"
