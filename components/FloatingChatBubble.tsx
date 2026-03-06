@@ -636,26 +636,26 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                             {tIntake('chatModule.subtitle')}
                           </p>
 
-                          <div className="mt-4 md:mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 text-left">
-                            <div className="flex items-center gap-2">
+                          <div className="mt-4 md:mt-5 mx-auto w-full max-w-[560px] flex flex-col items-center gap-3 md:gap-3.5">
+                            <div className="flex items-center justify-center gap-3">
                               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
                                 <Keyboard className="w-4 h-4 text-bla-charcoal" />
                               </div>
-                              <p className="text-xs sm:text-sm text-text-primary leading-relaxed">{tIntake('process.step1')}</p>
+                              <p className="text-sm sm:text-base text-text-primary leading-relaxed text-center">{tIntake('process.step1')}</p>
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-center gap-3">
                               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
                                 <Brain className="w-4 h-4 text-bla-charcoal" />
                               </div>
-                              <p className="text-xs sm:text-sm text-text-primary leading-relaxed">{tIntake('process.step2')}</p>
+                              <p className="text-sm sm:text-base text-text-primary leading-relaxed text-center">{tIntake('process.step2')}</p>
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-center gap-3">
                               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
                                 <FileText className="w-4 h-4 text-bla-charcoal" />
                               </div>
-                              <p className="text-xs sm:text-sm text-text-primary leading-relaxed">{tIntake('process.step3')}</p>
+                              <p className="text-sm sm:text-base text-text-primary leading-relaxed text-center">{tIntake('process.step3')}</p>
                             </div>
                           </div>
                         </motion.div>

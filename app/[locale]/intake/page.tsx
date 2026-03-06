@@ -149,70 +149,42 @@ export default function IntakePage() {
               }}
             />
 
-            <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-8 py-8 md:py-12 lg:py-16 text-center">
-              <motion.h1
-                className="font-sans text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-bla-white mb-4 md:mb-6 leading-tight md:whitespace-nowrap"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                {t('hero.title')}
-              </motion.h1>
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-12 lg:py-16">
+              <div className="max-w-4xl mx-auto text-center mb-6 md:mb-8">
+                <motion.h1
+                  className="font-sans text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-bla-white mb-4 md:mb-6 leading-tight md:whitespace-nowrap"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  {t('hero.title')}
+                </motion.h1>
 
-              <motion.p
-                className="text-base sm:text-lg md:text-xl text-bla-text-light mb-3 md:mb-4 max-w-2xl mx-auto px-2 leading-relaxed"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-              >
-                {t('hero.subtitle')}
-              </motion.p>
-            </div>
-          </div>
-        </section>
+                <motion.p
+                  className="text-base sm:text-lg md:text-xl text-bla-text-light mb-3 md:mb-4 max-w-2xl mx-auto px-2 leading-relaxed"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                >
+                  {t('hero.subtitle')}
+                </motion.p>
+              </div>
 
-        {/* AI Intake + Calendly */}
-        <section className="w-full px-1 sm:px-[10px] mb-12 md:mb-16">
-          <div className="relative w-full rounded-3xl overflow-hidden border border-white/10">
-            <BubbleBackground
-              className="absolute inset-0 z-0 pointer-events-none"
-              backgroundColor="#070800"
-              blueColor="17,37,255"
-              voltColor="206,255,0"
-            />
-
-            <div
-              className="absolute inset-0 opacity-[0.2] pointer-events-none z-[1]"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-                backgroundSize: '200px 200px',
-              }}
-            />
-
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-4 md:py-6">
               <div className="grid grid-cols-1 lg:grid-cols-[2fr_0.9fr] gap-4 md:gap-6 items-start">
                 <motion.div
                   data-chat-container
-                  className={[
-                    'rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 relative overflow-hidden',
-                    'bg-white/90 border border-gray-200 shadow-sm md:shadow-[0_8px_32px_rgba(0,0,0,0.06)]',
-                  ].join(' ')}
+                  className="relative"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, ease: 'easeOut' }}
                 >
-                  <h2 className="font-sans text-lg sm:text-xl md:text-2xl font-bold text-black mb-4 md:mb-5 px-2 text-center">
-                    {locale === 'nl' ? 'Gebruik onze AI Intake' : 'Use our AI Intake'}
-                  </h2>
-
                   <FloatingChatBubble variant="inline" />
                 </motion.div>
 
                 <motion.div
                   className={[
                     'rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 text-center',
-                    'bg-white/90 border border-gray-200 shadow-sm',
-                    'md:bg-white/80 md:shadow-[0_8px_32px_rgba(0,0,0,0.06)]',
+                    'backdrop-blur-[20px] bg-surface-glass border border-card-border shadow-lg',
                     'flex flex-col justify-center',
                   ].join(' ')}
                   initial={{ opacity: 0, y: 20 }}
@@ -245,16 +217,16 @@ export default function IntakePage() {
                     </svg>
                   </motion.button>
 
-                  <div className="mt-4 md:mt-6 flex flex-col items-center justify-center gap-2 text-xs sm:text-sm text-text-muted">
+                  <div className="mt-4 md:mt-6 flex flex-col items-center justify-center gap-2 text-xs sm:text-sm text-black">
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
-                        <Clock className="w-3.5 h-3.5 text-bla-charcoal" />
+                        <Clock className="w-3.5 h-3.5 text-black" />
                       </div>
                       <span>{locale === 'nl' ? '30 minuten' : '30 minutes'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full bg-gray-200/70 border border-gray-300/60 shadow-sm flex items-center justify-center">
-                        <CheckCircle className="w-3.5 h-3.5 text-bla-lime" />
+                        <CheckCircle className="w-3.5 h-3.5 text-black" />
                       </div>
                       <span>{locale === 'nl' ? 'Gratis & vrijblijvend' : 'Free & non-binding'}</span>
                     </div>
