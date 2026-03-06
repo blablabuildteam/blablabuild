@@ -22,6 +22,11 @@ export default function Footer() {
     location: {
       label: tCommon('location'),
     },
+    meeting: {
+      label: 'Meeting Inplannen',
+      text: 'Plan direct in',
+      href: 'https://calendly.com/team-blablabuild/30min',
+    },
     navLinks: [
       { label: t('solutions'), href: '#oplossingen' },
       { label: t('cases'), href: '#cases' },
@@ -117,6 +122,22 @@ export default function Footer() {
                 className="text-bla-text-light hover:text-bla-lime flex items-center gap-2 text-base md:text-lg transition-colors group"
               >
                 {footerData.email.label}
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </a>
+            </div>
+
+            {/* Meeting Section */}
+            <div className="flex flex-col items-start gap-3">
+              <h3 className="text-bla-lime text-sm font-semibold uppercase tracking-widest">
+                {footerData.meeting.label}
+              </h3>
+              <a
+                href={footerData.meeting.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-bla-text-light hover:text-bla-lime flex items-center gap-2 text-base md:text-lg transition-colors group"
+              >
+                {footerData.meeting.text}
                 <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </a>
             </div>
