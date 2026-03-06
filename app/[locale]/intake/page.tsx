@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { ArrowLeft, Clock, CheckCircle, Keyboard, Brain, FileText } from 'lucide-react';
@@ -51,6 +51,8 @@ export default function IntakePage() {
   const t = useTranslations('intake');
   const params = useParams();
   const locale = params.locale as string;
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     initAnalytics();
@@ -79,6 +81,28 @@ export default function IntakePage() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const SCROLLED_THRESHOLD = 20;
+    const handleScroll = () => {
+      const next = window.scrollY > SCROLLED_THRESHOLD;
+      setIsScrolled((prev) => (prev === next ? prev : next));
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const handleCalendlyClick = () => {
     trackEvent('calendly_clicked', { page: 'intake' });
     if (window.Calendly) {
@@ -98,14 +122,36 @@ export default function IntakePage() {
         WebkitOverflowScrolling: 'touch',
       }}
     >
-      {/* Simplified Navigation - Logo only */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#f5f5f5] md:bg-[#f5f5f5]/80 md:backdrop-blur-md border-b border-gray-200/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-3 md:py-4 flex items-center justify-between">
+      {/* Intake Navigation - floating on scroll like homepage */}
+      <motion.nav
+        className="fixed z-50 left-0 right-0 md:left-1/2 md:-translate-x-1/2"
+        initial={false}
+        animate={{ top: isMobile ? 0 : isScrolled ? 16 : 0 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+        style={{
+          width: '100%',
+          maxWidth: isMobile ? '100%' : '1312px',
+        }}
+      >
+        <motion.div
+          className="px-4 sm:px-6 md:px-8 py-3 md:py-4 flex items-center justify-between"
+          initial={false}
+          animate={{
+            backgroundColor: isScrolled ? 'rgba(245, 245, 245, 0.72)' : 'rgba(245, 245, 245, 1)',
+            borderRadius: isMobile ? '0px' : isScrolled ? '24px' : '0px',
+          }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          style={{
+            backdropFilter: isMobile || !isScrolled ? 'none' : 'blur(16px)',
+            WebkitBackdropFilter: isMobile || !isScrolled ? 'none' : 'blur(16px)',
+            boxShadow: isMobile || !isScrolled ? 'none' : '0 8px 32px rgba(0, 0, 0, 0.08)',
+          }}
+        >
           <Link href={`/${locale}`} className="flex items-center gap-1.5 sm:gap-2 touch-manipulation">
-            <Image 
-              src="/icon.svg" 
-              alt="blablabuild" 
-              width={37} 
+            <Image
+              src="/icon.svg"
+              alt="blablabuild"
+              width={37}
               height={37}
               className="w-8 h-8 sm:w-[37px] sm:h-[37px]"
             />
@@ -116,8 +162,7 @@ export default function IntakePage() {
           </Link>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Back to home button */}
-            <Link 
+            <Link
               href={`/${locale}`}
               className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 min-h-[44px] rounded-full bg-gray-200/80 hover:bg-gray-300/80 active:bg-gray-300 text-text-primary transition-colors font-sans font-medium text-xs sm:text-sm md:text-base touch-manipulation items-center justify-center border border-gray-300/70"
             >
@@ -127,8 +172,8 @@ export default function IntakePage() {
 
             <LanguageSwitcher />
           </div>
-        </div>
-      </nav>
+        </motion.div>
+      </motion.nav>
 
       <main className="pt-20 md:pt-24 pb-8 md:pb-12">
         {/* Hero Section */}
