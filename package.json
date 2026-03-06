@@ -14,7 +14,8 @@
     "test:verbose": "jest --verbose",
     "cleanup": "tsx __tests__/cleanup.ts",
     "test:full": "./__tests__/run-tests.sh",
-    "test:dynamic": "tsx scripts/test-dynamic.ts"
+    "test:dynamic": "tsx scripts/test-dynamic.ts",
+    "evaluate:intake": "tsx scripts/evaluate-intake-quality.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
