@@ -357,17 +357,17 @@ html {
 }
 
 @keyframes logo-marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
 .animate-logo-marquee {
-  animation: logo-marquee 20s linear infinite;
+  animation: logo-marquee 24s linear infinite;
 }
 
 @media (max-width: 767px) {
   .animate-logo-marquee {
-    animation-duration: 14s;
+    animation-duration: 18s;
   }
 }
 
