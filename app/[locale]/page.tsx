@@ -60,6 +60,9 @@ export default function HomePage() {
     const sectionElements: { id: string; element: HTMLElement }[] = [];
     let observer: IntersectionObserver | null = null;
     let rafId: number | null = null;
+    let scrollTimeoutId: ReturnType<typeof setTimeout> | null = null;
+    let lastRun = 0;
+    const SCROLL_CALC_INTERVAL_MS = 120;
 
     const handleScroll = () => {
       const navHeight = 80;
@@ -132,15 +135,34 @@ export default function HomePage() {
       setActiveSection(activeSection);
     };
 
-    const onScroll = () => {
-      // Use RAF for both mobile and desktop - cancel previous and schedule new
-      // This ensures direction changes are always registered
-      if (rafId !== null) {
-        window.cancelAnimationFrame(rafId);
-      }
+    const scheduleScrollCalculation = () => {
+      if (rafId !== null) return;
       rafId = window.requestAnimationFrame(() => {
         handleScroll();
+        lastRun = Date.now();
+        rafId = null;
       });
+    };
+
+    const onScroll = () => {
+      const now = Date.now();
+      const elapsed = now - lastRun;
+
+      if (elapsed >= SCROLL_CALC_INTERVAL_MS) {
+        if (scrollTimeoutId !== null) {
+          clearTimeout(scrollTimeoutId);
+          scrollTimeoutId = null;
+        }
+        scheduleScrollCalculation();
+        return;
+      }
+
+      if (scrollTimeoutId === null) {
+        scrollTimeoutId = setTimeout(() => {
+          scheduleScrollCalculation();
+          scrollTimeoutId = null;
+        }, SCROLL_CALC_INTERVAL_MS - elapsed);
+      }
     };
 
     const timer = setTimeout(() => {
@@ -176,6 +198,9 @@ export default function HomePage() {
 
     return () => {
       clearTimeout(timer);
+      if (scrollTimeoutId !== null) {
+        clearTimeout(scrollTimeoutId);
+      }
       if (rafId !== null) {
         window.cancelAnimationFrame(rafId);
       }

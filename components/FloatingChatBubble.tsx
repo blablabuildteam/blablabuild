@@ -128,14 +128,12 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
     if (isVisible) return; // Once visible, stay visible
 
     let rafId: number | null = null;
+    const heroSection = document.querySelector('section:first-of-type');
 
     const handleScroll = () => {
       if (rafId) return; // Throttle with requestAnimationFrame
       
       rafId = window.requestAnimationFrame(() => {
-        // Find the hero/header section (first section in the page)
-        const heroSection = document.querySelector('section:first-of-type');
-        
         if (heroSection) {
           const heroRect = heroSection.getBoundingClientRect();
           const heroBottom = heroRect.bottom;
@@ -144,12 +142,14 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
           // Using a small threshold (50px) to account for any padding/margins
           if (heroBottom <= 50) {
             setIsVisible(true);
+            window.removeEventListener('scroll', handleScroll);
           }
         } else {
           // Fallback: show after scrolling past viewport height (for mobile) or 200px
           const threshold = window.innerHeight > 768 ? window.innerHeight : 200;
           if (window.scrollY > threshold) {
             setIsVisible(true);
+            window.removeEventListener('scroll', handleScroll);
           }
         }
         

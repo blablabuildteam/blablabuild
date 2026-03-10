@@ -122,6 +122,20 @@ function BubbleBackground({
               border-radius: 50% !important;
               overflow: hidden;
             }
+
+            /* Reduce compositor pressure on mobile during scroll */
+            .blob-1 {
+              animation-duration: 16s;
+            }
+
+            .blob-3 {
+              animation-duration: 18s;
+            }
+
+            .blob-2,
+            .blob-4 {
+              animation: none !important;
+            }
           }
         `}
       </style>
@@ -155,8 +169,8 @@ function BubbleBackground({
       <div
         className="absolute inset-0 pointer-events-none"
         style={{ 
-          filter: isMobile ? 'blur(60px)' : 'url(#goo-hero) blur(60px)',
-          willChange: 'transform',
+          filter: isMobile ? 'blur(36px)' : 'url(#goo-hero) blur(60px)',
+          willChange: isMobile ? 'auto' : 'transform',
           transform: 'translateZ(0)',
           WebkitTransform: 'translateZ(0)',
         }}
