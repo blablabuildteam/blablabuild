@@ -18,6 +18,7 @@ interface CarouselCard {
   id: string;
   title: string;
   description: string;
+  descriptionMobile?: string;
   iconPath: string;
 }
 
@@ -38,18 +39,21 @@ export default function HeroSection() {
       id: 'inzicht',
       title: t('moreInsight.title'),
       description: t('moreInsight.description'),
+      descriptionMobile: t('moreInsight.descriptionMobile'),
       iconPath: '/icons/insights.svg'
     },
     {
       id: 'groei',
       title: t('moreRevenue.title'),
       description: t('moreRevenue.description'),
+      descriptionMobile: t('moreRevenue.descriptionMobile'),
       iconPath: '/icons/growth.svg'
     },
     {
       id: 'snelheid',
       title: t('moreSpeed.title'),
       description: t('moreSpeed.description'),
+      descriptionMobile: t('moreSpeed.descriptionMobile'),
       iconPath: '/icons/speed.svg'
     }
   ];
@@ -134,12 +138,12 @@ export default function HeroSection() {
                   <CarouselContent className="ml-0">
                     {carouselCards.map((card) => (
                       <CarouselItem key={card.id} className="pl-0">
-                        <div className="bg-[#1a1a1a] rounded-2xl sm:rounded-3xl pt-3 sm:pt-4 md:pt-5 px-5 sm:px-6 md:px-6 pb-3 sm:pb-4 md:pb-5 w-full relative overflow-visible flex flex-col [.carousel-active-card_&]:shadow-[0_0_20px_rgba(206,255,0,0.3)]">
+                        <div className="bg-[#1a1a1a] rounded-2xl sm:rounded-3xl pt-[0.7rem] px-[0.7rem] pb-[0.7rem] sm:pt-4 sm:px-6 md:pt-5 md:px-6 sm:pb-4 md:pb-5 w-full relative overflow-visible flex flex-col [.carousel-active-card_&]:shadow-[0_0_20px_rgba(206,255,0,0.3)]">
                           <div className="flex flex-col h-full">
                             {/* Icon and Title */}
                             <div className="mb-2 sm:mb-3 relative z-20 flex flex-col gap-1.5 sm:gap-2 flex-shrink-0">
-                              <div className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-xl bg-bla-lime flex items-center justify-center flex-shrink-0">
-                                <div className="w-5 h-5 sm:w-5 sm:h-5 md:w-6 md:h-6 relative">
+                              <div className="w-8 h-8 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-[0.5rem] sm:rounded-xl bg-bla-lime flex items-center justify-center flex-shrink-0">
+                                <div className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 relative">
                                   <Image
                                     src={card.iconPath}
                                     alt={card.title}
@@ -149,17 +153,24 @@ export default function HeroSection() {
                                   />
                                 </div>
                               </div>
-                              <p className="text-bla-white leading-relaxed text-xs sm:text-sm md:text-sm">
+                              <p className="hidden sm:block text-bla-white leading-relaxed text-xs sm:text-sm md:text-sm">
                                 {t('yourChance')}
                               </p>
-                              <h3 className="text-bla-lime font-medium text-base sm:text-lg md:text-lg">
+                              <h3 className="text-bla-lime font-medium text-[0.8rem] sm:text-lg md:text-lg">
                                 {card.title}
                               </h3>
                             </div>
 
                             {/* Content */}
                             <div className="relative z-20 flex-1 overflow-visible">
-                              <p className="text-bla-text-gray leading-relaxed text-xs sm:text-sm md:text-sm">
+                              {/* Mobile description */}
+                              {card.descriptionMobile && (
+                                <p className="sm:hidden text-bla-text-gray leading-relaxed text-xs sm:text-sm md:text-sm">
+                                  {card.descriptionMobile}
+                                </p>
+                              )}
+                              {/* Desktop description */}
+                              <p className="hidden sm:block text-bla-text-gray leading-relaxed text-xs sm:text-sm md:text-sm">
                                 {card.description}
                               </p>
                             </div>

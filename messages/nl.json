@@ -33,15 +33,18 @@
     "yourChance": "Jouw kans",
     "moreInsight": {
       "title": "Meer Inzicht",
-      "description": "Krijg één helder overzicht van al je data, zodat je direct weet waar je kansen liggen."
+      "description": "Krijg één helder overzicht van al je data, zodat je direct weet waar je kansen liggen.",
+      "descriptionMobile": "Één helder overzicht van al je data."
     },
     "moreRevenue": {
       "title": "Meer Omzet",
-      "description": "Optimaliseer de weg van bezoeker naar betalende klant voor direct meetbare groei."
+      "description": "Optimaliseer de weg van bezoeker naar betalende klant voor direct meetbare groei.",
+      "descriptionMobile": "Bezoekers worden betalende klanten."
     },
     "moreSpeed": {
       "title": "Meer Snelheid",
-      "description": "Elimineer saai, repetitief werk door slimme automatisering, en win tijd om te ondernemen."
+      "description": "Elimineer saai, repetitief werk door slimme automatisering, en win tijd om te ondernemen.",
+      "descriptionMobile": "Automatisering repetitief werk."
     }
   },
   "intro": {
