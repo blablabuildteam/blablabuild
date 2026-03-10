@@ -30,8 +30,10 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
   }, []);
 
   useEffect(() => {
-    // Avoid updating React state every scroll frame (major source of scroll jank).
-    // We only toggle a boolean once the user scrolls past a threshold.
+    // Skip scroll listener on mobile to prevent iOS scroll jank.
+    // Mobile nav stays fixed at top with no visual changes on scroll anyway.
+    if (isMobile) return;
+
     const SCROLLED_THRESHOLD = 20;
     const handleScroll = () => {
       const next = window.scrollY > SCROLLED_THRESHOLD;
@@ -40,7 +42,7 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isMobile]);
 
   const navLinks = [
     { id: 'oplossingen', label: t('solutions') },

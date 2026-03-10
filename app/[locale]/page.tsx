@@ -54,8 +54,13 @@ export default function HomePage() {
     };
   }, []);
 
-  // Track active section for navigation highlighting
+  // Track active section for navigation highlighting (desktop only)
+  // Disabled on mobile to prevent scroll jank from JS running during iOS momentum scroll
   useEffect(() => {
+    // Skip on mobile — nav highlighting not essential and causes iOS scroll jank
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) return;
+
     const sections = ['oplossingen', 'cases', 'aanpak', 'expertise', 'over-ons'];
     const sectionElements: { id: string; element: HTMLElement }[] = [];
     let observer: IntersectionObserver | null = null;
