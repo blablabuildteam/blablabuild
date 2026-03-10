@@ -111,6 +111,10 @@ export default function CasesSection({ embedded = false }: CasesSectionProps) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
+    // Skip ScrollTrigger on mobile to prevent iOS scroll jank — cards show immediately
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) return;
+
     const section = embedded ? embeddedRef.current : sectionRef.current;
     const cardsContainer = cardsContainerRef.current;
 

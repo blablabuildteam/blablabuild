@@ -113,7 +113,7 @@ function BubbleBackground({
             animation: blob-drift-4 9s ease-in-out infinite;
           }
           
-          /* Ensure bubbles are always circular on mobile */
+          /* Fully static blobs on mobile to prevent iOS scroll jank */
           @media (max-width: 768px) {
             .blob-1,
             .blob-2,
@@ -121,19 +121,6 @@ function BubbleBackground({
             .blob-4 {
               border-radius: 50% !important;
               overflow: hidden;
-            }
-
-            /* Reduce compositor pressure on mobile during scroll */
-            .blob-1 {
-              animation-duration: 16s;
-            }
-
-            .blob-3 {
-              animation-duration: 18s;
-            }
-
-            .blob-2,
-            .blob-4 {
               animation: none !important;
             }
           }

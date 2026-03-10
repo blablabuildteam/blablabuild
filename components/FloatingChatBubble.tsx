@@ -116,7 +116,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
     };
   }, [isExpanded, isInline]);
 
-  // Show bubble only after scrolling past the header section
+  // Show bubble after scrolling past hero (desktop) or after 3s delay (mobile)
   useEffect(() => {
     if (isInline) {
       // Inline mode should render immediately as a regular page component.
@@ -127,6 +127,17 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
 
     if (isVisible) return; // Once visible, stay visible
 
+    const isMobile = window.innerWidth < 768;
+
+    // On mobile, use a simple timeout instead of scroll detection to prevent iOS jank
+    if (isMobile) {
+      const mobileTimeout = setTimeout(() => {
+        setIsVisible(true);
+      }, 3000);
+      return () => clearTimeout(mobileTimeout);
+    }
+
+    // Desktop: use scroll-based detection
     let rafId: number | null = null;
     const heroSection = document.querySelector('section:first-of-type');
 
@@ -145,7 +156,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
             window.removeEventListener('scroll', handleScroll);
           }
         } else {
-          // Fallback: show after scrolling past viewport height (for mobile) or 200px
+          // Fallback: show after scrolling past viewport height or 200px
           const threshold = window.innerHeight > 768 ? window.innerHeight : 200;
           if (window.scrollY > threshold) {
             setIsVisible(true);
