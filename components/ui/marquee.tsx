@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 
 interface MarqueeProps {
   className?: string;
@@ -20,42 +20,72 @@ export default function Marquee({
   duration = 20,
   gap = 24,
 }: MarqueeProps) {
-  const scrollerRef = useRef<HTMLUListElement>(null);
-  const [start, setStart] = useState(false);
+  const ulRef = useRef<HTMLUListElement>(null);
+  const [ready, setReady] = useState(false);
+  const positionRef = useRef(0);
+  const rafRef = useRef<number>();
+  const lastTimeRef = useRef<number>(0);
+  const pausedRef = useRef(false);
 
   useEffect(() => {
-    if (!scrollerRef.current) return;
-    const items = Array.from(scrollerRef.current.children);
-    items.forEach((item) => {
-      const clone = item.cloneNode(true) as HTMLElement;
-      clone.setAttribute("aria-hidden", "true");
-      scrollerRef.current?.appendChild(clone);
-    });
-    setStart(true);
-  }, []);
+    const ul = ulRef.current;
+    if (!ul) return;
+
+    const durationMs = duration * 1000;
+    const direction = reverse ? 1 : -1;
+
+    const tick = (time: number) => {
+      const loopWidthPx = ul.offsetWidth / 2;
+      const delta = time - lastTimeRef.current;
+      lastTimeRef.current = time;
+
+      if (loopWidthPx > 0) {
+        setReady(true);
+        const pixelsPerMs = loopWidthPx / durationMs;
+        if (!pausedRef.current) {
+          positionRef.current += direction * pixelsPerMs * delta;
+          while (positionRef.current >= loopWidthPx) positionRef.current -= loopWidthPx;
+          while (positionRef.current <= -loopWidthPx) positionRef.current += loopWidthPx;
+          ul.style.transform = `translateX(${positionRef.current}px)`;
+        }
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    lastTimeRef.current = performance.now();
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+    };
+  }, [duration, reverse]);
+
+  const onMouseEnter = pauseOnHover ? () => { pausedRef.current = true; } : undefined;
+  const onMouseLeave = pauseOnHover ? () => { pausedRef.current = false; } : undefined;
 
   return (
     <div
-      className={cn("flex w-full overflow-hidden", className)}
+      className={cn("flex w-full overflow-hidden py-3", className)}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       style={{
         maskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
         WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
       }}
     >
       <ul
-        ref={scrollerRef}
-        className={cn(
-          "flex w-max min-w-full shrink-0 flex-nowrap items-center py-2",
-          start && "animate-scroll",
-          pauseOnHover && "hover:[animation-play-state:paused]"
-        )}
+        ref={ulRef}
+        className="flex shrink-0 flex-nowrap items-center"
         style={{
           gap: `${gap}px`,
-          animationDuration: `${duration}s`,
-          animationDirection: reverse ? "reverse" : "normal",
+          willChange: ready ? "transform" : "auto",
         }}
       >
-        {children}
+        {React.Children.toArray(children).map((child, i) =>
+          React.isValidElement(child) ? React.cloneElement(child, { key: `m1-${i}` }) : child
+        )}
+        {React.Children.toArray(children).map((child, i) =>
+          React.isValidElement(child) ? React.cloneElement(child, { key: `m2-${i}` }) : child
+        )}
       </ul>
     </div>
   );

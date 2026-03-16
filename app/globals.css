@@ -378,6 +378,11 @@ html {
 }
 
 /* Prevent a “second” scrollbar on some browsers that render both html + body scrollbars */
+@keyframes marquee-seamless {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
 body::-webkit-scrollbar {
   display: none;
 }

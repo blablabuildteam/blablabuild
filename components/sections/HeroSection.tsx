@@ -135,17 +135,17 @@ export default function HeroSection() {
                 className="relative w-full"
               >
                 {/* Mobile: hero-ticker — icoon + titel + korte tekst, wit op donker */}
-                <div className="md:hidden w-full overflow-hidden py-3 mb-8">
-                  <Marquee duration={22} gap={28}>
+                <div className="md:hidden w-full overflow-hidden mt-6 mb-10 min-h-[4.5rem]">
+                  <Marquee duration={22} gap={40}>
                     {carouselCards.map((card) => (
-                      <MarqueeItem key={card.id}>
-                        <div className="flex items-center gap-3 flex-shrink-0">
+                      <MarqueeItem key={card.id} className="flex-shrink-0">
+                        <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-lg bg-bla-lime flex items-center justify-center flex-shrink-0">
                             <div className="w-4 h-4 relative">
                               <Image src={card.iconPath} alt="" fill className="object-contain" style={{ filter: 'brightness(0)' }} />
                             </div>
                           </div>
-                          <div className="flex flex-col gap-0.5">
+                          <div className="flex flex-col gap-0.5 min-w-0">
                             <span className="text-white font-semibold text-[15px] leading-tight whitespace-nowrap">
                               {card.title}
                             </span>

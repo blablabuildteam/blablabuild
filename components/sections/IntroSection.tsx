@@ -66,9 +66,9 @@ export default function IntroSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <Marquee reverse duration={15} gap={20} pauseOnHover>
+          <Marquee reverse duration={15} gap={28} pauseOnHover>
             {expertises.map((item) => (
-              <MarqueeItem key={item.key}>
+              <MarqueeItem key={item.key} className="flex-shrink-0">
                 <div className="flex items-center gap-2.5 bg-white px-5 py-2.5 rounded-full shadow-sm border border-gray-100">
                   <item.icon className="w-4 h-4 flex-shrink-0 text-bla-blue" />
                   <span className="text-sm font-medium text-bla-dark whitespace-nowrap">{item.name}</span>
