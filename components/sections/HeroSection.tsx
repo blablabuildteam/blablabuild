@@ -4,7 +4,6 @@ import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { ContainerTextFlip } from '@/components/ui/container-text-flip';
 import { BubbleBackground } from '@/components/ui/bubble-background';
 import {
   Carousel,
@@ -13,6 +12,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import Marquee, { MarqueeItem } from '@/components/ui/marquee';
 
 interface CarouselCard {
   id: string;
@@ -85,7 +85,7 @@ export default function HeroSection() {
           />
 
           {/* Content Container */}
-          <div className="relative z-10 h-auto md:h-full flex flex-col lg:flex-row items-start lg:items-center justify-center px-[1.8rem] sm:px-6 md:px-8 lg:px-12 pt-2 sm:pt-3 md:pt-4 lg:pt-12 pb-0 sm:pb-0 md:pb-8 lg:pb-12">
+          <div className="relative z-10 h-auto md:h-full flex flex-col lg:flex-row items-start lg:items-center justify-center px-[1.8rem] sm:px-6 md:px-8 lg:px-12 pt-2 sm:pt-3 md:pt-4 lg:pt-12 pb-6 sm:pb-6 md:pb-8 lg:pb-12">
             {/* Left Side - Header Content */}
             <div className="w-full lg:flex-1 lg:max-w-[50%] mb-0 sm:mb-0 md:mb-2 lg:mb-0 h-auto md:h-full flex items-start lg:items-center">
               <motion.div
@@ -126,7 +126,7 @@ export default function HeroSection() {
               </motion.div>
             </div>
 
-            {/* Right Side - Carousel */}
+            {/* Right Side - Ticker op mobile, Carousel op desktop */}
             <div className="w-full lg:flex-1 lg:max-w-[45%] h-auto md:h-full flex items-start lg:items-center mt-4 sm:mt-6 md:mt-0 mb-0 sm:mb-0 md:mb-0">
               <motion.div
                 initial={{ opacity: 0, x: 30 }}
@@ -134,54 +134,72 @@ export default function HeroSection() {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 className="relative w-full"
               >
-                <Carousel initialIndex={1}>
-                  <CarouselContent className="ml-0">
+                {/* Mobile: hero-ticker — icoon + titel + korte tekst, wit op donker */}
+                <div className="md:hidden w-full overflow-hidden py-3 mb-8">
+                  <Marquee duration={22} gap={28}>
                     {carouselCards.map((card) => (
-                      <CarouselItem key={card.id} className="pl-0">
-                        <div className="bg-[#1a1a1a] rounded-2xl sm:rounded-3xl pt-[0.7rem] px-[0.7rem] pb-[0.7rem] sm:pt-4 sm:px-6 md:pt-5 md:px-6 sm:pb-4 md:pb-5 w-full relative overflow-visible flex flex-col [.carousel-active-card_&]:shadow-[0_0_20px_rgba(206,255,0,0.3)]">
-                          <div className="flex flex-col h-full">
-                            {/* Icon and Title */}
-                            <div className="mb-2 sm:mb-3 relative z-20 flex flex-col gap-1.5 sm:gap-2 flex-shrink-0">
-                              <div className="w-8 h-8 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-[0.5rem] sm:rounded-xl bg-bla-lime flex items-center justify-center flex-shrink-0">
-                                <div className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 relative">
-                                  <Image
-                                    src={card.iconPath}
-                                    alt={card.title}
-                                    fill
-                                    className="object-contain"
-                                    style={{ filter: 'brightness(0)' }}
-                                  />
-                                </div>
-                              </div>
-                              <p className="hidden sm:block text-bla-white leading-relaxed text-xs sm:text-sm md:text-sm">
-                                {t('yourChance')}
-                              </p>
-                              <h3 className="text-bla-lime font-medium text-[0.8rem] sm:text-lg md:text-lg">
-                                {card.title}
-                              </h3>
-                            </div>
-
-                            {/* Content */}
-                            <div className="relative z-20 flex-1 overflow-visible">
-                              {/* Mobile description */}
-                              {card.descriptionMobile && (
-                                <p className="sm:hidden text-bla-text-gray leading-relaxed text-xs sm:text-sm md:text-sm">
-                                  {card.descriptionMobile}
-                                </p>
-                              )}
-                              {/* Desktop description */}
-                              <p className="hidden sm:block text-bla-text-gray leading-relaxed text-xs sm:text-sm md:text-sm">
-                                {card.description}
-                              </p>
+                      <MarqueeItem key={card.id}>
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                          <div className="w-8 h-8 rounded-lg bg-bla-lime flex items-center justify-center flex-shrink-0">
+                            <div className="w-4 h-4 relative">
+                              <Image src={card.iconPath} alt="" fill className="object-contain" style={{ filter: 'brightness(0)' }} />
                             </div>
                           </div>
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-white font-semibold text-[15px] leading-tight whitespace-nowrap">
+                              {card.title}
+                            </span>
+                            <span className="text-white/80 text-[13px] leading-tight whitespace-nowrap">
+                              {card.descriptionMobile}
+                            </span>
+                          </div>
                         </div>
-                      </CarouselItem>
+                      </MarqueeItem>
                     ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="left-0 translate-x-2 lg:translate-x-4" />
-                  <CarouselNext className="right-0 translate-x-2 lg:translate-x-4" />
-                </Carousel>
+                  </Marquee>
+                </div>
+
+                {/* Desktop: carousel */}
+                <div className="hidden md:block w-full">
+                  <Carousel initialIndex={1}>
+                    <CarouselContent className="ml-0">
+                      {carouselCards.map((card) => (
+                        <CarouselItem key={card.id} className="pl-0">
+                          <div className="bg-[#1a1a1a] rounded-2xl sm:rounded-3xl pt-[0.7rem] px-[0.7rem] pb-[0.7rem] sm:pt-4 sm:px-6 md:pt-5 md:px-6 sm:pb-4 md:pb-5 w-full relative overflow-visible flex flex-col [.carousel-active-card_&]:shadow-[0_0_20px_rgba(206,255,0,0.3)]">
+                            <div className="flex flex-col h-full">
+                              <div className="mb-2 sm:mb-3 relative z-20 flex flex-col gap-1.5 sm:gap-2 flex-shrink-0">
+                                <div className="w-8 h-8 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-[0.5rem] sm:rounded-xl bg-bla-lime flex items-center justify-center flex-shrink-0">
+                                  <div className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 relative">
+                                    <Image
+                                      src={card.iconPath}
+                                      alt={card.title}
+                                      fill
+                                      className="object-contain"
+                                      style={{ filter: 'brightness(0)' }}
+                                    />
+                                  </div>
+                                </div>
+                                <p className="hidden sm:block text-bla-white leading-relaxed text-xs sm:text-sm md:text-sm">
+                                  {t('yourChance')}
+                                </p>
+                                <h3 className="text-bla-lime font-medium text-[0.8rem] sm:text-lg md:text-lg">
+                                  {card.title}
+                                </h3>
+                              </div>
+                              <div className="relative z-20 flex-1 overflow-visible">
+                                <p className="hidden sm:block text-bla-text-gray leading-relaxed text-xs sm:text-sm md:text-sm">
+                                  {card.description}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="left-0 translate-x-2 lg:translate-x-4" />
+                    <CarouselNext className="right-0 translate-x-2 lg:translate-x-4" />
+                  </Carousel>
+                </div>
               </motion.div>
             </div>
           </div>

@@ -8,8 +8,8 @@ interface MarqueeProps {
   reverse?: boolean;
   pauseOnHover?: boolean;
   children?: React.ReactNode;
-  duration?: number; // in seconds
-  gap?: number; // in pixels
+  duration?: number;
+  gap?: number;
 }
 
 export default function Marquee({
@@ -24,39 +24,28 @@ export default function Marquee({
   const [start, setStart] = useState(false);
 
   useEffect(() => {
-    addAnimation();
+    if (!scrollerRef.current) return;
+    const items = Array.from(scrollerRef.current.children);
+    items.forEach((item) => {
+      const clone = item.cloneNode(true) as HTMLElement;
+      clone.setAttribute("aria-hidden", "true");
+      scrollerRef.current?.appendChild(clone);
+    });
+    setStart(true);
   }, []);
-
-  function addAnimation() {
-    if (scrollerRef.current) {
-      const scrollerContent = Array.from(scrollerRef.current.children);
-
-      // Duplicate items for seamless loop
-      scrollerContent.forEach((item) => {
-        const duplicatedItem = item.cloneNode(true) as HTMLElement;
-        duplicatedItem.setAttribute("aria-hidden", "true");
-        scrollerRef.current?.appendChild(duplicatedItem);
-      });
-
-      setStart(true);
-    }
-  }
 
   return (
     <div
-      className={cn(
-        "flex w-full overflow-hidden",
-        className
-      )}
+      className={cn("flex w-full overflow-hidden", className)}
       style={{
-        maskImage: "linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgb(0, 0, 0) 10%, rgb(0, 0, 0) 90%, rgba(0, 0, 0, 0) 100%)",
-        WebkitMaskImage: "linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgb(0, 0, 0) 10%, rgb(0, 0, 0) 90%, rgba(0, 0, 0, 0) 100%)",
+        maskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
+        WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
       }}
     >
       <ul
         ref={scrollerRef}
         className={cn(
-          "flex w-max min-w-full shrink-0 flex-nowrap py-2",
+          "flex w-max min-w-full shrink-0 flex-nowrap items-center py-2",
           start && "animate-scroll",
           pauseOnHover && "hover:[animation-play-state:paused]"
         )}
@@ -73,9 +62,5 @@ export default function Marquee({
 }
 
 export function MarqueeItem({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <li className={cn("flex-shrink-0", className)}>
-      {children}
-    </li>
-  );
+  return <li className={cn("flex-shrink-0", className)}>{children}</li>;
 }
