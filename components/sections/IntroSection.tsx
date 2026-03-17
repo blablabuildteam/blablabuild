@@ -59,7 +59,7 @@ export default function IntroSection() {
           })()}
         </motion.h2>
         
-        {/* Expertise Ticker — gelijke marge boven/onder (marquee in het midden) */}
+        {/* Expertise Ticker — mobile: swipebaar; desktop: marquee */}
         <motion.div
           className="relative w-full py-2 md:py-8"
           initial={{ opacity: 0, y: 20 }}
@@ -67,7 +67,22 @@ export default function IntroSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <div className="px-0 md:px-8">
+          {/* Mobile: swipebare horizontale ticker */}
+          <div className="md:hidden overflow-x-auto overflow-y-hidden -mx-4 px-4 snap-x snap-mandatory scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <div className="flex w-max gap-3 py-1" style={{ width: 'max-content' }}>
+              {expertises.map((item) => (
+                <div
+                  key={item.key}
+                  className="flex shrink-0 snap-start items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 shadow-sm"
+                >
+                  <item.icon className="h-4 w-4 shrink-0 text-bla-blue" />
+                  <span className="whitespace-nowrap text-sm font-medium text-bla-dark">{item.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Desktop: marquee */}
+          <div className="hidden md:block px-0 md:px-8">
             <Marquee speed={28} gap={16} reverse pauseOnHover>
               {expertises.map((item) => (
                 <div
