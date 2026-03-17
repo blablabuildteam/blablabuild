@@ -180,15 +180,15 @@ export default function CasesSection({ embedded = false }: CasesSectionProps) {
   const cardsGrid = (
     <div 
       ref={cardsContainerRef} 
-      className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4"
     >
       {solutionCards.map((card) => (
         <div
           key={card.id}
           className={`solution-card rounded-2xl md:rounded-3xl p-6 md:p-8 flex flex-col transition-all duration-300 relative ${
             card.id === 9 
-              ? 'col-span-2 md:col-span-1' 
-              : 'bg-white'
+              ? 'col-span-1 md:col-span-1' 
+              : 'bg-white border border-bla-border/40 shadow-sm hover:shadow-md hover:border-bla-lime/30'
           }`}
           style={card.id === 9 ? { backgroundColor: '#070800' } : undefined}
         >
@@ -240,20 +240,22 @@ export default function CasesSection({ embedded = false }: CasesSectionProps) {
                 </>
               ) : (
                 <>
+                  {/* Accent bar */}
+                  <div className="absolute top-0 left-0 w-1 h-12 rounded-b-full bg-bla-lime/80" aria-hidden />
                   {/* Title */}
                   {card.title && (
-                    <h3 className="font-host font-medium text-lg md:text-xl lg:text-2xl text-text-primary mb-3">
+                    <h3 className="font-host font-medium text-lg md:text-xl lg:text-2xl text-text-primary mb-3 pl-1">
                       {card.title}
                     </h3>
                   )}
                   {/* Content */}
-                  <p className="font-host font-normal text-sm md:text-base lg:text-lg text-text-primary leading-relaxed flex-1">
+                  <p className="font-host font-normal text-sm md:text-base lg:text-lg text-text-primary/90 leading-relaxed flex-1">
                     {card.text}
                   </p>
 
                   {/* Separator */}
                   {card.badges.length > 0 && (
-                    <div className="border-t border-bla-border mt-4 mb-4"></div>
+                    <div className="border-t border-bla-border/60 mt-4 mb-4"></div>
                   )}
 
                   {/* Badges */}
@@ -262,17 +264,8 @@ export default function CasesSection({ embedded = false }: CasesSectionProps) {
                       {card.badges.map((badge) => (
                         <span
                           key={badge}
-                          className={`px-3 py-1 rounded-lg text-xs md:text-sm font-medium ${getBadgeColor(badge)} relative`}
-                          style={{ backgroundColor: '#070800' }}
+                          className="px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium bg-bla-lime/15 text-bla-lime border border-bla-lime/30 relative"
                         >
-                          {/* Grain effect overlay */}
-                          <div 
-                            className="absolute inset-0 rounded-lg opacity-[0.2] pointer-events-none"
-                            style={{
-                              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-                              backgroundSize: '200px 200px',
-                            }}
-                          />
                           <span className="relative z-10">{t(`badges.${badge}`)}</span>
                         </span>
                       ))}

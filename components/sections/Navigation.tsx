@@ -97,12 +97,13 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
   return (
     <>
       <motion.nav
-        className="fixed z-50 left-0 right-0 md:left-1/2 md:-translate-x-1/2"
+        className="fixed z-50 left-0 right-0 md:left-1/2 md:-translate-x-1/2 overflow-hidden"
         initial={false}
         animate={{
           top: isMobile ? 0 : isScrolled ? 16 : 0,
+          borderRadius: isMobile ? '0px' : isScrolled ? '24px' : '0px',
         }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
+        transition={{ duration: 0.35, ease: 'easeOut' }}
         style={{
           width: '100%',
           maxWidth: isMobile ? '100%' : '1312px',
@@ -114,15 +115,13 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
           animate={{
             backgroundColor: getBackgroundColor(),
             borderRadius: isMobile ? '0px' : isScrolled ? '24px' : '0px',
-            scale: 1,
+            boxShadow: isMobile || !isScrolled ? '0 0px 0px rgba(0,0,0,0)' : '0 8px 32px rgba(0, 0, 0, 0.08)',
           }}
-          transition={{ duration: 0.2, ease: 'easeOut' }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
           style={{
-            // Backdrop blur is expensive during scroll; keep it subtle and only in the scrolled desktop state.
             backdropFilter: isMobile || !isScrolled ? 'none' : 'blur(16px)',
             WebkitBackdropFilter: isMobile || !isScrolled ? 'none' : 'blur(16px)',
             borderBottom: 'none',
-            boxShadow: isMobile || !isScrolled ? 'none' : '0 8px 32px rgba(0, 0, 0, 0.08)',
           }}
         >
           {/* Logo */}
