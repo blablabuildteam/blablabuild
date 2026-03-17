@@ -23,7 +23,8 @@
     "team": "Team",
     "aboutUs": "About us",
     "privacy": "Privacy",
-    "freeAIAdvice": "Free AI Advice"
+    "freeAIAdvice": "Free AI Advice",
+    "scheduleMeeting": "Schedule a meeting"
   },
   "hero": {
     "tagline": "Talk less, build more",

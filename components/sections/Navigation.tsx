@@ -243,8 +243,17 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
                 </button>
               </div>
 
-              {/* Contact Section */}
-              <div className="pt-6 border-t border-bla-border space-y-2 text-center">
+              {/* Schedule meeting + Contact */}
+              <div className="pt-6 border-t border-bla-border space-y-4 text-center">
+                <a
+                  href="https://calendly.com/team-blablabuild/30min"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => isMenuOpen && setIsMenuOpen(false)}
+                  className="block font-sans font-medium text-base text-text-primary underline"
+                >
+                  {t('scheduleMeeting')}
+                </a>
                 <p className="text-sm font-sans font-normal" style={{ color: 'var(--text-muted)' }}>
                   {tCommon('contactUs')}
                 </p>
