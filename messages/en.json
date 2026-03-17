@@ -34,15 +34,18 @@
     "yourChance": "Your opportunity",
     "moreInsight": {
       "title": "More Insight",
-      "description": "Get one clear overview of all your data, so you immediately know where your opportunities lie."
+      "description": "Get one clear overview of all your data, so you immediately know where your opportunities lie.",
+      "descriptionMobile": "One clear overview of all your data."
     },
     "moreRevenue": {
       "title": "More Revenue",
-      "description": "Optimize the path from visitor to paying customer for directly measurable growth."
+      "description": "Optimize the path from visitor to paying customer for directly measurable growth.",
+      "descriptionMobile": "Visitors become paying customers."
     },
     "moreSpeed": {
       "title": "More Speed",
-      "description": "Eliminate boring, repetitive work through smart automation, and gain time to build your business."
+      "description": "Eliminate boring, repetitive work through smart automation, and gain time to build your business.",
+      "descriptionMobile": "Automate repetitive work."
     }
   },
   "intro": {
