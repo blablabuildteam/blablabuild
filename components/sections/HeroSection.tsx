@@ -84,10 +84,10 @@ export default function HeroSection() {
             }}
           />
 
-          {/* Content Container */}
-          <div className="relative z-10 h-auto md:h-full flex flex-col lg:flex-row items-start lg:items-center justify-center px-[1.8rem] sm:px-6 md:px-8 lg:px-12 pt-2 sm:pt-3 md:pt-4 lg:pt-12 pb-6 sm:pb-6 md:pb-8 lg:pb-12">
+          {/* Content Container - gap voorkomt overlap tekst/carousel op 1280px */}
+          <div className="relative z-10 h-auto md:h-full flex flex-col lg:flex-row items-start lg:items-center justify-center gap-x-0 lg:gap-x-10 xl:gap-x-12 px-[1.8rem] sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-2 sm:pt-3 md:pt-4 lg:pt-12 pb-6 sm:pb-6 md:pb-8 lg:pb-12">
             {/* Left Side - Header Content */}
-            <div className="w-full lg:flex-1 lg:max-w-[50%] mb-0 sm:mb-0 md:mb-2 lg:mb-0 h-auto md:h-full flex items-start lg:items-center">
+            <div className="w-full lg:flex-1 lg:min-w-0 lg:max-w-[50%] mb-0 sm:mb-0 md:mb-2 lg:mb-0 h-auto md:h-full flex items-start lg:items-center">
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -127,7 +127,7 @@ export default function HeroSection() {
             </div>
 
             {/* Right Side - Ticker op mobile, Carousel op desktop */}
-            <div className="w-full lg:flex-1 lg:max-w-[45%] h-auto md:h-full flex items-start lg:items-center mt-4 sm:mt-6 md:mt-0 mb-0 sm:mb-0 md:mb-0">
+            <div className="w-full lg:flex-1 lg:min-w-0 lg:max-w-[45%] h-auto md:h-full flex items-start lg:items-center mt-4 sm:mt-6 md:mt-0 mb-0 sm:mb-0 md:mb-0">
               <motion.div
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -166,7 +166,7 @@ export default function HeroSection() {
                     <CarouselContent className="ml-0">
                       {carouselCards.map((card) => (
                         <CarouselItem key={card.id} className="pl-0">
-                          <div className="bg-[#1a1a1a] rounded-2xl sm:rounded-3xl pt-[0.7rem] px-[0.7rem] pb-[0.7rem] sm:pt-4 sm:px-6 md:pt-5 md:px-6 sm:pb-4 md:pb-5 w-full relative overflow-visible flex flex-col [.carousel-active-card_&]:shadow-[0_0_20px_rgba(206,255,0,0.3)]">
+                          <div className="bg-[#1a1a1a] rounded-2xl sm:rounded-3xl pt-4 sm:pt-5 md:pt-6 px-4 sm:px-6 pb-4 sm:pb-4 md:pb-5 w-full relative overflow-visible flex flex-col [.carousel-active-card_&]:shadow-[0_0_20px_rgba(206,255,0,0.3)]">
                             <div className="flex flex-col h-full">
                               <div className="mb-2 sm:mb-3 relative z-20 flex flex-col gap-1.5 sm:gap-2 flex-shrink-0">
                                 <div className="w-8 h-8 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-[0.5rem] sm:rounded-xl bg-bla-lime flex items-center justify-center flex-shrink-0">
