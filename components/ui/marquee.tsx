@@ -43,7 +43,7 @@ export function Marquee({
     if (track) track.style.animationPlayState = 'paused';
     if (el) {
       el.style.overflowX = 'auto';
-      el.style.webkitOverflowScrolling = 'touch';
+      el.style.setProperty('-webkit-overflow-scrolling', 'touch');
       el.classList.add('scrollbar-hide');
     }
   }, []);
@@ -54,7 +54,7 @@ export function Marquee({
     if (track) track.style.animationPlayState = 'running';
     if (el) {
       el.style.overflowX = '';
-      el.style.webkitOverflowScrolling = '';
+      el.style.removeProperty('-webkit-overflow-scrolling');
       el.classList.remove('scrollbar-hide');
     }
   }, []);
