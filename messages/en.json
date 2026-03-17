@@ -313,7 +313,7 @@
       "subtitle": "Discover how we can help you...",
       "placeholder1": "My inventory management in Excel is failing...",
       "placeholder2": "Our data is spread across 5 tools...",
-      "placeholder3": "I want to automate processes, but where do I start?",
+      "placeholder3": "Where do I start with automation?",
       "send": "Send",
       "suggestions": {
         "label": "Choose what comes closest (or type your own):",
@@ -325,7 +325,8 @@
       },
       "helperText": "No worries — a few words is enough.",
       "normalizingText": "You don't need to have your problem clearly defined yet — we'll help with that.",
-      "inputPlaceholder": "Tell us briefly what frustrates you in your daily work…"
+      "inputPlaceholder": "Tell us briefly what frustrates you in your daily work…",
+      "inputPlaceholderShort": "What frustrates you at work?"
     },
     "process": {
       "step1": "1. You share your challenge",

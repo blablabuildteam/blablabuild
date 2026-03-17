@@ -316,7 +316,7 @@
       "subtitle": "Ontdek hoe wij je kunnen helpen...",
       "placeholder1": "Mijn voorraadbeheer in Excel loopt vast...",
       "placeholder2": "Onze data staat verspreid over 5 tools...",
-      "placeholder3": "Ik wil processen automatiseren, maar waar begin ik?",
+      "placeholder3": "Processen automatiseren, waar begin ik?",
       "send": "Verstuur",
       "suggestions": {
         "label": "Kies wat het dichtst in de buurt komt (of typ zelf):",
@@ -328,7 +328,8 @@
       },
       "helperText": "Geen zorgen — een paar woorden is genoeg.",
       "normalizingText": "Je hoeft je probleem nog niet scherp te hebben — daar helpen we bij.",
-      "inputPlaceholder": "Vertel kort wat je frustreert in je dagelijkse werk…"
+      "inputPlaceholder": "Vertel kort wat je frustreert in je dagelijkse werk…",
+      "inputPlaceholderShort": "Wat frustreert je in je werk?"
     },
     "process": {
       "step1": "1. Jij deelt je uitdaging",

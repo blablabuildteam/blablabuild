@@ -76,8 +76,17 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
   });
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
   const [isIntakeSource, setIsIntakeSource] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  // Detect mobile viewport voor korte placeholder en layout
+  useEffect(() => {
+    const check = () => setIsMobileView(typeof window !== 'undefined' && window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   // Auto-scroll to bottom when messages/loading state change
   useEffect(() => {
@@ -567,8 +576,16 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
     tIntake('chatModule.placeholder3'),
   ];
 
+  const shortPlaceholderRaw = tIntake('chatModule.inputPlaceholderShort');
+  const shortPlaceholder = (shortPlaceholderRaw && !shortPlaceholderRaw.includes('inputPlaceholderShort'))
+    ? shortPlaceholderRaw
+    : (locale === 'en' ? 'What frustrates you at work?' : 'Wat frustreert je in je werk?');
+  const longPlaceholderRaw = tIntake('chatModule.inputPlaceholder');
+  const longPlaceholder = (longPlaceholderRaw && !longPlaceholderRaw.includes('inputPlaceholder'))
+    ? longPlaceholderRaw
+    : (locale === 'en' ? 'Tell us briefly what frustrates you in your daily work…' : 'Vertel kort wat je frustreert in je dagelijkse werk…');
   const dynamicIdeaPlaceholder = isIdeaFocused
-    ? tIntake('chatModule.inputPlaceholder')
+    ? (isMobileView ? shortPlaceholder : longPlaceholder)
     : placeholders[currentPlaceholder];
 
   return (
@@ -605,7 +622,7 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                 <motion.div 
                   className={[
                     'backdrop-blur-[20px] bg-surface-glass border border-card-border rounded-[24px] relative overflow-hidden shadow-lg flex flex-col',
-                    isInline ? 'w-full max-w-[1240px] mx-auto h-[74vh] sm:h-[68vh] md:h-[60vh]' : 'w-[94vw] max-w-[1240px] h-[60vh]',
+                    isInline ? 'w-full max-w-[1240px] mx-auto h-[74vh] sm:h-[68vh] md:h-[60vh]' : 'w-[94vw] max-w-[1240px] h-[65dvh] md:h-[60vh]',
                   ].join(' ')}
                   style={{ WebkitBackdropFilter: 'blur(20px)' }}
                   initial={{ y: 20 }}
@@ -624,14 +641,16 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                   )}
 
                   {!chatStarted ? (
-                    /* Initial Input View */
-                    <div className="p-6 md:p-12 flex flex-col items-center h-full justify-between">
-                      <div className="flex flex-col items-center gap-4 md:gap-6 mb-6 md:mb-16">
+                    /* Initial Input View - no scroll; spacing only (text/icon sizes unchanged) */
+                    <div className="flex flex-col h-full min-h-0">
+                      <div className="flex-1 min-h-0 overflow-hidden px-5 pb-4 pt-8 md:px-12 md:pt-16 md:pb-6 flex flex-col items-center justify-center">
+                        <div className="flex flex-col items-center gap-4 md:gap-5 mb-4 md:mb-6">
                         {/* Logo Icon */}
                         <motion.div
                           initial={{ scale: 0, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
                           transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
+                          className="flex-shrink-0"
                         >
                           <div className="w-12 h-12 bg-bla-lime rounded-xl flex items-center justify-center">
                             <Image src="/icon.svg" alt="" width={32} height={32} className="w-8 h-8" />
@@ -679,45 +698,48 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                             </div>
                           </div>
                         </motion.div>
+                        </div>
                       </div>
 
-                      {/* Input Form - Positioned at bottom */}
-                      <motion.form 
-                        onSubmit={handleSubmit}
-                        className="w-full max-w-[1035px] mt-auto pt-6 md:pt-16"
-                        initial={{ y: 10, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.1, duration: 0.15 }}
-                      >
-                        <div
-                          className={[
-                            'relative flex items-center h-[60px] md:h-[78px]',
-                            isInline
-                              ? 'bg-white border-2 border-gray-300 rounded-[14px] shadow-[0_8px_24px_rgba(0,0,0,0.08)]'
-                              : 'bg-chat-input-bg rounded-[12px] shadow-sm',
-                          ].join(' ')}
+                      {/* Input Form - Fixed at bottom, always visible (desktop + mobile) */}
+                      <div className="flex-shrink-0 px-5 py-4 md:px-12 md:pt-5 md:pb-6 border-t border-black/5 bg-surface-glass/80">
+                        <motion.form 
+                          onSubmit={handleSubmit}
+                          className="w-full max-w-[1035px] mx-auto"
+                          initial={{ y: 10, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{ delay: 0.1, duration: 0.15 }}
                         >
-                          <input
-                            type="text"
-                            value={idea}
-                            onChange={(e) => setIdea(e.target.value)}
-                            onFocus={() => setIsIdeaFocused(true)}
-                            onBlur={() => setIsIdeaFocused(false)}
-                            placeholder={dynamicIdeaPlaceholder}
+                          <div
                             className={[
-                              'w-full h-full bg-transparent px-6 md:px-8 pr-14 md:pr-18 text-base md:text-[18px] font-host text-text-primary focus:outline-none',
-                              isInline ? 'rounded-[14px] placeholder:text-gray-500' : 'rounded-[12px] placeholder:text-text-muted',
+                              'relative flex items-center h-[52px] md:h-[78px] min-w-0',
+                              isInline
+                                ? 'bg-white border-2 border-gray-300 rounded-[14px] shadow-[0_8px_24px_rgba(0,0,0,0.08)]'
+                                : 'bg-chat-input-bg rounded-[12px] shadow-sm',
                             ].join(' ')}
-                            autoFocus={!isInline}
-                          />
-                          <button
-                            type="submit"
-                            className="absolute right-2 md:right-3 w-10 h-10 md:w-12 md:h-12 bg-bla-lime rounded-full flex items-center justify-center hover:bg-bla-lime/90 transition-all hover:scale-105"
                           >
-                            <ArrowRight className="w-5 h-5 md:w-6 md:h-6 text-black" />
-                          </button>
-                        </div>
-                      </motion.form>
+                            <input
+                              type="text"
+                              value={idea}
+                              onChange={(e) => setIdea(e.target.value)}
+                              onFocus={() => setIsIdeaFocused(true)}
+                              onBlur={() => setIsIdeaFocused(false)}
+                              placeholder={dynamicIdeaPlaceholder}
+                              className={[
+                                'w-full min-w-0 h-full bg-transparent px-4 md:px-8 pr-12 md:pr-18 text-sm md:text-[18px] font-host text-text-primary placeholder:text-ellipsis focus:outline-none',
+                                isInline ? 'rounded-[14px] placeholder:text-gray-500' : 'rounded-[12px] placeholder:text-text-muted',
+                              ].join(' ')}
+                              autoFocus={!isInline}
+                            />
+                            <button
+                              type="submit"
+                              className="absolute right-2 md:right-3 w-10 h-10 md:w-12 md:h-12 bg-bla-lime rounded-full flex items-center justify-center hover:bg-bla-lime/90 transition-all hover:scale-105"
+                            >
+                              <ArrowRight className="w-5 h-5 md:w-6 md:h-6 text-black" />
+                            </button>
+                          </div>
+                        </motion.form>
+                      </div>
                     </div>
                   ) : (
                     /* Chat View */
@@ -926,9 +948,12 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                         )}
                       </div>
 
-                      {/* Chat Input - Fixed at bottom */}
+                      {/* Chat Input - Fixed at bottom, safe area op mobile, z-index voor desktop */}
                       {!isComplete && (
-                        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-black/10 rounded-b-[24px] bg-surface-glass backdrop-blur-md z-10">
+                        <div 
+                          className="absolute bottom-0 left-0 right-0 p-4 border-t border-black/10 rounded-b-[24px] bg-surface-glass backdrop-blur-md z-30"
+                          style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 0px))' }}
+                        >
                           <div className="relative flex items-center">
                             <textarea
                               ref={inputRef}
@@ -937,14 +962,15 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                               onKeyPress={handleKeyPress}
                               placeholder={questionOptions?.length > 0 ? tChat('orTypeOwn') : tChat('yourAnswer')}
                               rows={2}
-                              className="w-full px-4 py-3 pr-20 md:px-8 md:pr-[4.5rem] border border-chat-input-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 transition-all resize-none text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40 overflow-wrap break-words"
+                              className="w-full min-w-0 px-4 py-3 pr-14 md:pr-[4.5rem] border border-chat-input-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-bla-lime/30 transition-all resize-none text-sm font-light bg-chat-input-bg text-black placeholder:text-black/40 overflow-wrap break-words"
                               style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}
                               disabled={isLoading}
                             />
                             <button
+                              type="button"
                               onClick={sendMessage}
                               disabled={!input.trim() || isLoading}
-                              className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-full flex items-center justify-center transition-all disabled:opacity-40"
+                              className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-bla-lime hover:bg-bla-lime/90 text-black rounded-full flex items-center justify-center transition-all disabled:opacity-40 z-10"
                             >
                               {isLoading ? (
                                 <BlablablaAnimation size="sm" />
