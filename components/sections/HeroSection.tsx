@@ -118,59 +118,30 @@ export default function HeroSection() {
                   <span className="text-bla-white lg:hidden">{t('description')}</span>
                 </p>
 
-                {/* Mobile: swipebare horizontale ticker */}
+                {/* Ticker: draait altijd; op touch ook swipebaar */}
                 <div
-                  className="md:hidden w-full overflow-x-auto overflow-y-hidden mt-6 mb-0 min-h-[4.5rem] -mx-[1.8rem] px-[1.8rem] snap-x snap-mandatory scrollbar-hide"
+                  className="w-full lg:max-w-xl relative mt-6 md:mt-8 mb-0 min-h-[4.5rem]"
                   style={{
-                    WebkitOverflowScrolling: 'touch',
-                    maskImage: 'linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)',
-                    WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)',
+                    maskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
                   }}
                 >
-                  <div className="flex w-max gap-4 py-1" style={{ width: 'max-content' }}>
+                  <Marquee speed={18} gap={16} pauseOnHover swipeableOnTouch>
                     {carouselCards.map((card) => (
                       <div
                         key={card.id}
-                        className="flex w-64 shrink-0 snap-start items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-gray-900/50 p-4"
+                        className="flex min-h-[72px] md:h-auto w-64 shrink-0 items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-gray-900/50 px-4 py-3 md:p-4 lg:w-auto lg:min-w-0 lg:py-2 lg:px-3 lg:rounded-lg"
                       >
-                        <div className="h-10 w-10 shrink-0 rounded-lg bg-bla-lime flex items-center justify-center">
-                          <div className="relative h-5 w-5">
+                        <div className="h-9 w-9 md:h-10 md:w-10 lg:h-8 lg:w-8 shrink-0 rounded-lg bg-bla-lime flex items-center justify-center">
+                          <div className="relative h-4 w-4 md:h-5 md:w-5 lg:h-4 lg:w-4">
                             <Image src={card.iconPath} alt="" fill className="object-contain" style={{ filter: 'brightness(0)' }} />
                           </div>
                         </div>
-                        <div className="min-w-0 flex-1 overflow-hidden flex flex-row items-center gap-2">
-                          <span className="text-[15px] font-semibold text-white shrink-0">{card.title}</span>
-                          <span className="text-[13px] text-white/70">{card.descriptionMobile}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Desktop: marquee met fade */}
-                <div
-                  className="hidden md:block w-full lg:max-w-xl relative overflow-hidden mt-6 md:mt-8 mb-0 min-h-[4.5rem]"
-                  style={{
-                    maskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
-                    WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
-                  }}
-                >
-                  <Marquee speed={18} gap={16} pauseOnHover>
-                    {carouselCards.map((card) => (
-                      <div
-                        key={card.id}
-                        className="flex w-64 shrink-0 items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-gray-900/50 p-4 lg:w-auto lg:min-w-0 lg:shrink-0 lg:flex-row lg:items-center lg:gap-2 lg:py-2 lg:px-3 lg:rounded-lg"
-                      >
-                        <div className="h-10 w-10 shrink-0 rounded-lg bg-bla-lime flex items-center justify-center lg:h-8 lg:w-8">
-                          <div className="relative h-5 w-5 lg:h-4 lg:w-4">
-                            <Image src={card.iconPath} alt="" fill className="object-contain" style={{ filter: 'brightness(0)' }} />
-                          </div>
-                        </div>
-                        <div className="min-w-0 flex-1 overflow-hidden flex flex-row items-center gap-2 flex-initial">
-                          <span className="text-[15px] font-semibold text-white lg:font-bold lg:text-sm whitespace-nowrap shrink-0">
+                        <div className="min-w-0 flex-1 overflow-hidden flex flex-col md:flex-row md:items-center gap-0.5 md:gap-2 flex-initial">
+                          <span className="text-[15px] font-semibold text-white md:font-bold lg:text-sm shrink-0">
                             {card.title}
                           </span>
-                          <span className="text-[13px] text-white/70 lg:text-xs">
+                          <span className="text-[13px] text-white/70 lg:text-xs md:whitespace-nowrap md:truncate">
                             {card.descriptionMobile}
                           </span>
                         </div>

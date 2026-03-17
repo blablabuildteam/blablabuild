@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 interface MarqueeProps {
@@ -12,13 +12,13 @@ interface MarqueeProps {
   gap?: number;
   reverse?: boolean;
   pauseOnHover?: boolean;
+  /** Op touch devices: animatie pauzeren en scroll toestaan bij swipe */
+  swipeableOnTouch?: boolean;
 }
 
 /**
- * Zelfde werking als het werkende voorbeeld:
- * - Items dubbel in één rij ([...items, ...items])
- * - Ouder overflow-hidden, kind flex w-max
- * - translateX(-50%) = precies één set weg → naadloze loop
+ * - Items dubbel in één rij voor naadloze loop
+ * - Op touch: bij touch pauzeren en overflow-x-auto zodat gebruiker kan swipen; bij release weer draaien
  */
 export function Marquee({
   children,
@@ -27,15 +27,43 @@ export function Marquee({
   gap = 32,
   reverse = false,
   pauseOnHover = true,
+  swipeableOnTouch = true,
 }: MarqueeProps) {
   const items = React.Children.toArray(children);
   const duplicated = [...items, ...items];
+  const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [isTouchScrolling, setIsTouchScrolling] = useState(false);
 
   const gapPx = typeof gap === 'number' ? gap : 32;
 
+  const handleTouchStart = () => {
+    if (!swipeableOnTouch) return;
+    setIsTouchScrolling(true);
+    if (trackRef.current) trackRef.current.style.animationPlayState = 'paused';
+  };
+
+  const handleTouchEnd = () => {
+    if (!swipeableOnTouch) return;
+    setIsTouchScrolling(false);
+    if (trackRef.current) trackRef.current.style.animationPlayState = 'running';
+  };
+
   return (
-    <div className={cn('relative w-full overflow-hidden', className)}>
+    <div
+      ref={containerRef}
+      className={cn(
+        'relative w-full overflow-y-hidden',
+        isTouchScrolling ? 'overflow-x-auto scrollbar-hide' : 'overflow-x-hidden',
+        className
+      )}
+      style={isTouchScrolling ? { WebkitOverflowScrolling: 'touch' } : undefined}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
+    >
       <div
+        ref={trackRef}
         className="flex w-max shrink-0 py-1"
         style={{
           gap: `${gapPx}px`,
