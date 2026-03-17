@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
 import { BubbleBackground } from '@/components/ui/bubble-background';
 import { Marquee } from '@/components/ui/marquee';
@@ -15,38 +15,44 @@ interface CarouselCard {
   iconPath: string;
 }
 
+const DESCRIPTION_MOBILE_FALLBACKS: Record<string, { en: string; nl: string }> = {
+  moreInsight: { en: 'One clear overview of all your data.', nl: 'Één helder overzicht van al je data.' },
+  moreRevenue: { en: 'Visitors become paying customers.', nl: 'Bezoekers worden betalende klanten.' },
+  moreSpeed: { en: 'Automate repetitive work.', nl: 'Automatisering repetitief werk.' },
+};
+
 export default function HeroSection() {
   const t = useTranslations('hero');
+  const locale = useLocale();
   const sectionRef = useRef<HTMLElement | null>(null);
 
-  // Debug: Log translation status
-  if (typeof window !== 'undefined') {
-    const heading = t('heading');
-    if (heading === 'hero.heading' || heading?.startsWith('hero.')) {
-      console.warn('Translation not found for hero.heading, got:', heading);
-    }
-  }
+  const getMobile = (key: 'moreInsight' | 'moreRevenue' | 'moreSpeed') => {
+    const raw = t(`${key}.descriptionMobile`);
+    if (raw && !raw.includes('descriptionMobile') && !raw.startsWith('hero.')) return raw;
+    const fallback = DESCRIPTION_MOBILE_FALLBACKS[key];
+    return fallback ? (locale === 'en' ? fallback.en : fallback.nl) : raw || '';
+  };
 
   const carouselCards: CarouselCard[] = [
     {
       id: 'inzicht',
       title: t('moreInsight.title'),
       description: t('moreInsight.description'),
-      descriptionMobile: t('moreInsight.descriptionMobile'),
+      descriptionMobile: getMobile('moreInsight'),
       iconPath: '/icons/insights.svg'
     },
     {
       id: 'groei',
       title: t('moreRevenue.title'),
       description: t('moreRevenue.description'),
-      descriptionMobile: t('moreRevenue.descriptionMobile'),
+      descriptionMobile: getMobile('moreRevenue'),
       iconPath: '/icons/growth.svg'
     },
     {
       id: 'snelheid',
       title: t('moreSpeed.title'),
       description: t('moreSpeed.description'),
-      descriptionMobile: t('moreSpeed.descriptionMobile'),
+      descriptionMobile: getMobile('moreSpeed'),
       iconPath: '/icons/speed.svg'
     }
   ];
