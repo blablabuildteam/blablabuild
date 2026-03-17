@@ -5,13 +5,6 @@ import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { BubbleBackground } from '@/components/ui/bubble-background';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel';
 import { Marquee } from '@/components/ui/marquee';
 
 interface CarouselCard {
@@ -62,11 +55,10 @@ export default function HeroSection() {
     <section 
       ref={sectionRef}
       className="relative h-auto md:h-[100dvh] p-1 sm:p-[10px] pt-[76px] sm:pt-[80px] md:pt-[82px]"
-      style={{ minHeight: 'auto' }}
     >
-      {/* Main Container with Rounded Edges and Spacing */}
-      <div className="relative z-10 w-full h-auto md:h-full">
-        <div className="w-full h-auto md:h-full rounded-3xl overflow-hidden border border-white/10 relative">
+      {/* Main Container: op mobile alleen contenthoogte (geen lege ruimte onder marquee), op desktop full height */}
+      <div className="relative z-10 w-full h-full">
+        <div className="w-full h-full rounded-3xl overflow-hidden border border-white/10 relative">
           {/* Animated Gradient Background */}
           <BubbleBackground
             className="absolute inset-0 z-0 rounded-3xl pointer-events-none"
@@ -85,7 +77,7 @@ export default function HeroSection() {
           />
 
           {/* Content Container - gap voorkomt overlap tekst/carousel op 1280px */}
-          <div className="relative z-10 h-auto md:h-full flex flex-col lg:flex-row items-start lg:items-center justify-center gap-x-0 lg:gap-x-10 xl:gap-x-12 px-[1.8rem] sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-2 sm:pt-3 md:pt-4 lg:pt-12 pb-6 sm:pb-6 md:pb-8 lg:pb-12">
+          <div className="relative z-10 h-auto md:h-full flex flex-col lg:flex-row items-start lg:items-center justify-center gap-x-0 lg:gap-x-16 xl:gap-x-20 px-[1.8rem] sm:px-6 md:px-8 lg:px-10 xl:px-20 2xl:px-24 pt-2 sm:pt-3 md:pt-4 lg:pt-6 pb-6 sm:pb-6 md:pb-6 lg:pb-6">
             {/* Left Side - Header Content */}
             <div className="w-full lg:flex-1 lg:min-w-0 lg:max-w-[50%] mb-0 sm:mb-0 md:mb-2 lg:mb-0 h-auto md:h-full flex items-start lg:items-center">
               <motion.div
@@ -97,7 +89,7 @@ export default function HeroSection() {
                 <div className="inline-block px-3 py-1.5 md:px-4 md:py-2 mb-3 sm:mb-2 md:mb-3 lg:mb-4 sm:mt-0" style={{ backgroundColor: '#070800', borderRadius: '10px', marginTop: '1.5rem' }}>
                   <span className="text-bla-lime font-normal" style={{ fontSize: '1.2rem' }}>{t('tagline')}</span>
                 </div>
-                <h2 className="font-sans text-[4rem] sm:text-[4.32rem] md:text-[5.4rem] lg:text-[6.48rem] xl:text-[8.64rem] font-bold tracking-tight text-bla-white mt-6 sm:mt-6 md:mt-0 leading-none mb-0" style={{ lineHeight: '1' }}>
+                <h2 className="font-sans text-[3.25rem] sm:text-[3.6rem] md:text-[4.5rem] lg:text-[5.25rem] xl:text-[6.75rem] font-bold tracking-tight text-bla-white mt-6 sm:mt-6 md:mt-0 leading-none mb-0" style={{ lineHeight: '1' }}>
                   <span className="font-normal">blabla</span>
                   <span className="font-bold">build</span>
                 </h2>
@@ -120,87 +112,61 @@ export default function HeroSection() {
                   </span>
                 </h1>
                 
-                <p className="text-lg md:text-xl max-w-xl mb-0 sm:mb-0 md:mb-0 mt-5 sm:mt-0">
-                  <span className="text-bla-white">{t('description')}</span>
+                {/* Tekst: op desktop kort (sluit aan op blokken), op mobile lang */}
+                <p className="text-lg md:text-xl lg:text-2xl max-w-xl mb-0 sm:mb-0 md:mb-0 mt-5 sm:mt-0">
+                  <span className="text-bla-white hidden lg:inline">{t('descriptionShort')}</span>
+                  <span className="text-bla-white lg:hidden">{t('description')}</span>
                 </p>
-              </motion.div>
-            </div>
 
-            {/* Right Side - Ticker op mobile, Carousel op desktop */}
-            <div className="w-full lg:flex-1 lg:min-w-0 lg:max-w-[45%] h-auto md:h-full flex items-start lg:items-center mt-4 sm:mt-6 md:mt-0 mb-0 sm:mb-0 md:mb-0">
-              <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                className="relative w-full"
-              >
-                {/* Mobile: hero-ticker — icoon + titel + korte tekst, wit op donker */}
-                <div className="md:hidden w-full overflow-hidden mt-6 mb-10 min-h-[4.5rem]">
+                {/* Marquee onder subtekst — fade aan zijkanten (zichtbaar op mobile), minder ruimte onder */}
+                <div 
+                  className="w-full lg:max-w-xl relative overflow-hidden mt-6 md:mt-8 mb-0 min-h-[4.5rem]"
+                  style={{
+                    maskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
+                  }}
+                >
                   <Marquee speed={18} gap={16} pauseOnHover>
                     {carouselCards.map((card) => (
                       <div
                         key={card.id}
-                        className="flex w-64 shrink-0 items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-gray-900/50 p-4"
+                        className="flex w-64 shrink-0 items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-gray-900/50 p-4 lg:w-auto lg:min-w-0 lg:shrink-0 lg:flex-row lg:items-center lg:gap-2 lg:py-2 lg:px-3 lg:rounded-lg"
                       >
-                        <div className="h-10 w-10 shrink-0 rounded-lg bg-bla-lime flex items-center justify-center">
-                          <div className="relative h-5 w-5">
+                        <div className="h-10 w-10 shrink-0 rounded-lg bg-bla-lime flex items-center justify-center lg:h-8 lg:w-8">
+                          <div className="relative h-5 w-5 lg:h-4 lg:w-4">
                             <Image src={card.iconPath} alt="" fill className="object-contain" style={{ filter: 'brightness(0)' }} />
                           </div>
                         </div>
-                        <div className="min-w-0 flex-1 overflow-hidden">
-                          <p className="text-[15px] font-semibold text-white">
+                        <div className="min-w-0 flex-1 overflow-hidden flex flex-col lg:flex-row lg:items-center lg:gap-2 lg:flex-initial">
+                          <span className="text-[15px] font-semibold text-white lg:font-bold lg:text-sm lg:whitespace-nowrap">
                             {card.title}
-                          </p>
-                          <p className="text-[13px] text-white/70 leading-snug mt-0.5">
+                          </span>
+                          <span className="text-[13px] text-white/70 leading-snug mt-0.5 lg:mt-0 lg:text-xs">
                             {card.descriptionMobile}
-                          </p>
+                          </span>
                         </div>
                       </div>
                     ))}
                   </Marquee>
                 </div>
+              </motion.div>
+            </div>
 
-                {/* Desktop: carousel */}
-                <div className="hidden md:block w-full">
-                  <Carousel initialIndex={1}>
-                    <CarouselContent className="ml-0">
-                      {carouselCards.map((card) => (
-                        <CarouselItem key={card.id} className="pl-0">
-                          <div className="bg-[#1a1a1a] rounded-2xl sm:rounded-3xl pt-4 sm:pt-5 md:pt-6 px-4 sm:px-6 pb-4 sm:pb-4 md:pb-5 w-full relative overflow-visible flex flex-col [.carousel-active-card_&]:shadow-[0_0_20px_rgba(206,255,0,0.3)]">
-                            <div className="flex flex-col h-full">
-                              <div className="mb-2 sm:mb-3 relative z-20 flex flex-col gap-1.5 sm:gap-2 flex-shrink-0">
-                                <div className="w-8 h-8 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-[0.5rem] sm:rounded-xl bg-bla-lime flex items-center justify-center flex-shrink-0">
-                                  <div className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 relative">
-                                    <Image
-                                      src={card.iconPath}
-                                      alt={card.title}
-                                      fill
-                                      className="object-contain"
-                                      style={{ filter: 'brightness(0)' }}
-                                    />
-                                  </div>
-                                </div>
-                                <p className="hidden sm:block text-bla-white leading-relaxed text-xs sm:text-sm md:text-sm">
-                                  {t('yourChance')}
-                                </p>
-                                <h3 className="text-bla-lime font-medium text-[0.8rem] sm:text-lg md:text-lg">
-                                  {card.title}
-                                </h3>
-                              </div>
-                              <div className="relative z-20 flex-1 overflow-visible">
-                                <p className="hidden sm:block text-bla-text-gray leading-relaxed text-xs sm:text-sm md:text-sm">
-                                  {card.description}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="left-0 translate-x-2 lg:translate-x-4" />
-                    <CarouselNext className="right-0 translate-x-2 lg:translate-x-4" />
-                  </Carousel>
-                </div>
+            {/* Right side desktop: alleen illustratie */}
+            <div className="hidden lg:flex lg:flex-1 lg:min-w-0 lg:max-w-[45%] h-auto md:h-full items-center justify-center">
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="relative w-full max-w-[760px] xl:max-w-[820px] aspect-square"
+              >
+                <Image
+                  src="/hero-illustration.svg"
+                  alt=""
+                  fill
+                  className="object-contain"
+                  priority
+                />
               </motion.div>
             </div>
           </div>

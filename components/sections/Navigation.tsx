@@ -98,17 +98,16 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
   return (
     <>
       <motion.nav
-        className="fixed z-50 left-0 right-0 md:left-1/2 md:-translate-x-1/2 overflow-hidden"
+        className="fixed z-50 left-0 right-0 w-full overflow-hidden"
         initial={false}
         animate={{
           top: isMobile ? 0 : isScrolled ? 16 : 0,
+          left: isMobile ? 0 : isScrolled ? 16 : 0,
+          right: isMobile ? 0 : isScrolled ? 16 : 0,
+          width: isMobile ? '100%' : isScrolled ? 'calc(100% - 32px)' : '100%',
           borderRadius: isMobile ? '0px' : isScrolled ? '24px' : '0px',
         }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
-        style={{
-          width: '100%',
-          maxWidth: isMobile ? '100%' : '1312px',
-        }}
       >
         <motion.div 
           className="px-4 md:px-8 py-2 flex items-center justify-between h-[72px]"
