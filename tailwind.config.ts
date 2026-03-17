@@ -142,11 +142,11 @@ const config: Config = {
 		keyframes: {
 			marquee: {
 				from: { transform: "translateX(0)" },
-				to: { transform: "translateX(calc(-100% - var(--gap)))" },
+				to: { transform: "translateX(-100%)" },
 			},
 			"marquee-vertical": {
 				from: { transform: "translateY(0)" },
-				to: { transform: "translateY(calc(-100% - var(--gap)))" },
+				to: { transform: "translateY(-100%)" },
 			},
 			scroll: {
 				from: { transform: "translateX(0)" },

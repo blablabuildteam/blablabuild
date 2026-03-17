@@ -1,10 +1,19 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowUpRight } from 'lucide-react';
+
+type BadgeType = 'insight' | 'revenue' | 'speed';
+
+const BADGE_ICONS: Record<BadgeType, string> = {
+  insight: '/icons/insights.svg',
+  revenue: '/icons/growth.svg',
+  speed: '/icons/speed.svg',
+};
 
 // Register ScrollTrigger plugin
 if (typeof window !== 'undefined') {
@@ -14,8 +23,6 @@ if (typeof window !== 'undefined') {
     autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize',
   });
 }
-
-type BadgeType = 'insight' | 'revenue' | 'speed';
 
 interface SolutionCard {
   id: number;
@@ -188,22 +195,22 @@ export default function CasesSection({ embedded = false }: CasesSectionProps) {
   const cardsGrid = (
     <div 
       ref={cardsContainerRef} 
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4"
     >
       {solutionCards.map((card) => (
         <div
           key={card.id}
-          className={`solution-card rounded-2xl md:rounded-3xl p-6 md:p-8 flex flex-col transition-all duration-300 relative ${
+          className={`solution-card rounded-xl md:rounded-3xl p-5 md:p-6 lg:p-8 flex flex-col transition-all duration-300 relative ${
             card.id === 9 
-              ? 'col-span-1 md:col-span-1' 
-              : 'bg-white border border-bla-border/40 shadow-sm hover:shadow-md hover:border-bla-lime/30'
+              ? 'sm:col-span-2 lg:col-span-1' 
+              : 'bg-white border border-bla-border/50 shadow-md hover:shadow-lg hover:border-bla-lime/40'
           }`}
           style={card.id === 9 ? { backgroundColor: '#070800' } : undefined}
         >
               {/* Grain effect overlay for CTA card */}
               {card.id === 9 && (
                 <div 
-                  className="absolute inset-0 rounded-2xl md:rounded-3xl opacity-[0.2] pointer-events-none"
+                  className="absolute inset-0 rounded-xl md:rounded-3xl opacity-[0.2] pointer-events-none"
                   style={{
                     backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
                     backgroundSize: '200px 200px',
@@ -212,22 +219,25 @@ export default function CasesSection({ embedded = false }: CasesSectionProps) {
               )}
               {card.isCTACard ? (
                 <>
-                  {/* Title */}
-                  <h3 className={`font-host font-medium text-lg md:text-xl lg:text-2xl mb-4 relative z-10 ${
-                    card.id === 9 ? 'text-bla-white' : 'text-text-primary'
-                  }`}>
-                    {card.title}
-                  </h3>
+                  {/* Title + onderstreping */}
+                  <div className="mb-2 md:mb-4 relative z-10">
+                    <h3 className={`font-host font-bold text-base md:text-xl lg:text-2xl tracking-tight ${
+                      card.id === 9 ? 'text-bla-white' : 'text-bla-dark'
+                    }`}>
+                      {card.title}
+                    </h3>
+                    <div className={`h-0.5 w-10 md:w-14 rounded-full mt-1.5 ${card.id === 9 ? 'bg-bla-lime' : 'bg-bla-lime'}`} aria-hidden />
+                  </div>
                   
                   {/* Body */}
-                  <p className={`font-host font-normal text-sm md:text-base lg:text-lg leading-relaxed mb-6 relative z-10 ${
+                  <p className={`font-host font-normal text-xs md:text-base lg:text-lg leading-relaxed mb-4 md:mb-6 relative z-10 ${
                     card.id === 9 ? 'text-bla-text-light' : 'text-text-primary'
                   }`}>
                     {card.body}
                   </p>
                   
                   {/* Separator */}
-                  <div className={`border-t mb-6 relative z-10 ${
+                  <div className={`border-t mb-4 md:mb-6 relative z-10 ${
                     card.id === 9 ? 'border-white/10' : 'border-bla-border'
                   }`}></div>
                   
@@ -235,46 +245,59 @@ export default function CasesSection({ embedded = false }: CasesSectionProps) {
                   <div className="relative z-10">
                     <a
                       href="mailto:team@blablabuild.com"
-                      className={`flex items-center gap-2 text-base md:text-lg transition-colors group ${
+                      className={`flex items-center gap-2 text-sm md:text-lg transition-colors group ${
                         card.id === 9 
                           ? 'text-bla-lime hover:text-white/90' 
                           : 'text-text-primary hover:text-bla-lime'
                       }`}
                     >
                       {t('cards.needSomethingElse.contact')}
-                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                      <ArrowUpRight className="h-3.5 w-3.5 md:h-4 md:w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     </a>
                   </div>
                 </>
               ) : (
                 <>
                   {/* Accent bar */}
-                  <div className="absolute top-0 left-0 w-1 h-12 rounded-b-full bg-bla-lime/80" aria-hidden />
-                  {/* Title */}
+                  <div className="absolute top-0 left-0 w-1 h-8 md:h-12 rounded-b-full bg-bla-lime/80" aria-hidden />
+                  {/* Title + onderstreping */}
                   {card.title && (
-                    <h3 className="font-host font-medium text-lg md:text-xl lg:text-2xl text-text-primary mb-3 pl-1">
-                      {card.title}
-                    </h3>
+                    <div className="mb-2 md:mb-3 pl-1">
+                      <h3 className="font-host font-bold text-base md:text-xl lg:text-2xl text-bla-dark tracking-tight">
+                        {card.title}
+                      </h3>
+                      <div className="h-0.5 w-10 md:w-14 bg-bla-lime rounded-full mt-1.5" aria-hidden />
+                    </div>
                   )}
-                  {/* Content */}
-                  <p className="font-host font-normal text-sm md:text-base lg:text-lg text-text-primary/90 leading-relaxed flex-1">
+                  {/* Content: op mobile max 2 regels (scanbaar), op desktop volledig */}
+                  <p className="font-host font-normal text-sm md:text-base lg:text-lg text-text-primary/90 leading-relaxed flex-1 line-clamp-2 md:line-clamp-none">
                     {card.text}
                   </p>
 
                   {/* Separator */}
                   {card.badges.length > 0 && (
-                    <div className="border-t border-bla-border/60 mt-4 mb-4"></div>
+                    <div className="border-t border-bla-border/60 mt-2 md:mt-4 mb-2 md:mb-4"></div>
                   )}
 
                   {/* Badges */}
                   {card.badges.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5 md:gap-2">
                       {card.badges.map((badge) => (
                         <span
                           key={badge}
-                          className="px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium bg-bla-lime/15 text-bla-lime border border-bla-lime/30 relative"
+                          className="inline-flex items-center gap-1 md:gap-2 px-2 py-1 md:px-3 md:py-1.5 rounded-md md:rounded-lg text-[10px] md:text-sm font-semibold bg-bla-lime/25 text-bla-dark border border-bla-lime/50 shadow-sm"
                         >
-                          <span className="relative z-10">{t(`badges.${badge}`)}</span>
+                          <span className="relative flex h-3 w-3 md:h-4 md:w-4 shrink-0 items-center justify-center">
+                            <Image
+                              src={BADGE_ICONS[badge]}
+                              alt=""
+                              width={16}
+                              height={16}
+                              className="object-contain h-full w-full"
+                              style={{ filter: 'brightness(0)' }}
+                            />
+                          </span>
+                          <span className="truncate">{t(`badges.${badge}`)}</span>
                         </span>
                       ))}
                     </div>
@@ -288,7 +311,7 @@ export default function CasesSection({ embedded = false }: CasesSectionProps) {
 
   if (embedded) {
     return (
-      <div ref={embeddedRef} className="w-full max-w-7xl mx-auto mt-10 md:mt-12">
+      <div ref={embeddedRef} className="w-full max-w-7xl mx-auto mt-6 md:mt-10">
         {cardsGrid}
       </div>
     );

@@ -1,89 +1,69 @@
-import { type ComponentPropsWithoutRef } from "react"
-import React from "react"
+'use client';
 
-import { cn } from "@/lib/utils"
+import React from 'react';
+import { cn } from '@/lib/utils';
 
-interface MarqueeProps extends ComponentPropsWithoutRef<"div"> {
-  /**
-   * Optional CSS class name to apply custom styles
-   */
-  className?: string
-  /**
-   * Whether to reverse the animation direction
-   * @default false
-   */
-  reverse?: boolean
-  /**
-   * Whether to pause the animation on hover
-   * @default false
-   */
-  pauseOnHover?: boolean
-  /**
-   * Content to be displayed in the marquee
-   */
-  children: React.ReactNode
-  /**
-   * Whether to animate vertically instead of horizontally
-   * @default false
-   */
-  vertical?: boolean
-  /**
-   * Number of copies of the content (for seamless infinite loop; animation runs forever)
-   * @default 8
-   */
-  repeat?: number
+interface MarqueeProps {
+  children: React.ReactNode;
+  className?: string;
+  /** Seconden voor één volledige loop */
+  speed?: number;
+  /** Ruimte tussen items (Tailwind gap of px) */
+  gap?: number;
+  reverse?: boolean;
+  pauseOnHover?: boolean;
 }
 
+/**
+ * Zelfde werking als het werkende voorbeeld:
+ * - Items dubbel in één rij ([...items, ...items])
+ * - Ouder overflow-hidden, kind flex w-max
+ * - translateX(-50%) = precies één set weg → naadloze loop
+ */
 export function Marquee({
+  children,
   className,
+  speed = 25,
+  gap = 32,
   reverse = false,
   pauseOnHover = true,
-  children,
-  vertical = false,
-  repeat = 8,
-  ...props
 }: MarqueeProps) {
-  const childArray = React.Children.toArray(children)
+  const items = React.Children.toArray(children);
+  const duplicated = [...items, ...items];
+
+  const gapPx = typeof gap === 'number' ? gap : 32;
 
   return (
-    <div
-      {...props}
-      className={cn(
-        "group flex flex-nowrap overflow-hidden p-2 [--duration:40s] [--gap:1rem]",
-        !vertical && "flex-row",
-        vertical && "flex-col",
-        className
-      )}
-    >
-      {Array(repeat)
-        .fill(0)
-        .map((_, copyIndex) => (
-          <div
-            key={copyIndex}
-            className={cn(
-              "flex shrink-0 flex-nowrap items-center",
-              !vertical && "animate-marquee flex-row",
-              vertical && "animate-marquee-vertical flex-col",
-              {
-                "group-hover:[animation-play-state:paused]": pauseOnHover,
-                "[animation-direction:reverse]": reverse,
+    <div className={cn('relative w-full overflow-hidden', className)}>
+      <div
+        className="flex w-max shrink-0 py-1"
+        style={{
+          gap: `${gapPx}px`,
+          animation: `marquee-scroll ${speed}s linear infinite`,
+          animationDirection: reverse ? 'reverse' : 'normal',
+          animationPlayState: pauseOnHover ? 'running' : 'running',
+        }}
+        onMouseEnter={
+          pauseOnHover
+            ? (e) => {
+                e.currentTarget.style.animationPlayState = 'paused';
               }
-            )}
-          >
-            {childArray.map((child, i) => (
-              <div
-                key={`${copyIndex}-${i}`}
-                className="shrink-0 min-w-max"
-                style={{
-                  marginRight: i < childArray.length - 1 ? "var(--gap)" : undefined,
-                  marginBottom: vertical && i < childArray.length - 1 ? "var(--gap)" : undefined,
-                }}
-              >
-                {child}
-              </div>
-            ))}
+            : undefined
+        }
+        onMouseLeave={
+          pauseOnHover
+            ? (e) => {
+                e.currentTarget.style.animationPlayState = 'running';
+              }
+            : undefined
+        }
+      >
+        {duplicated.map((item, i) => (
+          <div key={i} className="flex shrink-0 items-center">
+            {item}
           </div>
         ))}
+      </div>
     </div>
-  )
+  );
 }

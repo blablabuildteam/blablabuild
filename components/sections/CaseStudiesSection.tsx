@@ -280,7 +280,7 @@ export default function CaseStudiesSection() {
           </div>
 
           {/* Case Study Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {caseStudies.map((caseStudy) => {
               const content = getContent(caseStudy);
               return (
@@ -300,8 +300,8 @@ export default function CaseStudiesSection() {
                         backgroundSize: '200px 200px',
                       }}
                     />
-                    {/* Image Container */}
-                    <div className="relative z-10 aspect-[16/10] overflow-hidden flex-shrink-0">
+                    {/* Image Container: compacter op mobile (kortere hoogte) */}
+                    <div className="relative z-10 aspect-[3/1] md:aspect-[16/10] overflow-hidden flex-shrink-0 max-h-[140px] md:max-h-none">
                       <Image
                         src={caseStudy.frontCard.image}
                         alt={content.title}
@@ -312,10 +312,10 @@ export default function CaseStudiesSection() {
                     </div>
 
                     {/* Content */}
-                    <div className="relative z-10 p-5 md:p-6 flex flex-col flex-1">
+                    <div className="relative z-10 p-4 md:p-6 flex flex-col flex-1">
                       {/* Logo */}
-                      <div className="mb-3">
-                        <div className="relative h-7 w-24 md:h-8 md:w-28">
+                      <div className="mb-2 md:mb-3">
+                        <div className="relative h-6 w-20 md:h-8 md:w-28">
                           <Image
                             src={caseStudy.frontCard.logo}
                             alt={caseStudy.frontCard.logoAlt}
@@ -326,21 +326,21 @@ export default function CaseStudiesSection() {
                       </div>
 
                       {/* Title */}
-                      <h3 className="font-host font-medium text-base md:text-lg text-white mb-3 line-clamp-2 group-hover:text-bla-lime transition-colors">
+                      <h3 className="font-host font-medium text-sm md:text-lg text-white mb-2 md:mb-3 line-clamp-2 group-hover:text-bla-lime transition-colors">
                         {content.title}
                       </h3>
 
                       {/* Short Intro */}
-                      <p className="font-host font-normal text-sm text-white/70 mb-4 line-clamp-3 flex-1">
+                      <p className="font-host font-normal text-xs md:text-sm text-white/70 mb-3 md:mb-4 line-clamp-2 md:line-clamp-3 flex-1">
                         {content.shortIntro}
                       </p>
 
                       {/* Badges - single row with nowrap */}
-                      <div className="flex flex-nowrap gap-2 overflow-hidden">
+                      <div className="flex flex-nowrap gap-1.5 md:gap-2 overflow-hidden">
                         {caseStudy.frontCard.badges.map((badge) => (
                           <span
                             key={badge}
-                            className="px-2.5 py-1 rounded-lg text-xs font-medium text-bla-lime bg-black/50 border border-white/20 whitespace-nowrap flex-shrink-0"
+                            className="px-2 py-0.5 md:px-2.5 md:py-1 rounded-md md:rounded-lg text-[10px] md:text-xs font-medium text-bla-lime bg-black/50 border border-white/20 whitespace-nowrap flex-shrink-0"
                           >
                             {badgeLabels[badge][locale]}
                           </span>
@@ -349,7 +349,7 @@ export default function CaseStudiesSection() {
                     </div>
 
                     {/* Hover indicator */}
-                    <div className="absolute z-10 bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute z-10 bottom-3 right-3 md:bottom-4 md:right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="w-10 h-10 rounded-full bg-bla-lime flex items-center justify-center">
                         <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />

@@ -49,6 +49,7 @@
     "better": "better",
     "lessHassle": "less hassle",
     "description": "With our mix of AI, data, tech and customer experience, you get solutions that really deliver: more speed, fewer errors and systems that finally work together.",
+    "descriptionShort": "Solutions that really deliver: more speed, fewer errors, systems that work together.",
     "expertise": {
       "aiStrategy": "AI Strategy",
       "aiDataWorkflows": "AI & Data workflows",

@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { trackEvent } from '@/lib/analytics';
 import Image from 'next/image';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { BlablaLogo } from '@/components/ui/BlablaLogo';
 
 interface NavigationProps {
   showNavCTA: boolean;
@@ -126,13 +127,7 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
         >
           {/* Logo */}
           <div className="flex items-center gap-2 h-[37px] flex-shrink-0">
-            <Image 
-              src="/icon.svg" 
-              alt="blablabuild" 
-              width={37} 
-              height={37}
-              className="w-[40px] h-[40px] md:w-[37px] md:h-[37px]"
-            />
+            <BlablaLogo className="w-[40px] h-[40px] md:w-[37px] md:h-[37px] flex-shrink-0" />
             <span className="font-sans text-base md:text-xl text-black">
               <span className="font-normal">blabla</span>
               <span className="font-bold">build</span>

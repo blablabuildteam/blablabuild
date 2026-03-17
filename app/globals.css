@@ -382,9 +382,9 @@ html {
 }
 
 /* Prevent a “second” scrollbar on some browsers that render both html + body scrollbars */
-@keyframes marquee-seamless {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+@keyframes marquee-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
 }
 
 body::-webkit-scrollbar {
@@ -407,5 +407,9 @@ body::-webkit-scrollbar {
   to {
     transform: translateY(calc(-100% - var(--gap)));
     }
+  }
+  @keyframes marquee-simple {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
   }
 }

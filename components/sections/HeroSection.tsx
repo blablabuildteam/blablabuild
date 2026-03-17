@@ -136,23 +136,24 @@ export default function HeroSection() {
               >
                 {/* Mobile: hero-ticker — icoon + titel + korte tekst, wit op donker */}
                 <div className="md:hidden w-full overflow-hidden mt-6 mb-10 min-h-[4.5rem]">
-                  <Marquee pauseOnHover className="[--duration:22s] [--gap:2.5rem]">
+                  <Marquee speed={18} gap={16} pauseOnHover>
                     {carouselCards.map((card) => (
-                      <div key={card.id} className="flex-shrink-0">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-bla-lime flex items-center justify-center flex-shrink-0">
-                            <div className="w-4 h-4 relative">
-                              <Image src={card.iconPath} alt="" fill className="object-contain" style={{ filter: 'brightness(0)' }} />
-                            </div>
+                      <div
+                        key={card.id}
+                        className="flex w-64 shrink-0 items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-gray-900/50 p-4"
+                      >
+                        <div className="h-10 w-10 shrink-0 rounded-lg bg-bla-lime flex items-center justify-center">
+                          <div className="relative h-5 w-5">
+                            <Image src={card.iconPath} alt="" fill className="object-contain" style={{ filter: 'brightness(0)' }} />
                           </div>
-                          <div className="flex flex-col gap-0.5">
-                            <span className="text-white font-semibold text-[15px] leading-tight whitespace-nowrap">
-                              {card.title}
-                            </span>
-                            <span className="text-white/80 text-[13px] leading-tight whitespace-nowrap">
-                              {card.descriptionMobile}
-                            </span>
-                          </div>
+                        </div>
+                        <div className="min-w-0 flex-1 overflow-hidden">
+                          <p className="text-[15px] font-semibold text-white">
+                            {card.title}
+                          </p>
+                          <p className="text-[13px] text-white/70 leading-snug mt-0.5">
+                            {card.descriptionMobile}
+                          </p>
                         </div>
                       </div>
                     ))}

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { ArrowUpRight } from 'lucide-react';
-import Image from 'next/image';
+import { BlablaLogo } from '@/components/ui/BlablaLogo';
 import PrivacyModal from '@/components/ui/privacy-modal';
 import CookieSettingsButton from '@/components/CookieSettingsButton';
 
@@ -90,13 +90,7 @@ export default function Footer() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Image 
-                src="/icon.svg" 
-                alt="blablabuild" 
-                width={80} 
-                height={80}
-                className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20"
-              />
+              <BlablaLogo className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 flex-shrink-0" />
               <h2 className="font-sans text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight text-bla-white">
                 <span className="font-normal">blabla</span>
                 <span className="font-bold">build</span>
