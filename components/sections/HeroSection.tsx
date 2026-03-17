@@ -12,7 +12,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import Marquee, { MarqueeItem } from '@/components/ui/marquee';
+import { Marquee } from '@/components/ui/marquee';
 
 interface CarouselCard {
   id: string;
@@ -136,16 +136,16 @@ export default function HeroSection() {
               >
                 {/* Mobile: hero-ticker — icoon + titel + korte tekst, wit op donker */}
                 <div className="md:hidden w-full overflow-hidden mt-6 mb-10 min-h-[4.5rem]">
-                  <Marquee duration={22} gap={40}>
+                  <Marquee pauseOnHover className="[--duration:22s] [--gap:2.5rem]">
                     {carouselCards.map((card) => (
-                      <MarqueeItem key={card.id} className="flex-shrink-0">
+                      <div key={card.id} className="flex-shrink-0">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-lg bg-bla-lime flex items-center justify-center flex-shrink-0">
                             <div className="w-4 h-4 relative">
                               <Image src={card.iconPath} alt="" fill className="object-contain" style={{ filter: 'brightness(0)' }} />
                             </div>
                           </div>
-                          <div className="flex flex-col gap-0.5 min-w-0">
+                          <div className="flex flex-col gap-0.5">
                             <span className="text-white font-semibold text-[15px] leading-tight whitespace-nowrap">
                               {card.title}
                             </span>
@@ -154,7 +154,7 @@ export default function HeroSection() {
                             </span>
                           </div>
                         </div>
-                      </MarqueeItem>
+                      </div>
                     ))}
                   </Marquee>
                 </div>

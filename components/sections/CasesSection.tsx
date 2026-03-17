@@ -125,6 +125,16 @@ export default function CasesSection({ embedded = false }: CasesSectionProps) {
 
     let ctx: gsap.Context;
 
+    const runReveal = () => {
+      gsap.to(cards, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.08,
+        ease: 'power1.out',
+      });
+    };
+
     const initScrollTrigger = () => {
       ctx = gsap.context(() => {
         // Set initial state for all cards (hidden and slightly below)
@@ -139,16 +149,14 @@ export default function CasesSection({ embedded = false }: CasesSectionProps) {
         ScrollTrigger.create({
           trigger: section,
           start: 'top 85%',
-          onEnter: () => {
-            gsap.to(cards, {
-              opacity: 1,
-              y: 0,
-              duration: 0.8,
-              stagger: 0.08,
-              ease: 'power1.out',
-            });
-          },
+          onEnter: runReveal,
         });
+
+        // If section is already in view on load, reveal immediately (prevents stuck hidden cards)
+        const rect = section.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.85) {
+          runReveal();
+        }
       }, section);
 
       ScrollTrigger.refresh();

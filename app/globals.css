@@ -106,7 +106,7 @@
 @layer base {
   :root {
     /* ===== BLABLABUILD DESIGN SYSTEM ===== */
-    
+
     /* Core Brand Colors */
     --bla-lime: #CEFF00;
     --bla-blue: #1125FF;
@@ -122,7 +122,7 @@
     --bla-lavender: #e7e8ff;
     --bla-white: #FBFCFA;
     --bla-text-gray: #9E9E96;
-    
+
     /* Chat Widget Colors - User Messages: Yellow/Lime with Black */
     --chat-user-bg: #CEFF00;
     --chat-user-text: #0a0a0a;
@@ -133,19 +133,19 @@
     --chat-input-bg: #ffffff;
     --chat-input-border: #e5e7eb;
     --chat-header-bg: rgba(255, 255, 255, 0.2);
-    
+
     /* Surface Colors */
     --surface: #ffffff;
     --surface-elevated: #ffffff;
     --surface-overlay: rgba(255, 255, 255, 0.9);
     --surface-glass: rgba(255, 255, 255, 0.3);
-    
+
     /* Text Colors */
     --text-primary: #151F28;
     --text-secondary: #4b5563;
     --text-muted: #9ca3af;
     --text-inverse: #ffffff;
-    
+
     /* Navigation */
     --nav-bg: rgba(255, 255, 255, 1);
     --nav-bg-scrolled: rgba(255, 255, 255, 0.5);
@@ -153,7 +153,7 @@
     --nav-blur-scrolled: 24px;
     --nav-active-bg: rgba(17, 37, 255, 0.1);
     --nav-active-text: #1125FF;
-    
+
     /* Buttons */
     --btn-primary-bg: #CEFF00;
     --btn-primary-text: #0a0a0a;
@@ -161,12 +161,12 @@
     --btn-secondary-bg: #ffffff;
     --btn-secondary-text: #151F28;
     --btn-secondary-border: #e5e7eb;
-    
+
     /* Cards */
     --card-bg: #ffffff;
     --card-border: #ededed;
     --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    
+
     /* Standard CSS Variables */
     --background: 0 0% 96.1%;
     --foreground: 0 0% 3.9%;
@@ -235,21 +235,25 @@
     touch-action: auto;
     -webkit-overflow-scrolling: touch;
   }
-  
+
   /* All elements use Matter font */
   * {
     font-family: 'Matter', system-ui, sans-serif;
     max-width: 100%;
   }
-  
+
   /* Prevent horizontal overflow on sections and media */
   section {
     max-width: 100vw;
   }
-  
+
   img, video, iframe, canvas, svg {
     max-width: 100%;
     height: auto;
+  }
+  .theme {
+    --animate-marquee: marquee var(--duration) infinite linear;
+    --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
   }
 }
 
@@ -257,24 +261,24 @@
   .text-balance {
     text-wrap: balance;
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-  
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .snap-x {
     scroll-snap-type: x mandatory;
   }
-  
+
   .snap-center {
     scroll-snap-align: center;
   }
-  
+
 }
 
 /* Aanpak section body text - larger font size on desktop */
@@ -385,4 +389,23 @@ html {
 
 body::-webkit-scrollbar {
   display: none;
+}
+
+@theme inline {
+  @keyframes marquee {
+  from {
+    transform: translateX(0);
+    }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+    }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
 }

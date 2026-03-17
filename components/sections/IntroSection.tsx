@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { Brain, Network, Box, ShoppingCart, Heart, TrendingUp, Map, Building2, Target, Zap, Search } from 'lucide-react';
-import Marquee, { MarqueeItem } from '@/components/ui/marquee';
+import { Marquee } from '@/components/ui/marquee';
 import CasesSection from '@/components/sections/CasesSection';
 
 export default function IntroSection() {
@@ -66,14 +66,12 @@ export default function IntroSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <Marquee reverse duration={15} gap={24} pauseOnHover>
+          <Marquee reverse pauseOnHover className="[--duration:28s] [--gap:1.5rem]">
             {expertises.map((item) => (
-              <MarqueeItem key={item.key}>
-                <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
-                  <item.icon className="w-4 h-4 text-bla-blue" />
-                  <span className="text-sm font-medium text-bla-dark whitespace-nowrap">{item.name}</span>
-                </div>
-              </MarqueeItem>
+              <div key={item.key} className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm flex-shrink-0">
+                <item.icon className="w-4 h-4 text-bla-blue" />
+                <span className="text-sm font-medium text-bla-dark whitespace-nowrap">{item.name}</span>
+              </div>
             ))}
           </Marquee>
         </motion.div>

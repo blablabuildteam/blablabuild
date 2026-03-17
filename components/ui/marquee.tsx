@@ -1,96 +1,89 @@
-'use client';
+import { type ComponentPropsWithoutRef } from "react"
+import React from "react"
 
-import { cn } from "@/lib/utils";
-import React, { useRef, useEffect, useState } from "react";
+import { cn } from "@/lib/utils"
 
-interface MarqueeProps {
-  className?: string;
-  reverse?: boolean;
-  pauseOnHover?: boolean;
-  children?: React.ReactNode;
-  duration?: number;
-  gap?: number;
+interface MarqueeProps extends ComponentPropsWithoutRef<"div"> {
+  /**
+   * Optional CSS class name to apply custom styles
+   */
+  className?: string
+  /**
+   * Whether to reverse the animation direction
+   * @default false
+   */
+  reverse?: boolean
+  /**
+   * Whether to pause the animation on hover
+   * @default false
+   */
+  pauseOnHover?: boolean
+  /**
+   * Content to be displayed in the marquee
+   */
+  children: React.ReactNode
+  /**
+   * Whether to animate vertically instead of horizontally
+   * @default false
+   */
+  vertical?: boolean
+  /**
+   * Number of copies of the content (for seamless infinite loop; animation runs forever)
+   * @default 8
+   */
+  repeat?: number
 }
 
-export default function Marquee({
+export function Marquee({
   className,
   reverse = false,
-  pauseOnHover = false,
+  pauseOnHover = true,
   children,
-  duration = 20,
-  gap = 24,
+  vertical = false,
+  repeat = 8,
+  ...props
 }: MarqueeProps) {
-  const ulRef = useRef<HTMLUListElement>(null);
-  const [ready, setReady] = useState(false);
-  const positionRef = useRef(0);
-  const rafRef = useRef<number>();
-  const lastTimeRef = useRef<number>(0);
-  const pausedRef = useRef(false);
-
-  useEffect(() => {
-    const ul = ulRef.current;
-    if (!ul) return;
-
-    const durationMs = duration * 1000;
-    const direction = reverse ? 1 : -1;
-
-    const tick = (time: number) => {
-      const loopWidthPx = ul.offsetWidth / 2;
-      const delta = time - lastTimeRef.current;
-      lastTimeRef.current = time;
-
-      if (loopWidthPx > 0) {
-        setReady(true);
-        const pixelsPerMs = loopWidthPx / durationMs;
-        if (!pausedRef.current) {
-          positionRef.current += direction * pixelsPerMs * delta;
-          while (positionRef.current >= loopWidthPx) positionRef.current -= loopWidthPx;
-          while (positionRef.current <= -loopWidthPx) positionRef.current += loopWidthPx;
-          ul.style.transform = `translateX(${positionRef.current}px)`;
-        }
-      }
-      rafRef.current = requestAnimationFrame(tick);
-    };
-
-    lastTimeRef.current = performance.now();
-    rafRef.current = requestAnimationFrame(tick);
-    return () => {
-      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
-    };
-  }, [duration, reverse]);
-
-  const onMouseEnter = pauseOnHover ? () => { pausedRef.current = true; } : undefined;
-  const onMouseLeave = pauseOnHover ? () => { pausedRef.current = false; } : undefined;
+  const childArray = React.Children.toArray(children)
 
   return (
     <div
-      className={cn("flex w-full overflow-hidden py-3", className)}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      style={{
-        maskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
-        WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
-      }}
+      {...props}
+      className={cn(
+        "group flex flex-nowrap overflow-hidden p-2 [--duration:40s] [--gap:1rem]",
+        !vertical && "flex-row",
+        vertical && "flex-col",
+        className
+      )}
     >
-      <ul
-        ref={ulRef}
-        className="flex shrink-0 flex-nowrap items-center"
-        style={{
-          gap: `${gap}px`,
-          willChange: ready ? "transform" : "auto",
-        }}
-      >
-        {React.Children.toArray(children).map((child, i) =>
-          React.isValidElement(child) ? React.cloneElement(child, { key: `m1-${i}` }) : child
-        )}
-        {React.Children.toArray(children).map((child, i) =>
-          React.isValidElement(child) ? React.cloneElement(child, { key: `m2-${i}` }) : child
-        )}
-      </ul>
+      {Array(repeat)
+        .fill(0)
+        .map((_, copyIndex) => (
+          <div
+            key={copyIndex}
+            className={cn(
+              "flex shrink-0 flex-nowrap items-center",
+              !vertical && "animate-marquee flex-row",
+              vertical && "animate-marquee-vertical flex-col",
+              {
+                "group-hover:[animation-play-state:paused]": pauseOnHover,
+                "[animation-direction:reverse]": reverse,
+              }
+            )}
+          >
+            {childArray.map((child, i) => (
+              <div
+                key={`${copyIndex}-${i}`}
+                className="shrink-0 min-w-max"
+                style={{
+                  marginRight: i < childArray.length - 1 ? "var(--gap)" : undefined,
+                  marginBottom: vertical && i < childArray.length - 1 ? "var(--gap)" : undefined,
+                }}
+              >
+                {child}
+              </div>
+            ))}
+          </div>
+        ))}
     </div>
-  );
-}
-
-export function MarqueeItem({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <li className={cn("flex-shrink-0", className)}>{children}</li>;
+  )
 }
