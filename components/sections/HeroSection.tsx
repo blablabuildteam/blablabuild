@@ -27,10 +27,8 @@ export default function HeroSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
 
   const getMobile = (key: 'moreInsight' | 'moreRevenue' | 'moreSpeed') => {
-    const raw = t(`${key}.descriptionMobile`);
-    if (raw && !raw.includes('descriptionMobile') && !raw.startsWith('hero.')) return raw;
     const fallback = DESCRIPTION_MOBILE_FALLBACKS[key];
-    return fallback ? (locale === 'en' ? fallback.en : fallback.nl) : raw || '';
+    return fallback ? (locale === 'en' ? fallback.en : fallback.nl) : '';
   };
 
   const carouselCards: CarouselCard[] = [
