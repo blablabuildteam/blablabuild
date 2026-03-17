@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 
 interface MarqueeProps {
@@ -12,13 +12,13 @@ interface MarqueeProps {
   gap?: number;
   reverse?: boolean;
   pauseOnHover?: boolean;
-  /** Op touch devices: animatie pauzeren en scroll toestaan bij swipe */
+  /** Op touch: native scroll; op muis: klik-sleep om te bewegen */
   swipeableOnTouch?: boolean;
 }
 
 /**
  * - Items dubbel in één rij voor naadloze loop
- * - Op touch: bij touch pauzeren en overflow-x-auto zodat gebruiker kan swipen; bij release weer draaien
+ * - Touch: pauzeren + overflow auto (native swipe). Muis: pauzeren + drag-to-scroll (klik en sleep om te bewegen)
  */
 export function Marquee({
   children,
@@ -33,34 +33,66 @@ export function Marquee({
   const duplicated = [...items, ...items];
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const [isTouchScrolling, setIsTouchScrolling] = useState(false);
+  const dragRef = useRef<{ startX: number; startScrollLeft: number } | null>(null);
 
   const gapPx = typeof gap === 'number' ? gap : 32;
 
-  const handleTouchStart = () => {
-    if (!swipeableOnTouch) return;
-    setIsTouchScrolling(true);
-    if (trackRef.current) trackRef.current.style.animationPlayState = 'paused';
-  };
+  const enableScroll = useCallback(() => {
+    const el = containerRef.current;
+    const track = trackRef.current;
+    if (track) track.style.animationPlayState = 'paused';
+    if (el) {
+      el.style.overflowX = 'auto';
+      el.style.webkitOverflowScrolling = 'touch';
+      el.classList.add('scrollbar-hide');
+    }
+  }, []);
 
-  const handleTouchEnd = () => {
-    if (!swipeableOnTouch) return;
-    setIsTouchScrolling(false);
-    if (trackRef.current) trackRef.current.style.animationPlayState = 'running';
-  };
+  const disableScroll = useCallback(() => {
+    const el = containerRef.current;
+    const track = trackRef.current;
+    if (track) track.style.animationPlayState = 'running';
+    if (el) {
+      el.style.overflowX = '';
+      el.style.webkitOverflowScrolling = '';
+      el.classList.remove('scrollbar-hide');
+    }
+  }, []);
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (!swipeableOnTouch) return;
+      enableScroll();
+      const el = containerRef.current;
+      if (el) {
+        dragRef.current = { startX: e.clientX, startScrollLeft: el.scrollLeft };
+        const onMove = (e2: MouseEvent) => {
+          if (!dragRef.current || !containerRef.current) return;
+          const dx = dragRef.current.startX - e2.clientX;
+          containerRef.current.scrollLeft = dragRef.current.startScrollLeft + dx;
+        };
+        const onUp = () => {
+          dragRef.current = null;
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+          disableScroll();
+        };
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      }
+    },
+    [swipeableOnTouch, enableScroll, disableScroll]
+  );
 
   return (
     <div
       ref={containerRef}
-      className={cn(
-        'relative w-full overflow-y-hidden',
-        isTouchScrolling ? 'overflow-x-auto scrollbar-hide' : 'overflow-x-hidden',
-        className
-      )}
-      style={isTouchScrolling ? { WebkitOverflowScrolling: 'touch' } : undefined}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onTouchCancel={handleTouchEnd}
+      className={cn('relative w-full overflow-x-hidden overflow-y-hidden', className)}
+      style={{ touchAction: 'pan-x', cursor: swipeableOnTouch ? 'grab' : undefined }}
+      onTouchStart={swipeableOnTouch ? enableScroll : undefined}
+      onTouchEnd={swipeableOnTouch ? disableScroll : undefined}
+      onTouchCancel={swipeableOnTouch ? disableScroll : undefined}
+      onMouseDown={swipeableOnTouch ? handleMouseDown : undefined}
     >
       <div
         ref={trackRef}
