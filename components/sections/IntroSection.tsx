@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 export default function IntroSection() {
   const t = useTranslations('intro');
   const introDescription = t('description').trim();
+  const introDisclaimer = t('disclaimer').trim();
   const [openItemsByPillar, setOpenItemsByPillar] = useState<Record<string, string[]>>({});
 
   const togglePillarItem = (pillarKey: string, itemKey: string) => {
@@ -208,6 +209,24 @@ export default function IntroSection() {
           })}
         </div>
       </motion.div>
+
+      {introDisclaimer ? (
+        <motion.div
+          className="mx-auto mt-6 w-full max-w-7xl md:mt-8"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 0.55, delay: 0.08 }}
+        >
+          <div
+            className="mx-auto mb-2 h-px w-12 bg-bla-border/80 md:mb-2.5 md:w-14"
+            aria-hidden
+          />
+          <p className="w-full rounded-2xl border border-bla-border/55 border-l-[3px] border-l-bla-lime bg-white/80 px-5 pb-2.5 pt-2.5 text-center font-host text-base leading-snug text-text-primary/85 shadow-sm backdrop-blur-sm md:px-8 md:pb-3 md:pt-2.5 md:text-lg md:leading-snug">
+            {introDisclaimer}
+          </p>
+        </motion.div>
+      ) : null}
 
       <motion.div
         className="mx-auto mt-6 w-full max-w-7xl rounded-3xl border border-gray-300 bg-gray-200 p-6 md:mt-8 md:p-8"

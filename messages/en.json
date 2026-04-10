@@ -53,11 +53,12 @@
   },
   "intro": {
     "heading": "AI is standard now. We make it valuable.",
-    "description": "We turn complex challenges into concrete AI solutions that deliver immediate value.",
+    "description": "",
+    "disclaimer": "We do more than this. If we wrote it all down, this would be your scroll workout for the day. We'd rather talk through the rest with you.",
     "pillars": {
       "marketing": {
         "title": "Marketing",
-        "focus": "Growth and discoverability—when AI is in the room as much as Google.",
+        "focus": "Growth without soft promises: a brand that holds, messaging that lands, a funnel that doesn't leak—more money in the bank.",
         "items": {
           "brandDevelopment": {
             "title": "Brand Development",
@@ -79,7 +80,7 @@
       },
       "tooling": {
         "title": "Tooling",
-        "focus": "Move faster than the stack that keeps saying \"maybe next quarter\".",
+        "focus": "Fast, visible results: build, validate, automate—so your team can actually chat by the coffee machine again.",
         "items": {
           "prototyping": {
             "title": "Prototyping (PoC)",
@@ -97,7 +98,7 @@
       },
       "data": {
         "title": "Data",
-        "focus": "Insight so meetings lean a little less on gut feel.",
+        "focus": "Insight that shortens meetings: less gut feel, more 'what the numbers say—and what we do about it.'",
         "items": {
           "dataCentralization": {
             "title": "Data Centralization",
@@ -116,7 +117,7 @@
     },
     "strategy": {
       "title": "Strategy: from pain to plan",
-      "body": "You want to move forward—not another endless advisory run. After a **quick check**, you get a **strategy with opportunities** you can actually choose—and we **execute them ourselves if you want**. 40+ years in tough environments: we spot where it jams fast. **Sharp advice, executable plan.**",
+      "body": "You want to move forward—not another endless advisory run. After a **quick check**, you get a strategy with opportunities you can actually choose—and we execute them ourselves if you want. 40+ years in tough environments: we spot where it jams fast. **Sharp advice, executable plan.**",
       "contact": "Contact us"
     }
   },

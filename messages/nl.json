@@ -54,10 +54,11 @@
   "intro": {
     "heading": "AI is standaard geworden. Wij maken het waardevol.",
     "description": "",
+    "disclaimer": "We doen meer dan dit. Als we alles opschreven, was dit je scroll-workout voor vandaag. De rest bespreken we liever met jou.",
     "pillars": {
       "marketing": {
         "title": "Marketing",
-        "focus": "Groei en vindbaarheid—ook nu AI naast Google meekijkt.",
+        "focus": "Groei zonder slappe beloftes: merk dat klopt, boodschap die raakt, funnel die niet lekt—meer euro's op de bank.",
         "items": {
           "brandDevelopment": {
             "title": "Merkontwikkeling",
@@ -79,7 +80,7 @@
       },
       "tooling": {
         "title": "Tooling",
-        "focus": "Sneller vooruit dan software die remt in plaats van meegroeit.",
+        "focus": "Snel zichtbaar resultaat: bouwen, valideren, automatiseren zodat het team weer kan kletsen bij het koffiezetapparaat.",
         "items": {
           "prototyping": {
             "title": "Prototyping (PoC)",
@@ -97,7 +98,7 @@
       },
       "data": {
         "title": "Data",
-        "focus": "Inzicht zodat je vergadering minder op buikgevoel hoeft.",
+        "focus": "Inzicht dat de vergadering inkort: minder buikgevoel, meer 'dit zeggen de cijfers, dit doen we eraan'.",
         "items": {
           "dataCentralization": {
             "title": "Data Centralisatie",
@@ -116,7 +117,7 @@
     },
     "strategy": {
       "title": "Strategie: van pijn naar plan",
-      "body": "Je wilt vooruit—niet nóg een eindeloos adviestraject. Na de **snelle check** krijg je een **strategie met kansen** die je kunt kiezen, en die we **desgewenst zelf uitvoeren**. 40+ jaar in zware omgevingen: we zien snel waar het vastloopt. **Scherp advies, uitvoerbaar plan.**",
+      "body": "Je wilt vooruit—niet nóg een eindeloos adviestraject. Na de **snelle check** krijg je een strategie met kansen die je kunt kiezen, en die we desgewenst zelf uitvoeren. 40+ jaar in zware omgevingen: we zien snel waar het vastloopt. **Scherp advies, uitvoerbaar plan.**",
       "contact": "Neem contact op"
     }
   },
