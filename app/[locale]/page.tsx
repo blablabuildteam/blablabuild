@@ -7,7 +7,6 @@ import HeroSection from '@/components/sections/HeroSection';
 import IntroSection from '@/components/sections/IntroSection';
 import CaseStudiesSection from '@/components/sections/CaseStudiesSection';
 import ApproachSection from '@/components/sections/ApproachSection';
-import ExpertiseSection from '@/components/sections/ExpertiseSection';
 import TeamSection from '@/components/sections/TeamSection';
 import Footer from '@/components/sections/Footer';
 import FloatingChatBubble from '@/components/FloatingChatBubble';
@@ -61,7 +60,7 @@ export default function HomePage() {
     const isMobile = window.innerWidth < 768;
     if (isMobile) return;
 
-    const sections = ['oplossingen', 'cases', 'aanpak', 'expertise', 'over-ons'];
+    const sections = ['oplossingen', 'cases', 'aanpak', 'over-ons'];
     const sectionElements: { id: string; element: HTMLElement }[] = [];
     let observer: IntersectionObserver | null = null;
     let rafId: number | null = null;
@@ -223,7 +222,6 @@ export default function HomePage() {
       <IntroSection />
       <CaseStudiesSection />
       <ApproachSection />
-      <ExpertiseSection />
       <TeamSection />
       <Footer />
       <FloatingChatBubble />

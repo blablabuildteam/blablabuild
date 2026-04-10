@@ -28,45 +28,95 @@
   },
   "hero": {
     "tagline": "Talk less, build more",
-    "heading": "Voor jouw {ai} innovaties",
+    "headingHighlight": "{ai}-gedreven oplossingen",
+    "headingRest": "die jouw complexe uitdagingen omzetten in schaalbare oplossingen via:",
     "ai": "AI",
-    "description": "Wij helpen je bedrijf om AI-gericht te werken, leggen de koppeling tussen je processen en omzet, en maken je onderneming winstgevender.",
-    "descriptionShort": "Wij bouwen AI en data-oplossingen die direct resultaat opleveren: meer omzet, helder overzicht en minder gedoe.",
+    "description": "Wij transformeren complexe uitdagingen in schaalbare oplossingen via drie kerngebieden: Marketing, Tooling en Data. Met meer dan tien jaar ervaring bij de grootste organisaties ter wereld, bieden wij de oplossingen die nodig zijn om vandaag te winnen.",
+    "descriptionShort": "Wij transformeren complexe uitdagingen in schaalbare oplossingen via Marketing, Tooling en Data.",
     "yourChance": "Jouw kans",
-    "moreInsight": {
-      "title": "Meer Inzicht",
-      "description": "Krijg één helder overzicht van al je data, zodat je direct weet waar je kansen liggen.",
-      "descriptionMobile": "Één helder overzicht van al je data."
+    "marketing": {
+      "title": "Marketing",
+      "description": "Schaalbare groei door zichtbaarheid en conversie.",
+      "descriptionMobile": "Schaalbare groei door zichtbaarheid en conversie."
     },
-    "moreRevenue": {
-      "title": "Meer Omzet",
-      "description": "Optimaliseer de weg van bezoeker naar betalende klant voor direct meetbare groei.",
-      "descriptionMobile": "Bezoekers worden betalende klanten."
+    "tooling": {
+      "title": "Tooling",
+      "description": "Van snelle prototypes tot het vervangen van trage legacy-systemen.",
+      "descriptionMobile": "Van snelle prototypes tot het vervangen van trage legacy-systemen."
     },
-    "moreSpeed": {
-      "title": "Meer Snelheid",
-      "description": "Elimineer saai, repetitief werk door slimme automatisering, en win tijd om te ondernemen.",
-      "descriptionMobile": "Automatisering repetitief werk."
+    "data": {
+      "title": "Data",
+      "description": "Transformeer ruwe data naar directe antwoorden en stuur op inzicht.",
+      "descriptionMobile": "Transformeer ruwe data naar directe antwoorden en stuur op inzicht."
     }
   },
   "intro": {
-    "heading": "Wij zorgen dat jouw organisatie {better} presteert met {lessHassle}",
-    "better": "beter",
-    "lessHassle": "minder gedoe",
-    "description": "Met onze mix van AI, data, tech en klantervaring krijg je oplossingen die écht iets opleveren: meer snelheid, minder fouten en systemen die eindelijk samenwerken.",
-    "descriptionShort": "Oplossingen die écht iets opleveren: meer snelheid, minder fouten, systemen die samenwerken.",
-    "expertise": {
-      "aiStrategy": "AI-Strategie",
-      "aiDataWorkflows": "AI & Data workflows",
-      "prototyping": "Prototyping",
-      "ecommerce": "E-commerce & conversie",
-      "searchOptimization": "Search optimalisatie",
-      "brandBuilding": "Merkopbouw & emotie",
-      "dataDrivenGrowth": "Data-gedreven groei",
-      "painToPlan": "Pijn naar plan",
-      "enterpriseStrategy": "Enterprise strategie & ervaring",
-      "measurableGrowth": "Meetbaar groei focus",
-      "operationalEfficiency": "Operationele efficiëntie"
+    "heading": "Dit is hoe we AI inzetten voor meer omzet, inzicht en snelheid.",
+    "description": "Wij vertalen complexe uitdagingen naar concrete AI-oplossingen die direct waarde leveren.",
+    "pillars": {
+      "marketing": {
+        "title": "Marketing",
+        "focus": "Focus op groei en vindbaarheid in het AI-tijdperk.",
+        "items": {
+          "brandDevelopment": {
+            "title": "Merkontwikkeling",
+            "description": "Creëer een authentieke merkbeleving die resoneert met je doelgroep en duurzame loyaliteit opbouwt."
+          },
+          "websitesApps": {
+            "title": "Websites & Apps",
+            "description": "Wij bouwen razendsnelle, conversiegerichte digitale producten die naadloos aansluiten op de behoeften van de moderne gebruiker."
+          },
+          "adCampaigns": {
+            "title": "Ad Campagnes",
+            "description": "Maximaliseer je ROI met datagestuurde advertentiestrategieën die de juiste boodschap op het juiste moment bij de juiste persoon brengen."
+          },
+          "seoAeo": {
+            "title": "SEO/AEO",
+            "description": "Alleen Google is niet meer genoeg. Wij zorgen dat AI-tools zoals ChatGPT jouw bedrijf proactief aanbevelen aan hun gebruikers."
+          }
+        }
+      },
+      "tooling": {
+        "title": "Tooling",
+        "focus": "Focus op snelheid en technologische voorsprong.",
+        "items": {
+          "prototyping": {
+            "title": "Prototyping (PoC)",
+            "description": "Van idee naar werkend prototype in weken, niet maanden. Test, valideer en itereer razendsnel om risico's te minimaliseren."
+          },
+          "automation": {
+            "title": "Automatisering",
+            "description": "Elimineer repetitief werk en schaal je processen met slimme workflows voor maximale efficiëntie en tijdwinst."
+          },
+          "legacyReplacement": {
+            "title": "Legacy Vervanging",
+            "description": "Vervang trage, dure en gelimiteerde systemen door moderne oplossingen die wel meeschalen met je ambities."
+          }
+        }
+      },
+      "data": {
+        "title": "Data",
+        "focus": "Focus op inzicht en besluitvorming.",
+        "items": {
+          "dataCentralization": {
+            "title": "Data Centralisatie",
+            "description": "Transformeer versnipperde, ruwe data naar een centrale bron van waarheid die groei en innovatie aanjaagt."
+          },
+          "dashboarding": {
+            "title": "Dashboarding",
+            "description": "Visualiseer je belangrijkste KPI's in een oogopslag met heldere, interactieve overzichten die sturing geven aan je business."
+          },
+          "talkToData": {
+            "title": "Praat met Data",
+            "description": "Stop met handmatige rapportages. Stel direct vragen aan je real-time data via een intuïtieve chat-interface."
+          }
+        }
+      }
+    },
+    "strategy": {
+      "title": "Strategie: van pijn naar plan",
+      "body": "Wil je je organisatie in de breedte verbeteren en ben je puur op zoek naar advies? Dan verzorgen we middels een audit een strategie met een volledige roadmap van meerdere kansen die wij zelf ook kunnen realiseren. We hebben allemaal meer dan tien jaar ervaring met de grootste organisaties ter wereld. Daarin hebben we ontzettend veel complexiteit meegemaakt, wat ons in staat stelt om jou te adviseren.",
+      "contact": "Neem contact op"
     }
   },
   "cases": {

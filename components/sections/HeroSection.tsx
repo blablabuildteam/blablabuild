@@ -16,9 +16,9 @@ interface CarouselCard {
 }
 
 const DESCRIPTION_MOBILE_FALLBACKS: Record<string, { en: string; nl: string }> = {
-  moreInsight: { en: 'One clear overview of all your data.', nl: 'Één helder overzicht van al je data.' },
-  moreRevenue: { en: 'Visitors become paying customers.', nl: 'Bezoekers worden betalende klanten.' },
-  moreSpeed: { en: 'Automate repetitive work.', nl: 'Automatisering repetitief werk.' },
+  marketing: { en: 'Scalable growth through visibility and conversion.', nl: 'Schaalbare groei door zichtbaarheid en conversie.' },
+  tooling: { en: 'From fast prototypes to replacing slow legacy systems.', nl: 'Van snelle prototypes tot het vervangen van trage legacy-systemen.' },
+  data: { en: 'Turn raw data into direct answers and insights.', nl: 'Transformeer ruwe data naar directe antwoorden en stuur op inzicht.' },
 };
 
 export default function HeroSection() {
@@ -26,32 +26,32 @@ export default function HeroSection() {
   const locale = useLocale();
   const sectionRef = useRef<HTMLElement | null>(null);
 
-  const getMobile = (key: 'moreInsight' | 'moreRevenue' | 'moreSpeed') => {
+  const getMobile = (key: 'marketing' | 'tooling' | 'data') => {
     const fallback = DESCRIPTION_MOBILE_FALLBACKS[key];
     return fallback ? (locale === 'en' ? fallback.en : fallback.nl) : '';
   };
 
   const carouselCards: CarouselCard[] = [
     {
-      id: 'inzicht',
-      title: t('moreInsight.title'),
-      description: t('moreInsight.description'),
-      descriptionMobile: getMobile('moreInsight'),
-      iconPath: '/icons/insights.svg'
-    },
-    {
-      id: 'groei',
-      title: t('moreRevenue.title'),
-      description: t('moreRevenue.description'),
-      descriptionMobile: getMobile('moreRevenue'),
+      id: 'marketing',
+      title: t('marketing.title'),
+      description: t('marketing.description'),
+      descriptionMobile: getMobile('marketing'),
       iconPath: '/icons/growth.svg'
     },
     {
-      id: 'snelheid',
-      title: t('moreSpeed.title'),
-      description: t('moreSpeed.description'),
-      descriptionMobile: getMobile('moreSpeed'),
+      id: 'tooling',
+      title: t('tooling.title'),
+      description: t('tooling.description'),
+      descriptionMobile: getMobile('tooling'),
       iconPath: '/icons/speed.svg'
+    },
+    {
+      id: 'data',
+      title: t('data.title'),
+      description: t('data.description'),
+      descriptionMobile: getMobile('data'),
+      iconPath: '/icons/insights.svg'
     }
   ];
 
@@ -99,32 +99,14 @@ export default function HeroSection() {
                 </h2>
                 <h1 className="font-host font-medium md:text-5xl lg:text-6xl xl:text-[64px] leading-tight text-bla-white mt-4 sm:mt-0" style={{ fontSize: '1.8rem', lineHeight: '2.5rem' }}>
                   <span className="block">
-                    {(() => {
-                      const heading = t('heading', { ai: t('ai') });
-                      const parts = heading.split(t('ai'));
-                      if (parts.length > 1) {
-                        return (
-                          <>
-                            {parts[0]}
-                            <span className="text-bla-lime">{t('ai')}</span>
-                            {parts[1]}
-                          </>
-                        );
-                      }
-                      return heading;
-                    })()}
+                    <span className="font-bold text-bla-lime">{t('headingHighlight', { ai: t('ai') })}</span>{' '}
+                    <span>{t('headingRest')}</span>
                   </span>
                 </h1>
-                
-                {/* Tekst: op desktop kort (sluit aan op blokken), op mobile lang */}
-                <p className="text-lg md:text-xl lg:text-2xl max-w-xl mb-0 sm:mb-0 md:mb-0 mt-5 sm:mt-0">
-                  <span className="text-bla-white hidden lg:inline">{t('descriptionShort')}</span>
-                  <span className="text-bla-white lg:hidden">{t('description')}</span>
-                </p>
 
-                {/* Ticker: draait altijd; op touch ook swipebaar */}
+                {/* Mobile/tablet ticker */}
                 <div
-                  className="w-full lg:max-w-xl relative mt-6 md:mt-8 mb-0 min-h-[4.5rem]"
+                  className="w-full lg:hidden relative mt-6 md:mt-8 mb-0 min-h-[4.5rem]"
                   style={{
                     maskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
                     WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
@@ -134,24 +116,42 @@ export default function HeroSection() {
                     {carouselCards.map((card) => (
                       <div
                         key={card.id}
-                        className="flex min-h-[72px] md:h-auto w-64 shrink-0 items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-gray-900/50 px-4 py-3 md:p-4 lg:w-auto lg:min-w-0 lg:py-2 lg:px-3 lg:rounded-lg"
+                        className="flex min-h-[72px] md:h-auto w-64 shrink-0 items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-gray-900/50 px-4 py-3 md:p-4"
                       >
-                        <div className="h-9 w-9 md:h-10 md:w-10 lg:h-8 lg:w-8 shrink-0 rounded-lg bg-bla-lime flex items-center justify-center">
-                          <div className="relative h-4 w-4 md:h-5 md:w-5 lg:h-4 lg:w-4">
+                        <div className="h-9 w-9 md:h-10 md:w-10 shrink-0 rounded-lg bg-bla-lime flex items-center justify-center">
+                          <div className="relative h-4 w-4 md:h-5 md:w-5">
                             <Image src={card.iconPath} alt="" fill className="object-contain" style={{ filter: 'brightness(0)' }} />
                           </div>
                         </div>
                         <div className="min-w-0 flex-1 overflow-hidden flex flex-col md:flex-row md:items-center gap-0.5 md:gap-2 flex-initial">
-                          <span className="text-[15px] font-semibold text-white md:font-bold lg:text-sm shrink-0">
+                          <span className="text-[15px] font-semibold text-white md:font-bold shrink-0">
                             {card.title}
                           </span>
-                          <span className="text-[13px] text-white/70 lg:text-xs md:whitespace-nowrap md:truncate">
+                          <span className="text-[13px] text-white/70 md:whitespace-nowrap md:truncate">
                             {card.descriptionMobile}
                           </span>
                         </div>
                       </div>
                     ))}
                   </Marquee>
+                </div>
+
+                {/* Desktop stacked items */}
+                <div className="mt-6 hidden lg:flex lg:max-w-2xl lg:flex-col lg:gap-3">
+                  {carouselCards.map((card) => (
+                    <div
+                      key={card.id}
+                      className="flex min-h-[76px] items-center gap-x-4 overflow-hidden rounded-lg border border-white/10 bg-gray-900/50 px-4 py-3"
+                    >
+                      <div className="h-10 w-10 rounded-lg bg-bla-lime flex items-center justify-center">
+                        <div className="relative h-5 w-5">
+                          <Image src={card.iconPath} alt="" fill className="object-contain" style={{ filter: 'brightness(0)' }} />
+                        </div>
+                      </div>
+                      <span className="text-base xl:text-lg font-bold text-white">{card.title}</span>
+                      <span className="min-w-0 text-sm text-white/70 whitespace-nowrap">{card.description}</span>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             </div>

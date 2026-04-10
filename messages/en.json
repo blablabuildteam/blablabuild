@@ -28,45 +28,95 @@
   },
   "hero": {
     "tagline": "Talk less, build more",
-    "heading": "For your {ai} innovations",
+    "headingHighlight": "{ai}-driven solutions",
+    "headingRest": "that turn your complex challenges into scalable solutions through:",
     "ai": "AI",
-    "description": "We help your company work AI-driven, connect your processes and revenue, and make your business more profitable.",
-    "descriptionShort": "We build AI and data solutions that deliver real results: more revenue, clear overview, and less hassle.",
+    "description": "We transform complex challenges into scalable solutions across three core domains: Marketing, Tooling, and Data. With more than ten years of experience at the world's largest organizations, we deliver the solutions needed to win today.",
+    "descriptionShort": "We transform complex challenges into scalable solutions through Marketing, Tooling, and Data.",
     "yourChance": "Your opportunity",
-    "moreInsight": {
-      "title": "More Insight",
-      "description": "Get one clear overview of all your data, so you immediately know where your opportunities lie.",
-      "descriptionMobile": "One clear overview of all your data."
+    "marketing": {
+      "title": "Marketing",
+      "description": "Scalable growth through visibility and conversion.",
+      "descriptionMobile": "Scalable growth through visibility and conversion."
     },
-    "moreRevenue": {
-      "title": "More Revenue",
-      "description": "Optimize the path from visitor to paying customer for directly measurable growth.",
-      "descriptionMobile": "Visitors become paying customers."
+    "tooling": {
+      "title": "Tooling",
+      "description": "From rapid prototypes to replacing slow legacy systems.",
+      "descriptionMobile": "From rapid prototypes to replacing slow legacy systems."
     },
-    "moreSpeed": {
-      "title": "More Speed",
-      "description": "Eliminate boring, repetitive work through smart automation, and gain time to build your business.",
-      "descriptionMobile": "Automate repetitive work."
+    "data": {
+      "title": "Data",
+      "description": "Turn raw data into direct answers and lead with insight.",
+      "descriptionMobile": "Turn raw data into direct answers and lead with insight."
     }
   },
   "intro": {
-    "heading": "We ensure your organization performs {better} with {lessHassle}",
-    "better": "better",
-    "lessHassle": "less hassle",
-    "description": "With our mix of AI, data, tech and customer experience, you get solutions that really deliver: more speed, fewer errors and systems that finally work together.",
-    "descriptionShort": "Solutions that really deliver: more speed, fewer errors, systems that work together.",
-    "expertise": {
-      "aiStrategy": "AI Strategy",
-      "aiDataWorkflows": "AI & Data workflows",
-      "prototyping": "Prototyping",
-      "ecommerce": "E-commerce & conversion",
-      "searchOptimization": "Search optimization",
-      "brandBuilding": "Brand building & emotion",
-      "dataDrivenGrowth": "Data-driven growth",
-      "painToPlan": "Pain to plan",
-      "enterpriseStrategy": "Enterprise strategy & experience",
-      "measurableGrowth": "Measurable growth focus",
-      "operationalEfficiency": "Operational efficiency"
+    "heading": "This is how we use AI for more revenue, insight, and speed.",
+    "description": "We turn complex challenges into concrete AI solutions that deliver immediate value.",
+    "pillars": {
+      "marketing": {
+        "title": "Marketing",
+        "focus": "Focused on growth and discoverability in the AI era.",
+        "items": {
+          "brandDevelopment": {
+            "title": "Brand Development",
+            "description": "Create an authentic brand experience that resonates with your audience and builds lasting loyalty."
+          },
+          "websitesApps": {
+            "title": "Websites & Apps",
+            "description": "We build lightning-fast, conversion-focused digital products that align with the needs of modern users."
+          },
+          "adCampaigns": {
+            "title": "Ad Campaigns",
+            "description": "Maximize ROI with data-driven advertising strategies that deliver the right message to the right person at the right moment."
+          },
+          "seoAeo": {
+            "title": "SEO/AEO",
+            "description": "Google alone is no longer enough. We make sure AI tools like ChatGPT proactively recommend your company to their users."
+          }
+        }
+      },
+      "tooling": {
+        "title": "Tooling",
+        "focus": "Focused on speed and technological advantage.",
+        "items": {
+          "prototyping": {
+            "title": "Prototyping (PoC)",
+            "description": "From idea to a working prototype in weeks, not months. Test, validate, and iterate rapidly to minimize risk."
+          },
+          "automation": {
+            "title": "Automation",
+            "description": "Eliminate repetitive work and scale your operations with smart workflows for maximum efficiency and time savings."
+          },
+          "legacyReplacement": {
+            "title": "Legacy Replacement",
+            "description": "Replace slow, expensive, and limited systems with modern solutions that scale with your ambitions."
+          }
+        }
+      },
+      "data": {
+        "title": "Data",
+        "focus": "Focused on insight and decision-making.",
+        "items": {
+          "dataCentralization": {
+            "title": "Data Centralization",
+            "description": "Transform fragmented, raw data into one central source of truth that drives growth and innovation."
+          },
+          "dashboarding": {
+            "title": "Dashboarding",
+            "description": "Visualize your most important KPIs at a glance with clear, interactive overviews that guide your business."
+          },
+          "talkToData": {
+            "title": "Talk to Data",
+            "description": "Stop building reports manually. Ask your real-time data direct questions through an intuitive chat interface."
+          }
+        }
+      }
+    },
+    "strategy": {
+      "title": "Strategy: from pain to plan",
+      "body": "Do you want to improve your organization broadly and are you mainly looking for strategic advice? Through an audit, we deliver a strategy and a complete roadmap with multiple opportunities that we can also execute ourselves. We each have more than ten years of experience with the world's largest organizations. That exposure to complexity allows us to advise you with confidence.",
+      "contact": "Contact us"
     }
   },
   "cases": {

@@ -49,7 +49,6 @@ export default function Navigation({ showNavCTA, activeSection }: NavigationProp
     { id: 'oplossingen', label: t('solutions') },
     { id: 'cases', label: t('cases') },
     { id: 'aanpak', label: t('approach') },
-    { id: 'expertise', label: t('skills') },
     { id: 'over-ons', label: t('team') },
   ];
 
