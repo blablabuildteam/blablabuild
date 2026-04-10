@@ -212,7 +212,7 @@ export default function IntroSection() {
 
       {introDisclaimer ? (
         <motion.div
-          className="mx-auto mt-6 w-full max-w-7xl md:mt-8"
+          className="mx-auto mt-4 w-full max-w-7xl md:mt-5"
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
