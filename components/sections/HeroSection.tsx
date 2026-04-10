@@ -132,7 +132,7 @@ export default function HeroSection() {
                   <span className="font-normal">blabla</span>
                   <span className="font-bold">build</span>
                 </h2>
-                <h1 className="font-host font-medium text-lg leading-snug text-bla-white mt-4 sm:mt-0 sm:text-xl sm:leading-snug md:text-5xl md:leading-tight lg:text-6xl xl:text-[64px]">
+                <h1 className="font-host font-medium text-lg leading-snug text-bla-white mt-4 sm:mt-0 sm:text-xl sm:leading-snug md:text-[1.8rem] md:leading-[2.5rem]">
                   <span className="block">
                     <span className="font-bold text-bla-lime">{t('headingHighlight', { ai: t('ai') })}</span>{' '}
                     <span>{t('headingRest')}</span>
