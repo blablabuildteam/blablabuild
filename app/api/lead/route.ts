@@ -18,7 +18,7 @@ const getResendClient = () => {
 
 export async function POST(req: NextRequest) {
   try {
-    const { sessionId, email, name, companyName, phone, role, notes } = await req.json();
+    const { sessionId, email, name, companyName, phone, role, notes, messages: requestMessages } = await req.json();
 
     if (!sessionId || !email) {
       return NextResponse.json(
@@ -93,9 +93,22 @@ export async function POST(req: NextRequest) {
         hasChallenge: !!summary.challenge 
       });
 
-      // Get conversation messages for context
-      const { data: messages } = await messageStore.getBySession(sessionId);
-      console.log('💬 Retrieved messages:', messages?.length || 0);
+      // Get conversation messages for context.
+      // In serverless environments, in-memory message history may not be available;
+      // fall back to the chat transcript provided by the client.
+      const { data: storedMessages } = await messageStore.getBySession(sessionId);
+      const effectiveMessages = normalizeConversationMessages(storedMessages, requestMessages);
+      console.log('💬 Retrieved messages:', storedMessages?.length || 0, '| effective messages:', effectiveMessages.length);
+
+      // Extract the final recommendation from the last assistant message in the conversation.
+      const finalRecommendation = extractFinalRecommendation(effectiveMessages);
+
+      const effectiveSummary = {
+        challenge: summary.challenge || extractChallengeFromMessages(effectiveMessages),
+        domains: Array.isArray(summary.domains) ? summary.domains : [],
+        goldenTip: summary.goldenTip || '',
+        summary: summary.summary || finalRecommendation || '',
+      };
 
       // Send internal notification email to team
       const resend = getResendClient();
@@ -114,7 +127,8 @@ export async function POST(req: NextRequest) {
               name,
               companyName,
               sessionId,
-              summary,
+              summary: effectiveSummary,
+              finalRecommendation,
             }),
           });
           console.log('✅ Summary email sent to customer:', customerResult);
@@ -143,8 +157,7 @@ export async function POST(req: NextRequest) {
               companyName,
               phone,
               sessionId,
-              summary,
-              messages: messages || [],
+              messages: effectiveMessages,
             }),
           });
           console.log('✅ Lead notification sent to team:', internalResult);
@@ -187,23 +200,17 @@ interface InternalNotificationData {
   companyName?: string;
   phone?: string;
   sessionId: string;
-  summary: {
-    summary: string;
-    domains: string[];
-    goldenTip: string;
-    challenge: string;
-  };
   messages: any[];
 }
 
 function generateInternalNotificationHtml(data: InternalNotificationData): string {
-  const { email, name, companyName, phone, sessionId, summary, messages } = data;
+  const { email, name, companyName, phone, sessionId, messages } = data;
   
   const conversationHtml = messages
     .map((m: any) => `
       <div style="margin: 10px 0; padding: 10px; background: ${m.role === 'user' ? '#e3f2fd' : '#f5f5f5'}; border-radius: 8px;">
         <strong>${m.role === 'user' ? '👤 Klant' : '🤖 AI'}:</strong>
-        <p style="margin: 5px 0 0;">${m.content}</p>
+        <p style="margin: 5px 0 0; white-space: pre-wrap;">${escapeHtml(String(m.content || ''))}</p>
       </div>
     `)
     .join('');
@@ -235,26 +242,6 @@ function generateInternalNotificationHtml(data: InternalNotificationData): strin
   </div>
 
   <div class="section">
-    <h3>🎯 Uitdaging</h3>
-    <p>${summary.challenge || 'Niet gespecificeerd'}</p>
-  </div>
-
-  <div class="section">
-    <h3>📊 Domeinen</h3>
-    <p>${summary.domains.length > 0 ? summary.domains.join(', ') : 'Niet gespecificeerd'}</p>
-  </div>
-
-  <div class="section">
-    <h3>💡 Gouden Tip Gegeven</h3>
-    <p>${summary.goldenTip || 'Niet gespecificeerd'}</p>
-  </div>
-
-  <div class="section">
-    <h3>📝 AI Samenvatting</h3>
-    <p>${summary.summary || 'Niet beschikbaar'}</p>
-  </div>
-
-  <div class="section">
     <h3>💬 Volledig Gesprek</h3>
     ${conversationHtml || '<p>Geen berichten beschikbaar</p>'}
   </div>
@@ -280,12 +267,13 @@ interface CustomerSummaryEmailData {
     goldenTip: string;
     challenge: string;
   };
+  finalRecommendation: string;
 }
 
 function generateCustomerSummaryHtml(data: CustomerSummaryEmailData): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://blablabuild.com';
+  const calendlyUrl = 'https://calendly.com/team-blablabuild/30min';
   const displayName = (data.name || '').trim() || 'there';
-  const { summary } = data;
+  const { summary, finalRecommendation } = data;
 
   const domainsHtml =
     summary.domains?.length > 0
@@ -341,6 +329,15 @@ function generateCustomerSummaryHtml(data: CustomerSummaryEmailData): string {
           }
 
           ${
+            finalRecommendation
+              ? `<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin:0 0 12px;">
+                  <div style="font-weight:700;margin:0 0 6px;">Your final recommendation</div>
+                  <div style="font-size:14px;line-height:1.5;">${finalRecommendation}</div>
+                </div>`
+              : ''
+          }
+
+          ${
             summary.summary
               ? `<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin:0 0 18px;">
                   <div style="font-weight:700;margin:0 0 6px;">Summary</div>
@@ -350,7 +347,7 @@ function generateCustomerSummaryHtml(data: CustomerSummaryEmailData): string {
           }
 
           <div style="text-align:center;margin:20px 0 8px;">
-            <a href="${appUrl}/book" style="display:inline-block;background:#1125FF;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:700;">
+            <a href="${calendlyUrl}" style="display:inline-block;background:#1125FF;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:700;">
               Plan a free call
             </a>
           </div>
@@ -362,4 +359,49 @@ function generateCustomerSummaryHtml(data: CustomerSummaryEmailData): string {
     </div>
   </body>
 </html>`;
+}
+
+type ConversationMessage = {
+  role: 'user' | 'assistant';
+  content: string;
+  created_at?: string;
+};
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function normalizeConversationMessages(storedMessages: any[] | undefined, requestMessages: any[] | undefined): ConversationMessage[] {
+  const fromStored = Array.isArray(storedMessages)
+    ? storedMessages
+        .filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
+        .map((m) => ({ role: m.role, content: m.content, created_at: m.created_at }))
+    : [];
+
+  if (fromStored.length > 0) {
+    return fromStored;
+  }
+
+  const fromRequest = Array.isArray(requestMessages)
+    ? requestMessages
+        .filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
+        .map((m) => ({ role: m.role, content: m.content }))
+    : [];
+
+  return fromRequest;
+}
+
+function extractFinalRecommendation(messages: ConversationMessage[]): string {
+  const lastAssistantMessage = [...messages].reverse().find((m) => m.role === 'assistant' && m.content?.trim());
+  return lastAssistantMessage?.content?.trim() || '';
+}
+
+function extractChallengeFromMessages(messages: ConversationMessage[]): string {
+  const firstUserMessage = messages.find((m) => m.role === 'user' && m.content?.trim());
+  return firstUserMessage?.content?.trim() || '';
 }

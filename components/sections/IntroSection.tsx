@@ -3,16 +3,14 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 export default function IntroSection() {
   const t = useTranslations('intro');
-  const [activeItems, setActiveItems] = useState<Record<string, string>>({
-    marketing: 'brandDevelopment',
-    tooling: 'prototyping',
-    data: 'dataCentralization',
-  });
+  const introDescription = t('description').trim();
+  const [activeItems, setActiveItems] = useState<Record<string, string>>({});
 
   const pillars = [
     {
@@ -95,7 +93,10 @@ export default function IntroSection() {
     <section id="oplossingen" className="min-h-0 bg-[#f5f5f5] px-4 sm:px-6 md:px-16 pt-10 pb-10 md:pt-20 md:pb-36 overflow-hidden">
       <div className="mx-auto w-full max-w-[863px] text-center space-y-4 md:space-y-0">
         <motion.h2
-          className="font-host font-medium text-3xl md:text-[48px] leading-tight text-text-primary mb-4 md:mb-0"
+          className={cn(
+            'font-host font-medium text-3xl md:text-[48px] leading-tight text-text-primary mb-4',
+            introDescription ? 'md:mb-0' : 'md:mb-10'
+          )}
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
@@ -103,16 +104,18 @@ export default function IntroSection() {
         >
           {t('heading')}
         </motion.h2>
-        
-        <motion.p
-          className="font-host font-medium text-lg md:text-2xl text-text-primary leading-relaxed md:mt-0 md:mb-10"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          {t('description')}
-        </motion.p>
+
+        {introDescription ? (
+          <motion.p
+            className="font-host font-medium text-lg md:text-2xl text-text-primary leading-relaxed md:mt-0 md:mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {introDescription}
+          </motion.p>
+        ) : null}
       </div>
 
       <motion.div
@@ -124,7 +127,7 @@ export default function IntroSection() {
       >
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
           {pillars.map((pillar) => {
-            const activeItemKey = activeItems[pillar.key] ?? pillar.items[0].key;
+            const activeItemKey = activeItems[pillar.key];
 
             return (
               <div
@@ -143,7 +146,7 @@ export default function IntroSection() {
 
                 <div className="grid grid-cols-1 gap-2">
                   {pillar.items.map((item) => {
-                    const isActiveItem = item.key === activeItemKey;
+                    const isActiveItem = activeItemKey === item.key;
                     return (
                       <button
                         key={item.key}
@@ -166,18 +169,29 @@ export default function IntroSection() {
                             [pillar.key]: item.key,
                           }))
                         }
-                        className={`rounded-xl border px-3 py-2 text-left text-sm transition-colors md:text-base ${
+                        className={`group rounded-xl border-2 px-3 py-2 text-left text-sm transition-all duration-200 md:text-base ${
                           isActiveItem
-                            ? 'border-bla-lime/70 bg-bla-lime/10 text-bla-dark'
-                            : 'border-bla-border/60 bg-white text-text-primary hover:border-bla-lime/40'
+                            ? 'border-bla-lime bg-white text-bla-dark shadow-md -translate-y-0.5'
+                            : 'border-gray-200 bg-white text-text-primary/70 hover:border-bla-lime/50 hover:text-text-primary hover:shadow-sm hover:-translate-y-0.5'
                         }`}
                       >
-                        <span className="block font-medium">{item.title}</span>
-                        {isActiveItem && (
-                          <span className="mt-1.5 block text-xs leading-relaxed text-text-primary/80 md:text-sm">
+                        <span className="flex items-center justify-between gap-2">
+                          <span className="font-medium">{item.title}</span>
+                          <ChevronRight
+                            className={`h-4 w-4 shrink-0 transition-transform duration-200 ${
+                              isActiveItem ? 'rotate-90 text-bla-lime' : 'text-gray-400 group-hover:text-bla-lime/70'
+                            }`}
+                          />
+                        </span>
+                        <div
+                          className={`grid transition-all duration-200 ease-out ${
+                            isActiveItem ? 'mt-1.5 grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                          }`}
+                        >
+                          <span className="overflow-hidden text-xs leading-relaxed text-text-primary/80 md:text-sm">
                             {item.description}
                           </span>
-                        )}
+                        </div>
                       </button>
                     );
                   })}
@@ -189,7 +203,7 @@ export default function IntroSection() {
       </motion.div>
 
       <motion.div
-        className="mx-auto mt-6 w-full max-w-7xl rounded-3xl border border-bla-blue/20 bg-bla-blue/5 p-6 md:mt-8 md:p-8"
+        className="mx-auto mt-6 w-full max-w-7xl rounded-3xl border border-gray-300 bg-gray-200 p-6 md:mt-8 md:p-8"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}

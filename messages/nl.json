@@ -51,8 +51,8 @@
     }
   },
   "intro": {
-    "heading": "Dit is hoe we AI inzetten voor meer omzet, inzicht en snelheid.",
-    "description": "Wij vertalen complexe uitdagingen naar concrete AI-oplossingen die direct waarde leveren.",
+    "heading": "Dit is hoe we AI inzetten voor meer omzet, inzicht en snelheid",
+    "description": "",
     "pillars": {
       "marketing": {
         "title": "Marketing",
@@ -89,7 +89,7 @@
             "description": "Elimineer repetitief werk en schaal je processen met slimme workflows voor maximale efficiëntie en tijdwinst."
           },
           "legacyReplacement": {
-            "title": "Legacy Vervanging",
+            "title": "Oude Systemen Vervangen",
             "description": "Vervang trage, dure en gelimiteerde systemen door moderne oplossingen die wel meeschalen met je ambities."
           }
         }
