@@ -21,6 +21,20 @@ export default function IntroSection() {
     });
   };
 
+  const renderBoldSegments = (text: string) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return (
+          <strong key={i} className="font-semibold text-bla-dark">
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+      return part;
+    });
+  };
+
   const pillars = [
     {
       key: 'marketing',
@@ -203,7 +217,9 @@ export default function IntroSection() {
         transition={{ duration: 0.6, delay: 0.2 }}
       >
         <h3 className="mb-3 font-host text-2xl font-semibold text-bla-dark md:text-3xl">{t('strategy.title')}</h3>
-        <p className="font-host text-base leading-relaxed text-text-primary md:text-lg">{t('strategy.body')}</p>
+        <p className="font-host text-base leading-relaxed text-text-primary md:text-lg">
+          {renderBoldSegments(t('strategy.body'))}
+        </p>
         <a
           href="mailto:team@blablabuild.com"
           className="mt-5 inline-flex items-center gap-2 text-base font-semibold text-bla-blue transition-colors hover:text-bla-blue/80"
