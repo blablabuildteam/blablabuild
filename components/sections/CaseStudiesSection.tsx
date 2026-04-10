@@ -6,8 +6,15 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { X } from 'lucide-react';
 import LogoCarousel from '@/components/sections/LogoCarousel';
+import { cn } from '@/lib/utils';
 
-type BadgeType = 'insight' | 'revenue' | 'speed' | 'cost' | 'control';
+type BadgeType = 'marketing' | 'tooling' | 'data';
+
+const BADGE_ICONS: Record<BadgeType, string> = {
+  marketing: '/icons/growth.svg',
+  tooling: '/icons/speed.svg',
+  data: '/icons/insights.svg',
+};
 
 interface CaseStudyContent {
   title: string;
@@ -46,7 +53,7 @@ const caseStudies: CaseStudy[] = [
       image: '/case_images/adsomnia1.png',
       logo: '/logos/Adsomnia.svg',
       logoAlt: 'Adsomnia',
-      badges: ['insight', 'speed'],
+      badges: ['data', 'tooling'],
     },
     backCard: {
       headerImage: '/case_images/adsomnia2.png',
@@ -89,7 +96,7 @@ const caseStudies: CaseStudy[] = [
       image: '/case_images/comfortzzzone1.png',
       logo: '/logos/confortzzzone.svg',
       logoAlt: 'ComfortzzZone',
-      badges: ['insight', 'speed', 'revenue'],
+      badges: ['marketing'],
     },
     backCard: {
       headerImage: '/case_images/comfortzzzone2.png',
@@ -133,7 +140,7 @@ const caseStudies: CaseStudy[] = [
       image: '/case_images/stijl1.png',
       logo: '/logos/client-2.svg',
       logoAlt: 'Stijl Herenmode',
-      badges: ['revenue', 'speed'],
+      badges: ['marketing'],
     },
     backCard: {
       headerImage: '/case_images/stijl2.png',
@@ -173,12 +180,51 @@ const caseStudies: CaseStudy[] = [
 ];
 
 const badgeLabels: Record<BadgeType, { nl: string; en: string }> = {
-  insight: { nl: 'Meer Inzicht', en: 'More Insight' },
-  revenue: { nl: 'Meer Omzet', en: 'More Revenue' },
-  speed: { nl: 'Meer Snelheid', en: 'More Speed' },
-  cost: { nl: 'Lagere Kosten', en: 'Lower Costs' },
-  control: { nl: 'Meer Controle', en: 'More Control' },
+  marketing: { nl: 'Marketing', en: 'Marketing' },
+  tooling: { nl: 'Tooling', en: 'Tooling' },
+  data: { nl: 'Data', en: 'Data' },
 };
+
+function CaseStudyPillarBadge({
+  badge,
+  locale,
+  variant = 'card',
+}: {
+  badge: BadgeType;
+  locale: 'nl' | 'en';
+  variant?: 'card' | 'modal';
+}) {
+  return (
+    <span
+      className={cn(
+        'inline-flex flex-shrink-0 items-center gap-1 font-medium whitespace-nowrap text-bla-lime border border-white/20',
+        variant === 'card'
+          ? 'gap-1.5 rounded-md bg-black/55 px-2.5 py-1 text-xs md:gap-2 md:rounded-lg md:px-3 md:py-1.5 md:text-sm'
+          : 'gap-1.5 rounded-lg bg-[#0a0b00] px-2.5 py-1 text-xs'
+      )}
+    >
+      <span
+        className={cn(
+          'relative flex shrink-0 items-center justify-center rounded-sm bg-bla-lime',
+          variant === 'card' ? 'h-3.5 w-3.5 md:h-4 md:w-4' : 'h-3 w-3 md:h-3.5 md:w-3.5'
+        )}
+      >
+        <Image
+          src={BADGE_ICONS[badge]}
+          alt=""
+          width={14}
+          height={14}
+          className={cn(
+            'object-contain',
+            variant === 'card' ? 'h-3 w-3 md:h-3.5 md:w-3.5' : 'h-2.5 w-2.5 md:h-3 md:w-3'
+          )}
+          style={{ filter: 'brightness(0)' }}
+        />
+      </span>
+      <span className="truncate">{badgeLabels[badge][locale]}</span>
+    </span>
+  );
+}
 
 export default function CaseStudiesSection() {
   const t = useTranslations('caseStudies');
@@ -338,12 +384,7 @@ export default function CaseStudiesSection() {
                       {/* Badges - single row with nowrap */}
                       <div className="flex flex-nowrap gap-1.5 md:gap-2 overflow-hidden">
                         {caseStudy.frontCard.badges.map((badge) => (
-                          <span
-                            key={badge}
-                            className="px-2 py-0.5 md:px-2.5 md:py-1 rounded-md md:rounded-lg text-[10px] md:text-xs font-medium text-bla-lime bg-black/50 border border-white/20 whitespace-nowrap flex-shrink-0"
-                          >
-                            {badgeLabels[badge][locale]}
-                          </span>
+                          <CaseStudyPillarBadge key={badge} badge={badge} locale={locale} variant="card" />
                         ))}
                       </div>
                     </div>
@@ -434,12 +475,7 @@ export default function CaseStudiesSection() {
                     <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
                       <div className="flex flex-nowrap gap-2 mb-2 overflow-hidden">
                         {selectedCase.frontCard.badges.map((badge) => (
-                          <span
-                            key={badge}
-                            className="px-2.5 py-1 rounded-lg text-xs font-medium text-bla-lime bg-black/55 border border-white/20 whitespace-nowrap"
-                          >
-                            {badgeLabels[badge][locale]}
-                          </span>
+                          <CaseStudyPillarBadge key={badge} badge={badge} locale={locale} variant="modal" />
                         ))}
                       </div>
                       <h2 className="font-host font-medium text-xl md:text-2xl text-white">
