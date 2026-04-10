@@ -62,11 +62,11 @@ export default function Footer() {
   };
 
   return (
-    <footer className="pt-4 pb-[10px] md:pt-24 md:pb-[10px] px-[10px]">
+    <footer className="px-0 pb-0 pt-4 md:px-[10px] md:pb-[10px] md:pt-24">
       <div className="w-full">
         {/* Main Footer Card */}
         <motion.div 
-          className="rounded-3xl p-8 md:p-16 relative"
+          className="relative rounded-none px-[1.8rem] pb-5 pt-8 md:rounded-3xl md:p-16"
           style={{ backgroundColor: '#070800' }}
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -75,7 +75,7 @@ export default function Footer() {
         >
           {/* Grain effect overlay */}
           <div 
-            className="absolute inset-0 rounded-3xl opacity-[0.2] pointer-events-none"
+            className="pointer-events-none absolute inset-0 rounded-none opacity-[0.2] md:rounded-3xl"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
               backgroundSize: '200px 200px',

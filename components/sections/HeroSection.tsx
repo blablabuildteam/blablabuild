@@ -93,14 +93,14 @@ export default function HeroSection() {
   return (
     <section 
       ref={sectionRef}
-      className="relative h-auto md:h-[100dvh] p-1 sm:p-[10px] pt-[76px] sm:pt-[80px] md:pt-[82px]"
+      className="relative h-auto max-md:px-0 max-md:pb-0 md:h-[100dvh] md:p-[10px] md:pt-[82px] pt-[76px] sm:pt-[80px]"
     >
       {/* Main Container: op mobile alleen contenthoogte (geen lege ruimte onder marquee), op desktop full height */}
       <div className="relative z-10 w-full h-full">
-        <div className="relative h-full w-full min-h-0 overflow-hidden rounded-3xl border border-white/10 max-lg:flex max-lg:min-h-[32rem] max-lg:flex-col max-lg:justify-center max-lg:py-4">
+        <div className="relative h-full w-full min-h-0 overflow-hidden rounded-none border-x-0 border-b border-t-0 border-white/10 md:rounded-3xl md:border md:border-white/10 max-lg:flex max-lg:min-h-[32rem] max-lg:flex-col max-lg:justify-center max-lg:py-4">
           {/* Animated Gradient Background */}
           <BubbleBackground
-            className="absolute inset-0 z-0 rounded-3xl pointer-events-none"
+            className="pointer-events-none absolute inset-0 z-0 rounded-none md:rounded-3xl"
             backgroundColor="#070800"
             blueColor="17,37,255"
             voltColor="206,255,0"
@@ -108,7 +108,7 @@ export default function HeroSection() {
           
           {/* Grain effect overlay */}
           <div 
-            className="absolute inset-0 rounded-3xl opacity-[0.25] pointer-events-none z-[1]"
+            className="pointer-events-none absolute inset-0 z-[1] rounded-none opacity-[0.25] md:rounded-3xl"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
               backgroundSize: '200px 200px',
