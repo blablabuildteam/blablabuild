@@ -10,7 +10,16 @@ import { cn } from '@/lib/utils';
 export default function IntroSection() {
   const t = useTranslations('intro');
   const introDescription = t('description').trim();
-  const [activeItems, setActiveItems] = useState<Record<string, string>>({});
+  const [openItemsByPillar, setOpenItemsByPillar] = useState<Record<string, string[]>>({});
+
+  const togglePillarItem = (pillarKey: string, itemKey: string) => {
+    setOpenItemsByPillar((prev) => {
+      const open = prev[pillarKey] ?? [];
+      const isOpen = open.includes(itemKey);
+      const next = isOpen ? open.filter((k) => k !== itemKey) : [...open, itemKey];
+      return { ...prev, [pillarKey]: next };
+    });
+  };
 
   const pillars = [
     {
@@ -127,7 +136,7 @@ export default function IntroSection() {
       >
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
           {pillars.map((pillar) => {
-            const activeItemKey = activeItems[pillar.key];
+            const openKeys = openItemsByPillar[pillar.key] ?? [];
 
             return (
               <div
@@ -146,46 +155,30 @@ export default function IntroSection() {
 
                 <div className="grid grid-cols-1 gap-2">
                   {pillar.items.map((item) => {
-                    const isActiveItem = activeItemKey === item.key;
+                    const isOpen = openKeys.includes(item.key);
                     return (
                       <button
                         key={item.key}
                         type="button"
-                        onMouseEnter={() =>
-                          setActiveItems((prev) => ({
-                            ...prev,
-                            [pillar.key]: item.key,
-                          }))
-                        }
-                        onClick={() =>
-                          setActiveItems((prev) => ({
-                            ...prev,
-                            [pillar.key]: item.key,
-                          }))
-                        }
-                        onFocus={() =>
-                          setActiveItems((prev) => ({
-                            ...prev,
-                            [pillar.key]: item.key,
-                          }))
-                        }
+                        aria-expanded={isOpen}
+                        onClick={() => togglePillarItem(pillar.key, item.key)}
                         className={`group rounded-xl border-2 px-3 py-2 text-left text-sm transition-all duration-200 md:text-base ${
-                          isActiveItem
-                            ? 'border-bla-lime bg-white text-bla-dark shadow-md -translate-y-0.5'
-                            : 'border-gray-200 bg-white text-text-primary/70 hover:border-bla-lime/50 hover:text-text-primary hover:shadow-sm hover:-translate-y-0.5'
+                          isOpen
+                            ? 'border-bla-lime bg-white text-bla-dark shadow-md -translate-y-0.5 hover:shadow-lg hover:ring-2 hover:ring-bla-lime/20'
+                            : 'border-gray-200 bg-white text-text-primary/70 hover:border-bla-lime/50 hover:text-text-primary hover:shadow-sm hover:-translate-y-0.5 md:hover:bg-gray-50/80'
                         }`}
                       >
                         <span className="flex items-center justify-between gap-2">
                           <span className="font-medium">{item.title}</span>
                           <ChevronRight
-                            className={`h-4 w-4 shrink-0 transition-transform duration-200 ${
-                              isActiveItem ? 'rotate-90 text-bla-lime' : 'text-gray-400 group-hover:text-bla-lime/70'
+                            className={`h-4 w-4 shrink-0 text-gray-400 transition-transform duration-200 ${
+                              isOpen ? 'rotate-90' : 'group-hover:text-gray-600'
                             }`}
                           />
                         </span>
                         <div
                           className={`grid transition-all duration-200 ease-out ${
-                            isActiveItem ? 'mt-1.5 grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                            isOpen ? 'mt-1.5 grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
                           }`}
                         >
                           <span className="overflow-hidden text-xs leading-relaxed text-text-primary/80 md:text-sm">
