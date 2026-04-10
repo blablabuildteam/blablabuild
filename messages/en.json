@@ -28,94 +28,95 @@
   },
   "hero": {
     "tagline": "Talk less, build more",
-    "headingHighlight": "{ai}-driven solutions",
-    "headingRest": "that turn your complex challenges into scalable solutions through:",
+    "headingPrefix": "Three areas.",
+    "headingHighlight": "{ai}-driven.",
+    "headingRest": "We know them inside out.",
     "ai": "AI",
     "description": "We transform complex challenges into scalable solutions across three core domains: Marketing, Tooling, and Data. With more than ten years of experience at the world's largest organizations, we deliver the solutions needed to win today.",
     "descriptionShort": "We transform complex challenges into scalable solutions through Marketing, Tooling, and Data.",
     "yourChance": "Your opportunity",
     "marketing": {
       "title": "Marketing",
-      "description": "Scalable growth through visibility and conversion.",
-      "descriptionMobile": "Scalable growth through visibility and conversion."
+      "description": "Brand, site, ads: one through-line so discoverability and conversion reinforce each other.",
+      "descriptionMobile": "Brand, site, ads: one through-line so discoverability and conversion reinforce each other."
     },
     "tooling": {
       "title": "Tooling",
-      "description": "From rapid prototypes to replacing slow legacy systems.",
-      "descriptionMobile": "From rapid prototypes to replacing slow legacy systems."
+      "description": "Prototypes, integrations, internal tools: not a playground—things your team feels every day.",
+      "descriptionMobile": "Prototypes, integrations, internal tools: not a playground—things your team feels every day."
     },
     "data": {
       "title": "Data",
-      "description": "Turn raw data into direct answers and lead with insight.",
-      "descriptionMobile": "Turn raw data into direct answers and lead with insight."
+      "description": "Insight so you lean less on gut feel in meetings—more on facts.",
+      "descriptionMobile": "Insight so you lean less on gut feel in meetings—more on facts."
     }
   },
   "intro": {
-    "heading": "This is how we use AI for more revenue, insight, and speed.",
+    "heading": "AI is standard now. We make it valuable.",
     "description": "We turn complex challenges into concrete AI solutions that deliver immediate value.",
     "pillars": {
       "marketing": {
         "title": "Marketing",
-        "focus": "Focused on growth and discoverability in the AI era.",
+        "focus": "Growth and discoverability—when AI is in the room as much as Google.",
         "items": {
           "brandDevelopment": {
             "title": "Brand Development",
-            "description": "Create an authentic brand experience that resonates with your audience and builds lasting loyalty."
+            "description": "A brand isn't a moodboard contest. We align how you look, sound, and feel so people don't just recognize you—they get why you're the one."
           },
           "websitesApps": {
             "title": "Websites & Apps",
-            "description": "We build lightning-fast, conversion-focused digital products that align with the needs of modern users."
+            "description": "Fast loads, sure—but flows that make sense too. Nobody should need five taps to find the buy button."
           },
           "adCampaigns": {
             "title": "Ad Campaigns",
-            "description": "Maximize ROI with data-driven advertising strategies that deliver the right message to the right person at the right moment."
+            "description": "Less budget roulette, more learning what actually moves the needle. Campaigns should hand you insights—not just a pile of clicks to feel good about."
           },
           "seoAeo": {
             "title": "SEO/AEO",
-            "description": "Google alone is no longer enough. We make sure AI tools like ChatGPT proactively recommend your company to their users."
+            "description": "Ranking in Google isn't the whole game anymore. When someone asks an AI who you are, \"no idea\" shouldn't be the answer."
           }
         }
       },
       "tooling": {
         "title": "Tooling",
-        "focus": "Focused on speed and technological advantage.",
+        "focus": "Move faster than the stack that keeps saying \"maybe next quarter\".",
         "items": {
           "prototyping": {
             "title": "Prototyping (PoC)",
-            "description": "From idea to a working prototype in weeks, not months. Test, validate, and iterate rapidly to minimize risk."
+            "description": "From idea to something you can click through in weeks—not after three rounds of slides. Cheap failures welcome; guessing in meetings, less so."
           },
           "automation": {
             "title": "Automation",
-            "description": "Eliminate repetitive work and scale your operations with smart workflows for maximum efficiency and time savings."
+            "description": "That report stitched together from five tabs every week? Retire the ritual. We automate the boring bits so your team can do the work you actually hired humans for."
           },
           "legacyReplacement": {
             "title": "Legacy Replacement",
-            "description": "Replace slow, expensive, and limited systems with modern solutions that scale with your ambitions."
+            "description": "Yesterday's hero system is today's handbrake. We replace it in steps—no big-bang scare tactics, no pretending nothing's smoldering."
           }
         }
       },
       "data": {
         "title": "Data",
-        "focus": "Focused on more insight for better decision-making.",
+        "focus": "Insight so meetings lean a little less on gut feel.",
         "items": {
           "dataCentralization": {
             "title": "Data Centralization",
-            "description": "Transform fragmented, raw data into one central source of truth that drives growth and innovation."
+            "description": "Data everywhere and nowhere at once? We help build one place you trust—fewer \"which file is gospel?\" moments."
           },
           "dashboarding": {
             "title": "Dashboarding",
-            "description": "Visualize your most important KPIs at a glance with clear, interactive overviews that guide your business."
+            "description": "Dashboards you actually open. Not a trophy wall of numbers—something your team uses to decide what to do on Monday."
           },
           "talkToData": {
             "title": "Talk to Data",
-            "description": "Stop building reports manually. Ask your real-time data direct questions through an intuitive chat interface."
+            "description": "Ask your data a plain-language question like you'd ping a teammate—minus the small talk, plus an answer while you still remember why you asked."
           }
         }
       }
     },
     "strategy": {
       "title": "Strategy: from pain to plan",
-      "body": "Strategic advice to improve your organization across the board? After an **audit**, you get a **strategy with a roadmap**: concrete opportunities that we **deliver ourselves when you're ready**. More than ten years' experience with the world's largest organizations—we know complexity; advising is our strength.",
+      "body": "You want to move forward—not another endless advisory run. After a **quick check**, you get a **strategy with opportunities** you can actually choose—and we **execute them ourselves if you want**. 40+ years in tough environments: we spot where it jams fast. **Sharp advice, executable plan.**",
       "contact": "Contact us"
     }
   },
@@ -236,7 +237,7 @@
     }
   },
   "team": {
-    "heading": "More than 40 years of digital experience at your disposal",
+    "heading": "Not our first rodeo: 40+ years of digital experience",
     "expertiseLabel": "Expertise",
     "experienceWithBrands": "Experience with brands like:",
     "readMore": "Read more",
@@ -342,7 +343,7 @@
     }
   },
   "caseStudies": {
-    "heading": "From code to concrete value",
+    "heading": "From code to concrete cases",
     "subheading": "How we have helped businesses with AI, data and technology",
     "context": "Context",
     "problem": "The problem we solved",

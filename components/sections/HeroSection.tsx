@@ -15,9 +15,18 @@ interface CarouselCard {
 }
 
 const DESCRIPTION_MOBILE_FALLBACKS: Record<string, { en: string; nl: string }> = {
-  marketing: { en: 'Scalable growth through visibility and conversion.', nl: 'Schaalbare groei door zichtbaarheid en conversie.' },
-  tooling: { en: 'From fast prototypes to replacing slow legacy systems.', nl: 'Van snelle prototypes tot het vervangen van trage legacy-systemen.' },
-  data: { en: 'Turn raw data into direct answers and insights.', nl: 'Transformeer ruwe data naar directe antwoorden en stuur op inzicht.' },
+  marketing: {
+    en: 'Brand, site, ads: one through-line so discoverability and conversion reinforce each other.',
+    nl: 'Merk, site, ads: op één lijn, zodat vindbaarheid en conversie elkaar versterken.',
+  },
+  tooling: {
+    en: 'Prototypes, integrations, internal tools: not a playground—things your team feels every day.',
+    nl: 'Prototypes, koppelingen, interne tools: geen speeltuin—dingen die je team dagelijks merkt.',
+  },
+  data: {
+    en: 'Insight so you lean less on gut feel in meetings—more on facts.',
+    nl: 'Inzicht zodat je minder op buikgevoel vergadert—meer op feiten.',
+  },
 };
 
 const HERO_ITEM_IDS = ['marketing', 'tooling', 'data'] as const;
@@ -134,6 +143,7 @@ export default function HeroSection() {
                 </h2>
                 <h1 className="font-host font-medium text-lg leading-snug text-bla-white mt-4 sm:mt-0 sm:text-xl sm:leading-snug md:text-[1.8rem] md:leading-[2.5rem]">
                   <span className="block">
+                    <span>{t('headingPrefix')}</span>{' '}
                     <span className="font-bold text-bla-lime">{t('headingHighlight', { ai: t('ai') })}</span>{' '}
                     <span>{t('headingRest')}</span>
                   </span>

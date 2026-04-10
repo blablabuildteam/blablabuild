@@ -28,94 +28,95 @@
   },
   "hero": {
     "tagline": "Talk less, build more",
-    "headingHighlight": "{ai}-gedreven oplossingen",
-    "headingRest": "die jouw complexe uitdagingen omzetten in schaalbare oplossingen via:",
+    "headingPrefix": "Drie gebieden.",
+    "headingHighlight": "{ai}-gedreven.",
+    "headingRest": "Wij kennen ze blindelings.",
     "ai": "AI",
     "description": "Wij transformeren complexe uitdagingen in schaalbare oplossingen via drie kerngebieden: Marketing, Tooling en Data. Met meer dan tien jaar ervaring bij de grootste organisaties ter wereld, bieden wij de oplossingen die nodig zijn om vandaag te winnen.",
     "descriptionShort": "Wij transformeren complexe uitdagingen in schaalbare oplossingen via Marketing, Tooling en Data.",
     "yourChance": "Jouw kans",
     "marketing": {
       "title": "Marketing",
-      "description": "Schaalbare groei door zichtbaarheid en conversie.",
-      "descriptionMobile": "Schaalbare groei door zichtbaarheid en conversie."
+      "description": "Merk, site, ads: op één lijn, zodat vindbaarheid en conversie elkaar versterken.",
+      "descriptionMobile": "Merk, site, ads: op één lijn, zodat vindbaarheid en conversie elkaar versterken."
     },
     "tooling": {
       "title": "Tooling",
-      "description": "Van snelle prototypes tot het vervangen van trage legacy-systemen.",
-      "descriptionMobile": "Van snelle prototypes tot het vervangen van trage legacy-systemen."
+      "description": "Prototypes, koppelingen, interne tools: geen speeltuin—dingen die je team dagelijks merkt.",
+      "descriptionMobile": "Prototypes, koppelingen, interne tools: geen speeltuin—dingen die je team dagelijks merkt."
     },
     "data": {
       "title": "Data",
-      "description": "Transformeer ruwe data naar directe antwoorden en stuur op inzicht.",
-      "descriptionMobile": "Transformeer ruwe data naar directe antwoorden en stuur op inzicht."
+      "description": "Inzicht zodat je minder op buikgevoel vergadert—meer op feiten.",
+      "descriptionMobile": "Inzicht zodat je minder op buikgevoel vergadert—meer op feiten."
     }
   },
   "intro": {
-    "heading": "Dit is hoe we AI inzetten voor meer omzet, inzicht en snelheid",
+    "heading": "AI is standaard geworden. Wij maken het waardevol.",
     "description": "",
     "pillars": {
       "marketing": {
         "title": "Marketing",
-        "focus": "Focus op groei en vindbaarheid in het AI-tijdperk.",
+        "focus": "Groei en vindbaarheid—ook nu AI naast Google meekijkt.",
         "items": {
           "brandDevelopment": {
             "title": "Merkontwikkeling",
-            "description": "Creëer een authentieke merkbeleving die resoneert met je doelgroep en duurzame loyaliteit opbouwt."
+            "description": "Een merk is meer dan een strak moodboard. We zetten uitstraling, tone of voice en ervaring op één lijn, zodat mensen niet alleen snappen wat je doet, maar ook waarom jij het bent."
           },
           "websitesApps": {
             "title": "Websites & Apps",
-            "description": "Wij bouwen razendsnelle, conversiegerichte digitale producten die naadloos aansluiten op de behoeften van de moderne gebruiker."
+            "description": "Snel laden is nice; logisch aanvoelen is nicer. We bouwen digitale dingen waar je niet vijf keer voor hoeft te tappen voordat je ergens komt—zoals bij de checkout."
           },
           "adCampaigns": {
             "title": "Ad Campagnes",
-            "description": "Maximaliseer je ROI met datagestuurde advertentiestrategieën die de juiste boodschap op het juiste moment bij de juiste persoon brengen."
+            "description": "Minder gokken met budget, meer ontdekken wat écht werkt. Campagnes die je iets teruggeven—niet alleen een stapel clicks om je goed te laten voelen."
           },
           "seoAeo": {
             "title": "SEO/AEO",
-            "description": "Alleen Google is niet meer genoeg. Wij zorgen dat AI-tools zoals ChatGPT jouw bedrijf proactief aanbevelen aan hun gebruikers."
+            "description": "Alleen ranken in Google is niet meer het hele verhaal. We zorgen dat als iemand aan een AI vraagt wie jij bent, het antwoord niet \"geen idee\" is."
           }
         }
       },
       "tooling": {
         "title": "Tooling",
-        "focus": "Focus op snelheid en technologische voorsprong.",
+        "focus": "Sneller vooruit dan software die remt in plaats van meegroeit.",
         "items": {
           "prototyping": {
             "title": "Prototyping (PoC)",
-            "description": "Van idee naar werkend prototype in weken, niet maanden. Test, valideer en itereer razendsnel om risico's te minimaliseren."
+            "description": "Van idee naar iets dat je kunt aanraken in weken—niet na drie rondes PowerPoint. Fout mogen maken; goedkoop falen is onderdeel van het plan."
           },
           "automation": {
             "title": "Automatisering",
-            "description": "Elimineer repetitief werk en schaal je processen met slimme workflows voor maximale efficiëntie en tijdwinst."
+            "description": "Dat rapport dat elke week uit vijf tabbladen wordt geknipt? Die tour is voorbij. We automatiseren het saaie werk zodat je team weer tijd heeft voor waar je mensen voor betaalde."
           },
           "legacyReplacement": {
             "title": "Oude Systemen Vervangen",
-            "description": "Vervang trage, dure en gelimiteerde systemen door moderne oplossingen die wel meeschalen met je ambities."
+            "description": "Oude systemen waren ooit helden; nu remmen ze je ambities. We vervangen ze stap voor stap—zonder big-bang-bangmakerij en zonder te doen alsof er niets brandt."
           }
         }
       },
       "data": {
         "title": "Data",
-        "focus": "Focus op meer inzicht voor betere besluitvorming.",
+        "focus": "Inzicht zodat je vergadering minder op buikgevoel hoeft.",
         "items": {
           "dataCentralization": {
             "title": "Data Centralisatie",
-            "description": "Transformeer versnipperde, ruwe data naar een centrale bron van waarheid die groei en innovatie aanjaagt."
+            "description": "Data overal en nergens tegelijk? We bouwen één plek waar je durft te kijken—met minder \"welk bestand is nu leading?\"-stress."
           },
           "dashboarding": {
             "title": "Dashboarding",
-            "description": "Visualiseer je belangrijkste KPI's in een oogopslag met heldere, interactieve overzichten die sturing geven aan je business."
+            "description": "Dashboards die je écht opent. Geen muur van cijfers waar niemand naar kijkt—wel overzicht waar je maandag iets mee kunt doen."
           },
           "talkToData": {
             "title": "Praat met Data",
-            "description": "Stop met handmatige rapportages. Stel direct vragen aan je real-time data via een intuïtieve chat-interface."
+            "description": "Stel je data een vraag in gewone taal, alsof je een collega pingt—alleen dan zonder smalltalk en wél met antwoord terwijl je nog weet waarom je het vroeg."
           }
         }
       }
     },
     "strategy": {
       "title": "Strategie: van pijn naar plan",
-      "body": "Strategisch advies om je organisatie in de breedte te verbeteren? Na een **audit** krijg je een **strategie met roadmap**: concrete kansen die we **desgewenst zelf uitvoeren**. Meer dan tien jaar ervaring bij de grootste organisaties—complexiteit kennen we; advies is onze kracht.",
+      "body": "Je wilt vooruit—niet nóg een eindeloos adviestraject. Na de **snelle check** krijg je een **strategie met kansen** die je kunt kiezen, en die we **desgewenst zelf uitvoeren**. 40+ jaar in zware omgevingen: we zien snel waar het vastloopt. **Scherp advies, uitvoerbaar plan.**",
       "contact": "Neem contact op"
     }
   },
@@ -236,7 +237,7 @@
     }
   },
   "team": {
-    "heading": "Meer dan 40 jaar digitale ervaring tot jouw beschikking",
+    "heading": "Niet ons eerste rondje: 40+ jaar digitale ervaring",
     "expertiseLabel": "Expertise",
     "experienceWithBrands": "Ervaring met onder andere:",
     "readMore": "Lees meer",
@@ -342,7 +343,7 @@
     }
   },
   "caseStudies": {
-    "heading": "Van code naar concrete waarde",
+    "heading": "Van code naar concrete cases",
     "subheading": "Hoe we bedrijven hebben geholpen met AI, data en technologie",
     "context": "Context",
     "problem": "Het probleem dat we oplosten",
