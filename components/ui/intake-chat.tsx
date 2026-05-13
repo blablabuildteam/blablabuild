@@ -216,8 +216,12 @@ export function IntakeChat({ initialMessage, locale, onComplete, onReset }: Inta
   };
 
   const openCalendly = () => {
-    if (typeof window !== 'undefined' && window.Calendly) {
-      window.Calendly.initPopupWidget({
+    const calendly = (window as Window & {
+      Calendly?: { initPopupWidget: (options: { url: string }) => void };
+    }).Calendly;
+
+    if (typeof window !== 'undefined' && calendly) {
+      calendly.initPopupWidget({
         url: 'https://calendly.com/blablabuild/discovery-call'
       });
     }
