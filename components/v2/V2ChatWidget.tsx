@@ -102,7 +102,12 @@ export default function V2ChatWidget() {
 
   useEffect(() => {
     const onOpen = () => {
-      trackEvent('v2_chat_widget_opened');
+      try {
+        trackEvent('v2_chat_widget_opened');
+      } catch (error) {
+        // analytics should never block opening the widget
+        console.warn('v2 chat analytics error:', error);
+      }
       setOpen(true);
     };
     const onKey = (e: KeyboardEvent) => {
@@ -110,9 +115,12 @@ export default function V2ChatWidget() {
     };
     window.addEventListener('openChatWidget', onOpen as EventListener);
     window.addEventListener('keydown', onKey);
+    // Imperative fallback used by legacy triggers
+    (window as Window & { openChatWidget?: () => void }).openChatWidget = onOpen;
     return () => {
       window.removeEventListener('openChatWidget', onOpen as EventListener);
       window.removeEventListener('keydown', onKey);
+      delete (window as Window & { openChatWidget?: () => void }).openChatWidget;
     };
   }, []);
 

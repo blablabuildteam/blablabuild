@@ -280,51 +280,37 @@ export default function V2Hero() {
                   <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">
                     {locale === 'en' ? 'shipped for' : 'gewerkt voor'}
                   </div>
-                  <div
-                    className="relative w-full overflow-hidden"
-                    style={{
-                      maskImage:
-                        'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
-                      WebkitMaskImage:
-                        'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
-                    }}
-                  >
-                    <div
-                      className="flex w-max items-center"
-                      style={{ animation: 'marquee-scroll 14s linear infinite', gap: 56 }}
-                    >
-                      {[0, 1].map((dup) => (
-                        <div key={dup} className="flex shrink-0 items-center" style={{ gap: 56, paddingRight: 56 }} aria-hidden={dup === 1}>
-                          {[
-                            { src: '/profile-brand-logos/heineken.png', alt: 'Heineken' },
-                            { src: '/profile-brand-logos/adidas.png', alt: 'Adidas' },
-                            { src: '/profile-brand-logos/eneco.png', alt: 'Eneco' },
-                            { src: '/profile-brand-logos/bitvavo.png', alt: 'Bitvavo' },
-                            { src: '/profile-brand-logos/rabobank.png', alt: 'Rabobank' },
-                            { src: '/profile-brand-logos/action.svg.png', alt: 'Action' },
-                            { src: '/profile-brand-logos/mclaren.png', alt: 'McLaren' },
-                            { src: '/profile-brand-logos/ajax.png', alt: 'Ajax' },
-                            { src: '/profile-brand-logos/diageo.png', alt: 'Diageo' },
-                            { src: '/profile-brand-logos/us-airforce.png', alt: 'US Air Force' },
-                            { src: '/profile-brand-logos/puig.png', alt: 'Puig' },
-                          ].map((b) => (
-                            <div
-                              key={`${dup}-${b.src}`}
-                              className="flex h-6 shrink-0 items-center justify-center"
-                              style={{ minWidth: 130, maxWidth: 130 }}
-                            >
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
-                                src={b.src}
-                                alt={dup === 0 ? b.alt : ''}
-                                className="h-full max-h-6 w-auto max-w-full object-contain opacity-60 brightness-0 invert"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <MarqueeStrip speed={11} gap={36} fade className="py-1">
+                    {[
+                      { src: '/profile-brand-logos/heineken.png', alt: 'Heineken', invert: true },
+                      { src: '/profile-brand-logos/adidas.png', alt: 'Adidas', invert: true },
+                      { src: '/profile-brand-logos/eneco.png', alt: 'Eneco', invert: true },
+                      { src: '/profile-brand-logos/bitvavo.png', alt: 'Bitvavo', invert: true },
+                      { src: '/profile-brand-logos/rabobank.png', alt: 'Rabobank', invert: true },
+                      { src: '/profile-brand-logos/action.svg.png', alt: 'Action', invert: false },
+                      { src: '/profile-brand-logos/mclaren.png', alt: 'McLaren', invert: true },
+                      { src: '/profile-brand-logos/ajax.png', alt: 'Ajax', invert: true },
+                      { src: '/profile-brand-logos/diageo.png', alt: 'Diageo', invert: true },
+                      { src: '/profile-brand-logos/us-airforce.png', alt: 'US Air Force', invert: true },
+                      { src: '/profile-brand-logos/puig.png', alt: 'Puig', invert: true },
+                    ].map((b) => (
+                      <div
+                        key={b.src}
+                        className="inline-flex h-6 w-[120px] shrink-0 items-center justify-center"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={b.src}
+                          alt={b.alt}
+                          className={`h-full w-auto max-w-full object-contain object-center ${
+                            b.invert
+                              ? 'opacity-80 brightness-0 invert'
+                              : 'opacity-90 brightness-100'
+                          }`}
+                        />
+                      </div>
+                    ))}
+                  </MarqueeStrip>
                 </div>
               </div>
             </div>

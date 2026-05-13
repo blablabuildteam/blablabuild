@@ -81,9 +81,13 @@ export default function V2DirectHelp({
     trackEvent('v2_help_ai_advice_clicked', { source });
     setOpen(false);
     if (typeof window !== 'undefined') {
+      // Primary trigger (event-based)
       window.dispatchEvent(
         new CustomEvent('openChatWidget', { detail: { source } })
       );
+      // Fallback trigger for environments using imperative openers
+      const opener = (window as Window & { openChatWidget?: () => void }).openChatWidget;
+      if (typeof opener === 'function') opener();
     }
   };
 
