@@ -188,7 +188,7 @@ export default function V2Hero() {
               transition={{ duration: 0.9, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
               className="mt-8 flex flex-wrap items-center gap-3"
             >
-              <V2DirectHelp source="v2-hero" align="left" />
+              <V2DirectHelp source="v2-hero" align="left" openUpOnDesktop />
               <a
                 href="#cases"
                 className="group inline-flex h-12 items-center gap-2 rounded-full border border-white/15 px-5 text-sm font-medium text-white transition-colors hover:border-white/40 md:h-[52px] md:px-6 md:text-[15px]"

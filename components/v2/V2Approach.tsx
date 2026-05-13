@@ -12,8 +12,10 @@ export default function V2Approach() {
   const locale = useLocale();
   const lang = locale === 'en' ? 'en' : 'nl';
   const ref = useRef<HTMLElement | null>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
-  const railProgress = useTransform(scrollYProgress, [0.05, 0.85], ['0%', '100%']);
+  // Start the rail a bit later so it doesn't jump ahead
+  // when the section just touches the bottom of the viewport.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 90%', 'end 20%'] });
+  const railProgress = useTransform(scrollYProgress, [0.18, 0.9], ['0%', '100%']);
 
   return (
     <section
@@ -54,10 +56,10 @@ export default function V2Approach() {
         {/* Steps with scroll-driven progress rail */}
         <div className="relative mt-14 md:mt-20">
           {/* Rail */}
-          <div className="pointer-events-none absolute left-0 right-0 top-12 hidden h-px bg-white/10 md:block" />
+          <div className="pointer-events-none absolute left-0 right-0 top-4 hidden h-px bg-white/10 md:block" />
           <motion.div
             style={{ width: railProgress }}
-            className="pointer-events-none absolute left-0 top-12 hidden h-px bg-bla-lime md:block"
+            className="pointer-events-none absolute left-0 top-4 hidden h-px bg-bla-lime md:block"
           />
 
           <div className="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-8">
@@ -68,10 +70,10 @@ export default function V2Approach() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.7, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                className="relative pt-8"
+                className="relative pt-10"
               >
                 {/* Dot */}
-                <div className="absolute left-0 top-[42px] hidden h-3 w-3 -translate-y-1/2 rounded-full border border-white/20 bg-[#0d1015] md:block">
+                <div className="absolute left-0 top-4 hidden h-3 w-3 -translate-y-1/2 rounded-full border border-white/20 bg-[#0d1015] md:block">
                   <div className="absolute inset-1 rounded-full bg-bla-lime" />
                 </div>
 
