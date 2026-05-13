@@ -143,8 +143,8 @@ export default function V2DirectHelp({
               className={[
                 // mobile: bottom sheet centered, vol bruikbare ruimte
                 'fixed inset-x-4 bottom-6 z-[70] origin-bottom rounded-2xl border border-white/10 bg-[#0e1014]/95 p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] backdrop-blur-xl',
-                // desktop: anchored popover boven/onder de knop
-                'md:absolute md:bottom-auto md:inset-x-auto md:top-full md:mt-2 md:w-[22rem] md:origin-top-left',
+                // desktop: anchored popover, vaste 360px maar nooit breder dan viewport - 2rem
+                'md:absolute md:bottom-auto md:inset-x-auto md:top-full md:mt-2 md:w-[360px] md:max-w-[calc(100vw-2rem)] md:origin-top-left',
                 align === 'right' ? 'md:right-0 md:left-auto md:origin-top-right' : 'md:left-0',
               ].join(' ')}
             >
@@ -172,7 +172,7 @@ export default function V2DirectHelp({
                   </svg>
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-host text-[15px] font-medium text-white">
+                  <span className="block whitespace-nowrap font-host text-[15px] font-medium text-white">
                     {locale === 'en' ? 'Book a meeting' : 'Plan een meeting'}
                   </span>
                   <span className="mt-0.5 block font-host text-[12.5px] leading-snug text-white/55">
@@ -212,8 +212,8 @@ export default function V2DirectHelp({
                   </svg>
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="flex items-center gap-2">
-                    <span className="block font-host text-[15px] font-medium text-white">
+                  <span className="flex flex-wrap items-center gap-2">
+                    <span className="block whitespace-nowrap font-host text-[15px] font-medium text-white">
                       {locale === 'en' ? 'AI advice' : 'AI advies'}
                     </span>
                     <span className="rounded-full border border-bla-lime/30 bg-bla-lime/10 px-1.5 py-px font-mono text-[9px] uppercase tracking-[0.2em] text-bla-lime">

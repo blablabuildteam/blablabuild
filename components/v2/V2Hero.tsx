@@ -291,16 +291,17 @@ export default function V2Hero() {
                   >
                     <div
                       className="flex w-max items-center"
-                      style={{ animation: 'marquee-scroll 18s linear infinite', gap: 40 }}
+                      style={{ animation: 'marquee-scroll 14s linear infinite', gap: 56 }}
                     >
                       {[0, 1].map((dup) => (
-                        <div key={dup} className="flex shrink-0 items-center" style={{ gap: 40, paddingRight: 40 }} aria-hidden={dup === 1}>
+                        <div key={dup} className="flex shrink-0 items-center" style={{ gap: 56, paddingRight: 56 }} aria-hidden={dup === 1}>
                           {[
                             { src: '/profile-brand-logos/heineken.png', alt: 'Heineken' },
                             { src: '/profile-brand-logos/adidas.png', alt: 'Adidas' },
                             { src: '/profile-brand-logos/eneco.png', alt: 'Eneco' },
                             { src: '/profile-brand-logos/bitvavo.png', alt: 'Bitvavo' },
                             { src: '/profile-brand-logos/rabobank.png', alt: 'Rabobank' },
+                            { src: '/profile-brand-logos/action.svg.png', alt: 'Action' },
                             { src: '/profile-brand-logos/mclaren.png', alt: 'McLaren' },
                             { src: '/profile-brand-logos/ajax.png', alt: 'Ajax' },
                             { src: '/profile-brand-logos/diageo.png', alt: 'Diageo' },
@@ -310,13 +311,13 @@ export default function V2Hero() {
                             <div
                               key={`${dup}-${b.src}`}
                               className="flex h-6 shrink-0 items-center justify-center"
-                              style={{ minWidth: 96 }}
+                              style={{ minWidth: 130, maxWidth: 130 }}
                             >
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
                                 src={b.src}
                                 alt={dup === 0 ? b.alt : ''}
-                                className="h-full w-auto max-w-[120px] object-contain opacity-60 brightness-0 invert"
+                                className="h-full max-h-6 w-auto max-w-full object-contain opacity-60 brightness-0 invert"
                               />
                             </div>
                           ))}

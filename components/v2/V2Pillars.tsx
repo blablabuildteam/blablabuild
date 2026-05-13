@@ -76,7 +76,7 @@ export default function V2Pillars() {
                     <button
                       key={k}
                       onClick={() => setActivePillar(k)}
-                      className={`relative flex-1 rounded-full px-4 py-2.5 text-sm font-medium transition-colors md:text-base ${
+                      className={`relative flex-1 whitespace-nowrap rounded-full px-3 py-2.5 text-sm font-medium transition-colors md:px-4 md:text-[15px] ${
                         isActive ? 'text-white' : 'text-[#14181d]/55 hover:text-[#14181d]'
                       }`}
                     >
@@ -87,11 +87,11 @@ export default function V2Pillars() {
                           transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                         />
                       )}
-                      <span className="relative flex items-center justify-center gap-2">
+                      <span className="relative flex items-center justify-center gap-1.5 md:gap-2">
                         <span className="font-mono text-[10px] uppercase tracking-[0.18em] opacity-60">
                           {PILLAR_META[k].number}
                         </span>
-                        <span>{t(`pillars.${k}.title`)}</span>
+                        <span className="whitespace-nowrap">{t(`pillars.${k}.title`)}</span>
                       </span>
                     </button>
                   );
