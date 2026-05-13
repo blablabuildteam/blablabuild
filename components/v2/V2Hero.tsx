@@ -3,8 +3,48 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import { useLocale } from 'next-intl';
-import { NoiseLayer, MarqueeStrip } from './V2Atoms';
+import { NoiseLayer } from './V2Atoms';
 import V2DirectHelp from './V2DirectHelp';
+
+// Brand names displayed as text ticker — swap for real logos once sized
+const BRAND_NAMES = [
+  'Heineken', 'Adidas', 'Eneco', 'Bitvavo',
+  'Rabobank', 'McLaren', 'Ajax', 'Diageo', 'Puig',
+];
+
+function BrandTicker() {
+  // Two copies side-by-side so marquee-scroll (-50%) loops seamlessly
+  const items = [...BRAND_NAMES, ...BRAND_NAMES];
+  return (
+    <div
+      className="overflow-hidden"
+      style={{
+        maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
+        WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
+      }}
+    >
+      <div
+        className="flex w-max"
+        style={{ animation: 'marquee-scroll 18s linear infinite' }}
+      >
+        {items.map((name, i) => (
+          <span
+            key={i}
+            className="inline-flex shrink-0 items-center gap-2.5 px-2.5"
+          >
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/45">
+              {name}
+            </span>
+            <span
+              aria-hidden
+              className="inline-block h-[3px] w-[3px] rounded-full bg-white/20"
+            />
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const PILLAR_KEYS = ['marketing', 'tooling', 'data'] as const;
 type PillarKey = (typeof PILLAR_KEYS)[number];
@@ -275,66 +315,43 @@ export default function V2Hero() {
                   </div>
                 </div>
 
-                {/* Brand-proof marquee — bedrijven waar we werk voor deden */}
+                {/* Brand ticker — text-based, no image dependencies */}
                 <div className="mt-5">
                   <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">
                     {locale === 'en' ? 'shipped for' : 'gewerkt voor'}
                   </div>
-                  <MarqueeStrip speed={11} gap={36} fade className="py-1">
-                    {[
-                      { src: '/profile-brand-logos/heineken.png', alt: 'Heineken', invert: true },
-                      { src: '/profile-brand-logos/adidas.png', alt: 'Adidas', invert: true },
-                      { src: '/profile-brand-logos/eneco.png', alt: 'Eneco', invert: true },
-                      { src: '/profile-brand-logos/bitvavo.png', alt: 'Bitvavo', invert: true },
-                      { src: '/profile-brand-logos/rabobank.png', alt: 'Rabobank', invert: true },
-                      { src: '/profile-brand-logos/action.svg.png', alt: 'Action', invert: false },
-                      { src: '/profile-brand-logos/mclaren.png', alt: 'McLaren', invert: true },
-                      { src: '/profile-brand-logos/ajax.png', alt: 'Ajax', invert: true },
-                      { src: '/profile-brand-logos/diageo.png', alt: 'Diageo', invert: true },
-                      { src: '/profile-brand-logos/us-airforce.png', alt: 'US Air Force', invert: true },
-                      { src: '/profile-brand-logos/puig.png', alt: 'Puig', invert: true },
-                    ].map((b) => (
-                      <div
-                        key={b.src}
-                        className="inline-flex h-6 w-[120px] shrink-0 items-center justify-center"
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={b.src}
-                          alt={b.alt}
-                          className={`h-full w-auto max-w-full object-contain object-center ${
-                            b.invert
-                              ? 'opacity-80 brightness-0 invert'
-                              : 'opacity-90 brightness-100'
-                          }`}
-                        />
-                      </div>
-                    ))}
-                  </MarqueeStrip>
-                </div>
+                  <BrandTicker /></div>
               </div>
             </div>
           </motion.div>
         </div>
       </motion.div>
 
-      {/* Bottom ticker — strak, één regel, dot separators tussen items */}
-      <div className="relative border-t border-white/8 bg-[#0a0b0e]/60 py-4 backdrop-blur-sm">
-        <MarqueeStrip speed={50} gap={28} fade>
-          {tickerWords.flatMap((w, i) => [
+      {/* Bottom ticker — inline, geen component-dependency */}
+      <div className="relative border-t border-white/8 bg-[#0a0b0e]/60 py-4 backdrop-blur-sm overflow-hidden"
+        style={{
+          maskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
+        }}
+      >
+        <div
+          className="flex w-max"
+          style={{ animation: 'marquee-scroll 45s linear infinite' }}
+        >
+          {[...tickerWords, ...tickerWords].flatMap((w, i) => [
             <span
-              key={`w-${w}-${i}`}
-              className="font-mono text-[12px] uppercase tracking-[0.22em] text-white/55"
+              key={`w-${i}`}
+              className="mx-3 shrink-0 font-mono text-[12px] uppercase tracking-[0.22em] text-white/55"
             >
               {w}
             </span>,
             <span
-              key={`d-${w}-${i}`}
-              className="inline-block h-[5px] w-[5px] rounded-full bg-bla-lime/70"
+              key={`d-${i}`}
+              className="inline-block shrink-0 h-[5px] w-[5px] rounded-full bg-bla-lime/70"
               aria-hidden
             />,
           ])}
-        </MarqueeStrip>
+        </div>
       </div>
     </section>
   );

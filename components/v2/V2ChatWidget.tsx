@@ -18,22 +18,13 @@ const COPY = {
   nl: {
     eyebrow: '§ AI advies',
     title: 'Wat is jouw uitdaging?',
-    subtitle: 'Ontdek hoe wij je kunnen helpen.',
-    steps: [
-      'Jij deelt je uitdaging',
-      'AI analyseert direct',
-      'Je krijgt een eerste richting',
-    ],
-    placeholder: 'Vertel kort wat je tegenhoudt of waar je naartoe wil…',
-    suggestions: [
-      'Ik wil processen automatiseren, maar weet niet waar te beginnen.',
-      'Onze data zit overal, ik wil één plek waar ik alles kan zien.',
-      'Mijn marketing schaalt niet: meer budget, niet meer klanten.',
-    ],
+    subtitle: 'Vertel het ons — we denken direct mee.',
+    placeholder: 'Wat houdt je tegen, of waar wil je naartoe?',
+    suggestions: ['Processen automatiseren', 'Data centraliseren', 'Marketing schalen'],
     duration: '1–2 min',
     sendAria: 'Verstuur',
     cta: 'Plan een meeting',
-    ctaSub: 'Liever direct met een founder spreken?',
+    ctaSub: 'Liever direct met een founder?',
     closeAria: 'Sluit',
     error: 'Er ging iets mis. Probeer het opnieuw.',
     thinking: 'AI is aan het denken',
@@ -44,22 +35,13 @@ const COPY = {
   en: {
     eyebrow: '§ AI advice',
     title: 'What is your challenge?',
-    subtitle: 'See how we can help.',
-    steps: [
-      'You share the challenge',
-      'AI analyses instantly',
-      'You get a first direction',
-    ],
-    placeholder: 'In one line: what is slowing you down or what is the goal?',
-    suggestions: [
-      'I want to automate processes but I don’t know where to start.',
-      'Our data is scattered, I want one place to see everything.',
-      'My marketing isn’t scaling: more budget, not more clients.',
-    ],
+    subtitle: 'Tell us — we think along immediately.',
+    placeholder: 'What is holding you back, or where do you want to go?',
+    suggestions: ['Automate processes', 'Centralise data', 'Scale marketing'],
     duration: '1–2 min',
     sendAria: 'Send',
     cta: 'Book a meeting',
-    ctaSub: 'Prefer to talk to a founder directly?',
+    ctaSub: 'Prefer to talk to a founder?',
     closeAria: 'Close',
     error: 'Something went wrong. Please try again.',
     thinking: 'AI is thinking',
@@ -104,9 +86,8 @@ export default function V2ChatWidget() {
     const onOpen = () => {
       try {
         trackEvent('v2_chat_widget_opened');
-      } catch (error) {
+      } catch (_) {
         // analytics should never block opening the widget
-        console.warn('v2 chat analytics error:', error);
       }
       setOpen(true);
     };
@@ -115,7 +96,6 @@ export default function V2ChatWidget() {
     };
     window.addEventListener('openChatWidget', onOpen as EventListener);
     window.addEventListener('keydown', onKey);
-    // Imperative fallback used by legacy triggers
     (window as Window & { openChatWidget?: () => void }).openChatWidget = onOpen;
     return () => {
       window.removeEventListener('openChatWidget', onOpen as EventListener);
@@ -141,6 +121,13 @@ export default function V2ChatWidget() {
     if (!scrollRef.current) return;
     scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, busy]);
+
+  // focus input when opened
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => inputRef.current?.focus(), 120);
+    }
+  }, [open]);
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -189,6 +176,7 @@ export default function V2ChatWidget() {
   };
 
   const intro = messages.length === 0;
+  const chips = intro ? t.suggestions : options;
 
   return (
     <AnimatePresence>
@@ -209,16 +197,16 @@ export default function V2ChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.97 }}
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed left-1/2 top-1/2 z-[91] w-[min(640px,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2"
+            className="fixed left-1/2 top-1/2 z-[91] w-[min(620px,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2"
             role="dialog"
             aria-modal="true"
             aria-labelledby="v2chat-title"
           >
-            <div className="relative flex h-[min(82dvh,720px)] w-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0a0b0e] text-white shadow-[0_40px_120px_-30px_rgba(0,0,0,0.8)]">
+            <div className="relative flex w-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0a0b0e] text-white shadow-[0_40px_120px_-30px_rgba(0,0,0,0.8)]" style={{ maxHeight: 'min(78dvh, 680px)' }}>
               <NoiseLayer opacity={0.14} />
 
               {/* Top bar */}
-              <header className="relative flex items-center justify-between border-b border-white/8 px-5 py-4 md:px-6">
+              <header className="relative flex shrink-0 items-center justify-between border-b border-white/8 px-5 py-4 md:px-6">
                 <div className="flex items-center gap-3 min-w-0">
                   <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-bla-lime/30 bg-bla-lime/10 text-bla-lime">
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -254,9 +242,9 @@ export default function V2ChatWidget() {
                 </button>
               </header>
 
-              {/* Progress (alleen bij actieve sessie) */}
+              {/* Progress bar */}
               {messages.length > 0 && (
-                <div className="relative px-5 pt-3 md:px-6">
+                <div className="relative shrink-0 px-5 pt-3 md:px-6">
                   <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">
                     <span>{t.progress}</span>
                     <span>{Math.round(progress)}%</span>
@@ -272,34 +260,21 @@ export default function V2ChatWidget() {
                 </div>
               )}
 
-              {/* Body */}
-              <div
-                ref={scrollRef}
-                className="relative flex-1 overflow-y-auto px-5 py-5 md:px-6 md:py-6"
-              >
-                {intro ? (
-                  <div className="mx-auto flex h-full max-w-md flex-col items-center justify-center text-center">
-                    <h3 className="font-host text-2xl font-light leading-[1.1] tracking-tight text-white md:text-[1.85rem]">
-                      {t.title}
-                    </h3>
-                    <p className="mt-3 max-w-sm font-host text-[14.5px] leading-relaxed text-white/65">
-                      {t.subtitle}
-                    </p>
-                    <ol className="mt-7 w-full max-w-sm space-y-2 text-left">
-                      {t.steps.map((s, i) => (
-                        <li
-                          key={s}
-                          className="flex items-center gap-3 rounded-xl border border-white/8 bg-white/[0.025] px-3 py-2.5"
-                        >
-                          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-bla-lime/30 bg-bla-lime/10 font-mono text-[11px] font-medium text-bla-lime">
-                            {i + 1}
-                          </span>
-                          <span className="font-host text-[13.5px] leading-snug text-white/85">{s}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-                ) : (
+              {/* Body — intro or messages */}
+              {intro ? (
+                <div className="relative shrink-0 px-5 py-8 text-center md:px-10 md:py-10">
+                  <h3 className="font-host text-2xl font-light leading-tight tracking-tight text-white md:text-[1.75rem]">
+                    {t.title}
+                  </h3>
+                  <p className="mt-2 font-host text-[14px] leading-relaxed text-white/55">
+                    {t.subtitle}
+                  </p>
+                </div>
+              ) : (
+                <div
+                  ref={scrollRef}
+                  className="relative flex-1 overflow-y-auto px-5 py-5 md:px-6 md:py-6"
+                >
                   <ul className="space-y-4">
                     {messages.map((m, i) => (
                       <li
@@ -334,21 +309,21 @@ export default function V2ChatWidget() {
                       </li>
                     )}
                   </ul>
-                )}
 
-                {error && (
-                  <div className="mt-4 rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 font-host text-[13px] text-red-200">
-                    {error}
-                  </div>
-                )}
-              </div>
+                  {error && (
+                    <div className="mt-4 rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 font-host text-[13px] text-red-200">
+                      {error}
+                    </div>
+                  )}
+                </div>
+              )}
 
-              {/* Footer / input */}
-              <footer className="relative border-t border-white/8 bg-[#0a0b0e]/95 px-5 py-4 md:px-6 md:py-5">
-                {/* Suggestions or options */}
-                {(intro && t.suggestions.length > 0) || options.length > 0 ? (
+              {/* Footer — always visible */}
+              <footer className="relative shrink-0 border-t border-white/8 bg-[#0a0b0e]/95 px-5 py-4 md:px-6 md:py-5">
+                {/* Suggestion chips */}
+                {chips.length > 0 && (
                   <div className="mb-3 flex flex-wrap gap-2">
-                    {(intro ? t.suggestions : options).map((s) => (
+                    {chips.map((s) => (
                       <button
                         type="button"
                         key={s}
@@ -360,7 +335,7 @@ export default function V2ChatWidget() {
                       </button>
                     ))}
                   </div>
-                ) : null}
+                )}
 
                 <form onSubmit={handleSubmit} className="flex items-end gap-2">
                   <div className="flex-1">
@@ -378,7 +353,7 @@ export default function V2ChatWidget() {
                           sendMessage(input);
                         }
                       }}
-                      rows={1}
+                      rows={2}
                       placeholder={t.placeholder}
                       disabled={busy}
                       className="w-full resize-none rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 font-host text-[14.5px] leading-relaxed text-white placeholder-white/35 outline-none transition-colors focus:border-bla-lime/40 disabled:opacity-60"
@@ -402,8 +377,8 @@ export default function V2ChatWidget() {
                   </button>
                 </form>
 
-                <div className="mt-4 flex flex-col items-start gap-2 border-t border-white/8 pt-4 md:flex-row md:items-center md:justify-between">
-                  <p className="font-host text-[12.5px] leading-snug text-white/55">
+                <div className="mt-3 flex flex-col items-start gap-2 border-t border-white/8 pt-3 md:flex-row md:items-center md:justify-between">
+                  <p className="font-host text-[12px] leading-snug text-white/50">
                     {complete
                       ? lang === 'en'
                         ? 'We have a clear picture. Ready for the next step?'
@@ -414,8 +389,8 @@ export default function V2ChatWidget() {
                     href={CALENDLY}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={() => trackEvent('v2_chat_calendly_clicked')}
-                    className="inline-flex h-10 items-center gap-2 rounded-full border border-bla-lime/40 bg-bla-lime/10 px-4 font-host text-[13px] font-medium text-bla-lime transition-colors hover:bg-bla-lime/20"
+                    onClick={() => { try { trackEvent('v2_chat_calendly_clicked'); } catch (_) {} }}
+                    className="inline-flex h-9 items-center gap-2 rounded-full border border-bla-lime/40 bg-bla-lime/10 px-4 font-host text-[12.5px] font-medium text-bla-lime transition-colors hover:bg-bla-lime/20 whitespace-nowrap"
                   >
                     {t.cta}
                     <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden>
