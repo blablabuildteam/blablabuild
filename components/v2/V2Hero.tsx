@@ -248,42 +248,87 @@ export default function V2Hero() {
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
-                className="mt-5 border-t border-white/8 pt-4 font-host text-[15px] leading-snug text-white/75"
+                className="mt-4 font-host text-[15px] leading-snug text-white/75"
               >
                 {pillarCopy}
               </motion.p>
 
-              {/* Team showcase — vult de ruimte onderin met grotere foto's */}
-              <div className="mt-auto flex flex-col gap-4 border-t border-white/8 pt-5">
-                <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/45">
+              {/* Founders strip — past bij de rest van V2 (overlap avatars + label) */}
+              <div className="mt-auto border-t border-white/8 pt-5">
+                <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.28em] text-white/45">
                   § founders
                 </div>
-                <div className="flex items-center gap-3">
-                  {[
-                    { src: '/img/daniel-profile.png', name: 'Daniel' },
-                    { src: '/img/xennith-profile.png', name: 'Xennith' },
-                    { src: '/img/kevin-profile.png', name: 'Kevin' },
-                  ].map((f) => (
-                    <div key={f.name} className="flex flex-1 flex-col items-center gap-2">
-                      <span className="relative block aspect-square w-full overflow-hidden rounded-xl border border-white/10 bg-white/5">
+                <div className="flex items-center gap-4">
+                  <div className="flex shrink-0 -space-x-2.5">
+                    {[
+                      { src: '/img/daniel-profile.png', name: 'Daniel' },
+                      { src: '/img/xennith-profile.png', name: 'Xennith' },
+                      { src: '/img/kevin-profile.png', name: 'Kevin' },
+                    ].map((f) => (
+                      <span
+                        key={f.name}
+                        className="relative inline-block h-12 w-12 overflow-hidden rounded-full border-2 border-[#0a0b0e] ring-1 ring-white/10"
+                      >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={f.src}
-                          alt={f.name}
-                          className="h-full w-full object-cover object-top"
-                        />
+                        <img src={f.src} alt={f.name} className="h-full w-full object-cover object-top" />
                       </span>
-                      <span className="font-host text-xs text-white/75 md:text-[13px]">{f.name}</span>
+                    ))}
+                  </div>
+                  <div className="min-w-0 leading-tight">
+                    <div className="truncate font-host text-[14px] text-white/90 md:text-[15px]">
+                      Daniel · Xennith · Kevin
                     </div>
-                  ))}
+                    <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.22em] text-bla-lime/85">
+                      {locale === 'en' ? '40+ years experience' : '40+ jaar ervaring'}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-baseline justify-between border-t border-white/8 pt-3">
-                  <span className="font-host text-[15px] text-white/85">
-                    {locale === 'en' ? '40+ years combined' : '40+ jaar gebundelde ervaring'}
-                  </span>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/45">
-                    {locale === 'en' ? 'in tough rooms' : 'in zware omgevingen'}
-                  </span>
+
+                {/* Brand-proof marquee — bedrijven waar we werk voor deden */}
+                <div className="mt-5">
+                  <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">
+                    {locale === 'en' ? 'shipped for' : 'gewerkt voor'}
+                  </div>
+                  <div
+                    className="relative w-full overflow-hidden"
+                    style={{
+                      maskImage:
+                        'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
+                      WebkitMaskImage:
+                        'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
+                    }}
+                  >
+                    <div
+                      className="flex w-max items-center"
+                      style={{ animation: 'marquee-scroll 32s linear infinite', gap: 32 }}
+                    >
+                      {[0, 1].map((dup) => (
+                        <div key={dup} className="flex shrink-0 items-center" style={{ gap: 32, paddingRight: 32 }} aria-hidden={dup === 1}>
+                          {[
+                            '/profile-brand-logos/heineken.png',
+                            '/profile-brand-logos/starbucks2.png',
+                            '/profile-brand-logos/adidas.png',
+                            '/profile-brand-logos/eneco.png',
+                            '/profile-brand-logos/bitvavo.png',
+                            '/profile-brand-logos/rabobank.png',
+                            '/profile-brand-logos/diageo.png',
+                            '/profile-brand-logos/mclaren.png',
+                            '/profile-brand-logos/ajax.png',
+                            '/profile-brand-logos/action.svg.png',
+                            '/profile-brand-logos/us-airforce.png',
+                          ].map((src) => (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              key={`${dup}-${src}`}
+                              src={src}
+                              alt=""
+                              className="h-5 w-auto shrink-0 opacity-55 brightness-0 invert"
+                            />
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

@@ -229,6 +229,11 @@ export default function V2Cases() {
                 </div>
               </div>
 
+              {/* compact case title */}
+              <div className="px-5 pb-3">
+                <p className="line-clamp-2 text-sm leading-snug text-white/72 md:text-[14px]">{c.title[lang]}</p>
+              </div>
+
               {/* bottom meta */}
               <div className="relative flex items-center justify-between border-t border-white/8 px-5 py-4">
                 <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/55">
@@ -257,11 +262,20 @@ export default function V2Cases() {
             {tCommon('trustedBy')}
           </div>
         </div>
-        <MarqueeStrip speed={36} gap={64} fade>
+        <MarqueeStrip speed={40} gap={72} fade>
           {LOGOS.map((l) => (
-            <span key={l.alt} className="relative inline-block h-7 w-28 shrink-0 opacity-65 transition-opacity hover:opacity-100 md:h-8 md:w-32">
-              <Image src={l.src} alt={l.alt} fill className="object-contain object-center brightness-0 invert" />
-            </span>
+            <div
+              key={l.alt}
+              className="flex h-8 shrink-0 items-center justify-center opacity-70 transition-opacity hover:opacity-100 md:h-9"
+              style={{ minWidth: 140 }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={l.src}
+                alt={l.alt}
+                className="h-full w-auto max-w-[140px] object-contain brightness-0 invert"
+              />
+            </div>
           ))}
         </MarqueeStrip>
       </div>

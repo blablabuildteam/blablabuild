@@ -47,6 +47,8 @@ export default function V2Team() {
   const locale = useLocale();
   const lang = locale === 'en' ? 'en' : 'nl';
   const [hovered, setHovered] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const toggle = (id: string) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
 
   const founders = useMemo(
     () =>
@@ -72,7 +74,7 @@ export default function V2Team() {
             <h2 className="mt-5 font-host text-3xl font-light leading-[1.0] tracking-tight text-[#14181d] md:text-[3.5rem]">
               {lang === 'en' ? 'Three founders. ' : 'Drie founders. '}
               <span className="font-medium text-[#14181d]">
-                {lang === 'en' ? 'Forty years.' : 'Veertig jaar.'}
+                {lang === 'en' ? '40+ years experience.' : '40+ jaar ervaring.'}
               </span>
               <br />
               <span className="text-[#14181d]/70">{lang === 'en' ? 'One direct line.' : 'Eén directe lijn.'}</span>
@@ -136,9 +138,34 @@ export default function V2Team() {
                   <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-[#14181d]/55">
                     {f.role}
                   </p>
-                  <p className="mt-4 font-host text-sm leading-relaxed text-[#14181d]/70 md:text-[15px]">
+                  <p
+                    className={`mt-4 font-host text-sm leading-relaxed text-[#14181d]/70 md:text-[15px] ${
+                      expanded[f.id] ? '' : 'line-clamp-3'
+                    }`}
+                  >
                     {f.description}
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => toggle(f.id)}
+                    aria-expanded={!!expanded[f.id]}
+                    className="mt-2 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.22em] text-[#14181d]/55 transition-colors hover:text-[#14181d]"
+                  >
+                    {expanded[f.id]
+                      ? lang === 'en'
+                        ? 'Read less'
+                        : 'Minder lezen'
+                      : lang === 'en'
+                        ? 'Read more'
+                        : 'Lees meer'}
+                    <svg
+                      className={`h-3 w-3 transition-transform ${expanded[f.id] ? 'rotate-180' : ''}`}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                    >
+                      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
                 </div>
 
                 <div className="mt-5 border-t border-[#14181d]/8 pt-4">

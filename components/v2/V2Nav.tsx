@@ -57,10 +57,15 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
         <motion.div
           initial={false}
           animate={{
-            backgroundColor: isScrolled || isMenuOpen ? 'rgba(10,11,14,0.78)' : 'rgba(10,11,14,0.0)',
-            borderColor: isScrolled || isMenuOpen ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.0)',
-            backdropFilter: isScrolled || isMenuOpen ? 'blur(18px) saturate(160%)' : 'blur(0px)',
-            WebkitBackdropFilter: isScrolled || isMenuOpen ? 'blur(18px) saturate(160%)' : 'blur(0px)',
+            // op mobiel altijd glass + border zodat de nav over elke sectie leesbaar blijft
+            backgroundColor:
+              isMobile || isScrolled || isMenuOpen ? 'rgba(10,11,14,0.78)' : 'rgba(10,11,14,0.0)',
+            borderColor:
+              isMobile || isScrolled || isMenuOpen ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.0)',
+            backdropFilter:
+              isMobile || isScrolled || isMenuOpen ? 'blur(18px) saturate(160%)' : 'blur(0px)',
+            WebkitBackdropFilter:
+              isMobile || isScrolled || isMenuOpen ? 'blur(18px) saturate(160%)' : 'blur(0px)',
           }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="mx-auto flex h-14 max-w-[1400px] items-center justify-between rounded-full border px-3 md:h-16 md:px-4"
