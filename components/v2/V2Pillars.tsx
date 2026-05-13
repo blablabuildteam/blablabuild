@@ -175,10 +175,10 @@ export default function V2Pillars() {
               <div className="col-span-12 md:col-span-5">
                 <div className="grid grid-cols-2 gap-3">
                   {[
+                    { k: '48h', l: lang === 'en' ? 'first response' : 'eerste reactie' },
                     { k: '14d', l: lang === 'en' ? 'first prototype' : 'eerste prototype' },
-                    { k: '0', l: lang === 'en' ? 'powerpoint marathons' : 'powerpoint marathons' },
                     { k: '1:1', l: lang === 'en' ? 'with founders' : 'met de oprichters' },
-                    { k: 'EU', l: lang === 'en' ? 'data residency' : 'data residency' },
+                    { k: '0', l: lang === 'en' ? 'powerpoint marathons' : 'powerpoint marathons' },
                   ].map((s) => (
                     <div key={s.k} className="rounded-xl border border-white/8 bg-white/[0.02] p-4">
                       <div className="font-host text-2xl font-medium text-white md:text-3xl">{s.k}</div>

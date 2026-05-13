@@ -81,10 +81,22 @@ export default function V2Team() {
             </h2>
           </div>
           <div className="col-span-12 md:col-span-5 md:pt-10">
-            <p className="max-w-md font-host text-base leading-relaxed text-[#14181d]/70 md:text-lg">
-              {lang === 'en'
-                ? 'You don\'t hire an account team. You hire us.'
-                : 'Je huurt geen accountteam in. Je huurt ons in.'}
+            <p className="max-w-md font-host text-base leading-relaxed text-[#14181d]/75 md:text-lg">
+              {lang === 'en' ? (
+                <>
+                  With us you don&apos;t hire a job title — you hire a foundation.{' '}
+                  <span className="text-[#14181d]">
+                    Founder, consultant, manager and builder, all in one.
+                  </span>
+                </>
+              ) : (
+                <>
+                  Je huurt bij ons geen functieprofiel, maar een fundament.{' '}
+                  <span className="text-[#14181d]">
+                    Wij zijn je ondernemer, consultant, manager en bouwer in&eacute;&eacute;n.
+                  </span>
+                </>
+              )}
             </p>
           </div>
         </div>

@@ -23,10 +23,11 @@ export default function V2Footer() {
               <div className="font-mono text-[11px] uppercase tracking-[0.28em] text-bla-lime/85">
                 § {lang === 'en' ? 'Let\'s build' : 'Laten we bouwen'}
               </div>
-              <h2 className="mt-5 font-host text-3xl font-light leading-[1.0] tracking-tight text-white md:text-[4.5rem]">
-                {lang === 'en' ? 'Got a problem ' : 'Heb je een probleem '}
+              <h2 className="mt-5 font-host text-3xl font-light leading-[1.05] tracking-tight text-white md:text-[4.25rem]">
+                {lang === 'en' ? 'What keeps you up at night?' : "Wat houdt je 's nachts wakker?"}
+                <br />
                 <span className="font-medium text-bla-lime">
-                  {lang === 'en' ? 'worth solving?' : 'dat het waard is?'}
+                  {lang === 'en' ? 'For better or worse.' : 'Een probleem of een ambitie?'}
                 </span>
               </h2>
             </div>
@@ -71,8 +72,12 @@ export default function V2Footer() {
             <span className="font-light text-white/85">blabla</span>
             <span className="font-bold">build</span>
           </motion.div>
-          <div className="mt-3 font-mono text-[11px] uppercase tracking-[0.32em] text-white/40 md:text-xs">
-            Talk less. Build more. Built in Amsterdam.
+          <div className="mt-3 flex flex-col gap-1 font-mono text-[11px] uppercase tracking-[0.32em] text-white/40 md:flex-row md:items-center md:gap-4 md:text-xs">
+            <span>Talk less.</span>
+            <span aria-hidden className="hidden h-px w-6 bg-white/20 md:block" />
+            <span>Build more.</span>
+            <span aria-hidden className="hidden h-px w-6 bg-white/20 md:block" />
+            <span className="text-bla-lime/80">Built in Amsterdam.</span>
           </div>
         </div>
       </div>
