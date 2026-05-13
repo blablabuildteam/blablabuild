@@ -43,7 +43,7 @@ export default function V2Pillars() {
         <div className="mx-auto flex w-full max-w-[1320px] items-center justify-between px-5 py-3 sm:px-8 md:px-10">
           <SectionLabel index="01" label={lang === 'en' ? 'What we build' : 'Wat we bouwen'} tone="light" />
           <div className="hidden font-mono text-[10px] uppercase tracking-[0.28em] text-white/40 md:block">
-            {lang === 'en' ? 'three practices · one outcome' : 'drie praktijken · één resultaat'}
+            {lang === 'en' ? 'three practices · one outcome' : 'drie focusgebieden · één resultaat'}
           </div>
         </div>
       </div>
@@ -63,7 +63,7 @@ export default function V2Pillars() {
               <p className="mt-6 max-w-md font-host text-base leading-relaxed text-[#14181d]/70 md:text-lg">
                 {lang === 'en'
                   ? 'Three practices that reinforce each other. Pick one to start — we plug in where the leverage is highest.'
-                  : 'Drie praktijken die elkaar versterken. Begin met één — we starten waar de hefboom het grootst is.'}
+                  : 'Drie focusgebieden die elkaar versterken. Begin met één — we starten waar de hefboom het grootst is.'}
               </p>
             </div>
 

@@ -8,6 +8,7 @@ import V2Cases from '@/components/v2/V2Cases';
 import V2Approach from '@/components/v2/V2Approach';
 import V2Team from '@/components/v2/V2Team';
 import V2Footer from '@/components/v2/V2Footer';
+import FloatingChatBubble from '@/components/FloatingChatBubble';
 
 const SECTION_IDS = ['oplossingen', 'cases', 'aanpak', 'over-ons'] as const;
 
@@ -67,6 +68,7 @@ export default function V2Page() {
       <V2Approach />
       <V2Team />
       <V2Footer />
+      <FloatingChatBubble />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import { BlablaLogo } from '@/components/ui/BlablaLogo';
+import V2DirectHelp from './V2DirectHelp';
 
 interface V2NavProps {
   activeSection?: string;
@@ -113,17 +114,9 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
             >
               {otherLocale}
             </a>
-            <a
-              href="https://calendly.com/team-blablabuild/30min"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden h-10 items-center gap-2 rounded-full bg-bla-lime px-4 text-sm font-medium text-bla-dark transition-all hover:bg-bla-lime/90 hover:shadow-[0_0_24px_-6px_rgba(206,255,0,0.6)] md:inline-flex"
-            >
-              {t('scheduleMeeting')}
-              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
-                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </a>
+            <div className="hidden md:inline-flex">
+              <V2DirectHelp size="sm" align="right" source="v2-nav" />
+            </div>
 
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -170,21 +163,16 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
                   {t(s.key)}
                 </a>
               ))}
-              <div className="mt-2 flex items-center justify-between gap-3 border-t border-white/5 pt-4">
+              <div className="mt-2 flex items-center gap-3 border-t border-white/5 pt-4">
                 <a
                   href={`/${otherLocale}/v2`}
                   className="rounded-full border border-white/15 px-4 py-2 font-mono text-xs uppercase tracking-[0.2em] text-white/70"
                 >
                   {otherLocale}
                 </a>
-                <a
-                  href="https://calendly.com/team-blablabuild/30min"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-bla-lime px-5 text-sm font-medium text-bla-dark"
-                >
-                  {t('scheduleMeeting')}
-                </a>
+                <div className="flex-1">
+                  <V2DirectHelp size="sm" align="right" fullWidth source="v2-nav-mobile" />
+                </div>
               </div>
             </div>
           </motion.div>
