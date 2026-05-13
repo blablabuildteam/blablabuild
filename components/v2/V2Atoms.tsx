@@ -155,10 +155,7 @@ export function MarqueeStrip({
     >
       <div
         className="flex w-max items-center"
-        style={{
-          gap: `${gap}px`,
-          animation: `marquee-scroll ${speed}s linear infinite`,
-        }}
+        style={{ animation: `marquee-scroll ${speed}s linear infinite` }}
       >
         <div className="flex shrink-0 items-center" style={{ gap: `${gap}px`, paddingRight: `${gap}px` }}>
           {children}

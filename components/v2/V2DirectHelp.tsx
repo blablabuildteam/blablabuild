@@ -80,16 +80,17 @@ export default function V2DirectHelp({
   const triggerLabel = label || (locale === 'en' ? 'Get help now' : 'Direct hulp');
 
   const handleAiAdvice = () => {
-    trackEvent('v2_help_ai_advice_clicked', { source });
     setOpen(false);
+    // Open the chat widget first — analytics must never block this
     if (typeof window !== 'undefined') {
-      // Primary trigger (event-based)
-      window.dispatchEvent(
-        new CustomEvent('openChatWidget', { detail: { source } })
-      );
-      // Fallback trigger for environments using imperative openers
+      window.dispatchEvent(new CustomEvent('openChatWidget', { detail: { source } }));
       const opener = (window as Window & { openChatWidget?: () => void }).openChatWidget;
       if (typeof opener === 'function') opener();
+    }
+    try {
+      trackEvent('v2_help_ai_advice_clicked', { source });
+    } catch (_) {
+      // analytics should never block ui
     }
   };
 

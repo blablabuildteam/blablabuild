@@ -239,7 +239,7 @@ export default function V2Hero() {
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
-                className="mt-4 font-host text-[15px] leading-snug text-white/75"
+                className="mt-4 font-host text-[13px] leading-snug text-white/75"
               >
                 {pillarCopy}
               </motion.p>
