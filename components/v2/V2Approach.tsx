@@ -41,7 +41,7 @@ export default function V2Approach() {
               {lang === 'en' ? 'No agency ' : 'Geen agency '}
               <span className="font-medium text-bla-lime">{lang === 'en' ? 'bullsh*t.' : 'bullsh*t.'}</span>
               <br />
-              <span className="text-white/85">{lang === 'en' ? 'Just shipped work.' : 'Alleen geleverd werk.'}</span>
+              <span className="text-white/85">{lang === 'en' ? 'No noise, just results.' : 'Resultaat zonder ruis.'}</span>
             </h2>
           </div>
           <div className="col-span-12 md:col-span-5 md:pt-12">

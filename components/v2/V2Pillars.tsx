@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import { ArrowUpRight } from 'lucide-react';
@@ -30,6 +30,27 @@ export default function V2Pillars() {
   const locale = useLocale();
   const lang = locale === 'en' ? 'en' : 'nl';
   const [activePillar, setActivePillar] = useState<PillarKey>('marketing');
+  const [userPicked, setUserPicked] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Auto-rotate every 3 s; stops permanently once the user clicks a tab
+  useEffect(() => {
+    if (userPicked) return;
+    intervalRef.current = setInterval(() => {
+      setActivePillar((p) => {
+        const i = PILLAR_KEYS.indexOf(p);
+        return PILLAR_KEYS[(i + 1) % PILLAR_KEYS.length];
+      });
+    }, 3000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [userPicked]);
+
+  const handlePillarClick = (k: PillarKey) => {
+    setUserPicked(true);
+    setActivePillar(k);
+  };
 
   const meta = PILLAR_META[activePillar];
 
@@ -75,7 +96,7 @@ export default function V2Pillars() {
                   return (
                     <button
                       key={k}
-                      onClick={() => setActivePillar(k)}
+                      onClick={() => handlePillarClick(k)}
                       className={`relative flex-1 whitespace-nowrap rounded-full px-3 py-2.5 text-sm font-medium transition-colors md:px-4 md:text-[15px] ${
                         isActive ? 'text-white' : 'text-[#14181d]/55 hover:text-[#14181d]'
                       }`}
@@ -161,8 +182,8 @@ export default function V2Pillars() {
                 </h3>
                 <p className="mt-5 max-w-2xl font-host text-base leading-relaxed text-white/70 md:text-[17px]">
                   {lang === 'en'
-                    ? 'Skip the endless consultancy track. After a quick check, you get a strategy with options — and we can execute when you say go. 40+ years in tough environments mean we see where it gets stuck.'
-                    : 'Geen eindeloos adviestraject. Na een korte check krijg je een strategie met opties — en we voeren uit wanneer jij het sein geeft. 40+ jaar in zware omgevingen: we zien snel waar het vastloopt.'}
+                    ? 'No intake marathon. After one conversation you have direction and concrete options — and we start the moment you say go. 40+ years in tough environments: we spot where things get stuck.'
+                    : 'Geen intakemarathon. Na een eerste gesprek heb je richting en concrete opties — en we starten zodra jij het sein geeft. 40+ jaar in zware omgevingen: we zien snel waar het vastloopt.'}
                 </p>
                 <a
                   href="mailto:team@blablabuild.com"
@@ -175,7 +196,7 @@ export default function V2Pillars() {
               <div className="col-span-12 md:col-span-5">
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { k: '48h', l: lang === 'en' ? 'first response' : 'eerste reactie' },
+                    { k: '48h', l: lang === 'en' ? 'first proposal' : 'eerste voorstel' },
                     { k: '14d', l: lang === 'en' ? 'first prototype' : 'eerste prototype' },
                     { k: '1:1', l: lang === 'en' ? 'with founders' : 'met de oprichters' },
                     { k: '0', l: lang === 'en' ? 'powerpoint marathons' : 'powerpoint marathons' },

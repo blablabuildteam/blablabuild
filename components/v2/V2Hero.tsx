@@ -130,7 +130,7 @@ export default function V2Hero() {
     <section
       ref={containerRef}
       id="hero"
-      className="relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-[#0a0b0e] pt-24 md:pt-28"
+      className="relative flex h-[100svh] w-full flex-col overflow-hidden bg-[#0a0b0e] pt-24 md:pt-28"
     >
       <motion.div style={{ y: yBg }} className="pointer-events-none absolute inset-0 -z-10">
         <div
@@ -159,7 +159,7 @@ export default function V2Hero() {
 
       <motion.div
         style={{ opacity: opacityHero }}
-        className="relative mx-auto flex w-full max-w-[1320px] flex-1 flex-col px-5 sm:px-8 md:px-10"
+        className="relative mx-auto flex w-full max-w-[1320px] flex-1 flex-col justify-center px-5 sm:px-8 md:px-10"
       >
         {/* Top eyebrow row */}
         <div className="flex items-center justify-between pt-6 md:pt-8">
@@ -218,8 +218,8 @@ export default function V2Hero() {
               className="mt-7 max-w-xl font-host text-base leading-relaxed text-white/70 md:text-lg"
             >
               {locale === 'en'
-                ? 'We build AI, data and digital products that make Monday feel different — calmer, sharper, faster.'
-                : 'Wij bouwen AI, data en digitale producten waardoor maandag anders voelt — rustiger, scherper, sneller.'}
+                ? 'We turn AI, data and digital products into systems that genuinely move your business forward — less noise, more results.'
+                : 'We zetten AI, data en digitale producten om in systemen die je bedrijf écht vooruit helpen — minder ruis, meer resultaat.'}
             </motion.p>
 
             <motion.div
@@ -233,7 +233,7 @@ export default function V2Hero() {
                 href="#cases"
                 className="group inline-flex h-12 items-center gap-2 rounded-full border border-white/15 px-5 text-sm font-medium text-white transition-colors hover:border-white/40 md:h-[52px] md:px-6 md:text-[15px]"
               >
-                {locale === 'en' ? 'See the work' : 'Bekijk het werk'}
+                {locale === 'en' ? 'See the work' : 'Bekijk onze cases'}
               </a>
             </motion.div>
           </div>

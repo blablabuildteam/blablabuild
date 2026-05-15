@@ -172,14 +172,14 @@ export default function V2Cases() {
           <div>
             <SectionLabel index="02" label={lang === 'en' ? 'Selected work' : 'Geselecteerd werk'} />
             <h2 className="mt-5 max-w-3xl font-host text-3xl font-light leading-[1.0] tracking-tight md:text-[3.5rem]">
-              {lang === 'en' ? 'Real shipping. ' : 'Echt geleverd. '}
-              <span className="font-medium text-bla-lime">{lang === 'en' ? 'Real impact.' : 'Echte impact.'}</span>
+              {lang === 'en' ? 'Built. Shipped. ' : 'Gebouwd. Gelanceerd. '}
+              <span className="font-medium text-bla-lime">{lang === 'en' ? 'Worked.' : 'Gewerkt.'}</span>
             </h2>
           </div>
           <p className="max-w-md font-host text-base leading-relaxed text-white/60 md:text-[17px]">
             {lang === 'en'
-              ? 'A few of the things we built recently — across data, tooling and brand.'
-              : 'Een greep uit wat we recent bouwden — over data, tooling en merk.'}
+              ? 'A few of the things we built recently.'
+              : 'Een greep uit wat we recent bouwden.'}
           </p>
         </div>
 
@@ -284,71 +284,106 @@ export default function V2Cases() {
       <AnimatePresence>
         {active && (
           <>
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setActive(null)}
-              className="fixed inset-0 z-[80] bg-black/70 backdrop-blur-md"
+              className="fixed inset-0 z-[80] bg-black/75 backdrop-blur-md"
             />
+
+            {/* Modal card */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 24 }}
+              initial={{ opacity: 0, scale: 0.97, y: 28 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 24 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              exit={{ opacity: 0, scale: 0.97, y: 28 }}
+              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
               className="fixed inset-0 z-[81] flex items-center justify-center p-4 md:p-8"
               onClick={() => setActive(null)}
             >
               <div
                 onClick={(e) => e.stopPropagation()}
-                className="relative flex max-h-[88vh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0a0b0e]"
+                className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0d0f12] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)]"
               >
-                <button
-                  onClick={() => setActive(null)}
-                  className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08]"
-                  aria-label="Close"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-                <div className="relative h-56 flex-shrink-0 overflow-hidden md:h-72">
-                  <Image src={active.image} alt={active.title[lang]} fill className="object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0b0e] via-[#0a0b0e]/40 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 p-5 md:p-7">
-                    <div className="mb-3 flex flex-wrap gap-1.5">
-                      {active.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded-full border border-white/20 bg-[#0a0b0e]/60 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-white/85 backdrop-blur"
-                        >
-                          {TAG_LABEL[tag][lang]}
-                        </span>
-                      ))}
+                {/* ── Header: dark, no photo ── */}
+                <div className="relative flex-shrink-0 overflow-hidden px-6 pb-6 pt-6 md:px-8 md:pb-7 md:pt-7">
+                  {/* Lime glow accent */}
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0"
+                    style={{
+                      background:
+                        'radial-gradient(circle 500px at 100% 0%, rgba(206,255,0,0.10), transparent 55%)',
+                    }}
+                  />
+
+                  <div className="relative flex items-start justify-between gap-4">
+                    {/* Left: logo + client name */}
+                    <div className="flex flex-col gap-3">
+                      <div className="relative h-8 w-28 md:h-9 md:w-32">
+                        <Image
+                          src={active.logo}
+                          alt={active.client}
+                          fill
+                          className="object-contain object-left brightness-0 invert"
+                          sizes="140px"
+                        />
+                      </div>
+                      <h3 className="font-host text-xl font-medium leading-snug text-white md:text-2xl">
+                        {active.title[lang]}
+                      </h3>
+                      <div className="flex flex-wrap gap-1.5">
+                        {active.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-full border border-bla-lime/30 bg-bla-lime/10 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-bla-lime/90"
+                          >
+                            {TAG_LABEL[tag][lang]}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    <h3 className="font-host text-2xl font-medium leading-snug text-white md:text-3xl">
-                      {active.title[lang]}
-                    </h3>
+
+                    {/* Close button */}
+                    <button
+                      onClick={() => setActive(null)}
+                      className="mt-0.5 flex-shrink-0 grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-white transition-colors hover:bg-white/[0.10]"
+                      aria-label="Close"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-5 md:p-7">
-                  <div className="grid grid-cols-3 gap-3 md:gap-4">
+                {/* Divider */}
+                <div className="h-px flex-shrink-0 bg-white/8" />
+
+                {/* ── Body: scrollable ── */}
+                <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6 md:px-8 md:py-7">
+                  {/* Metrics grid */}
+                  <div className="grid grid-cols-3 gap-2.5 md:gap-3">
                     {active.metrics.map((m) => (
-                      <div key={m.value} className="rounded-xl border border-white/8 bg-white/[0.02] p-3 md:p-4">
+                      <div key={m.value} className="rounded-xl border border-white/8 bg-white/[0.025] p-3 md:p-4">
                         <div className="font-host text-xl font-medium text-bla-lime md:text-2xl">{m.value}</div>
-                        <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.22em] text-white/50 md:text-[10px]">
+                        <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.22em] text-white/45 md:text-[10px]">
                           {m.label[lang]}
                         </div>
                       </div>
                     ))}
                   </div>
+
+                  {/* Text sections */}
                   <div className="mt-7 space-y-6">
                     <Field label={lang === 'en' ? 'Context' : 'Context'} body={active.context[lang]} />
                     <Field label={lang === 'en' ? 'The problem' : 'Het probleem'} body={active.problem[lang]} />
-                    <Field label={lang === 'en' ? 'How we solved it' : 'Hoe we het oploosten'} body={active.result[lang]} />
+                    <Field label={lang === 'en' ? 'How we solved it' : 'Hoe we het oplosten'} body={active.result[lang]} />
                   </div>
+
+                  {/* Detail photo — bottom, full width */}
                   {active.detailImage && (
-                    <div className="relative mt-6 aspect-video overflow-hidden rounded-2xl">
-                      <Image src={active.detailImage} alt="" fill className="object-cover" />
+                    <div className="relative mt-8 aspect-video overflow-hidden rounded-2xl">
+                      <Image src={active.detailImage} alt={`${active.client} detail`} fill className="object-cover" />
                     </div>
                   )}
                 </div>

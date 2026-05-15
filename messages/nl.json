@@ -62,19 +62,19 @@
         "items": {
           "brandDevelopment": {
             "title": "Merkontwikkeling",
-            "description": "Een merk is meer dan een strak moodboard. We zetten uitstraling, tone of voice en ervaring op één lijn, zodat mensen niet alleen snappen wat je doet, maar ook waarom jij het bent."
+            "description": "Uitstraling, tone of voice en ervaring op één lijn — zodat klanten snappen wat je doet én waarom jij het bent."
           },
           "websitesApps": {
             "title": "Websites & Apps",
-            "description": "Snel laden is nice; logisch aanvoelen is nicer. We bouwen digitale dingen waar je niet vijf keer voor hoeft te tappen voordat je ergens komt—zoals bij de checkout."
+            "description": "Gebouwd zodat je niet vijf keer hoeft te tappen voor de checkout. Snel, logisch, converterend."
           },
           "adCampaigns": {
             "title": "Ad Campagnes",
-            "description": "Minder gokken met budget, meer ontdekken wat écht werkt. Campagnes die je iets teruggeven—niet alleen een stapel clicks om je goed te laten voelen."
+            "description": "Minder gokken, meer weten. Campagnes die je iets teruggeven naast een dashboard vol clicks."
           },
           "seoAeo": {
             "title": "SEO/AEO",
-            "description": "Alleen ranken in Google is niet meer het hele verhaal. We zorgen dat als iemand aan een AI vraagt wie jij bent, het antwoord niet \"geen idee\" is."
+            "description": "Google én AI: we zorgen dat als iemand vraagt wie jij bent, het antwoord niet 'geen idee' is."
           }
         }
       },
@@ -84,15 +84,15 @@
         "items": {
           "prototyping": {
             "title": "Prototyping (PoC)",
-            "description": "Van idee naar iets dat je kunt aanraken in weken—niet na drie rondes PowerPoint. Fout mogen maken; goedkoop falen is onderdeel van het plan."
+            "description": "Van idee naar iets tastbaars in weken, niet kwartalen. Fout mogen maken zit in de prijs."
           },
           "automation": {
             "title": "Automatisering",
-            "description": "Dat rapport dat elke week uit vijf tabbladen wordt geknipt? Die tour is voorbij. We automatiseren het saaie werk zodat je team weer tijd heeft voor waar je mensen voor betaalde."
+            "description": "Dat wekelijkse rapport dat uit vijf tabbladen wordt geknipt? Voorbij. Je team doet weer het echte werk."
           },
           "legacyReplacement": {
             "title": "Oude Systemen Vervangen",
-            "description": "Oude systemen waren ooit helden; nu remmen ze je ambities. We vervangen ze stap voor stap—zonder big-bang-bangmakerij en zonder te doen alsof er niets brandt."
+            "description": "Stap voor stap, zonder big-bang-drama. Oud systeem weg, ambities weer vrij."
           }
         }
       },
@@ -102,15 +102,15 @@
         "items": {
           "dataCentralization": {
             "title": "Data Centralisatie",
-            "description": "Data overal en nergens tegelijk? We bouwen één plek waar je durft te kijken—met minder \"welk bestand is nu leading?\"-stress."
+            "description": "Eén plek waar je durft te kijken. Geen 'welk bestand is leading?'-stress meer."
           },
           "dashboarding": {
             "title": "Dashboarding",
-            "description": "Dashboards die je écht opent. Geen muur van cijfers waar niemand naar kijkt—wel overzicht waar je maandag iets mee kunt doen."
+            "description": "Dashboards die mensen écht openen. Overzicht dat maandag richting geeft."
           },
           "talkToData": {
             "title": "Praat met Data",
-            "description": "Stel je data een vraag in gewone taal, alsof je een collega pingt—alleen dan zonder smalltalk en wél met antwoord terwijl je nog weet waarom je het vroeg."
+            "description": "Stel je data een vraag in gewone taal. Antwoord zonder smalltalk, terwijl je nog weet waarom je vroeg."
           }
         }
       }

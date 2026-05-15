@@ -77,9 +77,6 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
               <span className="font-light text-white/70">blabla</span>
               <span className="font-bold">build</span>
             </span>
-            <span className="ml-2 hidden rounded-full border border-bla-lime/30 bg-bla-lime/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-bla-lime md:inline-block">
-              v2
-            </span>
           </a>
 
           <div className="hidden items-center gap-1 lg:flex">

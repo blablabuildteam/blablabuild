@@ -62,19 +62,19 @@
         "items": {
           "brandDevelopment": {
             "title": "Brand Development",
-            "description": "A brand isn't a moodboard contest. We align how you look, sound, and feel so people don't just recognize you—they get why you're the one."
+            "description": "Look, sound, and feel aligned — so customers get what you do and why it's you, not someone else."
           },
           "websitesApps": {
             "title": "Websites & Apps",
-            "description": "Fast loads, sure—but flows that make sense too. Nobody should need five taps to find the buy button."
+            "description": "Built so nobody needs five taps to reach checkout. Fast, logical, converting."
           },
           "adCampaigns": {
             "title": "Ad Campaigns",
-            "description": "Less budget roulette, more learning what actually moves the needle. Campaigns should hand you insights—not just a pile of clicks to feel good about."
+            "description": "Less guessing, more knowing. Campaigns that give you something back beyond a dashboard full of clicks."
           },
           "seoAeo": {
             "title": "SEO/AEO",
-            "description": "Ranking in Google isn't the whole game anymore. When someone asks an AI who you are, \"no idea\" shouldn't be the answer."
+            "description": "Google and AI: we make sure that when someone asks who you are, the answer isn't 'no idea'."
           }
         }
       },
@@ -84,15 +84,15 @@
         "items": {
           "prototyping": {
             "title": "Prototyping (PoC)",
-            "description": "From idea to something you can click through in weeks—not after three rounds of slides. Cheap failures welcome; guessing in meetings, less so."
+            "description": "From idea to something tangible in weeks, not quarters. Getting it wrong early is built into the price."
           },
           "automation": {
             "title": "Automation",
-            "description": "That report stitched together from five tabs every week? Retire the ritual. We automate the boring bits so your team can do the work you actually hired humans for."
+            "description": "That weekly report stitched from five tabs? Gone. Your team gets back to the work that actually matters."
           },
           "legacyReplacement": {
             "title": "Legacy Replacement",
-            "description": "Yesterday's hero system is today's handbrake. We replace it in steps—no big-bang scare tactics, no pretending nothing's smoldering."
+            "description": "Step by step, no big-bang drama. Old system out, ambitions back on track."
           }
         }
       },
@@ -102,15 +102,15 @@
         "items": {
           "dataCentralization": {
             "title": "Data Centralization",
-            "description": "Data everywhere and nowhere at once? We help build one place you trust—fewer \"which file is gospel?\" moments."
+            "description": "One place you dare to look at. No more 'which file is gospel?' stress."
           },
           "dashboarding": {
             "title": "Dashboarding",
-            "description": "Dashboards you actually open. Not a trophy wall of numbers—something your team uses to decide what to do on Monday."
+            "description": "Dashboards people actually open. The kind of overview that gives Monday a direction."
           },
           "talkToData": {
             "title": "Talk to Data",
-            "description": "Ask your data a plain-language question like you'd ping a teammate—minus the small talk, plus an answer while you still remember why you asked."
+            "description": "Ask your data a question in plain language. Answer without small talk, while you still remember why you asked."
           }
         }
       }
