@@ -172,8 +172,8 @@ export default function V2Cases() {
           <div>
             <SectionLabel index="02" label={lang === 'en' ? 'Selected work' : 'Geselecteerd werk'} />
             <h2 className="mt-5 max-w-3xl font-host text-3xl font-light leading-[1.0] tracking-tight md:text-[3.5rem]">
-              {lang === 'en' ? 'Built. Shipped. ' : 'Gebouwd. Gelanceerd. '}
-              <span className="font-medium text-bla-lime">{lang === 'en' ? 'Worked.' : 'Gewerkt.'}</span>
+              {lang === 'en' ? 'Real work. ' : 'Echt werk. '}
+              <span className="font-medium text-bla-lime">{lang === 'en' ? 'Real results.' : 'Echt resultaat.'}</span>
             </h2>
           </div>
           <p className="max-w-md font-host text-base leading-relaxed text-white/60 md:text-[17px]">

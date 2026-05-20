@@ -199,7 +199,7 @@ export default function V2Pillars() {
                     { k: '48h', l: lang === 'en' ? 'first proposal' : 'eerste voorstel' },
                     { k: '14d', l: lang === 'en' ? 'first prototype' : 'eerste prototype' },
                     { k: '1:1', l: lang === 'en' ? 'with founders' : 'met de oprichters' },
-                    { k: '0', l: lang === 'en' ? 'powerpoint marathons' : 'powerpoint marathons' },
+                    { k: '0', l: lang === 'en' ? 'bullsh*t' : 'bullsh*t' },
                   ].map((s) => (
                     <div key={s.k} className="rounded-xl border border-white/8 bg-white/[0.02] p-4">
                       <div className="font-host text-2xl font-medium text-white md:text-3xl">{s.k}</div>
