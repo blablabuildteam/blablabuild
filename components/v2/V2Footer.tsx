@@ -67,9 +67,7 @@ export default function V2Footer() {
           <div className="mt-3 flex flex-col gap-1 font-mono text-[11px] uppercase tracking-[0.32em] text-white/40 md:flex-row md:items-center md:gap-4 md:text-xs">
             <span>Talk less.</span>
             <span aria-hidden className="hidden h-px w-6 bg-white/20 md:block" />
-            <span>Build more.</span>
-            <span aria-hidden className="hidden h-px w-6 bg-white/20 md:block" />
-            <span className="text-bla-lime/80">Built in Amsterdam.</span>
+            <span className="text-bla-lime/80">Build more.</span>
           </div>
         </div>
       </div>
@@ -83,7 +81,7 @@ export default function V2Footer() {
               { href: '#cases', label: t('cases') },
               { href: '#aanpak', label: t('approach') },
               { href: '#over-ons', label: t('team') },
-              { href: '/privacy', label: t('privacy') },
+              { href: `/${locale}/privacy`, label: t('privacy') },
             ].map((l) => (
               <a
                 key={l.label}
