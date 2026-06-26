@@ -172,42 +172,139 @@ export default function V2Pillars() {
                 background: 'radial-gradient(circle 600px at 100% 0%, rgba(206,255,0,0.14), transparent 60%)',
               }}
             />
-            <div className="relative grid grid-cols-12 gap-6">
-              <div className="col-span-12 md:col-span-7">
-                <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-bla-lime/85">
-                  § {lang === 'en' ? 'strategy' : 'strategie'}
+            <div className="relative">
+              {/* Header row: copy + stats */}
+              <div className="grid grid-cols-12 gap-6">
+                <div className="col-span-12 md:col-span-7">
+                  <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-bla-lime/85">
+                    § {lang === 'en' ? 'from pain to plan — fast' : 'snel van pijn naar plan'}
+                  </div>
+                  <h3 className="mt-4 font-host text-2xl font-light leading-tight text-white md:text-4xl">
+                    {lang === 'en' ? 'AI Strategy' : 'AI Strategie'}
+                  </h3>
+                  <p className="mt-5 max-w-2xl font-host text-base leading-relaxed text-white/70 md:text-[17px]">
+                    {lang === 'en'
+                      ? 'Don\u2019t know where to start with AI? We\u2019ve been there \u2014 and guided organisations through it at scale. We combine hands-on production experience with strategic business knowledge to pinpoint exactly where AI delivers maximum impact. No guesswork, no generic playbooks: a concrete roadmap built on 40+ years of charting and executing AI transformations.'
+                      : 'Niet weten waar te beginnen met AI? Wij hebben het pad al vaker bewandeld \u2014 en organisaties op schaal door deze transformatie geloodst. We combineren hands-on productie-ervaring met strategisch bedrijfsinzicht om precies te bepalen waar AI de meeste impact levert. Geen giswerk, geen generieke playbooks: een concreet plan gebouwd op 40+ jaar ervaring in het uitzetten en uitvoeren van AI-transformaties.'}
+                  </p>
+                  <a
+                    href="mailto:team@blablabuild.com"
+                    className="group mt-7 inline-flex items-center gap-2 rounded-full border border-bla-lime/40 bg-bla-lime/10 px-5 py-2.5 text-sm font-medium text-bla-lime transition-colors hover:bg-bla-lime/20 md:text-base"
+                  >
+                    {lang === 'en' ? 'Book a discovery session' : 'Plan een discovery sessie'}
+                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </a>
                 </div>
-                <h3 className="mt-4 font-host text-2xl font-light leading-tight text-white md:text-4xl">
-                  {lang === 'en' ? 'From pain to plan — fast.' : 'Van pijn naar plan — snel.'}
-                </h3>
-                <p className="mt-5 max-w-2xl font-host text-base leading-relaxed text-white/70 md:text-[17px]">
-                  {lang === 'en'
-                    ? 'No intake marathon. After one conversation you have direction and concrete options — and we start the moment you say go. 40+ years in tough environments: we spot where things get stuck.'
-                    : 'Geen intakemarathon. Na een eerste gesprek heb je richting en concrete opties — en we starten zodra jij het sein geeft. 40+ jaar in zware omgevingen: we zien snel waar het vastloopt.'}
-                </p>
-                <a
-                  href="mailto:team@blablabuild.com"
-                  className="group mt-7 inline-flex items-center gap-2 text-sm font-medium text-bla-lime md:text-base"
-                >
-                  team@blablabuild.com
-                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </a>
-              </div>
-              <div className="col-span-12 md:col-span-5">
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { k: '48h', l: lang === 'en' ? 'first proposal' : 'eerste voorstel' },
-                    { k: '14d', l: lang === 'en' ? 'first prototype' : 'eerste prototype' },
-                    { k: '1:1', l: lang === 'en' ? 'with founders' : 'met de oprichters' },
-                    { k: '0', l: lang === 'en' ? 'bullsh*t' : 'bullsh*t' },
-                  ].map((s) => (
-                    <div key={s.k} className="rounded-xl border border-white/8 bg-white/[0.02] p-4">
-                      <div className="font-host text-2xl font-medium text-white md:text-3xl">{s.k}</div>
-                      <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-white/50">
-                        {s.l}
+                <div className="col-span-12 md:col-span-5">
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { k: '1 dag', l: lang === 'en' ? 'discovery session' : 'discovery sessie' },
+                      { k: '2 wkn', l: lang === 'en' ? 'roadmap delivery' : 'roadmap oplevering' },
+                      { k: '1:1', l: lang === 'en' ? 'with founders' : 'met de oprichters' },
+                      { k: 'ROI', l: lang === 'en' ? 'per business case' : 'per business case' },
+                    ].map((s) => (
+                      <div key={s.k} className="rounded-xl border border-white/8 bg-white/[0.02] p-4">
+                        <div className="font-host text-2xl font-medium text-white md:text-3xl">{s.k}</div>
+                        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-white/50">
+                          {s.l}
+                        </div>
                       </div>
-                    </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Process stepper */}
+              <div className="mt-10 border-t border-white/8 pt-10 md:mt-14 md:pt-14">
+                <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/50">
+                  {lang === 'en' ? 'Our process' : 'Ons proces'}
+                </div>
+
+                {/* Desktop: horizontal */}
+                <div className="relative mt-6 hidden md:grid md:grid-cols-4 md:gap-0">
+                  {/* Connecting line */}
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute left-[12.5%] right-[12.5%] top-[28px] h-px bg-gradient-to-r from-bla-lime/40 via-bla-lime/20 to-bla-lime/40"
+                  />
+                  {(lang === 'en'
+                    ? [
+                        { title: 'Discovery', desc: 'We discuss your operations, processes and tool usage on-site.' },
+                        { title: 'Opportunities', desc: 'We identify the biggest opportunities and existing pain points.' },
+                        { title: 'Prioritise', desc: 'We rank on impact, effort, confidence and reach.' },
+                        { title: 'AI Roadmap', desc: 'Concrete business cases with ROI estimate per activity.' },
+                      ]
+                    : [
+                        { title: 'Discovery', desc: 'We bespreken jullie bedrijfsvoering, processen en toolgebruik on-site.' },
+                        { title: 'Kansen & pijnpunten', desc: 'We identificeren de grootste kansen en bestaande knelpunten.' },
+                        { title: 'Prioriteren', desc: 'We rangschikken op impact, effort, confidence en reach.' },
+                        { title: 'AI Roadmap', desc: 'Concrete business cases met ROI-schatting per activiteit.' },
+                      ]
+                  ).map((step, i) => (
+                    <motion.div
+                      key={step.title}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: '-60px' }}
+                      transition={{ duration: 0.5, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
+                      className="relative flex flex-col items-center text-center"
+                    >
+                      <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-full border border-bla-lime/30 bg-[#0a0b0e]">
+                        <span className="font-mono text-xs font-medium text-bla-lime">
+                          {String(i + 1).padStart(2, '0')}
+                        </span>
+                      </div>
+                      <h4 className="mt-4 font-host text-sm font-medium text-white">{step.title}</h4>
+                      <p className="mt-2 max-w-[180px] font-host text-xs leading-relaxed text-white/55">
+                        {step.desc}
+                      </p>
+                    </motion.div>
                   ))}
+                </div>
+
+                {/* Mobile: vertical */}
+                <div className="relative mt-6 md:hidden">
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute bottom-0 left-[19px] top-0 w-px bg-gradient-to-b from-bla-lime/40 via-bla-lime/20 to-bla-lime/40"
+                  />
+                  <div className="flex flex-col gap-6">
+                    {(lang === 'en'
+                      ? [
+                          { title: 'Discovery', desc: 'We discuss your operations, processes and tool usage on-site.' },
+                          { title: 'Opportunities', desc: 'We identify the biggest opportunities and existing pain points.' },
+                          { title: 'Prioritise', desc: 'We rank on impact, effort, confidence and reach.' },
+                          { title: 'AI Roadmap', desc: 'Concrete business cases with ROI estimate per activity.' },
+                        ]
+                      : [
+                          { title: 'Discovery', desc: 'We bespreken jullie bedrijfsvoering, processen en toolgebruik on-site.' },
+                          { title: 'Kansen & pijnpunten', desc: 'We identificeren de grootste kansen en bestaande knelpunten.' },
+                          { title: 'Prioriteren', desc: 'We rangschikken op impact, effort, confidence en reach.' },
+                          { title: 'AI Roadmap', desc: 'Concrete business cases met ROI-schatting per activiteit.' },
+                        ]
+                    ).map((step, i) => (
+                      <motion.div
+                        key={step.title}
+                        initial={{ opacity: 0, x: -10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, margin: '-40px' }}
+                        transition={{ duration: 0.4, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                        className="relative flex items-start gap-4 pl-1"
+                      >
+                        <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-bla-lime/30 bg-[#0a0b0e]">
+                          <span className="font-mono text-[10px] font-medium text-bla-lime">
+                            {String(i + 1).padStart(2, '0')}
+                          </span>
+                        </div>
+                        <div className="pt-1.5">
+                          <h4 className="font-host text-sm font-medium text-white">{step.title}</h4>
+                          <p className="mt-1 font-host text-xs leading-relaxed text-white/55">
+                            {step.desc}
+                          </p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
