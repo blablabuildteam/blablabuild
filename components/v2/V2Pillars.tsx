@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
-import { ArrowUpRight } from 'lucide-react';
 import { SectionLabel } from './V2Atoms';
+import V2DirectHelp from './V2DirectHelp';
 
 type PillarKey = 'marketing' | 'tooling' | 'data';
 
@@ -187,13 +187,16 @@ export default function V2Pillars() {
                       ? "Don't know where to start with AI? We've been there — and guided organisations through it at scale. No guesswork, no generic playbooks: a concrete roadmap built on 40+ years of executing AI transformations."
                       : 'Niet weten waar te beginnen met AI? Wij hebben het pad vaker bewandeld — en organisaties door deze transformatie geloodst. Geen giswerk, geen generieke playbooks: een concreet plan gebouwd op 40+ jaar ervaring.'}
                   </p>
-                  <a
-                    href="mailto:team@blablabuild.com"
-                    className="group mt-7 inline-flex items-center gap-2 rounded-full border border-bla-lime/40 bg-bla-lime/10 px-5 py-2.5 text-sm font-medium text-bla-lime transition-colors hover:bg-bla-lime/20 md:text-base"
-                  >
-                    {lang === 'en' ? 'Book a discovery session' : 'Plan een discovery sessie'}
-                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                  </a>
+                  <div className="mt-7">
+                    <V2DirectHelp
+                      label={lang === 'en' ? 'Book a discovery session' : 'Plan een discovery sessie'}
+                      variant="outline"
+                      tone="dark"
+                      source="v2-pillars-discovery"
+                      openUpOnDesktop
+                      showMail
+                    />
+                  </div>
                 </div>
                 <div className="col-span-12 md:col-span-5">
                   <div className="grid grid-cols-2 gap-3">

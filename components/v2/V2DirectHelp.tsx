@@ -20,9 +20,12 @@ interface V2DirectHelpProps {
   className?: string;
   label?: string;
   source?: string;
+  showMail?: boolean;
 }
 
 const CALENDLY_URL = 'https://calendly.com/team-blablabuild/30min';
+
+const MAIL = 'team@blablabuild.com';
 
 export default function V2DirectHelp({
   variant = 'primary',
@@ -34,6 +37,7 @@ export default function V2DirectHelp({
   className = '',
   label,
   source = 'v2',
+  showMail = false,
 }: V2DirectHelpProps) {
   const locale = useLocale();
   const [open, setOpen] = useState(false);
@@ -96,6 +100,11 @@ export default function V2DirectHelp({
 
   const handleMeeting = () => {
     trackEvent('v2_help_meeting_clicked', { source });
+    setOpen(false);
+  };
+
+  const handleMail = () => {
+    trackEvent('v2_help_mail_clicked', { source });
     setOpen(false);
   };
 
@@ -253,6 +262,51 @@ export default function V2DirectHelp({
                   />
                 </svg>
               </button>
+
+              {showMail && (
+                <>
+                  <div className="my-1 h-px bg-white/8" />
+                  <a
+                    href={`mailto:${MAIL}`}
+                    role="menuitem"
+                    onClick={handleMail}
+                    className="group/i flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-white/5"
+                  >
+                    <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-white/70">
+                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm0 0l8 9 8-9"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block whitespace-nowrap font-host text-[15px] font-medium text-white">
+                        {locale === 'en' ? 'Send an email' : 'Stuur een mail'}
+                      </span>
+                      <span className="mt-0.5 block font-mono text-[11px] text-white/45">
+                        {MAIL}
+                      </span>
+                    </span>
+                    <svg
+                      className="mt-1 h-3.5 w-3.5 text-white/45 transition-transform group-hover/i:translate-x-0.5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                    >
+                      <path
+                        d="M5 12h14M13 6l6 6-6 6"
+                        stroke="currentColor"
+                        strokeWidth="1.75"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </a>
+                </>
+              )}
             </motion.div>
           </>
         )}
