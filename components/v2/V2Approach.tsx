@@ -47,8 +47,8 @@ export default function V2Approach() {
           <div className="col-span-12 md:col-span-5 md:pt-12">
             <p className="max-w-md font-host text-base leading-relaxed text-white/75 md:text-lg">
               {lang === 'en'
-                ? 'A simple flow that compresses the distance between problem and outcome.'
-                : 'Een simpele flow die de afstand tussen probleem en resultaat verkleint.'}
+                ? 'Three steps. Problem to result.'
+                : 'Drie stappen. Van probleem naar resultaat.'}
             </p>
           </div>
         </div>
