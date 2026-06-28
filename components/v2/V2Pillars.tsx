@@ -195,6 +195,7 @@ export default function V2Pillars() {
                       source="v2-pillars-discovery"
                       openUpOnDesktop
                       showMail
+                      hideAi
                     />
                   </div>
                 </div>

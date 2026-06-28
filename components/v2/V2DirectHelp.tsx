@@ -21,6 +21,7 @@ interface V2DirectHelpProps {
   label?: string;
   source?: string;
   showMail?: boolean;
+  hideAi?: boolean;
 }
 
 const CALENDLY_URL = 'https://calendly.com/team-blablabuild/30min';
@@ -38,6 +39,7 @@ export default function V2DirectHelp({
   label,
   source = 'v2',
   showMail = false,
+  hideAi = false,
 }: V2DirectHelpProps) {
   const locale = useLocale();
   const [open, setOpen] = useState(false);
@@ -216,7 +218,7 @@ export default function V2DirectHelp({
                 </svg>
               </a>
 
-              <button
+              {!hideAi && <button
                 type="button"
                 role="menuitem"
                 onClick={handleAiAdvice}
@@ -261,7 +263,7 @@ export default function V2DirectHelp({
                     strokeLinejoin="round"
                   />
                 </svg>
-              </button>
+              </button>}
 
               {showMail && (
                 <>
