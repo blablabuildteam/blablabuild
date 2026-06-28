@@ -174,7 +174,7 @@ export default function V2Pillars() {
             />
             <div className="relative">
               {/* Header row: copy + stats */}
-              <div className="grid grid-cols-12 gap-6">
+              <div className="grid grid-cols-12 items-center gap-6">
                 <div className="col-span-12 md:col-span-7">
                   <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-bla-lime/85">
                     § {lang === 'en' ? 'from pain to plan — fast' : 'snel van pijn naar plan'}
@@ -184,8 +184,8 @@ export default function V2Pillars() {
                   </h3>
                   <p className="mt-5 max-w-2xl font-host text-base leading-relaxed text-white/70 md:text-[17px]">
                     {lang === 'en'
-                      ? 'Don\u2019t know where to start with AI? We\u2019ve been there \u2014 and guided organisations through it at scale. We combine hands-on production experience with strategic business knowledge to pinpoint exactly where AI delivers maximum impact. No guesswork, no generic playbooks: a concrete roadmap built on 40+ years of charting and executing AI transformations.'
-                      : 'Niet weten waar te beginnen met AI? Wij hebben het pad al vaker bewandeld \u2014 en organisaties op schaal door deze transformatie geloodst. We combineren hands-on productie-ervaring met strategisch bedrijfsinzicht om precies te bepalen waar AI de meeste impact levert. Geen giswerk, geen generieke playbooks: een concreet plan gebouwd op 40+ jaar ervaring in het uitzetten en uitvoeren van AI-transformaties.'}
+                      ? "Don't know where to start with AI? We've been there — and guided organisations through it at scale. No guesswork, no generic playbooks: a concrete roadmap built on 40+ years of executing AI transformations."
+                      : 'Niet weten waar te beginnen met AI? Wij hebben het pad vaker bewandeld — en organisaties door deze transformatie geloodst. Geen giswerk, geen generieke playbooks: een concreet plan gebouwd op 40+ jaar ervaring.'}
                   </p>
                   <a
                     href="mailto:team@blablabuild.com"

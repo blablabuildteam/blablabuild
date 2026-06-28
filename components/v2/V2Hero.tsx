@@ -130,7 +130,7 @@ export default function V2Hero() {
     <section
       ref={containerRef}
       id="hero"
-      className="relative flex h-[100svh] w-full flex-col overflow-hidden bg-[#0a0b0e] pt-24 md:pt-28"
+      className="relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-[#0a0b0e] pt-24 md:h-[100svh] md:pt-28"
     >
       <motion.div style={{ y: yBg }} className="pointer-events-none absolute inset-0 -z-10">
         <div
