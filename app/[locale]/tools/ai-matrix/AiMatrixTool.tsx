@@ -261,6 +261,9 @@ export default function AiMatrixTool() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  // 'sync'  = backend (Vercel KV) live, shared across devices
+  // 'local' = no backend, stored on this device only
+  const [storageMode, setStorageMode] = useState<'sync' | 'local'>('local');
 
   // Form state
   const [addStep, setAddStep] = useState<0 | 1>(0);
@@ -274,6 +277,29 @@ export default function AiMatrixTool() {
   const [copied, setCopied] = useState(false);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // ── Storage helpers ────────────────────────────────────────────────────────
+
+  const lsKey = (sid: string) => `ai-matrix:${sid}`;
+
+  const readLocal = (sid: string): UseCase[] => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const raw = window.localStorage.getItem(lsKey(sid));
+      return raw ? (JSON.parse(raw) as UseCase[]) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const writeLocal = (sid: string, cases: UseCase[]) => {
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.setItem(lsKey(sid), JSON.stringify(cases));
+    } catch {
+      // ignore quota / private mode errors
+    }
+  };
+
   // ── API helpers ──────────────────────────────────────────────────────────
 
   const fetchUseCases = useCallback(async (sid: string, silent = false) => {
@@ -281,35 +307,74 @@ export default function AiMatrixTool() {
     try {
       const res = await fetch(`/api/matrix-sessions/${sid}`);
       const data = await res.json();
-      setUseCases(data.useCases ?? []);
+      if (data.kv) {
+        // Backend live: server is the source of truth, mirror to local cache.
+        setStorageMode('sync');
+        setUseCases(data.useCases ?? []);
+        writeLocal(sid, data.useCases ?? []);
+      } else {
+        // No backend: fall back to whatever is stored on this device.
+        setStorageMode('local');
+        setUseCases(readLocal(sid));
+      }
       setLastUpdated(new Date());
     } catch {
-      // ignore
+      setStorageMode('local');
+      setUseCases(readLocal(sid));
     } finally {
       setIsSyncing(false);
     }
   }, []);
 
   const addUseCase = async (uc: UseCase) => {
-    const res = await fetch(`/api/matrix-sessions/${sessionId}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(uc),
+    // Optimistic update + local cache so it always shows up immediately.
+    setUseCases((prev) => {
+      const next = [...prev, uc];
+      writeLocal(sessionId, next);
+      return next;
     });
-    const data = await res.json();
-    if (data.useCases) setUseCases(data.useCases);
     setLastUpdated(new Date());
+    try {
+      const res = await fetch(`/api/matrix-sessions/${sessionId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(uc),
+      });
+      const data = await res.json();
+      if (data.kv && data.useCases) {
+        setStorageMode('sync');
+        setUseCases(data.useCases);
+        writeLocal(sessionId, data.useCases);
+      } else {
+        setStorageMode('local');
+      }
+    } catch {
+      setStorageMode('local');
+    }
   };
 
   const removeUseCase = async (id: string) => {
-    const res = await fetch(`/api/matrix-sessions/${sessionId}`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
+    setUseCases((prev) => {
+      const next = prev.filter((uc) => uc.id !== id);
+      writeLocal(sessionId, next);
+      return next;
     });
-    const data = await res.json();
-    if (data.useCases) setUseCases(data.useCases);
     setLastUpdated(new Date());
+    try {
+      const res = await fetch(`/api/matrix-sessions/${sessionId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      const data = await res.json();
+      if (data.kv && data.useCases) {
+        setStorageMode('sync');
+        setUseCases(data.useCases);
+        writeLocal(sessionId, data.useCases);
+      }
+    } catch {
+      setStorageMode('local');
+    }
   };
 
   // ── Polling ───────────────────────────────────────────────────────────────
@@ -779,13 +844,18 @@ export default function AiMatrixTool() {
 
           {inSession && (
             <div className="flex items-center gap-3">
-              {/* Sync indicator */}
-              <div className="hidden items-center gap-1.5 md:flex">
-                <RefreshCw className={`h-3 w-3 text-white/30 ${isSyncing ? 'animate-spin' : ''}`} />
-                <span className="font-mono text-[10px] text-white/30">
-                  {formatLastUpdated()}
-                </span>
-              </div>
+              {/* Storage / sync indicator */}
+              {storageMode === 'sync' ? (
+                <div className="hidden items-center gap-1.5 md:flex">
+                  <RefreshCw className={`h-3 w-3 text-bla-lime/70 ${isSyncing ? 'animate-spin' : ''}`} />
+                  <span className="font-mono text-[10px] text-bla-lime/70">Live · {formatLastUpdated()}</span>
+                </div>
+              ) : (
+                <div className="hidden items-center gap-1.5 rounded-full border border-amber-400/25 bg-amber-400/10 px-2 py-0.5 md:flex">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                  <span className="font-mono text-[10px] text-amber-400">This device only</span>
+                </div>
+              )}
 
               {/* Participants count */}
               <div className="flex items-center gap-1.5">
@@ -812,18 +882,24 @@ export default function AiMatrixTool() {
 
         {/* Session bar */}
         {inSession && (
-          <div className="border-t border-bla-lime/10 bg-bla-lime/5">
-            <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between px-5 py-1.5 sm:px-8">
-              <span className="font-mono text-[10px] text-bla-lime/60">
-                Session: <span className="font-medium text-bla-lime">{sessionLabel}</span>
+          <div className={`border-t ${storageMode === 'sync' ? 'border-bla-lime/10 bg-bla-lime/5' : 'border-amber-400/10 bg-amber-400/[0.04]'}`}>
+            <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-3 px-5 py-1.5 sm:px-8">
+              <span className={`font-mono text-[10px] ${storageMode === 'sync' ? 'text-bla-lime/60' : 'text-amber-400/70'}`}>
+                Session: <span className={`font-medium ${storageMode === 'sync' ? 'text-bla-lime' : 'text-amber-400'}`}>{sessionLabel}</span>
               </span>
-              <button onClick={copySessionId}
-                className="flex items-center gap-1.5 font-mono text-[10px] text-white/40 transition-colors hover:text-white">
-                <span>Code: <span className="font-medium text-white/70">{sessionId}</span></span>
-                {copied
-                  ? <Check className="h-3 w-3 text-bla-lime" />
-                  : <Copy className="h-3 w-3" />}
-              </button>
+              {storageMode === 'sync' ? (
+                <button onClick={copySessionId}
+                  className="flex items-center gap-1.5 font-mono text-[10px] text-white/40 transition-colors hover:text-white">
+                  <span>Code: <span className="font-medium text-white/70">{sessionId}</span></span>
+                  {copied
+                    ? <Check className="h-3 w-3 text-bla-lime" />
+                    : <Copy className="h-3 w-3" />}
+                </button>
+              ) : (
+                <span className="truncate font-mono text-[10px] text-amber-400/60">
+                  Saved on this device only — connect Vercel KV to sync across devices
+                </span>
+              )}
             </div>
           </div>
         )}
