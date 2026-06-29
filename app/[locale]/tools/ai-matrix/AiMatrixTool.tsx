@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, ChevronRight, ArrowLeft, BookOpen, BarChart3, Copy, Check, Users, RefreshCw } from 'lucide-react';
+import { Plus, X, ChevronRight, ArrowLeft, BookOpen, BarChart3, Copy, Check, Users, RefreshCw, Info } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -43,19 +43,19 @@ const CRITERIA: {
   weight: number;
   scaleLabels: [string, string];
 }[] = [
-  { key: 'businessImpact', label: 'Business Impact', question: 'How much time, revenue or quality does this deliver?', weight: 0.3, scaleLabels: ['Minimal', 'Maximum'] },
-  { key: 'frequency', label: 'Frequency', question: 'How often does this process occur?', weight: 0.2, scaleLabels: ['Rarely', 'Continuously'] },
-  { key: 'aiSuitability', label: 'AI Suitability', question: 'Is the work repetitive, text-, data- or decision-driven?', weight: 0.2, scaleLabels: ['Barely', 'Perfect fit'] },
-  { key: 'implementation', label: 'Implementation speed', question: 'How quickly can we realise this?', weight: 0.1, scaleLabels: ['Months', '< 2 weeks'] },
-  { key: 'risk', label: 'Risk (low = better)', question: 'How low are privacy, compliance and operational risks?', weight: 0.1, scaleLabels: ['High risk', 'No risk'] },
-  { key: 'adoption', label: 'Adoption', question: 'Will employees actually use this?', weight: 0.1, scaleLabels: ['Unlikely', 'Certain'] },
+  { key: 'businessImpact', label: 'Impact', question: 'How much time, money or quality does this save?', weight: 0.3, scaleLabels: ['A little', 'A lot'] },
+  { key: 'frequency', label: 'How often', question: 'How often does this happen?', weight: 0.2, scaleLabels: ['Rarely', 'All the time'] },
+  { key: 'aiSuitability', label: 'Fit for AI', question: 'Is the work repetitive or based on text and data?', weight: 0.2, scaleLabels: ['Not really', 'Perfect fit'] },
+  { key: 'implementation', label: 'Speed to build', question: 'How quickly can we build this?', weight: 0.1, scaleLabels: ['Months', 'Under 2 weeks'] },
+  { key: 'risk', label: 'Low risk', question: 'How safe is this for privacy and the business?', weight: 0.1, scaleLabels: ['Risky', 'Very safe'] },
+  { key: 'adoption', label: 'Will it be used', question: 'Will people actually use this?', weight: 0.1, scaleLabels: ['Unlikely', 'For sure'] },
 ];
 
-const KNOCKOUT_QUESTIONS: { key: keyof KnockoutAnswers; q: string }[] = [
-  { key: 'recurring', q: 'Is this a recurring problem?' },
-  { key: 'costly', q: 'Does it demonstrably cost time, money or quality today?' },
-  { key: 'dataAvailable', q: 'Is sufficient data available?' },
-  { key: 'standardized', q: 'Is the process largely standardised?' },
+const KNOCKOUT_QUESTIONS: { key: keyof KnockoutAnswers; q: string; hint: string }[] = [
+  { key: 'recurring', q: 'Does this happen again and again?', hint: 'A task you repeat often — not a one-off.' },
+  { key: 'costly', q: 'Is it costing you now?', hint: 'It eats up time, money or quality today.' },
+  { key: 'dataAvailable', q: 'Do you have the data for it?', hint: 'The needed info exists somewhere you can reach.' },
+  { key: 'standardized', q: 'Are the steps mostly the same each time?', hint: 'The work follows a clear, repeatable pattern.' },
 ];
 
 const WORKSHOP_QS = [
@@ -588,7 +588,7 @@ export default function AiMatrixTool() {
       </button>
 
       <div className="mb-8 flex items-center gap-3">
-        {['Knock-out check', 'Score & result'].map((label, i) => (
+        {['Quick check', 'Score & result'].map((label, i) => (
           <div key={label} className="flex items-center gap-2">
             <div className={`flex h-7 w-7 items-center justify-center rounded-full border font-mono text-xs font-medium transition-colors ${
               addStep > i ? 'border-bla-lime bg-bla-lime text-[#0a0b0e]'
@@ -618,12 +618,24 @@ export default function AiMatrixTool() {
               className="w-full resize-none rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 font-host text-white placeholder-white/25 outline-none focus:border-bla-lime/50" />
           </div>
           <div>
-            <p className="mb-1 font-mono text-[11px] uppercase tracking-[0.22em] text-white/50">§ knock-out check</p>
-            <p className="mb-4 text-xs text-white/35">One 'No' = probably not a no-regret use case.</p>
+            <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.22em] text-white/50">§ quick check</p>
+            <div className="mb-4 flex items-start gap-2.5 rounded-xl border border-bla-lime/20 bg-bla-lime/[0.06] p-3.5">
+              <Info className="mt-0.5 h-4 w-4 shrink-0 text-bla-lime/80" />
+              <p className="text-xs leading-relaxed text-white/65">
+                Four quick yes/no questions to see if this idea is worth scoring.
+                A <span className="font-medium text-bla-lime">no-regret use case</span> is one you'll
+                be glad you built — it solves a real, repeating problem with data you already have.
+                Answer <span className="font-medium text-white">No</span> to any question and it's
+                probably not the right place to start.
+              </p>
+            </div>
             <div className="space-y-3">
-              {KNOCKOUT_QUESTIONS.map(({ key, q }) => (
+              {KNOCKOUT_QUESTIONS.map(({ key, q, hint }) => (
                 <div key={key} className="flex items-center justify-between gap-4 rounded-xl border border-white/8 bg-white/[0.02] px-4 py-3">
-                  <span className="flex-1 text-sm leading-snug text-white/75">{q}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm leading-snug text-white/85">{q}</p>
+                    <p className="mt-0.5 text-xs leading-snug text-white/35">{hint}</p>
+                  </div>
                   <YesNo value={formKO[key]} onChange={(v) => setFormKO((prev) => ({ ...prev, [key]: v }))} />
                 </div>
               ))}
@@ -633,7 +645,7 @@ export default function AiMatrixTool() {
           {koFailed && koDone && (
             <div className="rounded-xl border border-red-400/20 bg-red-400/10 p-4">
               <p className="text-sm leading-relaxed text-red-400">
-                ⚠️ One or more knock-out answers are 'No'. This is likely not a no-regret use case — but you can still continue and assess it yourself.
+                ⚠️ You answered No to at least one question. This is probably not the easiest place to start — but you can keep going and score it anyway.
               </p>
             </div>
           )}
