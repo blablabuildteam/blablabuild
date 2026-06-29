@@ -1,0 +1,10 @@
+---
+description: Geen commit/push door de AI; bij commit gaat het live
+alwaysApply: true
+---
+
+# Geen commit, geen push – anders gaat het live
+
+- **Niet committen** en **niet pushen**. In dit project gaat een commit (naar main) direct live.
+- Alleen **bestanden lokaal aanpassen**. De gebruiker commit en deployt zelf wanneer hij/zij klaar is.
+- `git add`, `git commit` en `git push` alleen uitvoeren als de gebruiker dat **expliciet** vraagt en begrijpt dat het dan live gaat.
