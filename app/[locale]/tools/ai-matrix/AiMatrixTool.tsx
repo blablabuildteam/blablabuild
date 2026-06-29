@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, ChevronRight, ArrowLeft, BookOpen, BarChart3, Copy, Check, Users, RefreshCw, Info } from 'lucide-react';
+import QRCode from 'qrcode';
+import { Plus, X, ChevronRight, ArrowLeft, BookOpen, BarChart3, Copy, Check, Users, RefreshCw, Info, Share2, Download, Trophy, AlertTriangle } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type QuadrantKey = 'quick' | 'strategic' | 'low' | 'later';
-type View = 'landing' | 'matrix' | 'add' | 'workshop';
+type View = 'landing' | 'matrix' | 'add' | 'workshop' | 'results';
 
 interface Scores {
   businessImpact: number;
@@ -119,6 +120,37 @@ function makeId(): string {
   return Math.random().toString(36).slice(2, 10);
 }
 
+// risk score is 1 (risky) – 5 (very safe); flag the low end
+function isHighRisk(uc: UseCase): boolean {
+  return uc.scores.risk > 0 && uc.scores.risk <= 2;
+}
+
+function exportCsv(useCases: UseCase[], sessionLabel: string) {
+  const headers = [
+    'Use case', 'Description', 'Added by', 'Quadrant', 'Total score',
+    ...CRITERIA.map((c) => c.label),
+    'High risk',
+  ];
+  const rows = useCases.map((uc) => [
+    uc.name,
+    uc.description,
+    uc.addedBy ?? '',
+    Q_META[getQuadrant(uc)].label,
+    calcScore(uc.scores).toFixed(2),
+    ...CRITERIA.map((c) => String(uc.scores[c.key])),
+    isHighRisk(uc) ? 'yes' : 'no',
+  ]);
+  const esc = (v: string) => `"${String(v).replace(/"/g, '""')}"`;
+  const csv = [headers, ...rows].map((r) => r.map(esc).join(',')).join('\r\n');
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ai-matrix-${sessionLabel.replace(/\s+/g, '-').toLowerCase() || 'session'}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
 function Score5({ value, onChange }: { value: number; onChange: (n: number) => void }) {
@@ -216,12 +248,14 @@ function MatrixPlot({ useCases, hoveredId, onHover }: {
         const q = getQuadrant(uc);
         const color = Q_META[q].dot;
         const isHovered = hoveredId === uc.id;
+        const highRisk = isHighRisk(uc);
         const label = uc.name.length > 22 ? uc.name.slice(0, 20) + '…' : uc.name;
 
         return (
           <g key={uc.id} onMouseEnter={() => onHover(uc.id)} onMouseLeave={() => onHover(null)} style={{ cursor: 'pointer' }}>
             {isHovered && <circle cx={cx} cy={cy} r={20} fill={color} opacity={0.08} />}
             <circle cx={cx} cy={cy} r={isHovered ? 9 : 7} fill={color} opacity={isHovered ? 1 : 0.82} style={{ transition: 'r 0.15s, opacity 0.15s' }} />
+            {highRisk && <circle cx={cx} cy={cy} r={isHovered ? 12 : 10} fill="none" stroke="#f87171" strokeWidth="1.5" strokeDasharray="2 2" />}
             {isHovered && (
               <>
                 <rect x={cx - label.length * 3.5 - 8} y={cy - 30} width={label.length * 7 + 16} height={18} rx="4" fill="rgba(14,16,20,0.92)" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
@@ -275,7 +309,14 @@ export default function AiMatrixTool() {
   // UI state
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+  const [qrDataUrl, setQrDataUrl] = useState('');
+  const [toast, setToast] = useState<string | null>(null);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const knownIdsRef = useRef<Set<string>>(new Set());
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── Storage helpers ────────────────────────────────────────────────────────
 
@@ -300,6 +341,12 @@ export default function AiMatrixTool() {
     }
   };
 
+  const showToast = useCallback((msg: string) => {
+    setToast(msg);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setToast(null), 4000);
+  }, []);
+
   // ── API helpers ──────────────────────────────────────────────────────────
 
   const fetchUseCases = useCallback(async (sid: string, silent = false) => {
@@ -308,14 +355,26 @@ export default function AiMatrixTool() {
       const res = await fetch(`/api/matrix-sessions/${sid}`);
       const data = await res.json();
       if (data.kv) {
-        // Backend live: server is the source of truth, mirror to local cache.
+        const incoming: UseCase[] = data.useCases ?? [];
+        // Toast for use cases added by others since the last sync.
+        if (silent && knownIdsRef.current.size > 0) {
+          const fresh = incoming.filter((uc) => !knownIdsRef.current.has(uc.id));
+          if (fresh.length === 1) {
+            showToast(`${fresh[0].addedBy || 'Someone'} added "${fresh[0].name}"`);
+          } else if (fresh.length > 1) {
+            showToast(`${fresh.length} new use cases added`);
+          }
+        }
+        knownIdsRef.current = new Set(incoming.map((uc) => uc.id));
         setStorageMode('sync');
-        setUseCases(data.useCases ?? []);
-        writeLocal(sid, data.useCases ?? []);
+        setUseCases(incoming);
+        writeLocal(sid, incoming);
       } else {
         // No backend: fall back to whatever is stored on this device.
+        const local = readLocal(sid);
+        knownIdsRef.current = new Set(local.map((uc) => uc.id));
         setStorageMode('local');
-        setUseCases(readLocal(sid));
+        setUseCases(local);
       }
       setLastUpdated(new Date());
     } catch {
@@ -324,10 +383,11 @@ export default function AiMatrixTool() {
     } finally {
       setIsSyncing(false);
     }
-  }, []);
+  }, [showToast]);
 
   const addUseCase = async (uc: UseCase) => {
     // Optimistic update + local cache so it always shows up immediately.
+    knownIdsRef.current.add(uc.id);
     setUseCases((prev) => {
       const next = [...prev, uc];
       writeLocal(sessionId, next);
@@ -342,6 +402,7 @@ export default function AiMatrixTool() {
       });
       const data = await res.json();
       if (data.kv && data.useCases) {
+        knownIdsRef.current = new Set((data.useCases as UseCase[]).map((u) => u.id));
         setStorageMode('sync');
         setUseCases(data.useCases);
         writeLocal(sessionId, data.useCases);
@@ -380,7 +441,7 @@ export default function AiMatrixTool() {
   // ── Polling ───────────────────────────────────────────────────────────────
 
   useEffect(() => {
-    if (view === 'matrix' || view === 'add' || view === 'workshop') {
+    if (view !== 'landing') {
       fetchUseCases(sessionId, true);
       pollingRef.current = setInterval(() => fetchUseCases(sessionId, true), POLL_INTERVAL);
     }
@@ -388,6 +449,37 @@ export default function AiMatrixTool() {
       if (pollingRef.current) clearInterval(pollingRef.current);
     };
   }, [view, sessionId, fetchUseCases]);
+
+  // ── Share link + QR ─────────────────────────────────────────────────────────
+
+  const buildShare = useCallback(async (sid: string) => {
+    if (typeof window === 'undefined') return;
+    const url = `${window.location.origin}${window.location.pathname}?s=${encodeURIComponent(sid)}`;
+    setShareUrl(url);
+    try {
+      const dataUrl = await QRCode.toDataURL(url, {
+        margin: 1,
+        width: 220,
+        color: { dark: '#0a0b0e', light: '#ffffff' },
+      });
+      setQrDataUrl(dataUrl);
+    } catch {
+      setQrDataUrl('');
+    }
+  }, []);
+
+  // Auto-join when arriving via a shared link (?s=session-code)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const sid = new URLSearchParams(window.location.search).get('s');
+    if (sid) {
+      const clean = sid.trim().toLowerCase();
+      setSessionId(clean);
+      buildShare(clean);
+      fetchUseCases(clean).finally(() => setView('matrix'));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── Session actions ───────────────────────────────────────────────────────
 
@@ -397,9 +489,11 @@ export default function AiMatrixTool() {
     const sid = `${companyName.trim().toLowerCase().replace(/[^a-z0-9]/g, '-')}-${code}`;
     setIsLoading(true);
     setSessionId(sid);
+    await buildShare(sid);
     await fetchUseCases(sid);
     setIsLoading(false);
     setView('matrix');
+    setShowShare(true);
   };
 
   const joinSession = async () => {
@@ -407,6 +501,7 @@ export default function AiMatrixTool() {
     if (!sid) return;
     setIsLoading(true);
     setSessionId(sid);
+    await buildShare(sid);
     await fetchUseCases(sid);
     setIsLoading(false);
     setView('matrix');
@@ -449,6 +544,13 @@ export default function AiMatrixTool() {
     navigator.clipboard.writeText(sessionId).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
     });
   }
 
@@ -582,12 +684,20 @@ export default function AiMatrixTool() {
                   <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: Q_META[q].dot }} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-white">{uc.name}</p>
+                    {uc.description && (
+                      <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-white/40">{uc.description}</p>
+                    )}
                     <div className="mt-1 flex flex-wrap items-center gap-1.5">
                       <span className="font-mono text-[10px] text-white/35">{score.toFixed(1)} / 5.0</span>
                       <span className="rounded-full px-1.5 py-px font-mono text-[9px] uppercase tracking-[0.15em]"
                         style={{ color: Q_META[q].dot, backgroundColor: Q_META[q].dot + '22' }}>
                         {Q_META[q].label}
                       </span>
+                      {isHighRisk(uc) && (
+                        <span className="flex items-center gap-0.5 rounded-full bg-red-400/10 px-1.5 py-px font-mono text-[9px] text-red-400">
+                          <AlertTriangle className="h-2.5 w-2.5" /> risk
+                        </span>
+                      )}
                       {ko && <span className="rounded-full bg-red-400/10 px-1.5 py-px font-mono text-[9px] text-red-400">KO</span>}
                       {uc.addedBy && <span className="font-mono text-[9px] text-white/25">by {uc.addedBy}</span>}
                     </div>
@@ -602,11 +712,20 @@ export default function AiMatrixTool() {
           </div>
         )}
 
-        <button onClick={() => setView('workshop')}
-          className="mt-auto flex items-center gap-2 rounded-xl border border-white/8 px-4 py-3 text-sm text-white/50 transition-colors hover:border-white/15 hover:text-white/80">
-          <BookOpen className="h-4 w-4" />
-          Workshop questions
-        </button>
+        <div className="mt-auto flex flex-col gap-2">
+          {useCases.length > 0 && (
+            <button onClick={() => setView('results')}
+              className="flex items-center gap-2 rounded-xl border border-bla-lime/25 bg-bla-lime/5 px-4 py-3 text-sm text-bla-lime/90 transition-colors hover:bg-bla-lime/10">
+              <Trophy className="h-4 w-4" />
+              View results
+            </button>
+          )}
+          <button onClick={() => setView('workshop')}
+            className="flex items-center gap-2 rounded-xl border border-white/8 px-4 py-3 text-sm text-white/50 transition-colors hover:border-white/15 hover:text-white/80">
+            <BookOpen className="h-4 w-4" />
+            Workshop questions
+          </button>
+        </div>
       </div>
 
       {/* Matrix panel */}
@@ -821,6 +940,102 @@ export default function AiMatrixTool() {
     </div>
   );
 
+  const ResultsView = (() => {
+    const label = sessionId.split('-').slice(0, -1).join(' ') || sessionId;
+    const ranked = [...useCases].sort((a, b) => calcScore(b.scores) - calcScore(a.scores));
+    const quickWins = ranked.filter((uc) => getQuadrant(uc) === 'quick');
+    const counts = (Object.keys(Q_META) as QuadrantKey[]).reduce((acc, q) => {
+      acc[q] = useCases.filter((uc) => getQuadrant(uc) === q).length;
+      return acc;
+    }, {} as Record<QuadrantKey, number>);
+
+    return (
+      <div className="mx-auto w-full max-w-3xl">
+        <button onClick={() => setView('matrix')}
+          className="mb-6 flex items-center gap-2 text-sm text-white/45 transition-colors hover:text-white">
+          <ArrowLeft className="h-4 w-4" />
+          Back to matrix
+        </button>
+
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-bla-lime/70">§ results · {label}</p>
+            <h2 className="mt-1 font-host text-2xl font-light text-white">Prioritised use cases</h2>
+            <p className="mt-1 text-sm text-white/50">{useCases.length} use cases scored · {quickWins.length} no-regret quick wins</p>
+          </div>
+          <button onClick={() => exportCsv(useCases, label)}
+            className="flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-sm text-white/70 transition-colors hover:border-white/30 hover:text-white">
+            <Download className="h-4 w-4" />
+            Export CSV
+          </button>
+        </div>
+
+        {/* Quadrant counts */}
+        <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {(Object.entries(Q_META) as [QuadrantKey, typeof Q_META[QuadrantKey]][]).map(([k, v]) => (
+            <div key={k} className="rounded-xl border border-white/8 bg-white/[0.02] p-4">
+              <div className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: v.dot }} />
+                <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-white/45">{v.label}</span>
+              </div>
+              <p className="mt-1.5 font-host text-2xl font-medium text-white">{counts[k]}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Quick wins highlight */}
+        {quickWins.length > 0 && (
+          <div className="mt-8 rounded-2xl border border-bla-lime/20 bg-bla-lime/[0.05] p-6">
+            <div className="mb-4 flex items-center gap-2">
+              <Trophy className="h-4 w-4 text-bla-lime" />
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-bla-lime">§ start here — no-regret quick wins</p>
+            </div>
+            <div className="space-y-2.5">
+              {quickWins.map((uc, i) => (
+                <div key={uc.id} className="flex items-center gap-3">
+                  <span className="font-mono text-sm font-medium text-bla-lime">{i + 1}</span>
+                  <span className="flex-1 text-sm font-medium text-white">{uc.name}</span>
+                  {isHighRisk(uc) && <AlertTriangle className="h-3.5 w-3.5 text-red-400" />}
+                  <span className="font-mono text-xs text-bla-lime/80">{calcScore(uc.scores).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Full ranking */}
+        <div className="mt-8">
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.28em] text-white/40">§ full ranking</p>
+          <div className="space-y-2">
+            {ranked.map((uc, i) => {
+              const q = getQuadrant(uc);
+              return (
+                <div key={uc.id} className="flex items-center gap-3 rounded-xl border border-white/8 bg-white/[0.02] p-3.5">
+                  <span className="w-5 shrink-0 text-center font-mono text-xs text-white/30">{i + 1}</span>
+                  <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: Q_META[q].dot }} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-white">{uc.name}</p>
+                    {uc.description && <p className="truncate text-xs text-white/40">{uc.description}</p>}
+                  </div>
+                  {isHighRisk(uc) && (
+                    <span className="hidden items-center gap-0.5 rounded-full bg-red-400/10 px-1.5 py-px font-mono text-[9px] text-red-400 sm:flex">
+                      <AlertTriangle className="h-2.5 w-2.5" /> risk
+                    </span>
+                  )}
+                  <span className="rounded-full px-2 py-px font-mono text-[9px] uppercase tracking-[0.15em]"
+                    style={{ color: Q_META[q].dot, backgroundColor: Q_META[q].dot + '22' }}>
+                    {Q_META[q].label}
+                  </span>
+                  <span className="w-10 shrink-0 text-right font-mono text-xs text-white/55">{calcScore(uc.scores).toFixed(1)}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  })();
+
   // ── Main layout ────────────────────────────────────────────────────────────
 
   const inSession = view !== 'landing';
@@ -858,17 +1073,29 @@ export default function AiMatrixTool() {
               )}
 
               {/* Participants count */}
-              <div className="flex items-center gap-1.5">
+              <div className="hidden items-center gap-1.5 sm:flex">
                 <Users className="h-3.5 w-3.5 text-white/40" />
                 <span className="font-mono text-[10px] text-white/40">{useCases.length} cases</span>
               </div>
 
+              {/* Invite */}
+              <button onClick={() => setShowShare(true)}
+                className="flex h-8 items-center gap-1.5 rounded-full border border-bla-lime/30 bg-bla-lime/10 px-3 text-xs font-medium text-bla-lime transition-colors hover:bg-bla-lime/20">
+                <Share2 className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Invite</span>
+              </button>
+
               {/* Nav tabs */}
               <div className="flex gap-0.5 rounded-full border border-white/10 p-1">
-                <button onClick={() => setView(view === 'add' ? 'matrix' : 'matrix')}
-                  className={`flex h-7 items-center gap-1.5 rounded-full px-3 text-xs transition-colors ${view !== 'workshop' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white'}`}>
+                <button onClick={() => setView('matrix')}
+                  className={`flex h-7 items-center gap-1.5 rounded-full px-3 text-xs transition-colors ${view === 'matrix' || view === 'add' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white'}`}>
                   <BarChart3 className="h-3 w-3" />
                   <span className="hidden sm:inline">Matrix</span>
+                </button>
+                <button onClick={() => setView('results')}
+                  className={`flex h-7 items-center gap-1.5 rounded-full px-3 text-xs transition-colors ${view === 'results' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white'}`}>
+                  <Trophy className="h-3 w-3" />
+                  <span className="hidden sm:inline">Results</span>
                 </button>
                 <button onClick={() => setView('workshop')}
                   className={`flex h-7 items-center gap-1.5 rounded-full px-3 text-xs transition-colors ${view === 'workshop' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white'}`}>
@@ -919,9 +1146,82 @@ export default function AiMatrixTool() {
             {view === 'matrix'    && MatrixView}
             {view === 'add'       && AddForm}
             {view === 'workshop'  && WorkshopView}
+            {view === 'results'   && ResultsView}
           </motion.div>
         </AnimatePresence>
       </main>
+
+      {/* Toast */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.96 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-5 left-1/2 z-[90] -translate-x-1/2"
+          >
+            <div className="flex items-center gap-2.5 rounded-full border border-bla-lime/30 bg-[#0d0f12] px-4 py-2.5 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.7)]">
+              <Plus className="h-3.5 w-3.5 text-bla-lime" />
+              <span className="text-sm text-white/90">{toast}</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Share modal */}
+      <AnimatePresence>
+        {showShare && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[95] flex items-center justify-center p-4"
+            onClick={() => setShowShare(false)}
+          >
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-sm rounded-3xl border border-white/10 bg-[#0d0f12] p-7 text-center shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)]"
+            >
+              <button onClick={() => setShowShare(false)}
+                className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full text-white/40 transition-colors hover:bg-white/5 hover:text-white">
+                <X className="h-4 w-4" />
+              </button>
+
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-bla-lime/70">§ invite participants</p>
+              <h3 className="mt-1.5 font-host text-xl font-light text-white">Scan to join the session</h3>
+
+              {qrDataUrl && (
+                <div className="mx-auto mt-5 w-fit rounded-2xl bg-white p-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={qrDataUrl} alt="QR code to join session" width={200} height={200} className="block h-[200px] w-[200px]" />
+                </div>
+              )}
+
+              <p className="mt-5 mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">Or share this link</p>
+              <button onClick={copyLink}
+                className="flex w-full items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left transition-colors hover:border-white/20">
+                <span className="min-w-0 flex-1 truncate font-mono text-xs text-white/60">{shareUrl}</span>
+                {linkCopied
+                  ? <Check className="h-4 w-4 shrink-0 text-bla-lime" />
+                  : <Copy className="h-4 w-4 shrink-0 text-white/40" />}
+              </button>
+
+              {storageMode !== 'sync' && (
+                <div className="mt-5 flex items-start gap-2 rounded-xl border border-amber-400/20 bg-amber-400/10 p-3 text-left">
+                  <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-400" />
+                  <p className="text-xs leading-relaxed text-amber-400/90">
+                    Live sync is off. Connect a Vercel KV store so participants on other devices see each other&apos;s use cases.
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
