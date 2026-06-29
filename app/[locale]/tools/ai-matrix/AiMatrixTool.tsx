@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import QRCode from 'qrcode';
 import { Plus, X, ChevronRight, ArrowLeft, BookOpen, BarChart3, Copy, Check, Users, RefreshCw, Info, Share2, Download, Trophy, AlertTriangle } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -312,7 +311,6 @@ export default function AiMatrixTool() {
   const [linkCopied, setLinkCopied] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
-  const [qrDataUrl, setQrDataUrl] = useState('');
   const [toast, setToast] = useState<string | null>(null);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const knownIdsRef = useRef<Set<string>>(new Set());
@@ -456,16 +454,7 @@ export default function AiMatrixTool() {
     if (typeof window === 'undefined') return;
     const url = `${window.location.origin}${window.location.pathname}?s=${encodeURIComponent(sid)}`;
     setShareUrl(url);
-    try {
-      const dataUrl = await QRCode.toDataURL(url, {
-        margin: 1,
-        width: 220,
-        color: { dark: '#0a0b0e', light: '#ffffff' },
-      });
-      setQrDataUrl(dataUrl);
-    } catch {
-      setQrDataUrl('');
-    }
+
   }, []);
 
   // Auto-join when arriving via a shared link (?s=session-code)
@@ -1192,16 +1181,9 @@ export default function AiMatrixTool() {
               </button>
 
               <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-bla-lime/70">§ invite participants</p>
-              <h3 className="mt-1.5 font-host text-xl font-light text-white">Scan to join the session</h3>
+              <h3 className="mt-1.5 font-host text-xl font-light text-white">Share the link to join</h3>
 
-              {qrDataUrl && (
-                <div className="mx-auto mt-5 w-fit rounded-2xl bg-white p-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={qrDataUrl} alt="QR code to join session" width={200} height={200} className="block h-[200px] w-[200px]" />
-                </div>
-              )}
-
-              <p className="mt-5 mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">Or share this link</p>
+              <p className="mt-5 mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">Share this link</p>
               <button onClick={copyLink}
                 className="flex w-full items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left transition-colors hover:border-white/20">
                 <span className="min-w-0 flex-1 truncate font-mono text-xs text-white/60">{shareUrl}</span>
