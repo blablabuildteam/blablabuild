@@ -7,6 +7,33 @@ import Image from 'next/image';
 import { LinkedinIcon } from '@/components/ui/icons/il-linkedin';
 import { SectionLabel } from './V2Atoms';
 
+const FRIENDS = [
+  {
+    id: 'daniel',
+    name: 'Daniel de Vos',
+    initials: 'DD',
+    image: '/img/daniel-profile.png',
+    linkedin: 'https://www.linkedin.com/in/danieldevos/',
+    expertise: { nl: 'Strategie & AI', en: 'Strategy & AI' },
+    bio: {
+      nl: 'Adviseur op het snijvlak van strategie, creatie en AI. Haakt aan waar het gaat om richting en scherpe keuzes.',
+      en: 'Advisor at the intersection of strategy, creativity and AI. Steps in when direction and sharp choices matter.',
+    },
+  },
+  {
+    id: 'jesse',
+    name: 'Jesse Sander',
+    initials: 'JS',
+    image: null, // foto volgt
+    linkedin: null,
+    expertise: { nl: 'Expertise volgt', en: 'Expertise TBD' },
+    bio: {
+      nl: 'Expert waar we regelmatig mee samenwerken. Meer volgt.',
+      en: 'Expert we regularly collaborate with. More soon.',
+    },
+  },
+] as const;
+
 const FOUNDERS = [
   {
     id: 'daniel',
@@ -196,6 +223,80 @@ export default function V2Team() {
             );
           })}
         </div>
+
+        {/* ── blablafriends ─────────────────────────────────────────────── */}
+        <div className="mt-16 border-t border-[#14181d]/8 pt-12 md:mt-20 md:pt-14">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#14181d]/40">
+                blablafriends
+              </span>
+              <h3 className="mt-2 font-host text-2xl font-light leading-tight text-[#14181d] md:text-3xl">
+                {lang === 'en' ? 'Experts we bring in.' : 'Experts die we aanhaken.'}
+              </h3>
+            </div>
+            <p className="max-w-sm font-host text-sm leading-relaxed text-[#14181d]/60">
+              {lang === 'en'
+                ? 'Not full-time, but always the right fit. Specialists we work with regularly when a project calls for specific depth.'
+                : 'Geen vaste krachten, maar altijd de juiste fit. Specialisten die we regelmatig aanhaken als een project om specifieke diepgang vraagt.'}
+            </p>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {FRIENDS.map((f, i) => (
+              <motion.div
+                key={f.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.55, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                className="flex items-start gap-4 rounded-2xl border border-[#14181d]/8 bg-white/60 p-5 transition-colors hover:border-[#14181d]/18 hover:bg-white/90"
+              >
+                {/* Avatar */}
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-[#14181d]/8">
+                  {f.image ? (
+                    <Image
+                      src={f.image}
+                      alt={f.name}
+                      fill
+                      className="object-cover object-top"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center font-host text-lg font-medium text-[#14181d]/40">
+                      {f.initials}
+                    </div>
+                  )}
+                </div>
+
+                {/* Info */}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-host text-[15px] font-medium leading-tight text-[#14181d]">{f.name}</p>
+                      <span className="mt-0.5 inline-block rounded-full bg-[#14181d]/6 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-[#14181d]/50">
+                        {lang === 'en' ? f.expertise.en : f.expertise.nl}
+                      </span>
+                    </div>
+                    {f.linkedin && (
+                      <a
+                        href={f.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-[#14181d]/12 text-[#14181d]/40 transition-colors hover:border-bla-lime/40 hover:bg-bla-lime hover:text-[#14181d]"
+                      >
+                        <LinkedinIcon size={13} className="h-3.5 w-3.5" />
+                      </a>
+                    )}
+                  </div>
+                  <p className="mt-2.5 font-host text-xs leading-relaxed text-[#14181d]/55">
+                    {lang === 'en' ? f.bio.en : f.bio.nl}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </section>
   );
