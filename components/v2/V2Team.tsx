@@ -26,8 +26,8 @@ const FRIENDS: Friend[] = [
     linkedin: 'https://www.linkedin.com/in/danieldevos/',
     expertise: { nl: 'Data & AI', en: 'Data & AI' },
     bio: {
-      nl: 'Specialist op het snijvlak van data en AI. Haakt aan als het gaat om strategie, implementatie of het scherp krijgen van de juiste keuzes.',
-      en: 'Specialist at the intersection of data and AI. Joins when it comes to strategy, implementation or making the right call.',
+      nl: 'Data-specialist met een scherp oog voor wat er in de cijfers zit. Haakt aan als het gaat om data-infrastructuur, analyses en AI-implementaties die echt op data draaien.',
+      en: 'Data specialist who knows what lives inside the numbers. Joins for data infrastructure, analysis and AI implementations that actually run on data.',
     },
   },
   {
@@ -100,6 +100,12 @@ export default function V2Team() {
     [t]
   );
 
+  // Shuffle friends once on mount so order varies per visit
+  const shuffledFriends = useMemo(
+    () => [...FRIENDS].sort(() => Math.random() - 0.5),
+    []
+  );
+
   return (
     <section
       id="over-ons"
@@ -139,7 +145,7 @@ export default function V2Team() {
           </div>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-5 md:mt-16 md:grid-cols-2 md:max-w-2xl">
+        <div className="mt-12 grid grid-cols-1 gap-5 md:mt-16 md:grid-cols-2">
           {founders.map((f, i) => {
             const isActive = hovered === f.id;
             return (
@@ -252,7 +258,7 @@ export default function V2Team() {
           </div>
 
           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {FRIENDS.map((f, i) => (
+            {shuffledFriends.map((f, i) => (
               <motion.div
                 key={f.id}
                 initial={{ opacity: 0, y: 20 }}
