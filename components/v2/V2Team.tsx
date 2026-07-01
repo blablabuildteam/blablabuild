@@ -243,13 +243,15 @@ export default function V2Team() {
 
         {/* ── blablafriends ─────────────────────────────────────────────── */}
         <div className="mt-16 border-t border-[#14181d]/8 pt-12 md:mt-20 md:pt-14">
-          <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#14181d]/40">
-            blablafriends
-          </span>
-          <div className="mt-3 flex flex-col gap-2 md:flex-row md:items-end md:justify-between md:gap-10">
-            <h3 className="font-host text-2xl font-light leading-tight text-[#14181d] md:text-3xl">
-              {lang === 'en' ? 'Experts we bring in.' : 'Experts die we aanhaken.'}
-            </h3>
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-10">
+            <div>
+              <span className="font-host text-4xl font-semibold tracking-tight text-[#14181d] md:text-5xl">
+                blablafriends
+              </span>
+              <p className="mt-2 font-host text-base font-light text-[#14181d]/60">
+                {lang === 'en' ? 'Experts we bring in.' : 'Experts die we aanhaken.'}
+              </p>
+            </div>
             <p className="max-w-sm font-host text-sm leading-relaxed text-[#14181d]/55 md:pb-1">
               {lang === 'en'
                 ? 'Not full-time, but always the right fit. Specialists we work with regularly when a project calls for specific depth.'
