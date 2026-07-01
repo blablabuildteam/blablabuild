@@ -26,8 +26,8 @@ const FRIENDS: Friend[] = [
     linkedin: 'https://www.linkedin.com/in/danieldevos/',
     expertise: { nl: 'Data & AI', en: 'Data & AI' },
     bio: {
-      nl: 'Adviseur op het snijvlak van strategie, creatie en AI. Haakt aan waar het gaat om richting en scherpe keuzes.',
-      en: 'Advisor at the intersection of strategy, creativity and AI. Steps in when direction and sharp choices matter.',
+      nl: 'Specialist op het snijvlak van data en AI. Haakt aan als het gaat om strategie, implementatie of het scherp krijgen van de juiste keuzes.',
+      en: 'Specialist at the intersection of data and AI. Joins when it comes to strategy, implementation or making the right call.',
     },
   },
   {
@@ -38,8 +38,8 @@ const FRIENDS: Friend[] = [
     linkedin: 'https://www.linkedin.com/in/jessesander',
     expertise: { nl: 'Software Architect & Cloud', en: 'Software Architect & Cloud' },
     bio: {
-      nl: 'Oprichter van Code Monkeys BV. Bouwt high-performance cloud-applicaties, leidt dev-teams en breekt ze — ethisch — ook af. 15+ jaar stack-kennis van architectuur tot deployment.',
-      en: 'Founder of Code Monkeys BV. Builds high-performance cloud applications, leads dev teams and breaks them — ethically — too. 15+ years of stack knowledge from architecture to deployment.',
+      nl: 'Ervaren software architect met brede kennis van cloud, security en AI. Haakt aan als een project vraagt om stevige technische diepgang.',
+      en: 'Experienced software architect with deep knowledge of cloud, security and AI. Joins when a project calls for serious technical depth.',
     },
   },
   {
@@ -112,7 +112,7 @@ export default function V2Team() {
             <h2 className="mt-5 font-host text-3xl font-light leading-[1.0] tracking-tight text-[#14181d] md:text-[3.5rem]">
               {lang === 'en' ? 'Two founders. ' : 'Twee founders. '}
               <span className="font-medium text-[#14181d]">
-                {lang === 'en' ? '30+ years experience.' : '30+ jaar ervaring.'}
+                {lang === 'en' ? '25+ years experience.' : '25+ jaar ervaring.'}
               </span>
               <br />
               <span className="text-[#14181d]/70">{lang === 'en' ? 'One direct line.' : 'Eén directe lijn.'}</span>
@@ -139,7 +139,7 @@ export default function V2Team() {
           </div>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-5 md:mt-16 md:grid-cols-3">
+        <div className="mt-12 grid grid-cols-1 gap-5 md:mt-16 md:grid-cols-2 md:max-w-2xl">
           {founders.map((f, i) => {
             const isActive = hovered === f.id;
             return (
@@ -237,19 +237,17 @@ export default function V2Team() {
 
         {/* ── blablafriends ─────────────────────────────────────────────── */}
         <div className="mt-16 border-t border-[#14181d]/8 pt-12 md:mt-20 md:pt-14">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#14181d]/40">
-                blablafriends
-              </span>
-              <h3 className="mt-2 font-host text-2xl font-light leading-tight text-[#14181d] md:text-3xl">
-                {lang === 'en' ? 'Experts we bring in.' : 'Experts die we aanhaken.'}
-              </h3>
-            </div>
-            <p className="max-w-sm font-host text-sm leading-relaxed text-[#14181d]/60">
+          <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#14181d]/40">
+            blablafriends
+          </span>
+          <div className="mt-3 flex flex-col gap-2 md:flex-row md:items-end md:justify-between md:gap-10">
+            <h3 className="font-host text-2xl font-light leading-tight text-[#14181d] md:text-3xl">
+              {lang === 'en' ? 'Experts we bring in.' : 'Experts die we aanhaken.'}
+            </h3>
+            <p className="max-w-sm font-host text-sm leading-relaxed text-[#14181d]/55 md:pb-1">
               {lang === 'en'
                 ? 'Not full-time, but always the right fit. Specialists we work with regularly when a project calls for specific depth.'
-                : 'Geen vaste krachten, maar altijd de juiste fit. Specialisten die we regelmatig aanhaken als een project om specifieke diepgang vraagt.'}
+                : 'Geen vaste krachten, maar altijd de juiste fit. Specialisten die we inzetten als een project vraagt om specifieke diepgang.'}
             </p>
           </div>
 
