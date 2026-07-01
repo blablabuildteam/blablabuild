@@ -14,7 +14,7 @@ const FRIENDS = [
     initials: 'DD',
     image: '/img/daniel-friend-profile.png',
     linkedin: 'https://www.linkedin.com/in/danieldevos/',
-    expertise: { nl: 'Strategie & AI', en: 'Strategy & AI' },
+    expertise: { nl: 'Data & AI', en: 'Data & AI' },
     bio: {
       nl: 'Adviseur op het snijvlak van strategie, creatie en AI. Haakt aan waar het gaat om richting en scherpe keuzes.',
       en: 'Advisor at the intersection of strategy, creativity and AI. Steps in when direction and sharp choices matter.',
