@@ -7,7 +7,17 @@ import Image from 'next/image';
 import { LinkedinIcon } from '@/components/ui/icons/il-linkedin';
 import { SectionLabel } from './V2Atoms';
 
-const FRIENDS = [
+interface Friend {
+  id: string;
+  name: string;
+  initials: string;
+  image: string | null;
+  linkedin: string | null;
+  expertise: { nl: string; en: string };
+  bio: { nl: string; en: string };
+}
+
+const FRIENDS: Friend[] = [
   {
     id: 'daniel',
     name: 'Daniel de Vos',
@@ -44,7 +54,7 @@ const FRIENDS = [
       en: 'Digital designer with a sharp eye for brand and aesthetics. Joins when a product needs to not just work well, but look the part too.',
     },
   },
-] as const;
+];
 
 const FOUNDERS = [
   {

@@ -279,6 +279,29 @@ function MatrixPlot({ useCases, hoveredId, onHover }: {
 const EMPTY_KO: KnockoutAnswers = { recurring: null, costly: null, dataAvailable: null, standardized: null };
 const EMPTY_SCORES: Scores = { businessImpact: 0, frequency: 0, aiSuitability: 0, implementation: 0, risk: 0, adoption: 0 };
 
+// ─── localStorage helpers (module-level so they're stable references) ─────────
+
+const lsKey = (sid: string) => `ai-matrix:${sid}`;
+
+function readLocal(sid: string): UseCase[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(lsKey(sid));
+    return raw ? (JSON.parse(raw) as UseCase[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeLocal(sid: string, cases: UseCase[]) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(lsKey(sid), JSON.stringify(cases));
+  } catch {
+    // ignore quota / private mode errors
+  }
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function AiMatrixTool() {
@@ -315,29 +338,6 @@ export default function AiMatrixTool() {
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const knownIdsRef = useRef<Set<string>>(new Set());
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // ── Storage helpers ────────────────────────────────────────────────────────
-
-  const lsKey = (sid: string) => `ai-matrix:${sid}`;
-
-  const readLocal = (sid: string): UseCase[] => {
-    if (typeof window === 'undefined') return [];
-    try {
-      const raw = window.localStorage.getItem(lsKey(sid));
-      return raw ? (JSON.parse(raw) as UseCase[]) : [];
-    } catch {
-      return [];
-    }
-  };
-
-  const writeLocal = (sid: string, cases: UseCase[]) => {
-    if (typeof window === 'undefined') return;
-    try {
-      window.localStorage.setItem(lsKey(sid), JSON.stringify(cases));
-    } catch {
-      // ignore quota / private mode errors
-    }
-  };
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
