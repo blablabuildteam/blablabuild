@@ -25,11 +25,11 @@ const FRIENDS = [
     name: 'Jesse Sander',
     initials: 'JS',
     image: null, // foto volgt
-    linkedin: null,
-    expertise: { nl: 'Expertise volgt', en: 'Expertise TBD' },
+    linkedin: 'https://www.linkedin.com/in/jessesander',
+    expertise: { nl: 'Software Architect & Cloud', en: 'Software Architect & Cloud' },
     bio: {
-      nl: 'Expert waar we regelmatig mee samenwerken. Meer volgt.',
-      en: 'Expert we regularly collaborate with. More soon.',
+      nl: 'Oprichter van Code Monkeys BV. Bouwt high-performance cloud-applicaties, leidt dev-teams en breekt ze — ethisch — ook af. 15+ jaar stack-kennis van architectuur tot deployment.',
+      en: 'Founder of Code Monkeys BV. Builds high-performance cloud applications, leads dev teams and breaks them — ethically — too. 15+ years of stack knowledge from architecture to deployment.',
     },
   },
 ] as const;
