@@ -292,7 +292,6 @@ export default function V2Hero() {
                 <div className="flex items-center gap-4">
                   <div className="flex shrink-0 -space-x-2.5">
                     {[
-                      { src: '/img/daniel-profile.png', name: 'Daniel' },
                       { src: '/img/xennith-profile.png', name: 'Xennith' },
                       { src: '/img/kevin-profile.png', name: 'Kevin' },
                     ].map((f) => (
@@ -307,10 +306,10 @@ export default function V2Hero() {
                   </div>
                   <div className="min-w-0 leading-tight">
                     <div className="truncate font-host text-[14px] text-white/90 md:text-[15px]">
-                      Daniel · Xennith · Kevin
+                      Xennith · Kevin
                     </div>
                     <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.22em] text-bla-lime/85">
-                      {locale === 'en' ? '40+ years experience' : '40+ jaar ervaring'}
+                      {locale === 'en' ? '25+ years experience' : '25+ jaar ervaring'}
                     </div>
                   </div>
                 </div>
