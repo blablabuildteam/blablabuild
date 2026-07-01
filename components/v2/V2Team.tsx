@@ -12,7 +12,7 @@ const FRIENDS = [
     id: 'daniel',
     name: 'Daniel de Vos',
     initials: 'DD',
-    image: '/img/daniel-profile.png',
+    image: '/img/daniel-friend-profile.png',
     linkedin: 'https://www.linkedin.com/in/danieldevos/',
     expertise: { nl: 'Strategie & AI', en: 'Strategy & AI' },
     bio: {
@@ -24,7 +24,7 @@ const FRIENDS = [
     id: 'jesse',
     name: 'Jesse Sander',
     initials: 'JS',
-    image: null, // foto volgt
+    image: '/img/jesse-profile.png',
     linkedin: 'https://www.linkedin.com/in/jessesander',
     expertise: { nl: 'Software Architect & Cloud', en: 'Software Architect & Cloud' },
     bio: {
@@ -32,20 +32,21 @@ const FRIENDS = [
       en: 'Founder of Code Monkeys BV. Builds high-performance cloud applications, leads dev teams and breaks them — ethically — too. 15+ years of stack knowledge from architecture to deployment.',
     },
   },
+  {
+    id: 'michiel',
+    name: 'Michiel Aanen',
+    initials: 'MA',
+    image: '/img/michiel-profile.png',
+    linkedin: 'https://www.linkedin.com/in/michielaanen/',
+    expertise: { nl: 'Digital Design & Branding', en: 'Digital Design & Branding' },
+    bio: {
+      nl: 'Digital designer met een scherp oog voor merk en esthetiek. Haakt aan als een product er niet alleen goed moet werken, maar er ook goed uit moet zien.',
+      en: 'Digital designer with a sharp eye for brand and aesthetics. Joins when a product needs to not just work well, but look the part too.',
+    },
+  },
 ] as const;
 
 const FOUNDERS = [
-  {
-    id: 'daniel',
-    image: '/img/daniel-profile.png',
-    linkedin: 'https://www.linkedin.com/in/danieldevos/',
-    brands: [
-      { src: '/profile-brand-logos/heineken.png', alt: 'Heineken' },
-      { src: '/profile-brand-logos/us-airforce.png', alt: 'US Air Force' },
-      { src: '/profile-brand-logos/mclaren.png', alt: 'McLaren' },
-      { src: '/profile-brand-logos/ajax.png', alt: 'Ajax' },
-    ],
-  },
   {
     id: 'xennith',
     image: '/img/xennith-profile.png',
@@ -99,9 +100,9 @@ export default function V2Team() {
           <div className="col-span-12 md:col-span-7">
             <SectionLabel index="04" label={lang === 'en' ? 'Who builds' : 'Wie bouwt'} tone="dark" />
             <h2 className="mt-5 font-host text-3xl font-light leading-[1.0] tracking-tight text-[#14181d] md:text-[3.5rem]">
-              {lang === 'en' ? 'Three founders. ' : 'Drie founders. '}
+              {lang === 'en' ? 'Two founders. ' : 'Twee founders. '}
               <span className="font-medium text-[#14181d]">
-                {lang === 'en' ? '40+ years experience.' : '40+ jaar ervaring.'}
+                {lang === 'en' ? '30+ years experience.' : '30+ jaar ervaring.'}
               </span>
               <br />
               <span className="text-[#14181d]/70">{lang === 'en' ? 'One direct line.' : 'Eén directe lijn.'}</span>
@@ -113,14 +114,14 @@ export default function V2Team() {
                 <>
                   With us you don&apos;t hire a job title — you hire a foundation.{' '}
                   <span className="text-[#14181d]">
-                    Founder, consultant, manager and builder, all in one.
+                    Founder, consultant, manager and builder in one. Plus a network of specialists when the project demands it.
                   </span>
                 </>
               ) : (
                 <>
                   Je huurt bij ons geen functieprofiel, maar een fundament.{' '}
                   <span className="text-[#14181d]">
-                    Wij zijn je ondernemer, consultant, manager en bouwer in&eacute;&eacute;n.
+                    Ondernemer, consultant, manager en bouwer in één. Plus een netwerk van specialisten als het project erom vraagt.
                   </span>
                 </>
               )}
