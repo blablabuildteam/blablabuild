@@ -41,7 +41,6 @@
     "nanoid": "^5.0.5",
     "next": "^14.2.0",
     "next-intl": "^4.6.1",
-    "occt-import-js": "^0.0.23",
     "openai": "^4.28.0",
     "posthog-js": "^1.107.0",
     "qrcode": "^1.5.4",
