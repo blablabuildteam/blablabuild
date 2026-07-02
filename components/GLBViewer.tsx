@@ -82,11 +82,15 @@ function Scene({ src, autoRotate, rotationSpeed }: { src: string; autoRotate: bo
       </Suspense>
       
       <OrbitControls
-        enableZoom={false}
+        makeDefault
+        enableZoom
         enablePan={false}
-        autoRotate={false}
-        minPolarAngle={Math.PI / 3}
-        maxPolarAngle={Math.PI / 1.5}
+        enableDamping
+        dampingFactor={0.08}
+        target={[0, 0, 0]}
+        minPolarAngle={Math.PI / 6}
+        maxPolarAngle={Math.PI * 0.8}
+        touches={{ ONE: 0, TWO: 2 } as never}
       />
     </>
   );
@@ -108,7 +112,7 @@ export default function GLBViewer({ src, className = '', autoRotate = true, rota
   }
 
   return (
-    <div className={`w-full h-full ${className}`}>
+    <div className={`w-full h-full touch-none ${className}`}>
       <Canvas
         camera={{ position: [0, 0, 5], fov: 50 }}
         gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}

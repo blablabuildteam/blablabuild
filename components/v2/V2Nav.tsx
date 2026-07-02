@@ -71,7 +71,7 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="mx-auto flex h-14 max-w-[1400px] items-center justify-between rounded-full border px-3 md:h-16 md:px-4"
         >
-          <a href={`/${locale}/v2`} className="group flex items-center gap-2 pl-1">
+          <a href={`/${locale}`} className="group flex items-center gap-2 pl-1">
             <BlablaLogo className="h-7 w-7 md:h-8 md:w-8" />
             <span className="font-sans text-sm tracking-tight text-white md:text-base">
               <span className="font-light text-white/70">blabla</span>
@@ -106,7 +106,7 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
 
           <div className="flex items-center gap-2">
             <a
-              href={`/${otherLocale}/v2`}
+              href={`/${otherLocale}`}
               className="hidden items-center gap-1 rounded-full border border-white/10 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.2em] text-white/60 transition-colors hover:border-white/30 hover:text-white md:inline-flex"
             >
               {otherLocale}
@@ -162,7 +162,7 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
               ))}
               <div className="mt-2 flex items-center gap-3 border-t border-white/5 pt-4">
                 <a
-                  href={`/${otherLocale}/v2`}
+                  href={`/${otherLocale}`}
                   className="rounded-full border border-white/15 px-4 py-2 font-mono text-xs uppercase tracking-[0.2em] text-white/70"
                 >
                   {otherLocale}
