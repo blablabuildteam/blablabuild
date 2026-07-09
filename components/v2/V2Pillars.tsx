@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import { SectionLabel } from './V2Atoms';
 import V2DirectHelp from './V2DirectHelp';
+import V2StrategyCases from './V2StrategyCases';
 
 type PillarKey = 'marketing' | 'tooling' | 'data';
 
@@ -185,9 +186,10 @@ export default function V2Pillars() {
                   <p className="mt-5 max-w-2xl font-host text-base leading-relaxed text-white/70 md:text-[17px]">
                     {lang === 'en'
                       ? "Don't know where to start with AI? We've been there — and guided organisations through it at scale. No guesswork, no generic playbooks: a concrete roadmap built on 40+ years of executing AI transformations."
-                      : 'Niet weten waar te beginnen met AI? Wij hebben het pad vaker bewandeld — en organisaties door deze transformatie geloodst. Geen giswerk, geen generieke playbooks: een concreet plan gebouwd op 40+ jaar ervaring.'}
+                      : 'Niet weten waar te beginnen met AI? Wij hebben het pad vaker bewandeld — en organisaties door deze transformatie geloodst. Geen giswerk, geen generieke playbooks: een concreet plan gebouwd op 25+ jaar ervaring.'}
                   </p>
-                  <div className="mt-7">
+                  <div className="mt-8 flex flex-wrap items-center gap-3">
+                    <V2StrategyCases lang={lang} />
                     <V2DirectHelp
                       label={lang === 'en' ? 'Book a discovery session' : 'Plan een discovery sessie'}
                       variant="outline"
