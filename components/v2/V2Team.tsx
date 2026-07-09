@@ -84,7 +84,6 @@ export default function V2Team() {
   const t = useTranslations('team');
   const locale = useLocale();
   const lang = locale === 'en' ? 'en' : 'nl';
-  const [hovered, setHovered] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
 
@@ -145,100 +144,112 @@ export default function V2Team() {
           </div>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-5 md:mt-16 md:grid-cols-2">
-          {founders.map((f, i) => {
-            const isActive = hovered === f.id;
-            return (
-              <motion.article
-                key={f.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.65, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                onMouseEnter={() => setHovered(f.id)}
-                onMouseLeave={() => setHovered(null)}
-                className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#14181d]/10 bg-white p-5 transition-all duration-500 hover:border-[#14181d]/25 md:p-6"
-              >
-                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-[#14181d]/5">
+        <div className="mt-12 grid grid-cols-1 gap-4 md:mt-16 md:grid-cols-2 md:gap-5">
+          {founders.map((f, i) => (
+            <motion.article
+              key={f.id}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.65, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="flex h-full flex-col rounded-2xl border border-[#14181d]/10 bg-white p-5 transition-colors hover:border-[#14181d]/20 md:p-6"
+            >
+              <div className="flex gap-4">
+                <div className="relative aspect-[4/5] w-24 shrink-0 overflow-hidden rounded-xl bg-[#14181d]/8 md:w-28">
                   <Image
                     src={f.image}
                     alt={f.name}
                     fill
-                    className={`object-cover object-top transition-all duration-700 ${
-                      isActive ? 'scale-[1.04]' : 'scale-100'
-                    }`}
+                    className="object-cover object-top"
+                    sizes="(max-width: 768px) 96px, 112px"
                   />
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-t from-[#14181d]/40 via-transparent to-transparent transition-opacity duration-500 ${
-                      isActive ? 'opacity-100' : 'opacity-0'
-                    }`}
-                  />
-                  <a
-                    href={f.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={f.linkedinLabel}
-                    className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full border border-white/20 bg-[#14181d]/60 text-white backdrop-blur-sm transition-all hover:border-bla-lime/40 hover:bg-bla-lime hover:text-[#14181d]"
-                  >
-                    <LinkedinIcon size={16} className="h-4 w-4" />
-                  </a>
                 </div>
 
-                <div className="mt-5">
-                  <div className="flex items-baseline justify-between gap-3">
-                    <h3 className="font-host text-lg font-medium text-[#14181d] md:text-xl">{f.name}</h3>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#14181d]/40">
-                      0{i + 1}
-                    </span>
-                  </div>
-                  <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-[#14181d]/55">
-                    {f.role}
-                  </p>
-                  <p
-                    className={`mt-4 font-host text-sm leading-relaxed text-[#14181d]/70 md:text-[15px] ${
-                      expanded[f.id] ? '' : 'line-clamp-3'
-                    }`}
-                  >
-                    {f.description}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => toggle(f.id)}
-                    aria-expanded={!!expanded[f.id]}
-                    className="mt-2 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.22em] text-[#14181d]/55 transition-colors hover:text-[#14181d]"
-                  >
-                    {expanded[f.id]
-                      ? lang === 'en'
-                        ? 'Read less'
-                        : 'Minder lezen'
-                      : lang === 'en'
-                        ? 'Read more'
-                        : 'Lees meer'}
-                    <svg
-                      className={`h-3 w-3 transition-transform ${expanded[f.id] ? 'rotate-180' : ''}`}
-                      viewBox="0 0 24 24"
-                      fill="none"
-                    >
-                      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </button>
-                </div>
-
-                <div className="mt-5 border-t border-[#14181d]/8 pt-4">
-                  <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[#14181d]/45">
-                    {t('experienceWithBrands')}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                    {f.brands.map((b) => (
-                      <div key={b.alt} className="relative h-5 w-16 opacity-70 transition-opacity hover:opacity-100">
-                        <Image src={b.src} alt={b.alt} fill className="object-contain object-left" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                        <h3 className="font-host text-base font-medium text-[#14181d] md:text-lg">
+                          {f.name}
+                        </h3>
+                        <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#14181d]/45">
+                          {f.role}
+                        </span>
                       </div>
-                    ))}
+                    </div>
+                    <div className="flex shrink-0 items-center">
+                      <a
+                        href={f.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={f.linkedinLabel}
+                        className="grid h-8 w-8 place-items-center rounded-full border border-[#14181d]/12 text-[#14181d]/45 transition-colors hover:border-bla-lime/40 hover:bg-bla-lime hover:text-[#14181d]"
+                      >
+                        <LinkedinIcon size={14} className="h-3.5 w-3.5" />
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 border-t border-[#14181d]/8 pt-4">
+                    <motion.div
+                      initial={false}
+                      animate={{ height: expanded[f.id] ? 'auto' : '3.25rem' }}
+                      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <p className="font-host text-sm leading-relaxed text-[#14181d]/70 md:text-[15px]">
+                        {f.description}
+                      </p>
+                    </motion.div>
+                    <motion.button
+                      type="button"
+                      onClick={() => toggle(f.id)}
+                      aria-expanded={!!expanded[f.id]}
+                      whileHover={{ x: 2 }}
+                      whileTap={{ scale: 0.97 }}
+                      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                      className="group mt-2 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.22em] text-[#14181d]/55 transition-colors hover:text-[#14181d]"
+                    >
+                      <motion.span
+                        key={expanded[f.id] ? 'less' : 'more'}
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        {expanded[f.id]
+                          ? lang === 'en'
+                            ? 'Read less'
+                            : 'Minder lezen'
+                          : lang === 'en'
+                            ? 'Read more'
+                            : 'Lees meer'}
+                      </motion.span>
+                      <motion.svg
+                        animate={{ rotate: expanded[f.id] ? 180 : 0 }}
+                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                        className="h-3 w-3"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                      </motion.svg>
+                    </motion.button>
                   </div>
                 </div>
-              </motion.article>
-            );
-          })}
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-[#14181d]/8 pt-4">
+                <span className="w-full font-mono text-[10px] uppercase tracking-[0.22em] text-[#14181d]/45 sm:w-auto">
+                  {t('experienceWithBrands')}
+                </span>
+                {f.brands.map((b) => (
+                  <div key={b.alt} className="relative h-5 w-16 opacity-70 transition-opacity hover:opacity-100">
+                    <Image src={b.src} alt={b.alt} fill className="object-contain object-left" />
+                  </div>
+                ))}
+              </div>
+            </motion.article>
+          ))}
         </div>
 
         {/* ── blablafriends ─────────────────────────────────────────────── */}
