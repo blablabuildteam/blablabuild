@@ -81,6 +81,7 @@ export default function V2Footer() {
               { href: '#cases', label: t('cases') },
               { href: '#aanpak', label: t('approach') },
               { href: '#over-ons', label: t('team') },
+              { href: '#waarde', label: t('value') },
               { href: `/${locale}/privacy`, label: t('privacy') },
             ].map((l) => (
               <a

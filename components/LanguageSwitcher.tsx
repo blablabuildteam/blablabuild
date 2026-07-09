@@ -1,9 +1,13 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useLocale } from 'next-intl';
-import { locales, type Locale, defaultLocale } from '@/i18n/request';
+import { locales, type Locale } from '@/i18n/request';
 import { useState, useEffect } from 'react';
+import {
+  buildLocaleSwitchPath,
+  saveScrollForLocaleSwitch,
+} from '@/lib/localeSwitch';
 
 const localeNames: Record<Locale, string> = {
   nl: 'NL',
@@ -13,6 +17,7 @@ const localeNames: Record<Locale, string> = {
 export default function LanguageSwitcher() {
   const locale = useLocale() as Locale;
   const router = useRouter();
+  const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
 
   // Ensure component is mounted before accessing window
@@ -21,45 +26,14 @@ export default function LanguageSwitcher() {
   }, []);
 
   const switchLocale = (newLocale: Locale) => {
-    // Don't do anything if already on this locale
     if (locale === newLocale) {
       return;
     }
-    
-    // Get the actual browser pathname
-    const browserPath = isMounted && typeof window !== 'undefined' ? window.location.pathname : '/';
-    
-    // Extract path without locale prefix
-    let pathWithoutLocale = browserPath;
-    
-    // Remove any existing locale prefix
-    for (const loc of locales) {
-      if (loc !== defaultLocale) {
-        if (browserPath === `/${loc}`) {
-          pathWithoutLocale = '/';
-          break;
-        } else if (browserPath.startsWith(`/${loc}/`)) {
-          pathWithoutLocale = browserPath.replace(`/${loc}`, '') || '/';
-          break;
-        }
-      }
-    }
-    
-    // Ensure path starts with /
-    if (!pathWithoutLocale || pathWithoutLocale === '') {
-      pathWithoutLocale = '/';
-    }
-    if (!pathWithoutLocale.startsWith('/')) {
-      pathWithoutLocale = '/' + pathWithoutLocale;
-    }
-    
-    // Build new path based on target locale
-    const newPath = newLocale === defaultLocale 
-      ? pathWithoutLocale 
-      : `/${newLocale}${pathWithoutLocale}`;
-    
-    // Navigate to the new path
-    router.push(newPath);
+
+    saveScrollForLocaleSwitch();
+    const hash = isMounted && typeof window !== 'undefined' ? window.location.hash : '';
+    const newPath = buildLocaleSwitchPath(newLocale, pathname, hash);
+    router.push(newPath, { scroll: false });
     router.refresh();
   };
 

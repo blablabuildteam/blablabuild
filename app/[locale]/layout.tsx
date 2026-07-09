@@ -8,6 +8,7 @@ import "../globals.css";
 import PasswordGate from "@/components/PasswordGate";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import CookieBanner from "@/components/CookieBanner";
+import LocaleScrollRestore from "@/components/LocaleScrollRestore";
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -89,6 +90,7 @@ export default async function LocaleLayout({
             <GoogleAnalytics />
           </Suspense>
           {children}
+          <LocaleScrollRestore />
           <CookieBanner />
         </NextIntlClientProvider>
       </body>

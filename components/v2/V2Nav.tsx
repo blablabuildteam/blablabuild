@@ -1,10 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import { BlablaLogo } from '@/components/ui/BlablaLogo';
 import V2DirectHelp from './V2DirectHelp';
+import {
+  buildLocaleSwitchPath,
+  saveScrollForLocaleSwitch,
+} from '@/lib/localeSwitch';
+import type { Locale } from '@/i18n/request';
 
 interface V2NavProps {
   activeSection?: string;
@@ -15,11 +21,14 @@ const NAV_SECTIONS = [
   { id: 'cases', key: 'cases' },
   { id: 'aanpak', key: 'approach' },
   { id: 'over-ons', key: 'team' },
+  { id: 'waarde', key: 'value' },
 ] as const;
 
 export default function V2Nav({ activeSection = '' }: V2NavProps) {
   const t = useTranslations('nav');
   const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
   const otherLocale = locale === 'nl' ? 'en' : 'nl';
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -48,6 +57,18 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
     window.scrollTo({ top, behavior: 'smooth' });
     setIsMenuOpen(false);
   };
+
+  const switchLocale = (e: React.MouseEvent) => {
+    e.preventDefault();
+    saveScrollForLocaleSwitch();
+    const hash = typeof window !== 'undefined' ? window.location.hash : '';
+    const newPath = buildLocaleSwitchPath(otherLocale as Locale, pathname, hash);
+    router.push(newPath, { scroll: false });
+    router.refresh();
+    setIsMenuOpen(false);
+  };
+
+  const otherLocaleHref = buildLocaleSwitchPath(otherLocale as Locale, pathname, '');
 
   return (
     <>
@@ -106,7 +127,8 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
 
           <div className="flex items-center gap-2">
             <a
-              href={`/${otherLocale}`}
+              href={otherLocaleHref}
+              onClick={switchLocale}
               className="hidden items-center gap-1 rounded-full border border-white/10 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.2em] text-white/60 transition-colors hover:border-white/30 hover:text-white md:inline-flex"
             >
               {otherLocale}
@@ -162,7 +184,8 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
               ))}
               <div className="mt-2 flex items-center gap-3 border-t border-white/5 pt-4">
                 <a
-                  href={`/${otherLocale}`}
+                  href={otherLocaleHref}
+                  onClick={switchLocale}
                   className="rounded-full border border-white/15 px-4 py-2 font-mono text-xs uppercase tracking-[0.2em] text-white/70"
                 >
                   {otherLocale}
