@@ -161,19 +161,6 @@ export default function V2Hero() {
         style={{ opacity: opacityHero }}
         className="relative mx-auto flex w-full max-w-[1320px] flex-1 flex-col justify-center px-5 sm:px-8 md:px-10"
       >
-        {/* Top eyebrow row */}
-        <div className="flex items-center justify-between pt-6 md:pt-8">
-          <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.28em] text-white/55">
-            <span className="relative inline-flex h-1.5 w-1.5">
-              <span className="absolute inset-0 animate-ping rounded-full bg-bla-lime/60" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-bla-lime" />
-            </span>
-            <span>building since 2024</span>
-          </div>
-          <div className="hidden items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-white/45 md:flex">
-            <span>{locale === 'en' ? 'Amsterdam · global' : 'Amsterdam · wereldwijd'}</span>
-          </div>
-        </div>
 
         {/* Hero headline */}
         <div className="relative grid grid-cols-12 gap-x-4 gap-y-10 pb-12 pt-10 md:gap-y-14 md:pb-14 md:pt-16">
