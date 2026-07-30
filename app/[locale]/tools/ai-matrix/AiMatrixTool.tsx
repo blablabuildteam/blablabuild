@@ -2,9 +2,12 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, ChevronRight, ArrowLeft, BookOpen, BarChart3, Copy, Check, Users, RefreshCw, Info, Share2, Download, Trophy, AlertTriangle, Star, Code2, ClipboardCheck, HelpCircle } from 'lucide-react';
+import { Plus, X, ChevronRight, ArrowLeft, BarChart3, Copy, Check, Users, RefreshCw, Info, Share2, Download, Trophy, AlertTriangle, Star, Code2, ClipboardCheck, HelpCircle } from 'lucide-react';
 import ClaudeCasesView from './ClaudeCasesView';
 import ReviewView from './ReviewView';
+
+/** Internal normalize/review UI — local `npm run dev` only, never on shared/production URLs */
+const SHOW_REVIEW = process.env.NODE_ENV === 'development';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -92,56 +95,66 @@ const CRITERIA: {
   key: keyof Scores;
   label: string;
   question: string;
+  hint: string;
   weight: number;
   scaleLabels: [string, string];
 }[] = [
-  { key: 'businessImpact', label: 'Impact', question: 'How much time, money or quality does this save?', weight: 0.3, scaleLabels: ['A little', 'A lot'] },
-  { key: 'frequency', label: 'How often', question: 'How often does this happen?', weight: 0.2, scaleLabels: ['Rarely', 'All the time'] },
-  { key: 'aiSuitability', label: 'Fit for AI', question: 'Is the work repetitive or based on text and data?', weight: 0.2, scaleLabels: ['Not really', 'Perfect fit'] },
-  { key: 'implementation', label: 'Speed to build', question: 'How quickly can we build this?', weight: 0.1, scaleLabels: ['Months', 'Under 2 weeks'] },
-  { key: 'risk', label: 'Low risk', question: 'How safe is this for privacy and the business?', weight: 0.1, scaleLabels: ['Risky', 'Very safe'] },
-  { key: 'adoption', label: 'Will it be used', question: 'Will people actually use this?', weight: 0.1, scaleLabels: ['Unlikely', 'For sure'] },
+  { key: 'businessImpact', label: 'Impact', question: 'How big is the business upside if this works?', hint: 'You already answered yes/no on “direct impact” in Quick check. Here: how large — hours saved, fewer errors, more revenue.', weight: 0.3, scaleLabels: ['Small improvement', 'Big improvement'] },
+  { key: 'frequency', label: 'How often', question: 'How often does this work show up?', hint: 'You already answered yes/no on “repetitive” in Quick check. Here: how frequent — monthly = lower, daily/weekly = higher.', weight: 0.2, scaleLabels: ['Rarely', 'Daily / continuous'] },
+  { key: 'aiSuitability', label: 'Fit for AI', question: 'How well can AI or automation actually do this kind of work?', hint: 'Strong: sorting, drafting, summarising, matching, checking. Weak: negotiation, taste calls, one-off strategy.', weight: 0.2, scaleLabels: ['Weak fit', 'Strong fit'] },
+  { key: 'implementation', label: 'Speed to build', question: 'How fast can we ship a useful first version?', hint: 'Fast: helper in Slack/email, simple draft tool. Slow: new platform, many integrations.', weight: 0.1, scaleLabels: ['Many months', 'Days / weeks'] },
+  { key: 'risk', label: 'Low risk', question: 'How safe is this for data, compliance and the business?', hint: 'Higher risk: customer/personal data, money movements, external messages. Lower risk: internal drafts a human still checks.', weight: 0.1, scaleLabels: ['High risk', 'Low risk'] },
+  { key: 'adoption', label: 'Will it be used', question: 'Will the team actually use this in their daily work?', hint: 'High: clear owner + fits an existing habit. Low: nice-to-have with no owner.', weight: 0.1, scaleLabels: ['Unlikely', 'Yes, clearly'] },
 ];
 
-const KNOCKOUT_QUESTIONS: { key: keyof KnockoutAnswers; q: string; hint: string }[] = [
-  { key: 'recurring', q: 'Does this happen again and again?', hint: 'A task you repeat often — not a one-off.' },
-  { key: 'costly', q: 'Is it costing you now?', hint: 'It eats up time, money or quality today.' },
-  { key: 'dataAvailable', q: 'Do you have the data for it?', hint: 'The needed info exists somewhere you can reach.' },
-  { key: 'standardized', q: 'Are the steps mostly the same each time?', hint: 'The work follows a clear, repeatable pattern.' },
+const KNOCKOUT_QUESTIONS: {
+  key: keyof KnockoutAnswers;
+  label: string;
+  q: string;
+  yesMeans: string;
+  noMeans: string;
+}[] = [
+  { key: 'recurring', label: 'Repetitive & frequent?', q: 'Does this come back weekly/daily and eat manual time?', yesMeans: 'High automation potential.', noMeans: 'One-off or rare — usually not worth building first.' },
+  { key: 'dataAvailable', label: 'Data digitally available?', q: 'Is the info AI needs already digital and reachable?', yesMeans: 'You can start with prompts / agents.', noMeans: 'First unlock or digitise data — that’s a blocker.' },
+  { key: 'standardized', label: 'Clear & fixed process?', q: 'Are the steps clear for everyone — and mostly the same each time?', yesMeans: 'Good fit for an AI workflow or agent.', noMeans: 'Process is still messy — streamline before automating.' },
+  { key: 'costly', label: 'Direct business impact?', q: 'Would fixing this clearly save time, cut errors, or grow revenue?', yesMeans: 'Strong business case.', noMeans: 'Nice-to-have — little real upside.' },
 ];
 
 const WORKSHOP_QS = [
-  'What problem are we solving?',
-  'How is this done today?',
-  'How much time does this cost per week or month?',
-  'How often does this occur?',
-  'Which systems are involved?',
-  'What data do we have available?',
-  'How much human oversight remains necessary?',
-  'What would a minimal MVP look like?',
-  'How many weeks would a first version take?',
-  'Who will own this solution inside the organisation?',
+  { q: 'What exact problem are we solving?', why: 'Stops vague ideas like “we need AI for X”.' },
+  { q: 'How is this done today, and by whom?', why: 'Makes the current pain and owner concrete.' },
+  { q: 'What would a tiny first version look like?', why: 'Separates a Quick Win pilot from a Major Project.' },
+  { q: 'What data or systems must we connect?', why: 'Surfaces hidden effort and blockers early.' },
+  { q: 'Who owns this after the workshop?', why: 'No owner = low adoption, even with a high score.' },
 ];
 
 const TYPICAL = [
-  'AI Meeting Assistant', 'Email Assistant', 'Knowledge Assistant (RAG)',
-  'Document Analysis', 'Quote Generator', 'FAQ Agent',
-  'Marketing Content', 'Report Automation', 'CRM Data Enrichment',
-  'Contract Summarisation', 'Sales Proposal Generator', 'Dashboard Q&A',
+  'Campaign performance Q&A',
+  'Creative brief generator',
+  'Affiliate offer summariser',
+  'Email subject & copy assist',
+  'Invoice / payout check helper',
+  'CRM lead enrichment',
+  'Pricing anomaly alerts',
+  'HR policy chatbot',
+  'Weekly report auto-draft',
+  'Fraud / anomaly flagging',
+  'Advertiser onboarding checklist',
+  'Audience insight digests',
 ];
 
 const DECISION_RULES = [
-  'High business impact',
-  'Realisable as MVP within 2–6 weeks',
-  'Low implementation and compliance risks',
-  'Clear owner within the organisation',
+  'Clear problem + clear owner',
+  'Useful first version within weeks, not months',
+  'Data is reachable (even if messy)',
+  'Team will actually use it in daily work',
 ];
 
 const Q_META: Record<QuadrantKey, { dot: string; bg: string; label: string; desc: string }> = {
-  quick:     { dot: '#ceff00', bg: 'rgba(206,255,0,0.06)',   label: 'Quick Win',     desc: 'No-Regret ✅' },
-  strategic: { dot: '#60a5fa', bg: 'rgba(96,165,250,0.06)',  label: 'Strategic Bet', desc: 'Plan & prioritise' },
-  low:       { dot: '#6b7280', bg: 'rgba(107,114,128,0.04)', label: 'Low Priority',  desc: 'Save for later' },
-  later:     { dot: '#f59e0b', bg: 'rgba(245,158,11,0.05)',  label: 'Later',         desc: 'High effort' },
+  quick:     { dot: '#ceff00', bg: 'rgba(206,255,0,0.06)',   label: 'Quick Wins',     desc: 'High impact, low effort' },
+  strategic: { dot: '#60a5fa', bg: 'rgba(96,165,250,0.06)',  label: 'Major Projects', desc: 'High impact, more effort' },
+  low:       { dot: '#6b7280', bg: 'rgba(107,114,128,0.04)', label: 'Fill-ins',       desc: 'Low impact, low effort' },
+  later:     { dot: '#f59e0b', bg: 'rgba(245,158,11,0.05)',  label: 'Backlog',        desc: 'Low impact, high effort' },
 };
 
 const POLL_INTERVAL = 5000; // ms
@@ -254,6 +267,56 @@ function YesNo({ value, onChange }: { value: boolean | null; onChange: (v: boole
   );
 }
 
+/** Stable hash jitter so identical scores don't stack on the same pixel. */
+function hashJitter(id: string): { dx: number; dy: number } {
+  let t = 0;
+  for (let i = 0; i < id.length; i++) t = (Math.imul(31, t) + id.charCodeAt(i)) | 0;
+  return { dx: (t % 9 - 4) * 3.2, dy: ((t >> 4) % 9 - 4) * 3.2 };
+}
+
+const PLOT_MIN_DIST = 13;
+
+/** Place dots with hash jitter + iterative separation (same approach as production). */
+function layoutPlotPoints(
+  useCases: UseCase[],
+  toX: (effort: number) => number,
+  toY: (impact: number) => number,
+  bounds: { minX: number; maxX: number; minY: number; maxY: number },
+): { uc: UseCase; x: number; y: number }[] {
+  const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+  const points = [...useCases]
+    .sort((a, b) => a.id.localeCompare(b.id))
+    .map((uc) => {
+      const effort = 6 - uc.scores.implementation;
+      const impact = uc.scores.businessImpact;
+      const { dx, dy } = hashJitter(uc.id);
+      return {
+        uc,
+        x: clamp(toX(effort) + dx, bounds.minX, bounds.maxX),
+        y: clamp(toY(impact) + dy, bounds.minY, bounds.maxY),
+      };
+    });
+
+  for (let iter = 0; iter < 6; iter++) {
+    for (let i = 0; i < points.length; i++) {
+      for (let j = i + 1; j < points.length; j++) {
+        const sx = points[j].x - points[i].x;
+        const sy = points[j].y - points[i].y;
+        const dist = Math.hypot(sx, sy) || 0.01;
+        if (dist >= PLOT_MIN_DIST) continue;
+        const push = (PLOT_MIN_DIST - dist) * 0.35;
+        const nx = sx / dist;
+        const ny = sy / dist;
+        points[i].x = clamp(points[i].x - nx * push, bounds.minX, bounds.maxX);
+        points[i].y = clamp(points[i].y - ny * push, bounds.minY, bounds.maxY);
+        points[j].x = clamp(points[j].x + nx * push, bounds.minX, bounds.maxX);
+        points[j].y = clamp(points[j].y + ny * push, bounds.minY, bounds.maxY);
+      }
+    }
+  }
+  return points;
+}
+
 function MatrixPlot({ useCases, hoveredId, selectedId, onHover, onSelect }: {
   useCases: UseCase[];
   hoveredId: string | null;
@@ -261,8 +324,8 @@ function MatrixPlot({ useCases, hoveredId, selectedId, onHover, onSelect }: {
   onHover: (id: string | null) => void;
   onSelect: (id: string) => void;
 }) {
-  const W = 520; const H = 360;
-  const PAD = { t: 24, r: 24, b: 44, l: 44 };
+  const W = 560; const H = 400;
+  const PAD = { t: 22, r: 14, b: 44, l: 42 };
   const plotW = W - PAD.l - PAD.r;
   const plotH = H - PAD.t - PAD.b;
   const midX = PAD.l + plotW / 2;
@@ -270,6 +333,35 @@ function MatrixPlot({ useCases, hoveredId, selectedId, onHover, onSelect }: {
 
   const toX = (effort: number) => PAD.l + ((effort - 1) / 4) * plotW;
   const toY = (impact: number) => PAD.t + plotH - ((impact - 1) / 4) * plotH;
+
+  const points = layoutPlotPoints(useCases, toX, toY, {
+    minX: PAD.l + 6,
+    maxX: PAD.l + plotW - 6,
+    minY: PAD.t + 6,
+    maxY: PAD.t + plotH - 6,
+  });
+
+  const drawOrder = [...points].sort((a, b) => {
+    const focus = selectedId || hoveredId;
+    if (!focus) return 0;
+    if (a.uc.id === focus) return 1;
+    if (b.uc.id === focus) return -1;
+    return 0;
+  });
+
+  const hoverPoint = !selectedId && hoveredId
+    ? points.find((p) => p.uc.id === hoveredId)
+    : undefined;
+  const tipStyle = hoverPoint
+    ? {
+        left: `${(hoverPoint.x / W) * 100}%`,
+        top: `${(hoverPoint.y / H) * 100}%`,
+        transform: [
+          hoverPoint.x / W > 0.55 ? 'translateX(calc(-100% - 10px))' : 'translateX(10px)',
+          hoverPoint.y / H > 0.5 ? 'translateY(calc(-100% - 8px))' : 'translateY(8px)',
+        ].join(' '),
+      }
+    : undefined;
 
   const QLABELS: { q: QuadrantKey; x: number; y: number; anchor: 'start' | 'end' | 'middle' }[] = [
     { q: 'quick',     x: PAD.l + 10,          y: PAD.t + 16,            anchor: 'start' },
@@ -279,69 +371,107 @@ function MatrixPlot({ useCases, hoveredId, selectedId, onHover, onSelect }: {
   ];
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ fontFamily: 'inherit' }}>
-      <rect x={PAD.l} y={PAD.t}   width={plotW / 2} height={plotH / 2} fill={Q_META.quick.bg} />
-      <rect x={midX}  y={PAD.t}   width={plotW / 2} height={plotH / 2} fill={Q_META.strategic.bg} />
-      <rect x={PAD.l} y={midY}    width={plotW / 2} height={plotH / 2} fill={Q_META.low.bg} />
-      <rect x={midX}  y={midY}    width={plotW / 2} height={plotH / 2} fill={Q_META.later.bg} />
-      <rect x={PAD.l} y={PAD.t}   width={plotW}     height={plotH} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-      <line x1={midX} y1={PAD.t}  x2={midX} y2={PAD.t + plotH} stroke="rgba(255,255,255,0.10)" strokeWidth="1" strokeDasharray="5 5" />
-      <line x1={PAD.l} y1={midY}  x2={PAD.l + plotW} y2={midY} stroke="rgba(255,255,255,0.10)" strokeWidth="1" strokeDasharray="5 5" />
+    <div className="relative w-full" onMouseLeave={() => onHover(null)}>
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full touch-none" style={{ fontFamily: 'inherit' }}>
+        <rect x={PAD.l} y={PAD.t}   width={plotW / 2} height={plotH / 2} fill={Q_META.quick.bg} />
+        <rect x={midX}  y={PAD.t}   width={plotW / 2} height={plotH / 2} fill={Q_META.strategic.bg} />
+        <rect x={PAD.l} y={midY}    width={plotW / 2} height={plotH / 2} fill={Q_META.low.bg} />
+        <rect x={midX}  y={midY}    width={plotW / 2} height={plotH / 2} fill={Q_META.later.bg} />
+        <rect x={PAD.l} y={PAD.t}   width={plotW}     height={plotH} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+        <line x1={midX} y1={PAD.t}  x2={midX} y2={PAD.t + plotH} stroke="rgba(255,255,255,0.10)" strokeWidth="1" strokeDasharray="5 5" />
+        <line x1={PAD.l} y1={midY}  x2={PAD.l + plotW} y2={midY} stroke="rgba(255,255,255,0.10)" strokeWidth="1" strokeDasharray="5 5" />
 
-      {QLABELS.map(({ q, x, y, anchor }) => (
-        <text key={q} x={x} y={y} textAnchor={anchor} fontSize="9" fill={Q_META[q].dot} opacity="0.75" fontFamily="monospace" letterSpacing="0.1em">
-          {Q_META[q].label.toUpperCase()}
-        </text>
-      ))}
-      <text x={PAD.l + plotW / 2} y={H - 4} textAnchor="middle" fontSize="9" fill="rgba(255,255,255,0.3)" fontFamily="monospace" letterSpacing="0.08em">
-        IMPLEMENTATION EFFORT →
-      </text>
-      <text x={10} y={PAD.t + plotH / 2} textAnchor="middle" fontSize="9" fill="rgba(255,255,255,0.3)" fontFamily="monospace" letterSpacing="0.08em" transform={`rotate(-90, 10, ${PAD.t + plotH / 2})`}>
-        BUSINESS IMPACT ↑
-      </text>
+        {QLABELS.map(({ q, x, y, anchor }) => (
+          <text key={q} x={x} y={y} textAnchor={anchor} fontSize="9" fill={Q_META[q].dot} opacity="0.8" fontFamily="monospace" letterSpacing="0.08em">
+            {Q_META[q].label.toUpperCase()}
+          </text>
+        ))}
 
-      {useCases.map((uc) => {
-        const effort = 6 - uc.scores.implementation;
-        const impact = uc.scores.businessImpact;
-        const cx = toX(effort);
-        const cy = toY(impact);
-        const q = getQuadrant(uc);
-        const dept = uc.label || 'General';
-        const color = getDeptColor(dept);
-        const isHovered = hoveredId === uc.id || selectedId === uc.id;
-        const highRisk = isHighRisk(uc);
-        const label = uc.name.length > 22 ? uc.name.slice(0, 20) + '…' : uc.name;
-        const r = isHovered ? 5.5 : 4;
+        {/* X axis */}
+        <line x1={PAD.l} y1={PAD.t + plotH} x2={PAD.l + plotW} y2={PAD.t + plotH} stroke="rgba(255,255,255,0.28)" strokeWidth="1.5" />
+        {[1, 2, 3, 4, 5].map((n) => {
+          const x = toX(n);
+          return (
+            <g key={`ex-${n}`}>
+              <line x1={x} y1={PAD.t + plotH} x2={x} y2={PAD.t + plotH + 5} stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
+              <text x={x} y={PAD.t + plotH + 16} textAnchor="middle" fontSize="8" fill="rgba(255,255,255,0.4)" fontFamily="monospace">{n}</text>
+            </g>
+          );
+        })}
+        <text x={PAD.l} y={394} textAnchor="start" fontSize="10" fill="rgba(255,255,255,0.55)" fontFamily="monospace" letterSpacing="0.06em">LOW EFFORT</text>
+        <text x={PAD.l + plotW} y={394} textAnchor="end" fontSize="10" fill="rgba(255,255,255,0.55)" fontFamily="monospace" letterSpacing="0.06em">HIGH EFFORT</text>
 
-        return (
-          <g
-            key={uc.id}
-            onMouseEnter={() => onHover(uc.id)}
-            onMouseLeave={() => onHover(null)}
-            onClick={() => onSelect(uc.id)}
-            style={{ cursor: 'pointer' }}
-          >
-            {isHovered && <circle cx={cx} cy={cy} r={14} fill={color} opacity={0.1} />}
-            <circle cx={cx} cy={cy} r={r} fill={color} opacity={isHovered ? 1 : 0.88} style={{ transition: 'r 0.15s, opacity 0.15s' }} />
-            {uc.isWinner && <circle cx={cx} cy={cy} r={r + 3.5} fill="none" stroke="#ceff00" strokeWidth="1.25" />}
-            {highRisk && <circle cx={cx} cy={cy} r={r + 2.5} fill="none" stroke="#f87171" strokeWidth="1" strokeDasharray="2 2" />}
-            {isHovered && (
-              <>
-                <rect x={cx - label.length * 3.5 - 8} y={cy - 28} width={label.length * 7 + 16} height={18} rx="4" fill="rgba(14,16,20,0.92)" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-                <text x={cx} y={cy - 15} textAnchor="middle" fontSize="10" fill="white" fontFamily="inherit">{label}</text>
-                <text x={cx} y={cy + r + 12} textAnchor="middle" fontSize="8" fill={color} fontFamily="monospace">{dept} · {Q_META[q].label}</text>
-              </>
-            )}
-          </g>
-        );
-      })}
+        {/* Y axis */}
+        <line x1={PAD.l} y1={PAD.t} x2={PAD.l} y2={PAD.t + plotH} stroke="rgba(255,255,255,0.28)" strokeWidth="1.5" />
+        {[1, 2, 3, 4, 5].map((n) => {
+          const y = toY(n);
+          return (
+            <g key={`iy-${n}`}>
+              <line x1={PAD.l - 5} y1={y} x2={PAD.l} y2={y} stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
+              <text x={PAD.l - 8} y={y + 3} textAnchor="end" fontSize="8" fill="rgba(255,255,255,0.4)" fontFamily="monospace">{n}</text>
+            </g>
+          );
+        })}
+        <text x={12} y={PAD.t + 10} textAnchor="middle" fontSize="10" fill="rgba(255,255,255,0.55)" fontFamily="monospace" letterSpacing="0.04em" transform={`rotate(-90, 12, ${PAD.t + 10})`}>HIGH IMPACT</text>
+        <text x={12} y={PAD.t + plotH - 4} textAnchor="middle" fontSize="10" fill="rgba(255,255,255,0.55)" fontFamily="monospace" letterSpacing="0.04em" transform={`rotate(-90, 12, ${PAD.t + plotH - 4})`}>LOW IMPACT</text>
 
-      {useCases.length === 0 && (
-        <text x={PAD.l + plotW / 2} y={PAD.t + plotH / 2 + 4} textAnchor="middle" fontSize="12" fill="rgba(255,255,255,0.18)" fontFamily="inherit">
-          Add use cases to plot them here
-        </text>
+        {drawOrder.map(({ uc, x: cx, y: cy }) => {
+          const color = getDeptColor(uc.label || 'General');
+          const isActive = hoveredId === uc.id || selectedId === uc.id;
+          const highRisk = isHighRisk(uc);
+          const r = 4.5;
+
+          return (
+            <g
+              key={uc.id}
+              onMouseEnter={() => onHover(uc.id)}
+              onClick={() => onSelect(uc.id)}
+              style={{ cursor: 'pointer' }}
+            >
+              <circle cx={cx} cy={cy} r={20} fill="transparent" />
+              <circle cx={cx} cy={cy} r={r} fill={color} opacity={isActive ? 1 : 0.9} />
+              {uc.presented && (
+                <path
+                  d={`M ${cx - 1.7} ${cy + 0.15} L ${cx - 0.3} ${cy + 1.6} L ${cx + 1.9} ${cy - 1.5}`}
+                  fill="none"
+                  stroke="#0a0b0e"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              )}
+              {uc.isWinner && <circle cx={cx} cy={cy} r={r + 3.5} fill="none" stroke="#ceff00" strokeWidth="1.25" />}
+              {highRisk && <circle cx={cx} cy={cy} r={r + 2.5} fill="none" stroke="#f87171" strokeWidth="1" strokeDasharray="2 2" />}
+            </g>
+          );
+        })}
+
+        {useCases.length === 0 && (
+          <text x={PAD.l + plotW / 2} y={PAD.t + plotH / 2 + 4} textAnchor="middle" fontSize="12" fill="rgba(255,255,255,0.18)" fontFamily="inherit">
+            Add use cases to plot them here
+          </text>
+        )}
+      </svg>
+
+      {hoverPoint && tipStyle && (
+        <div
+          className="pointer-events-none absolute z-20 w-[240px] rounded-xl border border-white/12 bg-[#101218]/95 px-3.5 py-3 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-md"
+          style={tipStyle}
+        >
+          <div className="flex items-start gap-2">
+            <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: getDeptColor(hoverPoint.uc.label || 'General') }} />
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] font-medium leading-snug text-white">{hoverPoint.uc.name}</p>
+              <p className="mt-1 font-mono text-[10px] text-white/40">
+                {hoverPoint.uc.label || 'General'} · {Q_META[getQuadrant(hoverPoint.uc)].label} · {calcScore(hoverPoint.uc.scores).toFixed(1)}
+                {isHighRisk(hoverPoint.uc) ? ' · High risk' : ''}
+              </p>
+            </div>
+          </div>
+          <p className="mt-2 font-mono text-[10px] text-white/28">Click to discuss</p>
+        </div>
       )}
-    </svg>
+    </div>
   );
 }
 
@@ -397,6 +527,11 @@ export default function AiMatrixTool() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formName, setFormName] = useState('');
   const [formDesc, setFormDesc] = useState('');
+  const [formSolution, setFormSolution] = useState('');
+  const [formLabel, setFormLabel] = useState<string>('General');
+  const [showCustomLabel, setShowCustomLabel] = useState(false);
+  const [customLabel, setCustomLabel] = useState('');
+  const [extraLabels, setExtraLabels] = useState<string[]>([]);
   const [formKO, setFormKO] = useState<KnockoutAnswers>({ ...EMPTY_KO });
   const [formScores, setFormScores] = useState<Scores>({ ...EMPTY_SCORES });
 
@@ -608,10 +743,27 @@ export default function AiMatrixTool() {
   const scoresDone = CRITERIA.every((c) => formScores[c.key] > 0);
 
   function resetForm() {
-    setFormName(''); setFormDesc('');
-    setFormKO({ ...EMPTY_KO }); setFormScores({ ...EMPTY_SCORES });
+    setFormName('');
+    setFormDesc('');
+    setFormSolution('');
+    setFormLabel('General');
+    setShowCustomLabel(false);
+    setCustomLabel('');
+    setFormKO({ ...EMPTY_KO });
+    setFormScores({ ...EMPTY_SCORES });
     setAddStep(0);
     setEditingId(null);
+  }
+
+  function addCustomLabel() {
+    const label = customLabel.trim();
+    if (!label) return;
+    if (![...DEFAULT_LABELS, ...extraLabels].includes(label)) {
+      setExtraLabels((prev) => [...prev, label]);
+    }
+    setFormLabel(label);
+    setShowCustomLabel(false);
+    setCustomLabel('');
   }
 
   async function saveUseCase() {
@@ -623,6 +775,8 @@ export default function AiMatrixTool() {
         ...existing,
         name: formName.trim(),
         description: formDesc.trim(),
+        solution: formSolution.trim() || undefined,
+        label: formLabel || 'General',
         knockout: { ...formKO },
         scores: { ...formScores },
       });
@@ -631,6 +785,8 @@ export default function AiMatrixTool() {
         id: makeId(),
         name: formName.trim(),
         description: formDesc.trim(),
+        solution: formSolution.trim() || undefined,
+        label: formLabel || 'General',
         addedBy: yourName || undefined,
         knockout: { ...formKO },
         scores: { ...formScores },
@@ -644,6 +800,7 @@ export default function AiMatrixTool() {
   function startAdd(name = '') {
     resetForm();
     if (name) setFormName(name);
+    if (filterLabel !== 'all') setFormLabel(filterLabel);
     setView('add');
   }
 
@@ -651,6 +808,10 @@ export default function AiMatrixTool() {
     setEditingId(uc.id);
     setFormName(uc.name);
     setFormDesc(uc.description);
+    setFormSolution(uc.solution || '');
+    setFormLabel(uc.label || 'General');
+    setShowCustomLabel(false);
+    setCustomLabel('');
     setFormKO({ ...uc.knockout });
     setFormScores({ ...uc.scores });
     setAddStep(0);
@@ -683,6 +844,7 @@ export default function AiMatrixTool() {
   const allLabels = Array.from(
     new Set([
       ...DEFAULT_LABELS,
+      ...extraLabels,
       ...useCases.map((uc) => uc.label).filter((l): l is string => Boolean(l)),
     ])
   );
@@ -776,19 +938,19 @@ export default function AiMatrixTool() {
   );
 
   const MatrixView = (
-    <div className="flex h-full flex-col gap-6 lg:flex-row">
+    <div className="flex min-h-[calc(100vh-160px)] flex-col gap-6 lg:flex-row lg:items-stretch">
       {/* Left sidebar */}
-      <div className="flex w-full flex-col gap-3 lg:w-72">
+      <div className="flex w-full flex-col gap-3 lg:h-[calc(100vh-160px)] lg:w-80 lg:shrink-0">
         <button
           onClick={() => startAdd()}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-bla-lime/40 bg-bla-lime/10 px-4 py-3 text-sm font-medium text-bla-lime transition-colors hover:bg-bla-lime/20"
+          className="flex w-full shrink-0 items-center justify-center gap-2 rounded-xl border border-bla-lime/40 bg-bla-lime/10 px-4 py-3 text-sm font-medium text-bla-lime transition-colors hover:bg-bla-lime/20"
         >
           <Plus className="h-4 w-4" />
           Add use case
         </button>
 
         {/* Department filter */}
-        <div>
+        <div className="shrink-0">
           <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/35">§ department</p>
           <div className="flex flex-wrap gap-1.5">
             <button
@@ -822,7 +984,7 @@ export default function AiMatrixTool() {
         </div>
 
         {useCases.length === 0 ? (
-          <div className="mt-2">
+          <div className="mt-2 min-h-0 flex-1 overflow-y-auto">
             <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-white/35">§ click to start</p>
             <div className="flex flex-wrap gap-1.5">
               {TYPICAL.map((name) => (
@@ -834,129 +996,97 @@ export default function AiMatrixTool() {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
-            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/35">
+          <div className="flex min-h-0 flex-1 flex-col gap-2">
+            <p className="shrink-0 font-mono text-[10px] uppercase tracking-[0.22em] text-white/35">
               § use cases ({filteredUseCases.length}{filterLabel !== 'all' ? ` · ${filterLabel}` : ''})
             </p>
-            {filteredUseCases.length === 0 && (
-              <p className="text-xs text-white/35">No use cases in this department yet.</p>
-            )}
-            {filteredUseCases.map((uc) => {
-              const q = getQuadrant(uc);
-              const score = calcScore(uc.scores);
-              const ko = (Object.values(uc.knockout) as (boolean | null)[]).some((v) => v === false);
-              const dept = uc.label || 'General';
-              const isActive = selectedId === uc.id || hoveredId === uc.id;
-              return (
-                <div
-                  key={uc.id}
-                  role="button"
-                  tabIndex={0}
-                  onMouseEnter={() => setHoveredId(uc.id)}
-                  onMouseLeave={() => setHoveredId(null)}
-                  onClick={() => setSelectedId(uc.id)}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedId(uc.id); }}
-                  className={`group flex w-full cursor-pointer items-start gap-2.5 rounded-xl border p-3 text-left transition-colors ${
-                    uc.isWinner
-                      ? 'border-bla-lime/25 bg-bla-lime/[0.07]'
-                      : uc.presented
-                        ? 'border-emerald-400/20 bg-emerald-400/[0.05]'
-                        : selectedId === uc.id
-                          ? 'border-white/20 bg-white/[0.06]'
-                          : isActive
-                            ? 'border-white/15 bg-white/[0.05]'
-                            : 'border-white/8 bg-white/[0.02] hover:border-white/15'
-                  }`}
-                >
-                  <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: getDeptColor(dept) }} />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-start gap-1.5">
-                      <p className={`min-w-0 flex-1 truncate text-sm font-medium ${uc.presented ? 'text-white/55' : 'text-white'}`}>
-                        {uc.name}
-                      </p>
-                      {uc.isWinner && <Star className="mt-0.5 h-3 w-3 shrink-0 fill-bla-lime text-bla-lime" />}
-                    </div>
-                    {uc.description && (
-                      <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-white/40">{uc.description}</p>
-                    )}
-                    <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                      <span className="rounded-full px-1.5 py-px font-mono text-[9px]"
-                        style={{ color: getDeptColor(dept), backgroundColor: getDeptColor(dept) + '22' }}>
-                        {dept}
-                      </span>
-                      <span className="font-mono text-[10px] text-white/35">{score.toFixed(1)} / 5.0</span>
-                      <span className="rounded-full px-1.5 py-px font-mono text-[9px] uppercase tracking-[0.15em]"
-                        style={{ color: Q_META[q].dot, backgroundColor: Q_META[q].dot + '22' }}>
-                        {Q_META[q].label}
-                      </span>
-                      {isHighRisk(uc) && (
-                        <span className="flex items-center gap-0.5 rounded-full bg-red-400/10 px-1.5 py-px font-mono text-[9px] text-red-400">
-                          <AlertTriangle className="h-2.5 w-2.5" /> risk
-                        </span>
-                      )}
-                      {ko && <span className="rounded-full bg-red-400/10 px-1.5 py-px font-mono text-[9px] text-red-400">KO</span>}
-                      {uc.addedBy && <span className="font-mono text-[9px] text-white/25">by {uc.addedBy}</span>}
-                    </div>
-                  </div>
+            <div className="min-h-0 flex-1 space-y-0.5 overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.2)_transparent]">
+              {filteredUseCases.length === 0 && (
+                <p className="text-xs text-white/35">No use cases in this department yet.</p>
+              )}
+              {filteredUseCases.map((uc) => {
+                const q = getQuadrant(uc);
+                const score = calcScore(uc.scores);
+                const dept = uc.label || 'General';
+                return (
                   <div
-                    className={`flex shrink-0 items-center gap-0.5 transition-opacity ${
-                      uc.isWinner || uc.presented ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                    key={uc.id}
+                    role="button"
+                    tabIndex={0}
+                    onMouseEnter={() => setHoveredId(uc.id)}
+                    onMouseLeave={() => setHoveredId(null)}
+                    onClick={() => setSelectedId(uc.id)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedId(uc.id); }}
+                    className={`group flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 transition-colors ${
+                      uc.isWinner
+                        ? 'bg-bla-lime/[0.07]'
+                        : uc.presented
+                          ? 'bg-emerald-400/[0.05]'
+                          : selectedId === uc.id
+                            ? 'bg-white/[0.06]'
+                            : 'hover:bg-white/[0.03]'
                     }`}
-                    onClick={(e) => e.stopPropagation()}
                   >
-                    <button
-                      type="button"
-                      title={uc.presented ? 'Clear presented' : 'Mark as presented'}
-                      onClick={() => updateUseCase({ ...uc, presented: !uc.presented })}
-                      className={`grid h-6 w-6 place-items-center rounded-md transition-colors ${
-                        uc.presented ? 'text-emerald-300' : 'text-white/30 hover:text-emerald-300'
+                    <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: getDeptColor(dept) }} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline gap-2">
+                        <p className={`min-w-0 flex-1 truncate text-[13px] font-medium ${uc.presented ? 'text-white/55' : 'text-white/90'}`}>
+                          {uc.name}
+                        </p>
+                        <span className="shrink-0 font-mono text-[11px] tabular-nums text-white/40">{score.toFixed(1)}</span>
+                      </div>
+                      <p className="mt-0.5 truncate font-mono text-[10px] text-white/30">
+                        {dept}
+                        <span className="text-white/15"> · </span>
+                        {Q_META[q].label}
+                      </p>
+                    </div>
+                    <div
+                      className={`flex shrink-0 items-center gap-0.5 transition-opacity ${
+                        uc.isWinner || uc.presented ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                       }`}
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <Check className="h-3 w-3" />
-                    </button>
-                    <button
-                      type="button"
-                      title={uc.isWinner ? 'Remove favorite' : 'Mark as favorite'}
-                      onClick={() => updateUseCase({ ...uc, isWinner: !uc.isWinner })}
-                      className={`grid h-6 w-6 place-items-center rounded-md transition-colors ${
-                        uc.isWinner ? 'text-bla-lime' : 'text-white/30 hover:text-bla-lime'
-                      }`}
-                    >
-                      <Star className={`h-3 w-3 ${uc.isWinner ? 'fill-bla-lime' : ''}`} />
-                    </button>
-                    <button
-                      type="button"
-                      title="Delete"
-                      onClick={() => removeUseCase(uc.id)}
-                      className="grid h-6 w-6 place-items-center rounded-md text-white/25 opacity-0 transition-colors hover:text-red-400 group-hover:opacity-100"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
+                      <button
+                        type="button"
+                        title={uc.presented ? 'Clear presented' : 'Mark as presented'}
+                        onClick={() => updateUseCase({ ...uc, presented: !uc.presented })}
+                        className={`grid h-6 w-6 place-items-center rounded-md transition-colors ${
+                          uc.presented ? 'text-emerald-300' : 'text-white/30 hover:text-emerald-300'
+                        }`}
+                      >
+                        <Check className="h-3 w-3" />
+                      </button>
+                      <button
+                        type="button"
+                        title={uc.isWinner ? 'Remove favorite' : 'Mark as favorite'}
+                        onClick={() => updateUseCase({ ...uc, isWinner: !uc.isWinner })}
+                        className={`grid h-6 w-6 place-items-center rounded-md transition-colors ${
+                          uc.isWinner ? 'text-bla-lime' : 'text-white/30 hover:text-bla-lime'
+                        }`}
+                      >
+                        <Star className={`h-3 w-3 ${uc.isWinner ? 'fill-bla-lime' : ''}`} />
+                      </button>
+                      <button
+                        type="button"
+                        title="Delete"
+                        onClick={() => removeUseCase(uc.id)}
+                        className="grid h-6 w-6 place-items-center rounded-md text-white/25 opacity-0 transition-colors hover:text-red-400 group-hover:opacity-100"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
 
-        <div className="mt-auto flex flex-col gap-2">
-          {useCases.length > 0 && (
-            <button onClick={() => setView('results')}
-              className="flex items-center gap-2 rounded-xl border border-bla-lime/25 bg-bla-lime/5 px-4 py-3 text-sm text-bla-lime/90 transition-colors hover:bg-bla-lime/10">
-              <Trophy className="h-4 w-4" />
-              View results
-            </button>
-          )}
-          <button onClick={() => setView('workshop')}
-            className="flex items-center gap-2 rounded-xl border border-white/8 px-4 py-3 text-sm text-white/50 transition-colors hover:border-white/15 hover:text-white/80">
-            <BookOpen className="h-4 w-4" />
-            Help
-          </button>
-        </div>
       </div>
 
       {/* Matrix panel */}
-      <div className="flex-1 rounded-2xl border border-white/8 bg-white/[0.015] p-5 md:p-7">
+      <div className="flex-1 rounded-2xl border border-white/8 bg-white/[0.015] p-3 md:p-4">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/40">
             § priority matrix{filterLabel !== 'all' ? ` · ${filterLabel}` : ''}
@@ -981,12 +1111,13 @@ export default function AiMatrixTool() {
 
         {filteredUseCases.length > 0 && (
           <div className="mt-5 border-t border-white/8 pt-5">
-            <p className="mb-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">§ no-regret use cases</p>
+            <p className="mb-2.5 font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">§ quick wins</p>
             <div className="flex flex-wrap gap-2">
               {filteredUseCases.filter((uc) => getQuadrant(uc) === 'quick').length === 0
-                ? <p className="text-sm text-white/30">No quick wins yet. Score higher on impact and speed.</p>
+                ? <p className="text-sm text-white/30">No quick wins yet. Score higher on impact and speed to build.</p>
                 : filteredUseCases.filter((uc) => getQuadrant(uc) === 'quick').map((uc) => (
-                    <span key={uc.id} className="rounded-full border border-bla-lime/30 bg-bla-lime/10 px-3 py-1 text-xs font-medium text-bla-lime">
+                    <span key={uc.id} className="inline-flex items-center gap-1.5 rounded-full border border-bla-lime/30 bg-bla-lime/10 px-3 py-1 text-xs font-medium text-bla-lime">
+                      <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: getDeptColor(uc.label || 'General') }} />
                       {uc.name}
                     </span>
                   ))
@@ -1115,7 +1246,7 @@ export default function AiMatrixTool() {
               <div className="mb-4">
                 <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">Quick check</p>
                 <div className="grid grid-cols-2 gap-1.5">
-                  {KNOCKOUT_QUESTIONS.map(({ key, q: label }) => {
+                  {KNOCKOUT_QUESTIONS.map(({ key, label }) => {
                     const val = uc.knockout[key];
                     const yes = val === true;
                     const no = val === false;
@@ -1189,47 +1320,133 @@ export default function AiMatrixTool() {
       {addStep === 0 && (
         <div className="space-y-5">
           <div>
-            <label className="mb-2 block font-mono text-[11px] uppercase tracking-[0.22em] text-white/50">Use case name</label>
-            <input type="text" value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="e.g. AI Meeting Assistant"
-              className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 font-host text-white placeholder-white/25 outline-none focus:border-bla-lime/50" autoFocus />
+            <label className="mb-2 block font-mono text-xs uppercase tracking-[0.22em] text-white/50">Use case name</label>
+            <input
+              type="text"
+              value={formName}
+              onChange={(e) => setFormName(e.target.value)}
+              placeholder="Short title — e.g. Weekly campaign report auto-draft"
+              className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 font-host text-[15px] text-white placeholder-white/25 outline-none focus:border-bla-lime/50"
+              autoFocus
+            />
           </div>
+
           <div>
-            <label className="mb-2 block font-mono text-[11px] uppercase tracking-[0.22em] text-white/50">
-              Description <span className="text-white/25">(optional)</span>
-            </label>
-            <textarea value={formDesc} onChange={(e) => setFormDesc(e.target.value)} placeholder="What does this use case do exactly?" rows={2}
-              className="w-full resize-none rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 font-host text-white placeholder-white/25 outline-none focus:border-bla-lime/50" />
+            <label className="mb-1 block font-mono text-xs uppercase tracking-[0.22em] text-white/50">Problem statement</label>
+            <p className="mb-2 text-[14px] leading-snug text-white/50">What problem are we hitting — or what do we want to solve?</p>
+            <textarea
+              value={formDesc}
+              onChange={(e) => setFormDesc(e.target.value)}
+              placeholder="e.g. Every Monday media buyers spend ~3 hours copying Meta + Google stats into a sheet. Underperforming ads get spotted too late."
+              rows={3}
+              className="w-full resize-y rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 font-host text-[15px] leading-relaxed text-white placeholder-white/30 outline-none focus:border-bla-lime/50"
+            />
           </div>
+
           <div>
-            <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.22em] text-white/50">§ quick check</p>
+            <label className="mb-1 block font-mono text-xs uppercase tracking-[0.22em] text-white/50">Possible solution / AI</label>
+            <p className="mb-2 text-[14px] leading-snug text-white/50">What AI or tooling could help — even a rough idea?</p>
+            <textarea
+              value={formSolution}
+              onChange={(e) => setFormSolution(e.target.value)}
+              placeholder="e.g. A Slack bot that drafts a Monday digest from both platforms and flags weak campaigns for human review."
+              rows={3}
+              className="w-full resize-y rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 font-host text-[15px] leading-relaxed text-white placeholder-white/30 outline-none focus:border-bla-lime/50"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block font-mono text-xs uppercase tracking-[0.22em] text-white/50">Department</label>
+            <div className="flex flex-wrap gap-1.5">
+              {allLabels.map((label) => (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => { setFormLabel(label); setShowCustomLabel(false); }}
+                  className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                    formLabel === label && !showCustomLabel
+                      ? 'border-bla-lime/40 bg-bla-lime/10 text-bla-lime'
+                      : 'border-white/10 text-white/50 hover:border-white/20 hover:text-white/80'
+                  }`}
+                >
+                  <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: getDeptColor(label) }} />
+                  {label}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setShowCustomLabel(true)}
+                className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                  showCustomLabel
+                    ? 'border-bla-lime/40 bg-bla-lime/10 text-bla-lime'
+                    : 'border-dashed border-white/15 text-white/40 hover:border-white/25 hover:text-white/70'
+                }`}
+              >
+                <Plus className="mr-1 inline h-3 w-3" />
+                Custom
+              </button>
+            </div>
+            {showCustomLabel && (
+              <div className="mt-2 flex gap-2">
+                <input
+                  type="text"
+                  value={customLabel}
+                  onChange={(e) => setCustomLabel(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && addCustomLabel()}
+                  placeholder="e.g. Legal, Product…"
+                  className="min-w-0 flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white placeholder-white/25 outline-none focus:border-bla-lime/50"
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={addCustomLabel}
+                  disabled={!customLabel.trim()}
+                  className="rounded-xl bg-bla-lime px-3 py-2 text-sm font-medium text-[#0a0b0e] disabled:opacity-40"
+                >
+                  Add
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <p className="mb-2 font-mono text-xs uppercase tracking-[0.22em] text-white/50">§ quick check</p>
             <div className="mb-4 flex items-start gap-2.5 rounded-xl border border-bla-lime/20 bg-bla-lime/[0.06] p-3.5">
               <Info className="mt-0.5 h-4 w-4 shrink-0 text-bla-lime/80" />
-              <p className="text-xs leading-relaxed text-white/65">
-                Four quick yes/no questions to see if this idea is worth scoring.
-                A <span className="font-medium text-bla-lime">no-regret use case</span> is one you'll
-                be glad you built — it solves a real, repeating problem with data you already have.
-                Answer <span className="font-medium text-white">No</span> to any question and it's
-                probably not the right place to start.
+              <p className="text-[14px] leading-relaxed text-white/65">
+                Four yes/no gates before scoring. A <span className="font-medium text-white">No</span> doesn’t block you — it flags a weaker starting point.
               </p>
             </div>
             <div className="space-y-3">
-              {KNOCKOUT_QUESTIONS.map(({ key, q, hint }) => (
-                <div key={key} className="flex items-center justify-between gap-4 rounded-xl border border-white/8 bg-white/[0.02] px-4 py-3">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm leading-snug text-white/85">{q}</p>
-                    <p className="mt-0.5 text-xs leading-snug text-white/35">{hint}</p>
+              {KNOCKOUT_QUESTIONS.map(({ key, label, q, yesMeans, noMeans }) => (
+                <div key={key} className="rounded-xl border border-white/8 bg-white/[0.02] px-4 py-3.5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <p className="mb-1 font-mono text-[11px] uppercase tracking-[0.18em] text-bla-lime/70">{label}</p>
+                      <p className="text-[15px] leading-snug text-white/90">{q}</p>
+                      <p className="mt-1.5 text-[13px] leading-snug text-white/40">
+                        <span className="text-white/55">Yes:</span> {yesMeans}{' '}
+                        <span className="text-white/55">No:</span> {noMeans}
+                      </p>
+                    </div>
+                    <YesNo value={formKO[key]} onChange={(v) => setFormKO((prev) => ({ ...prev, [key]: v }))} />
                   </div>
-                  <YesNo value={formKO[key]} onChange={(v) => setFormKO((prev) => ({ ...prev, [key]: v }))} />
                 </div>
               ))}
             </div>
           </div>
 
           {koFailed && koDone && (
-            <div className="rounded-xl border border-red-400/20 bg-red-400/10 p-4">
-              <p className="text-sm leading-relaxed text-red-400">
-                ⚠️ You answered No to at least one question. This is probably not the easiest place to start — but you can keep going and score it anyway.
-              </p>
+            <div className="rounded-xl border border-amber-400/20 bg-amber-400/10 p-4">
+              <p className="mb-2 text-[15px] font-medium text-amber-100">You answered No on:</p>
+              <ul className="space-y-2">
+                {KNOCKOUT_QUESTIONS.filter(({ key }) => formKO[key] === false).map(({ key, label, noMeans }) => (
+                  <li key={key} className="text-[14px] leading-snug text-amber-200/90">
+                    <span className="font-medium text-amber-100">{label.replace(/\?$/, '')}</span> — {noMeans}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-3 text-[13px] text-amber-200/70">Still score it — just expect a harder start than a Quick Win.</p>
             </div>
           )}
 
@@ -1245,20 +1462,23 @@ export default function AiMatrixTool() {
         <div className="space-y-5">
           <div>
             <p className="font-host text-lg font-medium text-white">{formName}</p>
-            <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-white/35">Score each criterion from 1 (low) to 5 (high)</p>
+            <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-white/35">
+              {formLabel} · Score each criterion from 1 (low) to 5 (high)
+            </p>
           </div>
 
           {CRITERIA.map((c) => (
             <div key={c.key} className="rounded-xl border border-white/8 bg-white/[0.02] p-4">
               <div className="mb-0.5 flex items-center justify-between">
                 <span className="font-host text-sm font-medium text-white">{c.label}</span>
-                <span className="font-mono text-[10px] text-white/30">weight {Math.round(c.weight * 100)}%</span>
+                <span className="font-mono text-xs text-white/35">weight {Math.round(c.weight * 100)}%</span>
               </div>
-              <p className="mb-3 text-xs text-white/45">{c.question}</p>
+              <p className="mb-1 text-[14px] text-white/60">{c.question}</p>
+              <p className="mb-3 text-[12px] leading-snug text-white/35">{c.hint}</p>
               <Score5 value={formScores[c.key]} onChange={(v) => setFormScores((prev) => ({ ...prev, [c.key]: v }))} />
               <div className="mt-1.5 flex justify-between font-mono text-[9px] text-white/25">
-                <span>{c.scaleLabels[0]}</span>
-                <span>{c.scaleLabels[1]}</span>
+                <span>1 · {c.scaleLabels[0]}</span>
+                <span>5 · {c.scaleLabels[1]}</span>
               </div>
             </div>
           ))}
@@ -1323,16 +1543,19 @@ export default function AiMatrixTool() {
             <p className="text-[14px] leading-relaxed text-bla-lime/80">A Slack bot that drafts a Monday digest from both platforms and flags weak campaigns for human review.</p>
           </div>
         </div>
-        <p className="mt-4 text-[13px] text-white/50">→ Lands in <span className="text-bla-lime">Quick Wins</span> (high impact, lower effort).</p>
+        <p className="mt-4 text-[13px] text-white/50">→ Lands in <span className="text-bla-lime">Quick Wins</span> (high impact, low effort).</p>
       </div>
 
       <div className="mt-8 space-y-2.5">
         <p className="mb-1 font-mono text-[11px] uppercase tracking-[0.22em] text-white/40">§ discussion prompts</p>
-        {WORKSHOP_QS.map((q, i) => (
+        {WORKSHOP_QS.map(({ q, why }, i) => (
           <div key={q} className="rounded-xl border border-white/8 bg-white/[0.02] p-4">
             <div className="flex items-start gap-4">
               <span className="mt-0.5 shrink-0 font-mono text-[11px] text-bla-lime/65">{String(i + 1).padStart(2, '0')}</span>
-              <p className="text-sm font-medium leading-relaxed text-white/90">{q}</p>
+              <div>
+                <p className="text-sm font-medium leading-relaxed text-white/90">{q}</p>
+                <p className="mt-1 text-[13px] leading-snug text-white/40">{why}</p>
+              </div>
             </div>
           </div>
         ))}
@@ -1456,7 +1679,7 @@ export default function AiMatrixTool() {
     <div className="min-h-screen bg-[#0a0b0e] text-white">
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-white/8 bg-[#0a0b0e]/95 backdrop-blur-md">
-        <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-4 px-5 py-3.5 sm:px-8">
+        <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4 px-3 py-3.5 sm:px-4">
           <div className="flex items-center gap-3">
             <button onClick={() => setView('landing')} className="font-host text-[17px] font-bold tracking-tight hover:opacity-80">
               <span className="font-light text-white/60">blabla</span>build
@@ -1513,11 +1736,13 @@ export default function AiMatrixTool() {
                   <Code2 className="h-3 w-3" />
                   <span className="hidden sm:inline">Claude Cases</span>
                 </button>
-                <button onClick={() => setView('review')}
-                  className={`flex h-7 items-center gap-1.5 rounded-full px-3 text-xs transition-colors ${view === 'review' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white'}`}>
-                  <ClipboardCheck className="h-3 w-3" />
-                  <span className="hidden sm:inline">Review</span>
-                </button>
+                {SHOW_REVIEW && (
+                  <button onClick={() => setView('review')}
+                    className={`flex h-7 items-center gap-1.5 rounded-full px-3 text-xs transition-colors ${view === 'review' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white'}`}>
+                    <ClipboardCheck className="h-3 w-3" />
+                    <span className="hidden sm:inline">Review</span>
+                  </button>
+                )}
                 <button onClick={() => setView('workshop')}
                   className={`flex h-7 items-center gap-1.5 rounded-full px-3 text-xs transition-colors ${view === 'workshop' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white'}`}>
                   <HelpCircle className="h-3 w-3" />
@@ -1531,7 +1756,7 @@ export default function AiMatrixTool() {
         {/* Session bar */}
         {inSession && (
           <div className={`border-t ${storageMode === 'sync' ? 'border-bla-lime/10 bg-bla-lime/5' : 'border-amber-400/10 bg-amber-400/[0.04]'}`}>
-            <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-3 px-5 py-1.5 sm:px-8">
+            <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-3 px-3 py-1.5 sm:px-4">
               <span className={`font-mono text-[10px] ${storageMode === 'sync' ? 'text-bla-lime/60' : 'text-amber-400/70'}`}>
                 Session: <span className={`font-medium ${storageMode === 'sync' ? 'text-bla-lime' : 'text-amber-400'}`}>{sessionLabel}</span>
               </span>
@@ -1554,7 +1779,7 @@ export default function AiMatrixTool() {
       </header>
 
       {/* Main */}
-      <main className="mx-auto w-full max-w-[1400px] px-5 py-8 sm:px-8">
+      <main className="mx-auto w-full max-w-[1600px] px-3 py-6 sm:px-4">
         <AnimatePresence mode="wait">
           <motion.div
             key={view + addStep}
@@ -1571,7 +1796,7 @@ export default function AiMatrixTool() {
             {view === 'claude'    && (
               <ClaudeCasesView useCases={useCases} onBack={() => setView('matrix')} onUpdate={updateUseCase} />
             )}
-            {view === 'review'    && (
+            {SHOW_REVIEW && view === 'review' && (
               <ReviewView useCases={useCases} onBack={() => setView('matrix')} onUpdate={updateUseCase} />
             )}
           </motion.div>

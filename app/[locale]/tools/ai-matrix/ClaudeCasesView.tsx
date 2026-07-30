@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import {
-  ArrowLeft, X, Star, Code2, BadgeCheck, CircleDot,
-  AlertTriangle, Ban, Calendar, Users, Presentation,
+  ArrowLeft, ArrowRight, X, Code2, BadgeCheck, CircleDot,
+  AlertTriangle, Ban, Users, Presentation,
 } from 'lucide-react';
 import {
   type UseCase, type ClaudeFit, calcScore, getQuadrant, getDeptColor,
@@ -14,9 +14,17 @@ const CLAUDE_FIT_META: Record<ClaudeFit, {
   label: string; short: string; color: string; bg: string; border: string;
   Icon: typeof CircleDot;
 }> = {
-  good:    { label: 'Claude-ready', short: 'Ready', color: 'text-bla-lime', bg: 'bg-bla-lime/10', border: 'border-bla-lime/30', Icon: BadgeCheck },
+  good:    { label: 'Claude-ready', short: 'Claude ready', color: 'text-bla-lime', bg: 'bg-bla-lime/10', border: 'border-bla-lime/30', Icon: BadgeCheck },
   stretch: { label: 'Possible w/ caveats', short: 'Caveats', color: 'text-amber-300', bg: 'bg-amber-400/10', border: 'border-amber-400/30', Icon: AlertTriangle },
   blocked: { label: 'Needs platform/API', short: 'API', color: 'text-red-300', bg: 'bg-red-400/10', border: 'border-red-400/30', Icon: Ban },
+};
+
+const CARD_FIT_META: Record<ClaudeFit, {
+  short: string; color: string; bg: string; border: string; Icon: typeof CircleDot;
+}> = {
+  good:    { short: 'Claude ready', color: 'text-[#3d4a00]', bg: 'bg-[#ceff00]/55', border: 'border-[#b8e600]', Icon: BadgeCheck },
+  stretch: { short: 'Caveats', color: 'text-amber-800', bg: 'bg-amber-100', border: 'border-amber-200', Icon: AlertTriangle },
+  blocked: { short: 'API', color: 'text-red-800', bg: 'bg-red-100', border: 'border-red-200', Icon: Ban },
 };
 
 const SCORE_KEYS: { key: keyof UseCase['scores']; label: string }[] = [
@@ -127,51 +135,49 @@ export default function ClaudeCasesView({ useCases, onBack, onUpdate }: Props) {
       ) : (
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {selectedCases.sort(sortByDeptThenName).map((uc) => {
-            const fit = uc.claudeFit ? CLAUDE_FIT_META[uc.claudeFit] : null;
+            const fit = uc.claudeFit ? CARD_FIT_META[uc.claudeFit] : null;
             const dept = uc.label || 'General';
             return (
               <button
                 key={uc.id}
                 type="button"
                 onClick={() => { setShowOriginal(false); setSelectedId(uc.id); }}
-                className="group flex flex-col rounded-xl border border-white/15 bg-white/[0.06] p-4 text-left transition-all hover:border-bla-lime/30 hover:bg-white/[0.09]"
+                className="group relative flex flex-col rounded-xl border border-black/10 bg-[#f2f3f5] p-5 text-left shadow-[0_1px_0_rgba(255,255,255,0.04)] transition-all hover:border-bla-lime/50 hover:bg-white"
               >
-                <div className="mb-2 flex items-center gap-2">
+                <div className="mb-3 flex items-center gap-2 pr-6">
                   <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: getDeptColor(dept) }} />
-                  <span className="font-mono text-[10px] text-white/40">{dept}</span>
+                  <span className="font-mono text-[11px] text-black/45">{dept}</span>
                   {fit && (
-                    <span className={`ml-auto inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[9px] ${fit.border} ${fit.bg} ${fit.color}`}>
-                      <fit.Icon className="h-2.5 w-2.5" />{fit.short}
+                    <span className={`ml-auto inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[10px] ${fit.border} ${fit.bg} ${fit.color}`}>
+                      <fit.Icon className="h-3 w-3" />{fit.short}
                     </span>
                   )}
                 </div>
 
-                <h4 className="mb-3 text-[14px] font-medium leading-snug text-white group-hover:text-bla-lime transition-colors">
+                <h4 className="mb-4 text-[16px] font-medium leading-snug text-[#12141a] transition-colors group-hover:text-[#2a3200]">
                   {uc.name}
                 </h4>
                 
-                <div className="mb-3 flex-1 space-y-2">
+                <div className="mb-4 flex-1 space-y-3">
                   <div>
-                    <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-white/30">Problem</p>
-                    <p className="mt-0.5 line-clamp-2 text-[12px] leading-relaxed text-white/50">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-black/35">Problem</p>
+                    <p className="mt-1 text-[13px] leading-relaxed text-black/65">
                       {uc.description || '—'}
                     </p>
                   </div>
                   <div>
-                    <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-bla-lime/50">Solution idea</p>
-                    <p className="mt-0.5 line-clamp-2 text-[12px] leading-relaxed text-bla-lime/70">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#4a5600]">Solution idea</p>
+                    <p className="mt-1 text-[13px] leading-relaxed text-[#2a3200]">
                       {uc.solution || '—'}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between border-t border-white/8 pt-2.5">
-                  <span className={`font-mono text-[10px] ${uc.owner ? 'text-white/50' : 'text-amber-300/60'}`}>
+                <div className="flex items-center justify-between border-t border-black/10 pt-3">
+                  <span className={`font-mono text-[11px] ${uc.owner ? 'text-black/50' : 'text-amber-700'}`}>
                     {uc.owner || 'No owner yet'}
                   </span>
-                  <span className="font-mono text-[10px] text-white/30">
-                    Score {calcScore(uc.scores).toFixed(1)}
-                  </span>
+                  <ArrowRight className="h-4 w-4 text-black/0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-black/55" aria-hidden />
                 </div>
               </button>
             );
