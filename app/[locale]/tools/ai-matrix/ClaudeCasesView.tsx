@@ -82,32 +82,35 @@ export default function ClaudeCasesView({ useCases, onBack, onUpdate }: Props) {
         </div>
       </div>
 
-      {/* Upcoming sessions */}
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
-        <div className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5">
-          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-bla-lime/10">
-            <Users className="h-4 w-4 text-bla-lime" />
+      {/* Upcoming deadlines */}
+      <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4">
+        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">Upcoming deadlines</p>
+        <div className="mt-3 grid gap-4 sm:grid-cols-2 sm:gap-6">
+          <div className="flex items-start gap-3">
+            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-bla-lime/10">
+              <Users className="h-4 w-4 text-bla-lime" />
+            </div>
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-bla-lime/70">Q&A & Support Session</p>
+              <p className="mt-0.5 text-[14px] font-medium text-white">Wednesday, August 5th</p>
+              <p className="text-[13px] text-white/50">4:00 PM – 5:00 PM</p>
+              <p className="mt-1.5 text-[12px] leading-relaxed text-white/40">
+                Join us to ask any questions as you build your use case in Claude.
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-bla-lime/70">Q&A & Support Session</p>
-            <p className="mt-0.5 text-[14px] font-medium text-white">Wednesday, August 5th</p>
-            <p className="text-[13px] text-white/50">4:00 PM – 5:00 PM</p>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-white/40">
-              Join us to ask any questions as you build your use case in Claude.
-            </p>
-          </div>
-        </div>
-        <div className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5">
-          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-bla-lime/10">
-            <Presentation className="h-4 w-4 text-bla-lime" />
-          </div>
-          <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-bla-lime/70">Office Presentations</p>
-            <p className="mt-0.5 text-[14px] font-medium text-white">Tuesday, August 12th</p>
-            <p className="text-[13px] text-white/50">3:00 PM – 5:00 PM</p>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-white/40">
-              Each department presents their Claude concept or prototype.
-            </p>
+          <div className="flex items-start gap-3">
+            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-bla-lime/10">
+              <Presentation className="h-4 w-4 text-bla-lime" />
+            </div>
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-bla-lime/70">Office Presentations</p>
+              <p className="mt-0.5 text-[14px] font-medium text-white">Tuesday, August 12th</p>
+              <p className="text-[13px] text-white/50">3:00 PM – 5:00 PM</p>
+              <p className="mt-1.5 text-[12px] leading-relaxed text-white/40">
+                Each department presents their Claude concept or prototype.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -124,6 +127,35 @@ export default function ClaudeCasesView({ useCases, onBack, onUpdate }: Props) {
           For the purpose of prototyping in the next two weeks, we focused on selecting cases that are <span className="text-bla-lime font-medium">fully Claude-ready</span> — 
           meaning you can build and demo entirely within Claude using docs or pasted text, without requiring live tool logins.
         </p>
+        <p className="mt-2 text-white/50">
+          We purposely chose cases that act as a <span className="font-medium text-white">first step in enablement</span>.
+          Claude’s capabilities go further than how these cases are currently scoped — treat this sprint as the starting point.
+          After this initiative, we’ll look at how each team can progress their case into a more intelligent, sophisticated solution.
+        </p>
+      </div>
+
+      {/* How to approach */}
+      <div className="mt-6 rounded-xl border border-bla-lime/25 bg-bla-lime/[0.06] px-5 py-4">
+        <div className="flex items-start gap-3">
+          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-bla-lime/15">
+            <Code2 className="h-4 w-4 text-bla-lime" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-bla-lime/70">How to approach this?</p>
+            <div className="mt-2 space-y-2 text-[14px] leading-relaxed text-white/65">
+              <p>
+                We prepared these Claude Cases so each team can execute them <span className="font-medium text-white">autonomously</span>.
+              </p>
+              <p>
+                Assign <span className="font-medium text-white">one person</span> who will build the case in Claude Code.
+                The rest of the team supports them — reviewing output, clarifying requirements, and unblocking decisions.
+              </p>
+              <p>
+                Plan <span className="font-medium text-white">daily sessions</span> so you keep a steady cadence and can give input during progress reviews.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Case cards in 3-column grid */}
