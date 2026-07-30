@@ -40,6 +40,7 @@ interface UseCase {
   solution?: string;
   owner?: string;
   isWinner?: boolean;
+  presented?: boolean;
   buildInClaudeCode?: boolean;
   claudeFit?: ClaudeFit;
   claudeFitReason?: string;
@@ -253,10 +254,12 @@ function YesNo({ value, onChange }: { value: boolean | null; onChange: (v: boole
   );
 }
 
-function MatrixPlot({ useCases, hoveredId, onHover }: {
+function MatrixPlot({ useCases, hoveredId, selectedId, onHover, onSelect }: {
   useCases: UseCase[];
   hoveredId: string | null;
+  selectedId: string | null;
   onHover: (id: string | null) => void;
+  onSelect: (id: string) => void;
 }) {
   const W = 520; const H = 360;
   const PAD = { t: 24, r: 24, b: 44, l: 44 };
@@ -305,13 +308,19 @@ function MatrixPlot({ useCases, hoveredId, onHover }: {
         const q = getQuadrant(uc);
         const dept = uc.label || 'General';
         const color = getDeptColor(dept);
-        const isHovered = hoveredId === uc.id;
+        const isHovered = hoveredId === uc.id || selectedId === uc.id;
         const highRisk = isHighRisk(uc);
         const label = uc.name.length > 22 ? uc.name.slice(0, 20) + '…' : uc.name;
         const r = isHovered ? 5.5 : 4;
 
         return (
-          <g key={uc.id} onMouseEnter={() => onHover(uc.id)} onMouseLeave={() => onHover(null)} style={{ cursor: 'pointer' }}>
+          <g
+            key={uc.id}
+            onMouseEnter={() => onHover(uc.id)}
+            onMouseLeave={() => onHover(null)}
+            onClick={() => onSelect(uc.id)}
+            style={{ cursor: 'pointer' }}
+          >
             {isHovered && <circle cx={cx} cy={cy} r={14} fill={color} opacity={0.1} />}
             <circle cx={cx} cy={cy} r={r} fill={color} opacity={isHovered ? 1 : 0.88} style={{ transition: 'r 0.15s, opacity 0.15s' }} />
             {uc.isWinner && <circle cx={cx} cy={cy} r={r + 3.5} fill="none" stroke="#ceff00" strokeWidth="1.25" />}
@@ -385,6 +394,7 @@ export default function AiMatrixTool() {
 
   // Form state
   const [addStep, setAddStep] = useState<0 | 1>(0);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formName, setFormName] = useState('');
   const [formDesc, setFormDesc] = useState('');
   const [formKO, setFormKO] = useState<KnockoutAnswers>({ ...EMPTY_KO });
@@ -392,6 +402,7 @@ export default function AiMatrixTool() {
 
   // UI state
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [showShare, setShowShare] = useState(false);
@@ -401,9 +412,6 @@ export default function AiMatrixTool() {
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const knownIdsRef = useRef<Set<string>>(new Set());
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Showcase edit modal
-  const [editingCase, setEditingCase] = useState<UseCase | null>(null);
 
   const updateUseCase = async (uc: UseCase) => {
     setUseCases((prev) => {
@@ -508,6 +516,7 @@ export default function AiMatrixTool() {
   };
 
   const removeUseCase = async (id: string) => {
+    setSelectedId((cur) => (cur === id ? null : cur));
     setUseCases((prev) => {
       const next = sortUseCasesByScore(prev.filter((uc) => uc.id !== id));
       writeLocal(sessionId, next);
@@ -602,19 +611,32 @@ export default function AiMatrixTool() {
     setFormName(''); setFormDesc('');
     setFormKO({ ...EMPTY_KO }); setFormScores({ ...EMPTY_SCORES });
     setAddStep(0);
+    setEditingId(null);
   }
 
   async function saveUseCase() {
     if (!formName.trim() || !scoresDone) return;
-    const uc: UseCase = {
-      id: makeId(),
-      name: formName.trim(),
-      description: formDesc.trim(),
-      addedBy: yourName || undefined,
-      knockout: { ...formKO },
-      scores: { ...formScores },
-    };
-    await addUseCase(uc);
+    if (editingId) {
+      const existing = useCases.find((uc) => uc.id === editingId);
+      if (!existing) return;
+      await updateUseCase({
+        ...existing,
+        name: formName.trim(),
+        description: formDesc.trim(),
+        knockout: { ...formKO },
+        scores: { ...formScores },
+      });
+    } else {
+      const uc: UseCase = {
+        id: makeId(),
+        name: formName.trim(),
+        description: formDesc.trim(),
+        addedBy: yourName || undefined,
+        knockout: { ...formKO },
+        scores: { ...formScores },
+      };
+      await addUseCase(uc);
+    }
     resetForm();
     setView('matrix');
   }
@@ -622,6 +644,17 @@ export default function AiMatrixTool() {
   function startAdd(name = '') {
     resetForm();
     if (name) setFormName(name);
+    setView('add');
+  }
+
+  function startEdit(uc: UseCase) {
+    setEditingId(uc.id);
+    setFormName(uc.name);
+    setFormDesc(uc.description);
+    setFormKO({ ...uc.knockout });
+    setFormScores({ ...uc.scores });
+    setAddStep(0);
+    setSelectedId(null);
     setView('add');
   }
 
@@ -653,6 +686,8 @@ export default function AiMatrixTool() {
       ...useCases.map((uc) => uc.label).filter((l): l is string => Boolean(l)),
     ])
   );
+
+  const selectedCase = selectedId ? useCases.find((uc) => uc.id === selectedId) ?? null : null;
 
   const filteredUseCases = sortUseCasesByScore(
     filterLabel === 'all'
@@ -811,17 +846,36 @@ export default function AiMatrixTool() {
               const score = calcScore(uc.scores);
               const ko = (Object.values(uc.knockout) as (boolean | null)[]).some((v) => v === false);
               const dept = uc.label || 'General';
+              const isActive = selectedId === uc.id || hoveredId === uc.id;
               return (
-                <div key={uc.id}
+                <div
+                  key={uc.id}
+                  role="button"
+                  tabIndex={0}
                   onMouseEnter={() => setHoveredId(uc.id)}
                   onMouseLeave={() => setHoveredId(null)}
-                  className={`group flex cursor-default items-start gap-3 rounded-xl border p-3 transition-colors ${
-                    hoveredId === uc.id ? 'border-white/15 bg-white/[0.05]' : 'border-white/8 bg-white/[0.02]'
+                  onClick={() => setSelectedId(uc.id)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedId(uc.id); }}
+                  className={`group flex w-full cursor-pointer items-start gap-2.5 rounded-xl border p-3 text-left transition-colors ${
+                    uc.isWinner
+                      ? 'border-bla-lime/25 bg-bla-lime/[0.07]'
+                      : uc.presented
+                        ? 'border-emerald-400/20 bg-emerald-400/[0.05]'
+                        : selectedId === uc.id
+                          ? 'border-white/20 bg-white/[0.06]'
+                          : isActive
+                            ? 'border-white/15 bg-white/[0.05]'
+                            : 'border-white/8 bg-white/[0.02] hover:border-white/15'
                   }`}
                 >
                   <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: getDeptColor(dept) }} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-white">{uc.name}</p>
+                    <div className="flex items-start gap-1.5">
+                      <p className={`min-w-0 flex-1 truncate text-sm font-medium ${uc.presented ? 'text-white/55' : 'text-white'}`}>
+                        {uc.name}
+                      </p>
+                      {uc.isWinner && <Star className="mt-0.5 h-3 w-3 shrink-0 fill-bla-lime text-bla-lime" />}
+                    </div>
                     {uc.description && (
                       <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-white/40">{uc.description}</p>
                     )}
@@ -844,10 +898,41 @@ export default function AiMatrixTool() {
                       {uc.addedBy && <span className="font-mono text-[9px] text-white/25">by {uc.addedBy}</span>}
                     </div>
                   </div>
-                  <button onClick={() => removeUseCase(uc.id)}
-                    className="grid h-6 w-6 shrink-0 place-items-center rounded-full text-white/20 opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100">
-                    <X className="h-3 w-3" />
-                  </button>
+                  <div
+                    className={`flex shrink-0 items-center gap-0.5 transition-opacity ${
+                      uc.isWinner || uc.presented ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                    }`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      type="button"
+                      title={uc.presented ? 'Clear presented' : 'Mark as presented'}
+                      onClick={() => updateUseCase({ ...uc, presented: !uc.presented })}
+                      className={`grid h-6 w-6 place-items-center rounded-md transition-colors ${
+                        uc.presented ? 'text-emerald-300' : 'text-white/30 hover:text-emerald-300'
+                      }`}
+                    >
+                      <Check className="h-3 w-3" />
+                    </button>
+                    <button
+                      type="button"
+                      title={uc.isWinner ? 'Remove favorite' : 'Mark as favorite'}
+                      onClick={() => updateUseCase({ ...uc, isWinner: !uc.isWinner })}
+                      className={`grid h-6 w-6 place-items-center rounded-md transition-colors ${
+                        uc.isWinner ? 'text-bla-lime' : 'text-white/30 hover:text-bla-lime'
+                      }`}
+                    >
+                      <Star className={`h-3 w-3 ${uc.isWinner ? 'fill-bla-lime' : ''}`} />
+                    </button>
+                    <button
+                      type="button"
+                      title="Delete"
+                      onClick={() => removeUseCase(uc.id)}
+                      className="grid h-6 w-6 place-items-center rounded-md text-white/25 opacity-0 transition-colors hover:text-red-400 group-hover:opacity-100"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
                 </div>
               );
             })}
@@ -886,7 +971,13 @@ export default function AiMatrixTool() {
           </div>
         </div>
 
-        <MatrixPlot useCases={filteredUseCases} hoveredId={hoveredId} onHover={setHoveredId} />
+        <MatrixPlot
+          useCases={filteredUseCases}
+          hoveredId={hoveredId}
+          selectedId={selectedId}
+          onHover={setHoveredId}
+          onSelect={setSelectedId}
+        />
 
         {filteredUseCases.length > 0 && (
           <div className="mt-5 border-t border-white/8 pt-5">
@@ -904,6 +995,170 @@ export default function AiMatrixTool() {
           </div>
         )}
       </div>
+
+      {/* Case detail modal */}
+      {selectedCase && (() => {
+        const uc = selectedCase;
+        const q = getQuadrant(uc);
+        const score = calcScore(uc.scores);
+        const dept = uc.label || 'General';
+        const highRisk = isHighRisk(uc);
+        const koFailed = (Object.values(uc.knockout) as (boolean | null)[]).some((v) => v === false);
+        return (
+          <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/60 p-3 sm:items-center sm:p-6">
+            <button type="button" aria-label="Close" className="absolute inset-0 cursor-default" onClick={() => setSelectedId(null)} />
+            <div className="relative z-10 max-h-[92vh] w-full max-w-[400px] overflow-y-auto rounded-2xl border border-white/12 bg-[#0e1016] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.65)]">
+              <div className="mb-4 flex items-start gap-3">
+                <span
+                  className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full"
+                  style={{
+                    background: `radial-gradient(circle at 50% 50%, ${getDeptColor(dept)} 0%, ${getDeptColor(dept)}88 55%, transparent 100%)`,
+                    boxShadow: `0 0 12px ${getDeptColor(dept)}66`,
+                  }}
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="font-host text-[18px] font-medium leading-snug text-white">{uc.name}</p>
+                  <p className="mt-1 font-mono text-[11px] text-white/40">
+                    by <span className="text-white/65">{uc.addedBy || 'Unknown'}</span>
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedId(null)}
+                  className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-white/35 transition-colors hover:bg-white/8 hover:text-white/70"
+                  aria-label="Close"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="mb-4 flex flex-wrap items-center gap-1.5">
+                <span className="rounded-full px-2.5 py-0.5 font-mono text-[10px]" style={{ color: getDeptColor(dept), backgroundColor: getDeptColor(dept) + '22' }}>
+                  {dept}
+                </span>
+                <span className="rounded-full px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em]" style={{ color: Q_META[q].dot, backgroundColor: Q_META[q].dot + '22' }}>
+                  {Q_META[q].label}
+                </span>
+                <span className="rounded-full bg-white/8 px-2.5 py-0.5 font-mono text-[10px] text-white/70">
+                  {score.toFixed(1)} / 5
+                </span>
+                {uc.isWinner && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-bla-lime/15 px-2.5 py-0.5 font-mono text-[10px] text-bla-lime">
+                    <Star className="h-2.5 w-2.5 fill-bla-lime" /> Favorite
+                  </span>
+                )}
+                {uc.presented && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/15 px-2.5 py-0.5 font-mono text-[10px] text-emerald-300">
+                    <Check className="h-2.5 w-2.5" /> Presented
+                  </span>
+                )}
+                {highRisk && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-red-400/15 px-2.5 py-0.5 font-mono text-[10px] text-red-300">
+                    <AlertTriangle className="h-2.5 w-2.5" /> High risk
+                  </span>
+                )}
+                {koFailed && (
+                  <span className="rounded-full bg-amber-400/15 px-2.5 py-0.5 font-mono text-[10px] text-amber-300/90">Check flags</span>
+                )}
+              </div>
+
+              <div className="mb-4 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => updateUseCase({ ...uc, isWinner: !uc.isWinner })}
+                  className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-3 py-2.5 text-[13px] font-medium transition-colors ${
+                    uc.isWinner
+                      ? 'border-bla-lime/40 bg-bla-lime/15 text-bla-lime'
+                      : 'border-white/12 bg-white/[0.04] text-white/70 hover:border-white/20 hover:text-white'
+                  }`}
+                >
+                  <Star className={`h-3.5 w-3.5 ${uc.isWinner ? 'fill-bla-lime' : ''}`} />
+                  {uc.isWinner ? 'Favorited' : 'Favorite'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateUseCase({ ...uc, presented: !uc.presented })}
+                  className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-3 py-2.5 text-[13px] font-medium transition-colors ${
+                    uc.presented
+                      ? 'border-emerald-400/40 bg-emerald-400/15 text-emerald-300'
+                      : 'border-white/12 bg-white/[0.04] text-white/70 hover:border-white/20 hover:text-white'
+                  }`}
+                >
+                  <Check className="h-3.5 w-3.5" />
+                  {uc.presented ? 'Presented' : 'Mark presented'}
+                </button>
+              </div>
+
+              {highRisk && (
+                <div className="mb-4 flex items-start gap-2.5 rounded-xl border border-red-400/25 bg-red-400/[0.08] px-3.5 py-3">
+                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-300" />
+                  <div>
+                    <p className="text-[13px] font-medium text-red-200">High risk</p>
+                    <p className="mt-0.5 text-[12px] leading-snug text-red-200/70">
+                      Safety scored {uc.scores.risk}/5 — discuss risk mitigation before picking this as a first win.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="mb-4 space-y-3">
+                <div>
+                  <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">Problem</p>
+                  <p className="text-[13px] leading-relaxed text-white/70">{uc.description || 'No problem statement yet.'}</p>
+                </div>
+                <div>
+                  <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">Solution / AI</p>
+                  <p className="text-[13px] leading-relaxed text-bla-lime/75">{uc.solution || 'No solution sketched yet.'}</p>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">Quick check</p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {KNOCKOUT_QUESTIONS.map(({ key, q: label }) => {
+                    const val = uc.knockout[key];
+                    const yes = val === true;
+                    const no = val === false;
+                    return (
+                      <div
+                        key={key}
+                        className={`rounded-lg border px-2.5 py-2 ${
+                          yes ? 'border-bla-lime/25 bg-bla-lime/[0.06]' : no ? 'border-amber-400/25 bg-amber-400/[0.06]' : 'border-white/8 bg-white/[0.02]'
+                        }`}
+                      >
+                        <p className="font-mono text-[9px] leading-snug text-white/45">{label.replace(/\?$/, '')}</p>
+                        <p className={`mt-1 text-[12px] font-medium ${yes ? 'text-bla-lime' : no ? 'text-amber-300' : 'text-white/30'}`}>
+                          {yes ? 'Yes' : no ? 'No' : '—'}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">Scores</p>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {CRITERIA.map(({ key, label }) => (
+                    <div key={key} className="rounded-lg border border-white/8 bg-white/[0.03] px-2 py-2 text-center">
+                      <p className="font-mono text-[9px] leading-tight text-white/40">{label}</p>
+                      <p className="mt-1 font-mono text-[15px] text-white/85">{uc.scores[key]}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => startEdit(uc)}
+                className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-bla-lime px-3 py-2.5 text-[13px] font-medium text-[#0a0b0e] transition-colors hover:bg-bla-lime/90"
+              >
+                Edit case
+              </button>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 
@@ -1032,7 +1287,7 @@ export default function AiMatrixTool() {
             </button>
             <button onClick={saveUseCase} disabled={!scoresDone}
               className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-bla-lime px-6 py-3.5 text-sm font-medium text-[#0a0b0e] disabled:cursor-not-allowed disabled:opacity-40">
-              Add to matrix
+              {editingId ? 'Save changes' : 'Add to matrix'}
             </button>
           </div>
         </div>
