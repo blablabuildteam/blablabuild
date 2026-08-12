@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import {
   ArrowLeft, ArrowRight, X, Code2, BadgeCheck, CircleDot,
-  AlertTriangle, Ban, Users, Presentation,
+  AlertTriangle, Ban, Presentation,
 } from 'lucide-react';
 import {
   type UseCase, type ClaudeFit, calcScore, getQuadrant, getDeptColor,
@@ -85,32 +85,17 @@ export default function ClaudeCasesView({ useCases, onBack, onUpdate }: Props) {
       {/* Upcoming deadlines */}
       <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4">
         <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">Upcoming deadlines</p>
-        <div className="mt-3 grid gap-4 sm:grid-cols-2 sm:gap-6">
-          <div className="flex items-start gap-3">
-            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-bla-lime/10">
-              <Users className="h-4 w-4 text-bla-lime" />
-            </div>
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-bla-lime/70">Q&A & Support Session</p>
-              <p className="mt-0.5 text-[14px] font-medium text-white">Wednesday, August 5th</p>
-              <p className="text-[13px] text-white/50">4:00 PM – 5:00 PM</p>
-              <p className="mt-1.5 text-[12px] leading-relaxed text-white/40">
-                Join us to ask any questions as you build your use case in Claude.
-              </p>
-            </div>
+        <div className="mt-3 flex items-start gap-3">
+          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-bla-lime/10">
+            <Presentation className="h-4 w-4 text-bla-lime" />
           </div>
-          <div className="flex items-start gap-3">
-            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-bla-lime/10">
-              <Presentation className="h-4 w-4 text-bla-lime" />
-            </div>
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-bla-lime/70">Office Presentations</p>
-              <p className="mt-0.5 text-[14px] font-medium text-white">Tuesday, August 12th</p>
-              <p className="text-[13px] text-white/50">3:00 PM – 5:00 PM</p>
-              <p className="mt-1.5 text-[12px] leading-relaxed text-white/40">
-                Each department presents their Claude concept or prototype.
-              </p>
-            </div>
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-bla-lime/70">Office Presentations</p>
+            <p className="mt-0.5 text-[14px] font-medium text-white">Wednesday, September 19th</p>
+            <p className="text-[13px] text-white/50">3:00 PM – 5:00 PM</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-white/40">
+              Each department presents their Claude concept or prototype.
+            </p>
           </div>
         </div>
       </div>

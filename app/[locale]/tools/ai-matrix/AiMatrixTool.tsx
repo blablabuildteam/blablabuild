@@ -931,7 +931,7 @@ export default function AiMatrixTool() {
         </div>
 
         <p className="mt-6 text-center font-mono text-[10px] text-white/25">
-          Sessions are stored for 7 days · No account needed
+          Sessions are stored for 90 days · No account needed
         </p>
       </div>
     </div>
