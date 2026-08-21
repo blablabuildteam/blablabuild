@@ -2,99 +2,57 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BookOpen, FileBarChart, FileSpreadsheet, FileType, Sparkles, Upload } from 'lucide-react';
 
 interface HorizonStage {
   id: string;
   title: string;
   action: string;
-  description: string;
-  example: string;
-  buildsOn: string;
 }
 
 const STAGES_EN: HorizonStage[] = [
   {
     id: 'copilot',
-    title: 'Copilot',
-    action: 'Helps you',
-    description:
-      'Your team starts using AI for everyday tasks — drafting, rewriting, brainstorming. Everyone gets faster at the work they already do, without changing how things are organised.',
-    example:
-      'A team member asks AI to draft a client email, summarise a meeting, or generate three campaign angles — then reviews and ships.',
-    buildsOn: 'Your people\'s judgment, their questions, their final call.',
+    title: 'Assistent',
+    action: 'Your team starts using AI for everyday tasks',
   },
   {
     id: 'specialist',
     title: 'Specialist',
-    action: 'Handles for you',
-    description:
-      'AI is trained on specific recurring tasks your people run into daily. Instead of starting from scratch every time, the tool already knows the context, the format, and the criteria.',
-    example:
-      'A weekly report that used to take an hour is now generated in seconds — pre-trained on your KPIs, your format, your thresholds.',
-    buildsOn: 'Everything from Copilot — plus structured context and repeatable instructions.',
+    action: 'AI is trained on specific recurring tasks your people run into daily',
   },
   {
     id: 'agent',
     title: 'Agent',
-    action: 'Acts for you',
-    description:
-      'AI runs multi-step workflows across your tools — pulling data, analysing, taking action, and reporting back. You set the goal; it handles the execution loop.',
-    example:
-      'Every morning at 9 AM: pull performance data, flag anomalies, alert the team on Slack, and draft follow-up actions — ready for approval.',
-    buildsOn: 'Copilot creativity + Specialist knowledge, now connected to your systems.',
+    action: 'AI runs multi-step workflows across your tools',
   },
   {
     id: 'ecosystem',
-    title: 'Ecosystem',
-    action: 'Scales across',
-    description:
-      'Agent workflows across departments share intelligence and coordinate action. One source of truth, one connected system — insights flow where they\'re needed without manual handovers.',
-    example:
-      'A spike detected by one team automatically informs the budget report in finance and triggers a proactive outreach from another department.',
-    buildsOn: 'All previous horizons, interconnected across teams and systems.',
+    title: 'AI ecosystem',
+    action: 'Agent workflows across departments share intelligence and coordinate action',
   },
 ];
 
 const STAGES_NL: HorizonStage[] = [
   {
     id: 'copilot',
-    title: 'Copilot',
-    action: 'Helpt je',
-    description:
-      'Je team begint AI te gebruiken voor dagelijkse taken — schrijven, herschrijven, brainstormen. Iedereen wordt sneller in het werk dat ze al doen, zonder dat de organisatie verandert.',
-    example:
-      'Een teamlid vraagt AI om een klantmail te schrijven, een vergadering samen te vatten, of drie campagne-invalshoeken te genereren — en reviewt het resultaat.',
-    buildsOn: 'Het oordeelsvermogen van je mensen, hun vragen, hun uiteindelijke keuze.',
+    title: 'Assistent',
+    action: 'Je team begint AI te gebruiken voor dagelijkse taken',
   },
   {
     id: 'specialist',
     title: 'Specialist',
-    action: 'Neemt over',
-    description:
-      'AI wordt getraind op specifieke terugkerende taken die je mensen dagelijks tegenkomen. In plaats van elke keer opnieuw beginnen, kent de tool al de context, het format en de criteria.',
-    example:
-      'Een wekelijks rapport dat een uur kostte wordt nu in seconden gegenereerd — getraind op jouw KPI\'s, jouw format, jouw drempelwaardes.',
-    buildsOn: 'Alles uit Copilot — plus gestructureerde context en herhaalbare instructies.',
+    action: 'AI wordt getraind op specifieke terugkerende taken die je mensen dagelijks tegenkomen',
   },
   {
     id: 'agent',
     title: 'Agent',
-    action: 'Handelt voor je',
-    description:
-      'AI voert meerstaps-workflows uit over je tools heen — data ophalen, analyseren, actie ondernemen en terugrapporteren. Jij stelt het doel; het systeem voert de loop uit.',
-    example:
-      'Elke ochtend om 9 uur: performance data ophalen, afwijkingen signaleren, het team op Slack waarschuwen en vervolgacties klaarzetten — klaar voor goedkeuring.',
-    buildsOn: 'Copilot-creativiteit + Specialist-kennis, nu verbonden met je systemen.',
+    action: 'AI voert meerstaps-workflows uit over je tools heen',
   },
   {
     id: 'ecosystem',
-    title: 'Ecosystem',
-    action: 'Schaalt breed',
-    description:
-      'Agent-workflows over afdelingen heen delen kennis en coördineren acties. Eén waarheid, één verbonden systeem — inzichten stromen waar ze nodig zijn zonder handmatige overdracht.',
-    example:
-      'Een piek die door één team wordt gesignaleerd informeert automatisch het budgetrapport bij finance en triggert proactief outreach vanuit een andere afdeling.',
-    buildsOn: 'Alle voorgaande horizonten, verbonden over teams en systemen.',
+    title: 'AI ecosystem',
+    action: 'Agent-workflows over afdelingen heen delen kennis en coördineren acties',
   },
 ];
 
@@ -105,7 +63,6 @@ interface V2AIHorizonsProps {
 export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
   const [activeStage, setActiveStage] = useState(0);
   const stages = lang === 'en' ? STAGES_EN : STAGES_NL;
-  const active = stages[activeStage];
 
   return (
     <div className="mt-10 border-t border-[#14181d]/10 pt-10 md:mt-14 md:pt-14">
@@ -118,9 +75,9 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
         </div>
       </div>
 
-      {/* Stage selector — desktop: clickable tab cards */}
-      <div className="hidden md:block">
-        <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-5 md:items-stretch">
+        {/* Stages — stacked left */}
+        <div className="flex flex-col gap-2 md:col-span-4 lg:col-span-3">
           {stages.map((stage, i) => {
             const isActive = i === activeStage;
             return (
@@ -128,269 +85,985 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
                 key={stage.id}
                 onClick={() => setActiveStage(i)}
                 aria-pressed={isActive}
-                className={`group relative cursor-pointer rounded-2xl border p-5 text-left transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/20 ${
+                className={`group flex w-full items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/20 md:flex-1 md:px-5 ${
                   isActive
                     ? 'border-[#14181d] bg-white shadow-[0_18px_40px_-24px_rgba(20,24,29,0.35)]'
                     : 'border-[#14181d]/10 bg-white/70 hover:border-[#14181d]/25 hover:bg-white'
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`font-mono text-[10px] tracking-[0.2em] transition-colors duration-300 ${
-                      isActive ? 'text-[#14181d]' : 'text-[#14181d]/30'
-                    }`}
-                  >
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <span
-                    className={`flex h-5 w-5 items-center justify-center rounded-full border transition-all duration-300 ${
-                      isActive
-                        ? 'border-[#14181d] bg-[#14181d]'
-                        : 'border-[#14181d]/15 group-hover:border-[#14181d]/30'
-                    }`}
-                  >
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${
-                        isActive ? 'bg-bla-lime' : 'bg-[#14181d]/20 group-hover:bg-[#14181d]/40'
-                      }`}
-                    />
-                  </span>
-                </div>
-                <div
-                  className={`mt-4 font-host text-base font-medium transition-colors duration-300 ${
-                    isActive ? 'text-[#14181d]' : 'text-[#14181d]/55 group-hover:text-[#14181d]/85'
+                <span
+                  className={`mt-0.5 font-mono text-[10px] tracking-[0.2em] transition-colors duration-300 ${
+                    isActive ? 'text-[#14181d]' : 'text-[#14181d]/30'
                   }`}
                 >
-                  {stage.title}
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div
+                    className={`font-host text-base font-medium transition-colors duration-300 ${
+                      isActive ? 'text-[#14181d]' : 'text-[#14181d]/55 group-hover:text-[#14181d]/85'
+                    }`}
+                  >
+                    {stage.title}
+                  </div>
+                  <div
+                    className={`mt-1 font-host text-xs leading-snug transition-colors duration-300 ${
+                      isActive ? 'text-[#14181d]/60' : 'text-[#14181d]/40 group-hover:text-[#14181d]/50'
+                    }`}
+                  >
+                    {stage.action}
+                  </div>
                 </div>
-                <div
-                  className={`mt-1 font-mono text-[9px] uppercase tracking-[0.2em] transition-colors duration-300 ${
-                    isActive ? 'text-[#14181d]/55' : 'text-[#14181d]/25 group-hover:text-[#14181d]/40'
+                <span
+                  className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${
+                    isActive
+                      ? 'border-[#14181d] bg-[#14181d]'
+                      : 'border-[#14181d]/15 group-hover:border-[#14181d]/30'
                   }`}
                 >
-                  {stage.action}
-                </div>
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${
+                      isActive ? 'bg-bla-lime' : 'bg-[#14181d]/20 group-hover:bg-[#14181d]/40'
+                    }`}
+                  />
+                </span>
               </button>
             );
           })}
         </div>
 
-        {/* Content panel — desktop */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={active.id}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-8 grid grid-cols-12 gap-6 rounded-2xl border border-[#14181d]/10 bg-white p-6 md:p-8"
-          >
-            <div className="col-span-12 md:col-span-7">
-              <p className="font-host text-[15px] leading-relaxed text-[#14181d]/80">
-                {active.description}
-              </p>
-              <div className="mt-5 rounded-xl border border-[#14181d]/8 bg-[#f1ede4]/70 px-4 py-3">
-                <div className="mb-1 font-mono text-[9px] uppercase tracking-[0.22em] text-[#14181d]/40">
-                  {lang === 'en' ? 'In practice' : 'In de praktijk'}
-                </div>
-                <p className="font-host text-sm leading-relaxed text-[#14181d]/65">
-                  {active.example}
-                </p>
-              </div>
-            </div>
-            <div className="col-span-12 md:col-span-5">
-              <HorizonVisual stage={activeStage} />
-              <div className="mt-4 rounded-xl border border-[#14181d]/8 bg-[#f1ede4]/70 px-4 py-3">
-                <div className="mb-1 font-mono text-[9px] uppercase tracking-[0.22em] text-[#14181d]/35">
-                  {lang === 'en' ? 'Builds on' : 'Bouwt voort op'}
-                </div>
-                <p className="font-host text-xs leading-relaxed text-[#14181d]/50">
-                  {active.buildsOn}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {/* Stage selector — mobile */}
-      <div className="md:hidden">
-        <div className="flex flex-col gap-3">
-          {stages.map((stage, i) => {
-            const isActive = i === activeStage;
-            return (
-              <motion.div key={stage.id} layout>
-                <button
-                  onClick={() => setActiveStage(i)}
-                  className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all duration-300 ${
-                    isActive
-                      ? 'border-[#14181d] bg-white'
-                      : 'border-[#14181d]/10 bg-white/70'
-                  }`}
-                >
-                  <div
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${
-                      isActive ? 'border-[#14181d] bg-[#14181d]' : 'border-[#14181d]/15'
-                    }`}
-                  >
-                    <span
-                      className={`font-mono text-[9px] font-medium ${
-                        isActive ? 'text-bla-lime' : 'text-[#14181d]/40'
-                      }`}
-                    >
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <span
-                      className={`font-host text-sm font-medium ${
-                        isActive ? 'text-[#14181d]' : 'text-[#14181d]/60'
-                      }`}
-                    >
-                      {stage.title}
-                    </span>
-                    <span
-                      className={`ml-2 font-mono text-[9px] uppercase tracking-[0.18em] ${
-                        isActive ? 'text-[#14181d]/50' : 'text-[#14181d]/25'
-                      }`}
-                    >
-                      {stage.action}
-                    </span>
-                  </div>
-                  <motion.div
-                    animate={{ rotate: isActive ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="shrink-0 text-[#14181d]/30"
-                  >
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                      <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </motion.div>
-                </button>
-
-                <AnimatePresence>
-                  {isActive && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-4 pb-2 pt-3">
-                        <p className="font-host text-[13px] leading-relaxed text-[#14181d]/70">
-                          {stage.description}
-                        </p>
-                        <div className="mt-3 rounded-lg border border-[#14181d]/8 bg-white px-3 py-2.5">
-                          <div className="mb-1 font-mono text-[8px] uppercase tracking-[0.22em] text-[#14181d]/40">
-                            {lang === 'en' ? 'In practice' : 'In de praktijk'}
-                          </div>
-                          <p className="font-host text-xs leading-relaxed text-[#14181d]/55">
-                            {stage.example}
-                          </p>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+        {/* Interactive visual — large frame, height locked to the stage list on desktop */}
+        <div className="relative md:col-span-8 lg:col-span-9">
+          <div className="h-[440px] md:absolute md:inset-0 md:h-auto">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={stages[activeStage].id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                className="h-full"
+              >
+                <HorizonVisual stage={activeStage} lang={lang} />
               </motion.div>
-            );
-          })}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function HorizonVisual({ stage }: { stage: number }) {
-  const isAgent = stage === 2;
+function HorizonVisual({ stage, lang }: { stage: number; lang: 'en' | 'nl' }) {
   return (
-    <div className={`flex items-center justify-center rounded-xl border border-[#14181d]/8 bg-[#f1ede4]/70 ${isAgent ? 'h-[160px]' : 'h-[120px]'}`}>
+    <div className="flex h-full items-center justify-center overflow-hidden rounded-2xl border border-[#14181d]/20 bg-[#14181d]">
       <AnimatePresence mode="wait">
         <motion.div
           key={stage}
-          initial={{ opacity: 0, scale: 0.92 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
+          exit={{ opacity: 0, scale: 0.98 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="flex items-center justify-center"
+          className="flex h-full w-full items-center justify-center"
         >
-          {stage === 0 && <CopilotVisual />}
-          {stage === 1 && <SpecialistVisual />}
-          {stage === 2 && <AgentWorkflowVisual />}
-          {stage === 3 && <EcosystemVisual />}
+          {stage === 0 && <CopilotVisual lang={lang} />}
+          {stage === 1 && <SpecialistVisual lang={lang} />}
+          {stage === 2 && <AgentWorkflowVisual lang={lang} />}
+          {stage === 3 && <EcosystemVisual lang={lang} />}
         </motion.div>
       </AnimatePresence>
     </div>
   );
 }
 
-function CopilotVisual() {
+const COPILOT_PROMPTS = {
+  en: 'Draft a short client email about the campaign update',
+  nl: 'Schrijf een korte klantmail over de campagne-update',
+};
+
+const COPILOT_RESPONSES = {
+  en: [
+    'Subject: Campaign update — quick check-in',
+    'Hi team,',
+    'Hope you\'re well. Sharing a short update on this week\'s campaign push and where we stand.',
+    'Early results look strong across the board. Happy to jump on a call if useful — otherwise we\'ll keep iterating and follow up Friday.',
+    'Best,',
+    '[Your name]',
+  ],
+  nl: [
+    'Onderwerp: Campagne-update — korte check-in',
+    'Hoi team,',
+    'Hopelijk gaat het goed. Hier een korte update over de campagne van deze week en waar we staan.',
+    'De eerste resultaten zien er over de hele linie sterk uit. Bel gerust als dat helpt — anders itereren we door en volgen we vrijdag op.',
+    'Groet,',
+    '[Jouw naam]',
+  ],
+};
+
+type CopilotPhase = 'idle' | 'typing' | 'sending' | 'waiting' | 'responding' | 'done';
+
+function useCopilotLoop(lang: 'en' | 'nl') {
+  const [phase, setPhase] = useState<CopilotPhase>('idle');
+  const [typedPrompt, setTypedPrompt] = useState('');
+  const [sentPrompt, setSentPrompt] = useState('');
+  const [responseLines, setResponseLines] = useState(0);
+
+  const prompt = COPILOT_PROMPTS[lang];
+  const response = COPILOT_RESPONSES[lang];
+
+  useEffect(() => {
+    let cancelled = false;
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    const intervals: ReturnType<typeof setInterval>[] = [];
+
+    function wait(ms: number) {
+      return new Promise<void>((resolve) => {
+        timeouts.push(setTimeout(resolve, ms));
+      });
+    }
+
+    async function run() {
+      while (!cancelled) {
+        setPhase('idle');
+        setTypedPrompt('');
+        setSentPrompt('');
+        setResponseLines(0);
+        await wait(700);
+        if (cancelled) return;
+
+        setPhase('typing');
+        await new Promise<void>((resolve) => {
+          let i = 0;
+          const id = setInterval(() => {
+            i += 1;
+            setTypedPrompt(prompt.slice(0, i));
+            if (i >= prompt.length) {
+              clearInterval(id);
+              resolve();
+            }
+          }, 26);
+          intervals.push(id);
+        });
+        if (cancelled) return;
+
+        await wait(280);
+        if (cancelled) return;
+
+        setPhase('sending');
+        setSentPrompt(prompt);
+        setTypedPrompt('');
+        await wait(420);
+        if (cancelled) return;
+
+        setPhase('waiting');
+        await wait(1100);
+        if (cancelled) return;
+
+        setPhase('responding');
+        for (let line = 1; line <= response.length; line++) {
+          if (cancelled) return;
+          setResponseLines(line);
+          await wait(360);
+        }
+
+        setPhase('done');
+        await wait(2800);
+      }
+    }
+
+    run();
+
+    return () => {
+      cancelled = true;
+      timeouts.forEach(clearTimeout);
+      intervals.forEach(clearInterval);
+    };
+  }, [lang, prompt, response]);
+
+  return { phase, typedPrompt, sentPrompt, responseLines, response };
+}
+
+function CopilotVisual({ lang }: { lang: 'en' | 'nl' }) {
+  const { phase, typedPrompt, sentPrompt, responseLines, response } = useCopilotLoop(lang);
+  const showWaiting = phase === 'waiting';
+  const showResponse = responseLines > 0;
+  const canSend = phase === 'typing' && typedPrompt.length > 8;
+  const sending = phase === 'sending';
+  const placeholder = lang === 'en' ? 'Message…' : 'Bericht…';
+
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#14181d]/20 bg-white">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-[#14181d]/60">
-          <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.2"/>
-          <path d="M2.5 14c0-3 2.5-4.5 5.5-4.5s5.5 1.5 5.5 4.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-        </svg>
+    <div className="relative flex h-full w-full flex-col overflow-hidden">
+      <div className="flex shrink-0 items-center justify-between border-b border-white/8 px-5 py-3">
+        <div className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-bla-lime/80" />
+          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/45">
+            {lang === 'en' ? 'New chat' : 'Nieuwe chat'}
+          </span>
+        </div>
+        <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/25">
+          LLM
+        </span>
       </div>
-      <svg width="24" height="8" viewBox="0 0 24 8" className="text-[#14181d]/35">
-        <path d="M0 4h20m0 0l-3-3m3 3l-3 3" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#14181d]/25 bg-white">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-[#14181d]/70">
-          <rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/>
-          <path d="M5 7h6M5 9.5h4" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
-        </svg>
+
+      <div className="relative flex min-h-0 flex-1 flex-col justify-end gap-3 overflow-hidden px-5 py-4 md:px-7">
+        <AnimatePresence>
+          {sentPrompt && (
+            <motion.div
+              key="user-msg"
+              layout
+              initial={{ opacity: 0, y: 10, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              className="ml-auto max-w-[85%] shrink-0 rounded-2xl rounded-br-md border border-white/15 bg-white/[0.08] px-4 py-3"
+            >
+              <div className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.18em] text-white/40">
+                {lang === 'en' ? 'You' : 'Jij'}
+              </div>
+              <p className="font-host text-sm leading-relaxed text-white/85">{sentPrompt}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="mr-auto max-w-[90%] shrink-0">
+          <AnimatePresence mode="popLayout">
+            {showWaiting && (
+              <motion.div
+                key="waiting"
+                layout
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.25 }}
+                className="inline-flex items-center gap-2.5 rounded-2xl rounded-bl-md border border-bla-lime/25 bg-bla-lime/[0.06] px-4 py-3"
+              >
+                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-bla-lime/70">
+                  AI
+                </span>
+                <div className="flex items-center gap-1.5">
+                  {[0, 1, 2].map((i) => (
+                    <motion.span
+                      key={i}
+                      className="h-2 w-2 rounded-full bg-bla-lime/80"
+                      animate={{ opacity: [0.25, 1, 0.25], scale: [0.85, 1.15, 0.85] }}
+                      transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.18 }}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {showResponse && (
+              <motion.div
+                key="response"
+                layout
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-2xl rounded-bl-md border border-bla-lime/30 bg-bla-lime/[0.07] px-4 py-3"
+              >
+                <div className="mb-2 font-mono text-[9px] uppercase tracking-[0.18em] text-bla-lime/70">
+                  AI
+                </div>
+                <div className="space-y-1.5">
+                  {response.slice(0, responseLines).map((line, i) => (
+                    <motion.p
+                      key={line}
+                      layout
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.22 }}
+                      className={`font-host leading-snug text-white/80 ${
+                        i === 0
+                          ? 'text-sm font-medium'
+                          : i === response.length - 1 || i === response.length - 2
+                            ? 'text-[13px] text-white/55'
+                            : 'text-[13px] text-white/70'
+                      }`}
+                    >
+                      {line}
+                    </motion.p>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      <div className="shrink-0 border-t border-white/8 px-4 py-3 md:px-5 md:py-3.5">
+        <div
+          className={`flex items-end gap-2.5 rounded-2xl border px-3.5 py-2.5 transition-colors duration-300 ${
+            phase === 'typing' || sending
+              ? 'border-white/20 bg-white/[0.06]'
+              : 'border-white/10 bg-white/[0.03]'
+          }`}
+        >
+          <div className="min-h-[22px] min-w-0 flex-1 font-host text-sm leading-relaxed">
+            {typedPrompt ? (
+              <span className="text-white/85">
+                {typedPrompt}
+                {phase === 'typing' && (
+                  <motion.span
+                    className="ml-0.5 inline-block h-3.5 w-0.5 translate-y-[2px] bg-bla-lime"
+                    animate={{ opacity: [1, 0] }}
+                    transition={{ duration: 0.6, repeat: Infinity }}
+                  />
+                )}
+              </span>
+            ) : (
+              <span className="text-white/28">{placeholder}</span>
+            )}
+          </div>
+          <motion.div
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+            animate={{
+              backgroundColor: sending
+                ? 'rgba(206,255,0,0.95)'
+                : canSend
+                  ? 'rgba(206,255,0,0.85)'
+                  : 'rgba(255,255,255,0.08)',
+              scale: sending ? [1, 0.88, 1] : 1,
+            }}
+            transition={{ duration: 0.28 }}
+          >
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 13 13"
+              fill="none"
+              className={canSend || sending ? 'text-[#14181d]' : 'text-white/30'}
+            >
+              <path
+                d="M2 6.5h9M7.5 3l3.5 3.5L7.5 10"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </motion.div>
+        </div>
       </div>
     </div>
   );
 }
 
-function SpecialistVisual() {
+type SpecialistScene = 0 | 1 | 2;
+
+const SPECIALIST_DOC_ICONS = {
+  chart: FileBarChart,
+  brand: BookOpen,
+  doc: FileType,
+  sheet: FileSpreadsheet,
+} as const;
+
+const SPECIALIST_DOCS = {
+  en: [
+    { name: 'KPI-definitions.pdf', size: '142 KB', kind: 'chart' as const },
+    { name: 'Brand-guidelines.pdf', size: '2.3 MB', kind: 'brand' as const },
+    { name: 'Report-template.docx', size: '89 KB', kind: 'doc' as const },
+    { name: 'Q3-targets.xlsx', size: '56 KB', kind: 'sheet' as const },
+  ],
+  nl: [
+    { name: 'KPI-definities.pdf', size: '142 KB', kind: 'chart' as const },
+    { name: 'Merkrichtlijnen.pdf', size: '2,3 MB', kind: 'brand' as const },
+    { name: 'Rapport-template.docx', size: '89 KB', kind: 'doc' as const },
+    { name: 'Q3-doelen.xlsx', size: '56 KB', kind: 'sheet' as const },
+  ],
+};
+
+const SPECIALIST_INSTRUCTIONS = {
+  en: [
+    'When I send weekly figures, compare them to the previous period.',
+    'Flag any deviation above 10% and label it as critical.',
+    'Use the brand guidelines for formatting the output.',
+    'Return a prioritised summary ranked by business impact.',
+  ],
+  nl: [
+    'Als ik wekelijkse cijfers stuur, vergelijk ze met de vorige periode.',
+    'Markeer elke afwijking boven 10% en label het als kritiek.',
+    'Gebruik de merkrichtlijnen voor de opmaak van de output.',
+    'Lever een geprioriteerde samenvatting gerangschikt op business-impact.',
+  ],
+};
+
+const SPECIALIST_SKILL_NAME = {
+  en: 'Weekly KPI Reporter',
+  nl: 'Wekelijkse KPI Rapporteur',
+};
+
+const SPECIALIST_CHAT_PROMPT = {
+  en: 'Here are this week\'s figures. Run the analysis.',
+  nl: 'Hier zijn de cijfers van deze week. Voer de analyse uit.',
+};
+
+const SPECIALIST_CHAT_RESPONSE = {
+  en: [
+    '📊 Weekly KPI Report — Week 34',
+    '',
+    '⚠️ Critical deviations (>10%):',
+    '• Conversion rate: −14% vs. last week (3.2% → 2.8%)',
+    '• Ad spend efficiency: +18% CPA increase',
+    '',
+    '✓ All other KPIs within normal range.',
+    'Full formatted report attached below.',
+  ],
+  nl: [
+    '📊 Wekelijks KPI-rapport — Week 34',
+    '',
+    '⚠️ Kritieke afwijkingen (>10%):',
+    '• Conversieratio: −14% vs. vorige week (3,2% → 2,8%)',
+    '• Advertentie-efficiëntie: +18% CPA-stijging',
+    '',
+    '✓ Alle overige KPI\'s binnen normaal bereik.',
+    'Volledig opgemaakt rapport hieronder bijgevoegd.',
+  ],
+};
+
+function useSpecialistLoop(lang: 'en' | 'nl') {
+  const [scene, setScene] = useState<SpecialistScene>(0);
+  const [docCount, setDocCount] = useState(0);
+  const [instructionLines, setInstructionLines] = useState(0);
+  const [chatPhase, setChatPhase] = useState<'idle' | 'typing' | 'sent' | 'thinking' | 'responding' | 'done'>('idle');
+  const [typedChat, setTypedChat] = useState('');
+  const [responseLines, setResponseLines] = useState(0);
+
+  const docs = SPECIALIST_DOCS[lang];
+  const instructions = SPECIALIST_INSTRUCTIONS[lang];
+  const chatPrompt = SPECIALIST_CHAT_PROMPT[lang];
+  const chatResponse = SPECIALIST_CHAT_RESPONSE[lang];
+
+  useEffect(() => {
+    let cancelled = false;
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    const intervals: ReturnType<typeof setInterval>[] = [];
+
+    function wait(ms: number) {
+      return new Promise<void>((resolve) => {
+        timeouts.push(setTimeout(resolve, ms));
+      });
+    }
+
+    async function run() {
+      while (!cancelled) {
+        // --- Scene 1: Knowledge base / document upload ---
+        setScene(0);
+        setDocCount(0);
+        setInstructionLines(0);
+        setChatPhase('idle');
+        setTypedChat('');
+        setResponseLines(0);
+        await wait(600);
+        if (cancelled) return;
+
+        for (let i = 1; i <= docs.length; i++) {
+          if (cancelled) return;
+          setDocCount(i);
+          await wait(700);
+        }
+        await wait(2200);
+        if (cancelled) return;
+
+        // --- Scene 2: System instructions ---
+        setScene(1);
+        setDocCount(0);
+        await wait(500);
+        if (cancelled) return;
+
+        for (let i = 1; i <= instructions.length; i++) {
+          if (cancelled) return;
+          setInstructionLines(i);
+          await wait(900);
+        }
+        await wait(2200);
+        if (cancelled) return;
+
+        // --- Scene 3: Invoke the skill in chat ---
+        setScene(2);
+        setInstructionLines(0);
+        setChatPhase('idle');
+        await wait(500);
+        if (cancelled) return;
+
+        setChatPhase('typing');
+        await new Promise<void>((resolve) => {
+          let i = 0;
+          const id = setInterval(() => {
+            i += 1;
+            setTypedChat(chatPrompt.slice(0, i));
+            if (i >= chatPrompt.length) {
+              clearInterval(id);
+              resolve();
+            }
+          }, 28);
+          intervals.push(id);
+        });
+        if (cancelled) return;
+
+        await wait(350);
+        if (cancelled) return;
+
+        setChatPhase('sent');
+        setTypedChat('');
+        await wait(400);
+        if (cancelled) return;
+
+        setChatPhase('thinking');
+        await wait(1200);
+        if (cancelled) return;
+
+        setChatPhase('responding');
+        for (let line = 1; line <= chatResponse.length; line++) {
+          if (cancelled) return;
+          setResponseLines(line);
+          await wait(320);
+        }
+
+        setChatPhase('done');
+        await wait(2800);
+      }
+    }
+
+    run();
+    return () => {
+      cancelled = true;
+      timeouts.forEach(clearTimeout);
+      intervals.forEach(clearInterval);
+    };
+  }, [lang, docs, instructions, chatPrompt, chatResponse]);
+
+  return { scene, docCount, instructionLines, chatPhase, typedChat, responseLines, docs, instructions, chatPrompt, chatResponse };
+}
+
+function SkillBadge({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' }) {
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#14181d]/15 bg-white">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-[#14181d]/50">
-          <rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.1"/>
-          <path d="M4 5h6M4 7h6M4 9h4" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round"/>
-        </svg>
-      </div>
-      <svg width="16" height="8" viewBox="0 0 16 8" className="text-[#14181d]/20">
-        <path d="M0 4h12" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
-      </svg>
-      <div className="relative flex h-12 w-12 items-center justify-center rounded-xl border border-[#14181d]/30 bg-white">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[#14181d]/80">
-          <circle cx="9" cy="9" r="4" stroke="currentColor" strokeWidth="1.2"/>
-          <path d="M9 2v2M9 14v2M2 9h2M14 9h2" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
-        </svg>
-        <div className="absolute -right-1 -top-1 flex h-3 w-3 items-center justify-center rounded-full border border-[#14181d]/30 bg-bla-lime">
-          <svg width="6" height="6" viewBox="0 0 6 6" className="text-[#14181d]">
-            <path d="M1.5 3l1 1 2-2" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-          </svg>
+    <span
+      className={`inline-flex max-w-full shrink-0 items-center gap-1.5 rounded-full border border-bla-lime/50 bg-bla-lime/20 ${
+        size === 'md' ? 'px-3 py-1.5' : 'px-2.5 py-1'
+      }`}
+    >
+      <Sparkles className={`shrink-0 text-bla-lime ${size === 'md' ? 'h-3.5 w-3.5' : 'h-3 w-3'}`} strokeWidth={2.2} />
+      <span className={`truncate font-host font-medium leading-none text-bla-lime ${size === 'md' ? 'text-sm' : 'text-xs'}`}>
+        {name}
+      </span>
+    </span>
+  );
+}
+
+function SpecialistVisual({ lang }: { lang: 'en' | 'nl' }) {
+  const { scene, docCount, instructionLines, chatPhase, typedChat, responseLines, docs, instructions, chatPrompt, chatResponse } = useSpecialistLoop(lang);
+
+  const skillName = SPECIALIST_SKILL_NAME[lang];
+
+  return (
+    <div className="relative flex h-full w-full flex-col overflow-hidden">
+      {/* Header — skill name stays visible across all scenes */}
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/8 px-5 py-3">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <Sparkles className="h-4 w-4 shrink-0 text-bla-lime" strokeWidth={2.2} />
+          <span className="truncate font-host text-sm font-medium text-white">{skillName}</span>
+        </div>
+        <div className="flex shrink-0 items-center gap-1.5">
+          {[0, 1, 2].map((s) => (
+            <span
+              key={s}
+              className={`h-1 rounded-full transition-all duration-500 ${
+                s === scene ? 'w-4 bg-bla-lime/70' : 'w-1 bg-white/20'
+              }`}
+            />
+          ))}
         </div>
       </div>
-      <svg width="16" height="8" viewBox="0 0 16 8" className="text-[#14181d]/20">
-        <path d="M0 4h12" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
-      </svg>
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#14181d]/15 bg-white">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-[#14181d]/60">
-          <path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+
+      {/* Scene content */}
+      <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+        <AnimatePresence mode="wait">
+          {scene === 0 && (
+            <motion.div
+              key="scene-upload"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              className="flex h-full flex-col justify-center px-5 py-5 md:px-7"
+            >
+              <div className="mb-4 font-mono text-[9px] uppercase tracking-[0.22em] text-white/35">
+                {lang === 'en' ? 'Step 1 — Build your knowledge base' : 'Stap 1 — Bouw je kennisbank'}
+              </div>
+
+              {/* Skill name field */}
+              <div className="mb-4 rounded-xl border border-white/12 bg-white/[0.03] px-4 py-3">
+                <div className="mb-1.5 font-mono text-[8px] uppercase tracking-[0.16em] text-white/30">
+                  {lang === 'en' ? 'Skill name' : 'Skill-naam'}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 shrink-0 text-bla-lime" strokeWidth={2.2} />
+                  <span className="font-host text-sm font-medium text-white">{skillName}</span>
+                </div>
+              </div>
+
+              {/* Upload zone */}
+              <div className="rounded-xl border border-dashed border-white/15 bg-white/[0.02] p-4">
+                <div className="mb-3 flex items-center gap-2">
+                  <Upload className="h-3.5 w-3.5 text-bla-lime" strokeWidth={2} />
+                  <span className="font-host text-xs text-white/50">
+                    {lang === 'en' ? 'Upload documents to context' : 'Upload documenten naar context'}
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  {docs.map((doc, i) => {
+                    const uploaded = i < docCount;
+                    const DocIcon = SPECIALIST_DOC_ICONS[doc.kind];
+                    return (
+                    <motion.div
+                      key={doc.name}
+                      initial={false}
+                      animate={{
+                        opacity: uploaded ? 1 : 0.35,
+                        borderColor: uploaded ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.06)',
+                        backgroundColor: uploaded ? 'rgba(255,255,255,0.04)' : 'transparent',
+                      }}
+                      transition={{ duration: 0.35 }}
+                      className="flex h-10 items-center justify-between rounded-lg border px-3"
+                    >
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${uploaded ? 'bg-bla-lime/20' : 'bg-white/5'}`}>
+                          <DocIcon className={`h-3.5 w-3.5 ${uploaded ? 'text-bla-lime' : 'text-white/30'}`} strokeWidth={2} />
+                        </span>
+                        <span className={`truncate font-host text-[11px] ${uploaded ? 'text-white/70' : 'text-white/25'}`}>
+                          {uploaded ? doc.name : (lang === 'en' ? 'Waiting for file…' : 'Wacht op bestand…')}
+                        </span>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        {uploaded && (
+                          <>
+                            <span className="font-mono text-[8px] text-white/25">{doc.size}</span>
+                            <motion.span
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <svg width="10" height="10" viewBox="0 0 10 10" className="text-green-400/80">
+                                <path d="M2 5.2l2 2 4-4.4" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </motion.span>
+                          </>
+                        )}
+                      </div>
+                    </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="mt-3 flex h-4 items-center gap-2">
+                {docCount >= docs.length && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center gap-2"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-400/80" />
+                    <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-green-400/70">
+                      {lang === 'en' ? 'Knowledge base ready' : 'Kennisbank gereed'}
+                    </span>
+                  </motion.div>
+                )}
+              </div>
+            </motion.div>
+          )}
+
+          {scene === 1 && (
+            <motion.div
+              key="scene-instructions"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              className="flex h-full flex-col justify-center px-5 py-5 md:px-7"
+            >
+              <div className="mb-4">
+                <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-white/35">
+                  {lang === 'en' ? 'Step 2 — Define system instructions' : 'Stap 2 — Stel systeeminstructies op'}
+                </div>
+                <div className="mt-3">
+                  <SkillBadge name={skillName} />
+                </div>
+              </div>
+
+              {/* Instruction editor panel */}
+              <div className="rounded-xl border border-white/12 bg-white/[0.03]">
+                {/* Editor header */}
+                <div className="flex items-center gap-2 border-b border-white/8 px-4 py-2.5">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="text-bla-lime/50">
+                    <rect x="1.5" y="1.5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="0.8"/>
+                    <path d="M4 4h4M4 6h3M4 8h2" stroke="currentColor" strokeWidth="0.6" strokeLinecap="round"/>
+                  </svg>
+                  <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/40">
+                    {lang === 'en' ? 'System instructions' : 'Systeeminstructies'}
+                  </span>
+                </div>
+
+                {/* Instruction lines */}
+                <div className="flex flex-col gap-0 px-4 py-3">
+                  {instructions.slice(0, instructionLines).map((line, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex items-start gap-2 py-1.5"
+                    >
+                      <span className="mt-[3px] font-mono text-[8px] text-white/20">
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      <p className="font-host text-[12px] leading-relaxed text-white/75">
+                        {line}
+                        {i === instructionLines - 1 && instructionLines < instructions.length && (
+                          <motion.span
+                            className="ml-0.5 inline-block h-3 w-0.5 translate-y-[1px] bg-bla-lime"
+                            animate={{ opacity: [1, 0] }}
+                            transition={{ duration: 0.6, repeat: Infinity }}
+                          />
+                        )}
+                      </p>
+                    </motion.div>
+                  ))}
+
+                  {instructionLines < instructions.length && (
+                    <div className="flex items-start gap-2 py-1.5">
+                      <span className="mt-[3px] font-mono text-[8px] text-white/10">
+                        {String(instructionLines + 1).padStart(2, '0')}
+                      </span>
+                      <motion.span
+                        className="inline-block h-3 w-0.5 translate-y-[2px] bg-bla-lime/60"
+                        animate={{ opacity: [1, 0] }}
+                        transition={{ duration: 0.6, repeat: Infinity }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {instructionLines >= instructions.length && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="mt-3 flex items-center gap-2"
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-green-400/80" />
+                  <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-green-400/70">
+                    {lang === 'en' ? 'Instructions saved' : 'Instructies opgeslagen'}
+                  </span>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+
+          {scene === 2 && (
+            <motion.div
+              key="scene-invoke"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              className="flex h-full flex-col overflow-hidden"
+            >
+              {/* Skill badge at top */}
+              <div className="flex shrink-0 items-center gap-2.5 border-b border-white/8 px-5 py-3">
+                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/35">
+                  {lang === 'en' ? 'Using' : 'Gebruikt'}
+                </span>
+                <SkillBadge name={skillName} />
+              </div>
+
+              {/* Chat area */}
+              <div className="flex min-h-0 flex-1 flex-col justify-end gap-3 overflow-hidden px-5 py-4 md:px-7">
+                {/* User message */}
+                <AnimatePresence>
+                  {(chatPhase === 'sent' || chatPhase === 'thinking' || chatPhase === 'responding' || chatPhase === 'done') && (
+                    <motion.div
+                      key="user-chat"
+                      initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ duration: 0.28 }}
+                      className="ml-auto max-w-[85%] shrink-0 rounded-2xl rounded-br-md border border-white/12 bg-white/[0.07] px-4 py-2.5"
+                    >
+                      <p className="font-host text-[12px] leading-relaxed text-white/80">{chatPrompt}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Thinking dots */}
+                {chatPhase === 'thinking' && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center gap-2 self-start"
+                  >
+                    <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-md border border-bla-lime/20 bg-bla-lime/[0.05] px-3 py-2">
+                      {[0, 1, 2].map((i) => (
+                        <motion.span
+                          key={i}
+                          className="h-1.5 w-1.5 rounded-full bg-bla-lime/70"
+                          animate={{ opacity: [0.3, 1, 0.3], scale: [0.85, 1.1, 0.85] }}
+                          transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.18 }}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* AI response */}
+                <AnimatePresence>
+                  {responseLines > 0 && (
+                    <motion.div
+                      key="chat-response"
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="max-w-[92%] self-start"
+                    >
+                      <div className="rounded-2xl rounded-bl-md border border-bla-lime/25 bg-bla-lime/[0.06] px-4 py-3">
+                        <div className="mb-2">
+                          <SkillBadge name={skillName} size="sm" />
+                        </div>
+                        <div className="flex flex-col gap-0.5">
+                          {chatResponse.slice(0, responseLines).map((line, i) => (
+                            <motion.p
+                              key={i}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ duration: 0.2 }}
+                              className={`font-host text-[11px] leading-relaxed ${
+                                line === '' ? 'h-2' : 'text-white/75'
+                              }`}
+                            >
+                              {line}
+                            </motion.p>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Composer with skill tag */}
+              <div className="shrink-0 border-t border-white/8 px-4 py-3 md:px-5">
+                <div
+                  className={`flex items-end gap-2.5 rounded-2xl border px-3.5 py-2.5 transition-colors duration-300 ${
+                    chatPhase === 'typing'
+                      ? 'border-white/20 bg-white/[0.06]'
+                      : 'border-white/10 bg-white/[0.03]'
+                  }`}
+                >
+                  <div className="min-h-[22px] min-w-0 flex-1 font-host text-sm leading-relaxed">
+                    {chatPhase === 'typing' && typedChat ? (
+                      <span className="text-white/85">
+                        {typedChat}
+                        <motion.span
+                          className="ml-0.5 inline-block h-3.5 w-0.5 translate-y-[2px] bg-bla-lime"
+                          animate={{ opacity: [1, 0] }}
+                          transition={{ duration: 0.6, repeat: Infinity }}
+                        />
+                      </span>
+                    ) : (
+                      <span className="text-white/28">
+                        {lang === 'en' ? 'Message…' : 'Bericht…'}
+                      </span>
+                    )}
+                  </div>
+                  <motion.div
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
+                    animate={{
+                      backgroundColor: chatPhase === 'typing' && typedChat.length > 5
+                        ? 'rgba(206,255,0,0.85)'
+                        : 'rgba(255,255,255,0.08)',
+                    }}
+                    transition={{ duration: 0.28 }}
+                  >
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 13 13"
+                      fill="none"
+                      className={chatPhase === 'typing' && typedChat.length > 5 ? 'text-[#14181d]' : 'text-white/30'}
+                    >
+                      <path
+                        d="M2 6.5h9M7.5 3l3.5 3.5L7.5 10"
+                        stroke="currentColor"
+                        strokeWidth="1.4"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
 }
 
 const WORKFLOW_NODES = [
-  { label: 'Pull', tasks: 3 },
-  { label: 'Analyze', tasks: 3 },
-  { label: 'Alert', tasks: 2 },
-  { label: 'Act', tasks: 2 },
+  {
+    label: { en: 'Pull', nl: 'Ophalen' },
+    sub: { en: 'From your systems', nl: 'Uit je systemen' },
+    tasks: [
+      { en: 'Connect to the source', nl: 'Verbinden met de bron' },
+      { en: 'Fetch the latest records', nl: 'Laatste records ophalen' },
+      { en: 'Load last-run context', nl: 'Context vorige run laden' },
+    ],
+    tools: [
+      { icon: 'db', label: { en: 'Database', nl: 'Database' } },
+      { icon: 'api', label: { en: 'API', nl: 'API' } },
+    ],
+  },
+  {
+    label: { en: 'Analyze', nl: 'Analyse' },
+    sub: { en: 'Find what matters', nl: 'Vind wat telt' },
+    tasks: [
+      { en: 'Compare to the baseline', nl: 'Vergelijken met de baseline' },
+      { en: 'Flag exceptions', nl: 'Uitzonderingen markeren' },
+      { en: 'Rank by impact', nl: 'Rangschikken op impact' },
+    ],
+    tools: [
+      { icon: 'calc', label: { en: 'Model', nl: 'Model' } },
+      { icon: 'db', label: { en: 'History', nl: 'Historiek' } },
+    ],
+  },
+  {
+    label: { en: 'Alert', nl: 'Melding' },
+    sub: { en: 'Notify the team', nl: 'Team waarschuwen' },
+    tasks: [
+      { en: 'Write a short summary', nl: 'Korte samenvatting schrijven' },
+      { en: 'Send it to the channel', nl: 'Naar het kanaal sturen' },
+    ],
+    tools: [
+      { icon: 'msg', label: { en: 'Slack', nl: 'Slack' } },
+    ],
+  },
+  {
+    label: { en: 'Act', nl: 'Actie' },
+    sub: { en: 'You approve', nl: 'Jij keurt goed' },
+    tasks: [
+      { en: 'Draft the follow-up', nl: 'Vervolgactie opstellen' },
+      { en: 'Queue for approval', nl: 'Klaarzetten voor goedkeuring' },
+    ],
+    tools: [
+      { icon: 'api', label: { en: 'CRM', nl: 'CRM' } },
+      { icon: 'doc', label: { en: 'Docs', nl: 'Docs' } },
+    ],
+  },
 ];
-const TOTAL_TASKS = WORKFLOW_NODES.reduce((s, n) => s + n.tasks, 0);
-const TASK_DURATION_MS = 600;
-const PAUSE_BEFORE_RESTART_MS = 2400;
+const TOTAL_TASKS = WORKFLOW_NODES.reduce((s, n) => s + n.tasks.length, 0);
+const TASK_DURATION_MS = 1400;
+const PAUSE_BEFORE_RESTART_MS = 2600;
 
 function useWorkflowLoop() {
   const [tick, setTick] = useState(-1);
@@ -409,165 +1082,898 @@ function useWorkflowLoop() {
         timeout = setTimeout(() => step(next), TASK_DURATION_MS);
       }
     }
-    timeout = setTimeout(() => step(-1), 800);
+    timeout = setTimeout(() => step(-1), 600);
     return () => clearTimeout(timeout);
   }, []);
 
   return tick;
 }
 
-function AgentWorkflowVisual() {
+function AgentWorkflowVisual({ lang }: { lang: 'en' | 'nl' }) {
   const tick = useWorkflowLoop();
+  const allDone = tick >= TOTAL_TASKS;
 
   let tasksBefore = 0;
   const nodes = WORKFLOW_NODES.map((node) => {
     const start = tasksBefore;
-    tasksBefore += node.tasks;
-    const completedTasks = Math.max(0, Math.min(node.tasks, tick - start));
-    const isActive = tick >= start && tick < start + node.tasks;
-    const isDone = tick >= start + node.tasks;
-    return { ...node, completedTasks, isActive, isDone };
+    const count = node.tasks.length;
+    tasksBefore += count;
+    const completedTasks = Math.max(0, Math.min(count, tick - start));
+    const isActive = tick >= start && tick < start + count;
+    const isDone = tick >= start + count;
+    return {
+      label: node.label[lang],
+      sub: node.sub[lang],
+      tasks: node.tasks.map((t) => t[lang]),
+      tools: node.tools,
+      completedTasks,
+      isActive,
+      isDone,
+    };
   });
 
   return (
-    <div className="flex flex-col items-center gap-2 px-2">
-      <div className="flex items-end gap-1">
+    <div className="flex h-full w-full flex-col justify-center gap-5 px-5 py-5 md:px-7">
+      <div className="flex items-center justify-between">
+        <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-white/40">
+          {lang === 'en' ? 'One agent workflow' : 'Eén agent-workflow'}
+        </div>
+        <span
+          className={`font-mono text-[9px] uppercase tracking-[0.2em] transition-colors duration-300 ${
+            allDone ? 'text-green-400' : 'text-white/55'
+          }`}
+        >
+          {allDone
+            ? lang === 'en' ? 'complete' : 'voltooid'
+            : lang === 'en' ? 'running' : 'bezig'}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 py-10 lg:grid-cols-4 lg:gap-3">
         {nodes.map((node, i) => (
-          <div key={node.label} className="flex items-end gap-1">
-            <div className="flex flex-col items-center gap-1">
-              <motion.div
-                className="flex h-9 w-14 items-center justify-center rounded-lg border"
-                animate={{
-                  borderColor: node.isDone
-                    ? 'rgba(34,197,94,0.6)'
-                    : node.isActive
-                      ? 'rgba(20,24,29,0.6)'
-                      : 'rgba(20,24,29,0.15)',
-                  backgroundColor: node.isDone
-                    ? 'rgba(34,197,94,0.08)'
-                    : node.isActive
-                      ? 'rgba(255,255,255,1)'
-                      : 'rgba(255,255,255,0.7)',
-                }}
-                transition={{ duration: 0.25 }}
-              >
+          <div key={node.label} className="flex items-stretch">
+            <motion.div
+              className="relative flex min-h-0 flex-1 flex-col rounded-2xl border p-3.5"
+              animate={{
+                borderColor: node.isDone
+                  ? 'rgba(34,197,94,0.55)'
+                  : node.isActive
+                    ? 'rgba(206,255,0,0.5)'
+                    : 'rgba(255,255,255,0.12)',
+                backgroundColor: node.isDone
+                  ? 'rgba(34,197,94,0.07)'
+                  : node.isActive
+                    ? 'rgba(206,255,0,0.05)'
+                    : 'rgba(255,255,255,0.03)',
+              }}
+              transition={{ duration: 0.25 }}
+            >
+              {/* Data flow connectors on the card border when active */}
+              <AnimatePresence>
+                {node.isActive && (
+                  <motion.div
+                    key="data-flow"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="pointer-events-none"
+                  >
+                    {/* Top connector dot — centered on top border */}
+                    <div
+                      className="absolute z-20 flex h-4 w-4 items-center justify-center rounded-full border border-bla-lime/60 bg-[#14181d]"
+                      style={{ top: '-8px', left: 'calc(50% - 8px)' }}
+                    >
+                      <div className="h-1.5 w-1.5 rounded-full bg-bla-lime/80" />
+                    </div>
+
+                    {/* Line going up from top connector */}
+                    <div
+                      className="absolute z-10 flex flex-col items-center"
+                      style={{ bottom: 'calc(100% + 8px)', left: 'calc(50% - 4px)', width: '8px', height: '32px' }}
+                    >
+                      <svg width="8" height="6" viewBox="0 0 8 6" className="shrink-0 text-bla-lime/70">
+                        <path d="M4 0L7 5H1L4 0Z" fill="currentColor"/>
+                      </svg>
+                      <div className="relative w-[1.5px] flex-1 overflow-hidden bg-bla-lime/25">
+                        <motion.div
+                          className="absolute left-0 w-full bg-bla-lime/90"
+                          style={{ height: '10px', borderRadius: '1px' }}
+                          animate={{ top: ['100%', '-10px'] }}
+                          transition={{ duration: 0.9, repeat: Infinity, ease: 'linear' }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Bottom connector dot — centered on bottom border */}
+                    <div
+                      className="absolute z-20 flex h-4 w-4 items-center justify-center rounded-full border border-green-400/60 bg-[#14181d]"
+                      style={{ bottom: '-8px', left: 'calc(50% - 8px)' }}
+                    >
+                      <div className="h-1.5 w-1.5 rounded-full bg-green-400/80" />
+                    </div>
+
+                    {/* Line coming up from below into bottom connector */}
+                    <div
+                      className="absolute z-10 flex flex-col items-center"
+                      style={{ top: 'calc(100% + 8px)', left: 'calc(50% - 4px)', width: '8px', height: '32px' }}
+                    >
+                      <div className="relative w-[1.5px] flex-1 overflow-hidden bg-green-400/25">
+                        <motion.div
+                          className="absolute left-0 w-full bg-green-400/90"
+                          style={{ height: '10px', borderRadius: '1px' }}
+                          animate={{ bottom: ['-10px', '100%'] }}
+                          transition={{ duration: 0.9, repeat: Infinity, ease: 'linear', delay: 0.45 }}
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <div className="mb-3 flex items-start justify-between gap-2">
+                <div>
+                  <div
+                    className={`font-host text-sm font-medium transition-colors duration-200 ${
+                      node.isDone ? 'text-green-300' : node.isActive ? 'text-white' : 'text-white/50'
+                    }`}
+                  >
+                    {node.label}
+                  </div>
+                  <div className="mt-0.5 font-mono text-[8px] uppercase tracking-[0.16em] text-white/30">
+                    {node.sub}
+                  </div>
+                </div>
                 <span
-                  className={`font-mono text-[8px] font-medium transition-colors duration-200 ${
-                    node.isDone ? 'text-green-700' : node.isActive ? 'text-[#14181d]' : 'text-[#14181d]/40'
+                  className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
+                    node.isDone
+                      ? 'border-green-400/70 bg-green-400'
+                      : node.isActive
+                        ? 'border-bla-lime/60 bg-bla-lime/15'
+                        : 'border-white/15'
                   }`}
                 >
-                  {node.label}
+                  {node.isDone ? (
+                    <svg width="8" height="8" viewBox="0 0 8 8" className="text-[#14181d]">
+                      <path d="M1.5 4.2l1.8 1.8 3.2-3.6" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  ) : node.isActive ? (
+                    <motion.span
+                      className="h-1.5 w-1.5 rounded-full bg-bla-lime"
+                      animate={{ opacity: [0.4, 1, 0.4] }}
+                      transition={{ duration: 0.9, repeat: Infinity }}
+                    />
+                  ) : null}
                 </span>
-              </motion.div>
-              <div className="flex gap-0.5">
-                {Array.from({ length: node.tasks }).map((_, t) => {
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                {node.tasks.map((task, t) => {
                   const done = t < node.completedTasks;
                   const active = node.isActive && t === node.completedTasks;
                   return (
                     <motion.div
-                      key={t}
-                      className="h-1.5 w-1.5 rounded-full"
+                      key={task}
+                      className="flex items-center gap-2 rounded-lg border px-2 py-1.5"
                       animate={{
-                        backgroundColor: done
-                          ? 'rgba(34,197,94,0.8)'
+                        borderColor: done
+                          ? 'rgba(34,197,94,0.35)'
                           : active
-                            ? 'rgba(20,24,29,0.7)'
-                            : 'rgba(20,24,29,0.15)',
-                        scale: active ? [1, 1.4, 1] : 1,
+                            ? 'rgba(206,255,0,0.4)'
+                            : 'rgba(255,255,255,0.08)',
+                        backgroundColor: done
+                          ? 'rgba(34,197,94,0.08)'
+                          : active
+                            ? 'rgba(206,255,0,0.08)'
+                            : 'transparent',
                       }}
-                      transition={active ? { scale: { duration: 0.5, repeat: Infinity } } : { duration: 0.2 }}
-                    />
+                      transition={{ duration: 0.2 }}
+                    >
+                      <span
+                        className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border ${
+                          done
+                            ? 'border-green-400/80 bg-green-400'
+                            : active
+                              ? 'border-bla-lime/70'
+                              : 'border-white/15'
+                        }`}
+                      >
+                        {done ? (
+                          <svg width="7" height="7" viewBox="0 0 8 8" className="text-[#14181d]">
+                            <path d="M1.5 4.2l1.8 1.8 3.2-3.6" stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        ) : active ? (
+                          <motion.span
+                            className="h-1.5 w-1.5 rounded-full bg-bla-lime"
+                            animate={{ scale: [0.8, 1.25, 0.8] }}
+                            transition={{ duration: 0.7, repeat: Infinity }}
+                          />
+                        ) : null}
+                      </span>
+                      <span
+                        className={`font-host text-[11px] leading-snug ${
+                          done ? 'text-white/70' : active ? 'text-white/90' : 'text-white/35'
+                        }`}
+                      >
+                        {task}
+                      </span>
+                    </motion.div>
                   );
                 })}
               </div>
-            </div>
+            </motion.div>
+
             {i < nodes.length - 1 && (
-              <motion.div
-                className="mb-4 flex items-center"
-                animate={{
-                  opacity: nodes[i].isDone ? 1 : 0.3,
-                }}
-                transition={{ duration: 0.2 }}
-              >
+              <div className="mx-1 hidden items-center lg:flex">
                 <motion.div
-                  className="h-px w-3"
+                  className="h-px w-2.5"
                   animate={{
-                    backgroundColor: nodes[i].isDone
-                      ? 'rgba(34,197,94,0.5)'
-                      : 'rgba(20,24,29,0.2)',
+                    backgroundColor: node.isDone ? 'rgba(34,197,94,0.55)' : 'rgba(255,255,255,0.15)',
                   }}
-                  transition={{ duration: 0.2 }}
                 />
                 <motion.svg
-                  width="5"
-                  height="6"
+                  width="6"
+                  height="8"
                   viewBox="0 0 5 6"
                   animate={{
-                    color: nodes[i].isDone ? 'rgba(34,197,94,0.6)' : 'rgba(20,24,29,0.25)',
+                    color: node.isDone ? 'rgba(34,197,94,0.7)' : 'rgba(255,255,255,0.2)',
                   }}
-                  transition={{ duration: 0.2 }}
                 >
                   <path d="M0.5 0.5l3.5 2.5-3.5 2.5" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                 </motion.svg>
-              </motion.div>
+              </div>
             )}
           </div>
         ))}
       </div>
-      <motion.div
-        className="flex items-center gap-1.5"
-        animate={{
-          opacity: tick >= TOTAL_TASKS ? 1 : 0.4,
-        }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="h-px w-3 bg-[#14181d]/15" />
-        <span className={`font-mono text-[7px] uppercase tracking-wider transition-colors duration-300 ${
-          tick >= TOTAL_TASKS ? 'text-green-700/60' : 'text-[#14181d]/30'
-        }`}>
-          {tick >= TOTAL_TASKS ? 'done' : 'running'}
-        </span>
-        <div className="h-px w-3 bg-[#14181d]/15" />
-      </motion.div>
     </div>
   );
 }
 
-function EcosystemVisual() {
-  const nodes = [
-    { x: 50, y: 20 },
-    { x: 20, y: 50 },
-    { x: 80, y: 50 },
-    { x: 35, y: 80 },
-    { x: 65, y: 80 },
-  ];
+interface EcosystemDept {
+  id: string;
+  label: { en: string; nl: string };
+  icon: string;
+  angle: number;
+}
+
+const DEPARTMENTS: EcosystemDept[] = [
+  { id: 'marketing', label: { en: 'Marketing', nl: 'Marketing' }, icon: 'megaphone', angle: -90 },
+  { id: 'sales', label: { en: 'Sales', nl: 'Sales' }, icon: 'chart', angle: -18 },
+  { id: 'finance', label: { en: 'Finance', nl: 'Financiën' }, icon: 'wallet', angle: 54 },
+  { id: 'hr', label: { en: 'People & HR', nl: 'People & HR' }, icon: 'people', angle: 126 },
+  { id: 'operations', label: { en: 'Operations', nl: 'Operations' }, icon: 'gear', angle: 198 },
+];
+
+interface EcosystemInsight {
+  from: number;
+  to: number;
+  title: { en: string; nl: string };
+  body: { en: string; nl: string };
+}
+
+const INSIGHTS: EcosystemInsight[] = [
+  {
+    from: 0,
+    to: 1,
+    title: { en: 'Lead quality shapes the next campaign', nl: 'Leadkwaliteit vormt de volgende campagne' },
+    body: {
+      en: 'When Sales closes or loses a deal, that signal travels back to Marketing. Targeting, creative and spend shift toward the audiences that actually convert — instead of last month’s assumptions.',
+      nl: 'Als Sales een deal wint of verliest, reist dat signaal terug naar Marketing. Targeting, creative en spend verschuiven naar de doelgroepen die écht converteren — in plaats van naar aannames van vorige maand.',
+    },
+  },
+  {
+    from: 1,
+    to: 2,
+    title: { en: 'Pipeline velocity rewrites the forecast', nl: 'Pipelinesnelheid herschrijft de forecast' },
+    body: {
+      en: 'Finance no longer waits for a quarterly pipeline dump. Deal speed, slippage and win-rate feed the forecast as they happen, so cash planning moves with the business rather than behind it.',
+      nl: 'Finance wacht niet langer op een kwartaalexport van de pipeline. Dealsnelheid, uitstel en win-rate voeden de forecast terwijl het gebeurt, zodat cashplanning met de business meebeweegt in plaats van erachteraan.',
+    },
+  },
+  {
+    from: 2,
+    to: 3,
+    title: { en: 'Headcount follows real capacity', nl: 'Personeelsplanning volgt echte capaciteit' },
+    body: {
+      en: 'Hiring plans update against live margin and cash position. People & HR can open or pause roles before the budget conversation happens — because the financial constraint is already in the loop.',
+      nl: 'Wervingsplannen passen zich aan op live marge en cashpositie. People & HR kan rollen openen of pauzeren voordat het budgetgesprek plaatsvindt — omdat de financiële grens al in de loop zit.',
+    },
+  },
+  {
+    from: 3,
+    to: 4,
+    title: { en: 'Skill gaps set automation priorities', nl: 'Vaardigheidstekorten sturen automatisering' },
+    body: {
+      en: 'Where teams are stretched, Operations sees it first. Recurring work that eats capacity gets queued for agents, so people spend time on judgement — not on the work the system can already run.',
+      nl: 'Waar teams krap staan, ziet Operations dat als eerste. Terugkerend werk dat capaciteit opeet, gaat naar agents — zodat mensen tijd steken in oordeel, niet in werk dat het systeem al kan doen.',
+    },
+  },
+  {
+    from: 4,
+    to: 0,
+    title: { en: 'Bottlenecks rewrite the message', nl: 'Knelpunten herschrijven de boodschap' },
+    body: {
+      en: 'If fulfilment, support or delivery slows down, Marketing hears it before the next campaign goes out. Promises stay honest, demand is paced, and the brand does not outrun the operation.',
+      nl: 'Als fulfilment, support of levering vertraagt, hoort Marketing dat vóór de volgende campagne live gaat. Beloftes blijven eerlijk, vraag wordt gedoseerd, en het merk loopt de operatie niet voorbij.',
+    },
+  },
+  {
+    from: 0,
+    to: 2,
+    title: { en: 'Spend follows live margin', nl: 'Spend volgt live marge' },
+    body: {
+      en: 'Campaign budget is no longer a fixed monthly envelope. Finance streams margin and contribution back into Marketing, so channels that protect profit keep running and the rest get cut in the same week.',
+      nl: 'Campagnebudget is geen vast maandelijks envelopje meer. Finance stuurt marge en contributie terug naar Marketing, zodat kanalen die winst beschermen doorlopen en de rest in dezelfde week wordt teruggeschroefd.',
+    },
+  },
+  {
+    from: 1,
+    to: 3,
+    title: { en: 'Hiring accelerates where Sales is thin', nl: 'Werving versnelt waar Sales dun staat' },
+    body: {
+      en: 'Coverage gaps in the pipeline surface as hiring signals, not as a surprise in Q3. People & HR can brief roles, territories and onboarding against the deals that are already waiting.',
+      nl: 'Dekkingsgaten in de pipeline worden wervingssignalen, geen verrassing in Q3. People & HR kan rollen, regio’s en onboarding afstemmen op de deals die al liggen te wachten.',
+    },
+  },
+  {
+    from: 3,
+    to: 0,
+    title: { en: 'Employer brand meets the talent market', nl: 'Employer brand ontmoet de arbeidsmarkt' },
+    body: {
+      en: 'Recruitment insight — which roles stall, which stories convert — feeds Marketing. Employer campaigns stop guessing and start speaking to the talent the business actually needs to hire.',
+      nl: 'Wervingsinzicht — welke rollen stokken, welke verhalen converteren — voedt Marketing. Employer-campagnes gokken niet meer, maar spreken het talent aan dat het bedrijf écht moet aannemen.',
+    },
+  },
+];
+
+function useEcosystemLoop() {
+  const [activeInsight, setActiveInsight] = useState(-1);
+  const [activeDepts, setActiveDepts] = useState<number[]>([]);
+  const [pulsePhase, setPulsePhase] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+
+    function wait(ms: number) {
+      return new Promise<void>((resolve) => {
+        timeouts.push(setTimeout(resolve, ms));
+      });
+    }
+
+    async function run() {
+      await wait(800);
+      let idx = 0;
+
+      while (!cancelled) {
+        const insight = INSIGHTS[idx % INSIGHTS.length];
+        setActiveDepts([insight.from, insight.to]);
+        setPulsePhase(1);
+        await wait(600);
+        if (cancelled) return;
+
+        setPulsePhase(2);
+        await wait(500);
+        if (cancelled) return;
+
+        setActiveInsight(idx % INSIGHTS.length);
+        setPulsePhase(3);
+        await wait(6200);
+        if (cancelled) return;
+
+        setActiveInsight(-1);
+        setActiveDepts([]);
+        setPulsePhase(0);
+        await wait(1100);
+        if (cancelled) return;
+
+        idx++;
+      }
+    }
+
+    run();
+    return () => {
+      cancelled = true;
+      timeouts.forEach(clearTimeout);
+    };
+  }, []);
+
+  return { activeInsight, activeDepts, pulsePhase };
+}
+
+function DeptIcon({ type, className = 'h-4 w-4' }: { type: string; className?: string }) {
+  const cn = className;
+  switch (type) {
+    case 'megaphone':
+      return (
+        <svg viewBox="0 0 16 16" fill="none" className={cn} aria-hidden>
+          <path d="M12 3L5 6H3a1 1 0 00-1 1v2a1 1 0 001 1h2l7 3V3z" stroke="currentColor" strokeWidth="1" strokeLinejoin="round"/>
+          <path d="M14 6.5v3" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
+          <path d="M5 10v2.5a1 1 0 001 1h1" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      );
+    case 'chart':
+      return (
+        <svg viewBox="0 0 16 16" fill="none" className={cn} aria-hidden>
+          <path d="M2 13h12" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
+          <path d="M4 13V8M7 13V5M10 13V7M13 13V3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+        </svg>
+      );
+    case 'wallet':
+      return (
+        <svg viewBox="0 0 16 16" fill="none" className={cn} aria-hidden>
+          <rect x="2" y="4" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1"/>
+          <path d="M2 7h12" stroke="currentColor" strokeWidth="0.7"/>
+          <circle cx="11.5" cy="9.5" r="1" stroke="currentColor" strokeWidth="0.7"/>
+          <path d="M4 4V3.5a1 1 0 011-1h6" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round"/>
+        </svg>
+      );
+    case 'people':
+      return (
+        <svg viewBox="0 0 16 16" fill="none" className={cn} aria-hidden>
+          <circle cx="6" cy="5" r="2" stroke="currentColor" strokeWidth="1"/>
+          <path d="M2 13c0-2.2 1.8-4 4-4s4 1.8 4 4" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
+          <circle cx="11" cy="5.5" r="1.5" stroke="currentColor" strokeWidth="0.8"/>
+          <path d="M11 8.5c1.7 0 3 1.3 3 3" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round"/>
+        </svg>
+      );
+    case 'gear':
+      return (
+        <svg viewBox="0 0 16 16" fill="none" className={cn} aria-hidden>
+          <circle cx="8" cy="8" r="2.5" stroke="currentColor" strokeWidth="1"/>
+          <path d="M8 2v1.5M8 12.5V14M2 8h1.5M12.5 8H14M3.8 3.8l1.05 1.05M11.15 11.15l1.05 1.05M12.2 3.8l-1.05 1.05M4.85 11.15l-1.05 1.05" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round"/>
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
+function FlowingLink({
+  d,
+  highlighted,
+  delay = 0,
+  duration = 4.4,
+}: {
+  d: string;
+  highlighted: boolean;
+  delay?: number;
+  duration?: number;
+}) {
+  return (
+    <g>
+      <path
+        d={d}
+        fill="none"
+        stroke="rgba(206,255,0,0.08)"
+        strokeWidth="0.18"
+        strokeLinecap="round"
+      />
+      <motion.path
+        d={d}
+        fill="none"
+        strokeLinecap="round"
+        strokeDasharray={highlighted ? '1.8 2.1' : '1.15 3.6'}
+        animate={{
+          strokeDashoffset: [0, -24],
+          stroke: highlighted ? 'rgba(206,255,0,0.9)' : 'rgba(206,255,0,0.2)',
+          strokeWidth: highlighted ? 0.55 : 0.22,
+        }}
+        transition={{
+          strokeDashoffset: {
+            duration: highlighted ? duration * 0.42 : duration,
+            repeat: Infinity,
+            ease: 'linear',
+            delay,
+          },
+          stroke: { duration: 0.4 },
+          strokeWidth: { duration: 0.4 },
+        }}
+      />
+      <motion.circle
+        r={highlighted ? 0.52 : 0.26}
+        fill="#CEFF00"
+        filter={highlighted ? 'url(#eco-glow)' : undefined}
+        style={{ offsetPath: `path("${d}")`, offsetRotate: '0deg' }}
+        animate={{
+          offsetDistance: ['0%', '100%'],
+          opacity: highlighted ? [0.25, 1, 1, 0.2] : [0.06, 0.28, 0.28, 0.06],
+        }}
+        transition={{
+          offsetDistance: {
+            duration: highlighted ? duration * 0.48 : duration,
+            repeat: Infinity,
+            ease: 'linear',
+            delay: delay + 0.35,
+          },
+          opacity: {
+            duration: highlighted ? duration * 0.48 : duration,
+            repeat: Infinity,
+            ease: 'linear',
+            delay: delay + 0.35,
+          },
+        }}
+      />
+    </g>
+  );
+}
+
+function EcosystemVisual({ lang = 'en' }: { lang?: 'en' | 'nl' }) {
+  const { activeInsight, activeDepts, pulsePhase } = useEcosystemLoop();
+  const insight = activeInsight >= 0 ? INSIGHTS[activeInsight] : null;
+
+  const RADIUS = 36;
+  const CX = 50;
+  const CY = 50;
+
+  function deptPos(idx: number, r: number) {
+    const a = (DEPARTMENTS[idx].angle * Math.PI) / 180;
+    return { x: CX + r * Math.cos(a), y: CY + r * Math.sin(a) };
+  }
+
+  const connections: { from: number; to: number }[] = [];
+  for (let i = 0; i < DEPARTMENTS.length; i++) {
+    for (let j = i + 1; j < DEPARTMENTS.length; j++) {
+      connections.push({ from: i, to: j });
+    }
+  }
+
+  const crossFrom = activeDepts.length === 2 ? deptPos(activeDepts[0], RADIUS) : null;
+  const crossTo = activeDepts.length === 2 ? deptPos(activeDepts[1], RADIUS) : null;
 
   return (
-    <div className="relative h-[90px] w-[120px]">
-      <svg width="120" height="90" viewBox="0 0 120 90" fill="none" className="absolute inset-0">
-        {nodes.map((from, i) =>
-          nodes.slice(i + 1).map((to, j) => (
-            <line
-              key={`${i}-${j}`}
-              x1={`${from.x}%`} y1={`${from.y}%`}
-              x2={`${to.x}%`} y2={`${to.y}%`}
-              stroke="rgba(20,24,29,0.12)"
-              strokeWidth="0.8"
-            />
-          ))
-        )}
-      </svg>
-      {nodes.map((node, i) => (
-        <div
-          key={i}
-          className={`absolute flex h-6 w-6 items-center justify-center rounded-full border ${
-            i === 0 ? 'border-[#14181d] bg-[#14181d]' : 'border-[#14181d]/20 bg-white'
-          }`}
-          style={{ left: `${node.x}%`, top: `${node.y}%`, transform: 'translate(-50%, -50%)' }}
-        >
-          <div className={`h-1.5 w-1.5 rounded-full ${i === 0 ? 'bg-bla-lime' : 'bg-[#14181d]/40'}`} />
+    <div className="flex h-full w-full flex-col overflow-hidden">
+      {/* Header */}
+      <div className="flex shrink-0 items-center justify-between border-b border-white/8 px-5 py-3">
+        <div className="flex items-center gap-2">
+          <motion.span
+            className="h-1.5 w-1.5 rounded-full bg-bla-lime"
+            animate={{ scale: [1, 1.4, 1], opacity: [0.8, 1, 0.8] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/45">
+            {lang === 'en' ? 'Connected intelligence' : 'Verbonden intelligentie'}
+          </span>
         </div>
-      ))}
+        <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/25">
+          {lang === 'en' ? 'live' : 'live'}
+        </span>
+      </div>
+
+      {/* Main visualisation — organism + card grouped in the center */}
+      <div className="relative flex min-h-0 flex-1 items-center justify-center gap-5 overflow-hidden px-4 py-4 md:gap-8 md:px-8">
+        <div className="relative aspect-square w-[min(58%,340px)] min-w-[220px] shrink-0">
+        <svg
+          viewBox="0 0 100 100"
+          className="absolute inset-0 h-full w-full"
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <defs>
+            <radialGradient id="eco-core-glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#CEFF00" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#CEFF00" stopOpacity="0" />
+            </radialGradient>
+            <filter id="eco-glow">
+              <feGaussianBlur stdDeviation="0.8" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Connection web — always flowing, highlighted pair brightens */}
+          {connections.map(({ from, to }, i) => {
+            const a = deptPos(from, RADIUS);
+            const b = deptPos(to, RADIUS);
+            const cx1 = a.x + (CX - a.x) * 0.5;
+            const cy1 = a.y + (CY - a.y) * 0.5;
+            const cx2 = b.x + (CX - b.x) * 0.5;
+            const cy2 = b.y + (CY - b.y) * 0.5;
+            const reversed = i % 2 === 1;
+            const d = reversed
+              ? `M ${b.x} ${b.y} C ${cx2} ${cy2}, ${cx1} ${cy1}, ${a.x} ${a.y}`
+              : `M ${a.x} ${a.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${b.x} ${b.y}`;
+            const isHighlighted = Boolean(
+              insight &&
+                ((insight.from === from && insight.to === to) ||
+                  (insight.from === to && insight.to === from))
+            );
+
+            return (
+              <FlowingLink
+                key={`conn-${from}-${to}`}
+                d={d}
+                highlighted={isHighlighted}
+                delay={i * 0.28}
+                duration={4.2 + (i % 3) * 0.55}
+              />
+            );
+          })}
+
+          {/* Spokes to core — always flowing */}
+          {DEPARTMENTS.map((_, i) => {
+            const p = deptPos(i, RADIUS);
+            const inward = i % 2 === 0;
+            const d = inward
+              ? `M ${p.x} ${p.y} L ${CX} ${CY}`
+              : `M ${CX} ${CY} L ${p.x} ${p.y}`;
+            return (
+              <FlowingLink
+                key={`spoke-${i}`}
+                d={d}
+                highlighted={activeDepts.includes(i)}
+                delay={0.15 + i * 0.22}
+                duration={3.6 + (i % 2) * 0.5}
+              />
+            );
+          })}
+
+          {/* Animated data particles along active connections */}
+          {activeDepts.length === 2 && pulsePhase >= 1 && (
+            <>
+              {/* From dept → center */}
+              {activeDepts.map((dIdx, pi) => {
+                const p = deptPos(dIdx, RADIUS);
+                return (
+                  <motion.circle
+                    key={`particle-to-center-${pi}`}
+                    r="0.7"
+                    fill="#CEFF00"
+                    filter="url(#eco-glow)"
+                    initial={{ cx: p.x, cy: p.y, opacity: 0 }}
+                    animate={{
+                      cx: [p.x, CX],
+                      cy: [p.y, CY],
+                      opacity: [0, 1, 1, 0.3],
+                    }}
+                    transition={{
+                      duration: 1.2,
+                      delay: pi * 0.25,
+                      ease: 'easeInOut',
+                    }}
+                  />
+                );
+              })}
+              {/* Center → depts (response) */}
+              {pulsePhase >= 2 && activeDepts.map((dIdx, pi) => {
+                const p = deptPos(dIdx, RADIUS);
+                return (
+                  <motion.circle
+                    key={`particle-from-center-${pi}`}
+                    r="0.5"
+                    fill="#CEFF00"
+                    opacity="0.7"
+                    initial={{ cx: CX, cy: CY }}
+                    animate={{
+                      cx: [CX, p.x],
+                      cy: [CY, p.y],
+                      opacity: [0, 0.8, 0.8, 0],
+                    }}
+                    transition={{
+                      duration: 1,
+                      delay: pi * 0.2 + 0.3,
+                      ease: 'easeInOut',
+                    }}
+                  />
+                );
+              })}
+              {/* Cross-department particle via center */}
+              {pulsePhase >= 2 && crossFrom && crossTo && (
+                <motion.circle
+                  key="cross-particle"
+                  r="0.6"
+                  fill="#CEFF00"
+                  filter="url(#eco-glow)"
+                  initial={{ cx: crossFrom.x, cy: crossFrom.y }}
+                  animate={{
+                    cx: [crossFrom.x, CX, crossTo.x],
+                    cy: [crossFrom.y, CY, crossTo.y],
+                    opacity: [0, 1, 1, 0],
+                  }}
+                  transition={{
+                    duration: 1.6,
+                    delay: 0.5,
+                    ease: 'easeInOut',
+                  }}
+                />
+              )}
+            </>
+          )}
+
+          {/* Central AI core — outer pulse */}
+          <motion.circle
+            cx={CX} cy={CY} r="5"
+            fill="none"
+            stroke="rgba(206,255,0,0.15)"
+            strokeWidth="0.3"
+            animate={{
+              r: [5, 7, 5],
+              opacity: [0.15, 0.05, 0.15],
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <motion.circle
+            cx={CX} cy={CY} r="3.5"
+            fill="none"
+            stroke="rgba(206,255,0,0.2)"
+            strokeWidth="0.25"
+            animate={{
+              r: [3.5, 5, 3.5],
+              opacity: [0.2, 0.08, 0.2],
+            }}
+            transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
+          />
+
+          {/* Central AI core glow */}
+          <circle cx={CX} cy={CY} r="4" fill="url(#eco-core-glow)" />
+
+          {/* Central AI core */}
+          <motion.circle
+            cx={CX} cy={CY} r="3"
+            fill="rgba(20,24,29,0.9)"
+            stroke="rgba(206,255,0,0.6)"
+            strokeWidth="0.4"
+            animate={{
+              strokeOpacity: pulsePhase >= 2 ? [0.6, 1, 0.6] : [0.4, 0.6, 0.4],
+            }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+          <motion.circle
+            cx={CX} cy={CY} r="1.2"
+            fill="#CEFF00"
+            animate={{
+              opacity: [0.6, 1, 0.6],
+              r: pulsePhase >= 2 ? [1.2, 1.6, 1.2] : [1.0, 1.3, 1.0],
+            }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+          />
+
+          {/* Department nodes */}
+          {DEPARTMENTS.map((dept, i) => {
+            const p = deptPos(i, RADIUS);
+            const isActive = activeDepts.includes(i);
+
+            return (
+              <g key={dept.id}>
+                {isActive && (
+                  <motion.circle
+                    cx={p.x} cy={p.y} r="7"
+                    fill="none"
+                    stroke="rgba(206,255,0,0.28)"
+                    strokeWidth="0.2"
+                    initial={{ r: 5.4, opacity: 0 }}
+                    animate={{ r: [6.4, 7.2, 6.4], opacity: [0.28, 0.1, 0.28] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  />
+                )}
+                <motion.circle
+                  cx={p.x} cy={p.y} r="5.4"
+                  fill="rgba(20,24,29,0.96)"
+                  strokeWidth="0.35"
+                  animate={{
+                    stroke: isActive ? 'rgba(206,255,0,0.75)' : 'rgba(255,255,255,0.18)',
+                  }}
+                  transition={{ duration: 0.4 }}
+                />
+              </g>
+            );
+          })}
+        </svg>
+
+        {/* Icons sit inside the department circles.
+            Position is a plain wrapper so Framer Motion cannot override the centering transform. */}
+        <div className="pointer-events-none absolute inset-0">
+          {DEPARTMENTS.map((dept, i) => {
+            const a = (dept.angle * Math.PI) / 180;
+            const x = 50 + RADIUS * Math.cos(a);
+            const y = 50 + RADIUS * Math.sin(a);
+            const isActive = activeDepts.includes(i);
+
+            return (
+              <div
+                key={dept.id}
+                title={dept.label[lang]}
+                className="absolute flex items-center justify-center"
+                style={{
+                  left: `${x}%`,
+                  top: `${y}%`,
+                  width: '10.8%',
+                  height: '10.8%',
+                  transform: 'translate(-50%, -50%)',
+                }}
+              >
+                <motion.span
+                  className="flex h-full w-full items-center justify-center"
+                  animate={{
+                    scale: isActive ? 1.08 : 1,
+                    color: isActive ? '#CEFF00' : 'rgba(255,255,255,0.62)',
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <DeptIcon type={dept.icon} className="h-[55%] w-[55%]" />
+                </motion.span>
+              </div>
+            );
+          })}
+
+          {/* Core label — sits just below the hub so it stays readable */}
+          <div
+            className="absolute flex flex-col items-center"
+            style={{ left: '50%', top: '50%', transform: 'translate(-50%, 22px)' }}
+          >
+            <motion.span
+              className="font-mono text-[8px] uppercase tracking-[0.22em] text-bla-lime md:text-[9px]"
+              animate={{
+                opacity: pulsePhase >= 2 ? [0.85, 1, 0.85] : 0.8,
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              {lang === 'en' ? 'Core' : 'Kern'}
+            </motion.span>
+          </div>
+        </div>
+        </div>
+
+        {/* Insight card — sits next to the organism */}
+        <div className="relative flex w-[240px] shrink-0 items-center sm:w-[280px] md:w-[320px]">
+          <AnimatePresence mode="wait">
+            {insight ? (
+              <motion.div
+                key={activeInsight}
+                initial={{ opacity: 0, x: 12, scale: 0.97 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: 8, scale: 0.98 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full overflow-hidden rounded-xl border border-bla-lime/25 bg-[#14181d]/90 backdrop-blur-md"
+              >
+                <div className="px-4 py-4 md:px-5 md:py-5">
+                  <div className="mb-3">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-bla-lime/70">
+                      {lang === 'en' ? 'Insight' : 'Inzicht'}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 text-white/85">
+                      <DeptIcon type={DEPARTMENTS[insight.from].icon} className="h-3.5 w-3.5 shrink-0 text-bla-lime" />
+                      <span className="font-host text-sm font-medium">
+                        {DEPARTMENTS[insight.from].label[lang]}
+                      </span>
+                    </span>
+                    <span className="font-mono text-[11px] tracking-widest text-bla-lime/55">
+                      &gt; &lt;
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-white/85">
+                      <DeptIcon type={DEPARTMENTS[insight.to].icon} className="h-3.5 w-3.5 shrink-0 text-bla-lime" />
+                      <span className="font-host text-sm font-medium">
+                        {DEPARTMENTS[insight.to].label[lang]}
+                      </span>
+                    </span>
+                  </div>
+                  <h5 className="mt-3 font-host text-[15px] font-medium leading-snug text-white/90">
+                    {insight.title[lang]}
+                  </h5>
+                  <p className="mt-2 font-host text-[14px] leading-relaxed text-white/55">
+                    {insight.body[lang]}
+                  </p>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="insight-idle"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="w-full rounded-xl border border-white/8 bg-white/[0.03] px-4 py-4 md:px-5"
+              >
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">
+                  {lang === 'en' ? 'Listening for a signal…' : 'Wacht op een signaal…'}
+                </span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
     </div>
   );
 }

@@ -123,10 +123,10 @@ export default function V2StrategyCases({ lang }: V2StrategyCasesProps) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="group inline-flex items-center gap-2.5 rounded-full border border-bla-lime/35 bg-bla-lime/10 px-5 py-2.5 text-sm font-medium text-bla-lime transition-all hover:border-bla-lime/55 hover:bg-bla-lime/15 md:text-[15px]"
+        className="group inline-flex h-12 items-center gap-2.5 rounded-full bg-bla-lime px-5 text-sm font-medium text-[#14181d] transition-all hover:bg-bla-lime/90 hover:shadow-[0_15px_40px_-15px_rgba(206,255,0,0.55)] md:h-[52px] md:px-6 md:text-[15px]"
       >
         {lang === 'en' ? 'Case Studies' : 'Case studies'}
-        <ArrowUpRight className="h-4 w-4 text-bla-lime/70 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-bla-lime" />
+        <ArrowUpRight className="h-4 w-4 text-[#14181d]/70 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#14181d]" />
       </button>
 
       <AnimatePresence>

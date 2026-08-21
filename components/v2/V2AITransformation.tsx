@@ -112,13 +112,8 @@ export default function V2AITransformation() {
 
         {/* How we start — static, deliberately quiet */}
         <div className="mt-12 border-t border-[#14181d]/10 pt-10 md:mt-16 md:pt-12">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#14181d]/40">
-              {lang === 'en' ? 'How we start — wherever you are' : 'Hoe we starten — waar je ook staat'}
-            </div>
-            <div className="hidden font-mono text-[9px] uppercase tracking-[0.22em] text-[#14181d]/25 md:block">
-              {lang === 'en' ? 'our approach in four steps' : 'onze aanpak in vier stappen'}
-            </div>
+          <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#14181d]/40">
+            {lang === 'en' ? 'our approach in four steps' : 'onze aanpak in vier stappen'}
           </div>
 
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4 md:gap-8">

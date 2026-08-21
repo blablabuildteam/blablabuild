@@ -78,7 +78,7 @@ export default function V2DirectHelp({
     'outline-dark':
       'border border-white/15 text-white hover:border-white/40 hover:bg-white/5',
     'outline-light':
-      'border border-[#14181d]/15 text-[#14181d] hover:border-[#14181d]/40 hover:bg-[#14181d]/5',
+      'border border-[#14181d]/20 bg-white text-[#14181d] hover:border-[#14181d]/45 hover:bg-[#14181d]/[0.03]',
   };
 
   const arrowColor = variant === 'primary' ? '' : tone === 'dark' ? 'text-white' : 'text-[#14181d]';

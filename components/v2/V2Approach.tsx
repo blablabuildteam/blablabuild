@@ -1,11 +1,71 @@
 'use client';
 
 import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import { SectionLabel, NoiseLayer } from './V2Atoms';
 
 const STEPS = ['blabla', 'build', 'scale'] as const;
+const RAIL_START = 0.18;
+const RAIL_END = 0.9;
+
+function ApproachStep({
+  index,
+  title,
+  description,
+  progress,
+}: {
+  index: number;
+  title: string;
+  description: string;
+  progress: MotionValue<number>;
+}) {
+  // Dots sit at the left of each equal column: 0%, ~33%, ~67%.
+  const dotAt = index / STEPS.length;
+  const lightStart = RAIL_START + Math.max(0, dotAt - 0.04) * (RAIL_END - RAIL_START);
+  const lightEnd = RAIL_START + Math.min(1, dotAt + 0.12) * (RAIL_END - RAIL_START);
+
+  const lit = useTransform(progress, [lightStart, lightEnd], [0, 1]);
+  const labelColor = useTransform(lit, [0, 1], ['rgba(255,255,255,0.18)', 'rgba(255,255,255,0.55)']);
+  const titleColor = useTransform(lit, [0, 1], ['rgba(255,255,255,0.16)', '#CEFF00']);
+  const titleShadow = useTransform(
+    lit,
+    [0, 1],
+    ['0 0 0px rgba(206,255,0,0)', '0 0 28px rgba(206,255,0,0.28)'],
+  );
+  const bodyColor = useTransform(lit, [0, 1], ['rgba(255,255,255,0.14)', 'rgba(255,255,255,0.82)']);
+  const dotScale = useTransform(lit, [0, 1], [0, 1]);
+
+  return (
+    <div className="relative pt-10">
+      <div className="absolute left-0 top-4 hidden h-3 w-3 -translate-y-1/2 rounded-full border border-white/20 bg-[#0d1015] md:block">
+        <motion.div
+          style={{ scale: dotScale }}
+          className="absolute inset-1 rounded-full bg-bla-lime"
+        />
+      </div>
+
+      <motion.div
+        style={{ color: labelColor }}
+        className="font-mono text-[11px] uppercase tracking-[0.28em]"
+      >
+        {`step 0${index + 1}`}
+      </motion.div>
+      <motion.h3
+        style={{ color: titleColor, textShadow: titleShadow }}
+        className="mt-3 font-host text-4xl font-light tracking-tight md:text-5xl"
+      >
+        {title}
+      </motion.h3>
+      <motion.p
+        style={{ color: bodyColor }}
+        className="mt-5 max-w-md font-host text-base font-light leading-relaxed md:text-[17px]"
+      >
+        {description}
+      </motion.p>
+    </div>
+  );
+}
 
 export default function V2Approach() {
   const t = useTranslations('approach');
@@ -15,7 +75,7 @@ export default function V2Approach() {
   // Start the rail a bit later so it doesn't jump ahead
   // when the section just touches the bottom of the viewport.
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 90%', 'end 20%'] });
-  const railProgress = useTransform(scrollYProgress, [0.18, 0.9], ['0%', '100%']);
+  const railProgress = useTransform(scrollYProgress, [RAIL_START, RAIL_END], ['0%', '100%']);
 
   return (
     <section
@@ -64,29 +124,13 @@ export default function V2Approach() {
 
           <div className="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-8">
             {STEPS.map((step, i) => (
-              <motion.div
+              <ApproachStep
                 key={step}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.7, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                className="relative pt-10"
-              >
-                {/* Dot */}
-                <div className="absolute left-0 top-4 hidden h-3 w-3 -translate-y-1/2 rounded-full border border-white/20 bg-[#0d1015] md:block">
-                  <div className="absolute inset-1 rounded-full bg-bla-lime" />
-                </div>
-
-                <div className="font-mono text-[11px] uppercase tracking-[0.28em] text-white/50">
-                  {`step 0${i + 1}`}
-                </div>
-                <h3 className="mt-3 font-host text-4xl font-light tracking-tight text-bla-lime md:text-5xl">
-                  {t(`steps.${step}.title`)}
-                </h3>
-                <p className="mt-5 max-w-md font-host text-base font-light leading-relaxed text-white/80 md:text-[17px]">
-                  {t(`steps.${step}.description`)}
-                </p>
-              </motion.div>
+                index={i}
+                title={t(`steps.${step}.title`)}
+                description={t(`steps.${step}.description`)}
+                progress={scrollYProgress}
+              />
             ))}
           </div>
         </div>
