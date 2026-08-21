@@ -72,19 +72,19 @@ export default function IntroSection() {
       focus: t('pillars.tooling.focus'),
       items: [
         {
-          key: 'experienceDesign',
-          title: t('pillars.tooling.items.experienceDesign.title'),
-          description: t('pillars.tooling.items.experienceDesign.description'),
-        },
-        {
           key: 'aiAgents',
           title: t('pillars.tooling.items.aiAgents.title'),
           description: t('pillars.tooling.items.aiAgents.description'),
         },
         {
-          key: 'customDevelopment',
-          title: t('pillars.tooling.items.customDevelopment.title'),
-          description: t('pillars.tooling.items.customDevelopment.description'),
+          key: 'bespokeSystems',
+          title: t('pillars.tooling.items.bespokeSystems.title'),
+          description: t('pillars.tooling.items.bespokeSystems.description'),
+        },
+        {
+          key: 'legacyReplacement',
+          title: t('pillars.tooling.items.legacyReplacement.title'),
+          description: t('pillars.tooling.items.legacyReplacement.description'),
         },
         {
           key: 'rapidPrototyping',
@@ -95,16 +95,6 @@ export default function IntroSection() {
           key: 'systemIntegration',
           title: t('pillars.tooling.items.systemIntegration.title'),
           description: t('pillars.tooling.items.systemIntegration.description'),
-        },
-        {
-          key: 'adoptionEnablement',
-          title: t('pillars.tooling.items.adoptionEnablement.title'),
-          description: t('pillars.tooling.items.adoptionEnablement.description'),
-        },
-        {
-          key: 'responsibleAi',
-          title: t('pillars.tooling.items.responsibleAi.title'),
-          description: t('pillars.tooling.items.responsibleAi.description'),
         },
       ],
     },

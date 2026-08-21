@@ -15,13 +15,11 @@ const PILLAR_META: Record<PillarKey, { number: string; itemKeys: string[] }> = {
   tooling: {
     number: '02',
     itemKeys: [
-      'experienceDesign',
       'aiAgents',
-      'customDevelopment',
+      'bespokeSystems',
+      'legacyReplacement',
       'rapidPrototyping',
       'systemIntegration',
-      'adoptionEnablement',
-      'responsibleAi',
     ],
   },
   data: {

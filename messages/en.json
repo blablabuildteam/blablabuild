@@ -83,17 +83,17 @@
         "title": "AI Products & Services",
         "focus": "From concept to production — we design, build, and ship AI that your team and customers actually use.",
         "items": {
-          "experienceDesign": {
-            "title": "AI Experience Design",
-            "description": "How AI fits into the journey — for customers, employees, or both. We map touchpoints, design interactions, and prototype the experience before building."
-          },
           "aiAgents": {
             "title": "AI Agents & Automation",
             "description": "Autonomous systems that handle multi-step workflows. From customer service agents to internal process automation — with human oversight where it matters."
           },
-          "customDevelopment": {
-            "title": "Custom AI Development",
-            "description": "Production-grade AI applications built for your specific context. We ship working software, not slide decks."
+          "bespokeSystems": {
+            "title": "Bespoke Systems",
+            "description": "Systems built around your process, not the other way around. No off-the-shelf forced into a mould — software that does what you need."
+          },
+          "legacyReplacement": {
+            "title": "Legacy Replacement",
+            "description": "Old systems out, working software in. Data, processes and people come with it — without parking the business for six months."
           },
           "rapidPrototyping": {
             "title": "Rapid Prototyping",
@@ -102,14 +102,6 @@
           "systemIntegration": {
             "title": "System Integration",
             "description": "AI connected to your existing stack — CRM, ERP, data warehouse, internal tools. No island solutions."
-          },
-          "adoptionEnablement": {
-            "title": "Adoption & Enablement",
-            "description": "Building it is half the work. We make sure your team understands, trusts, and actually uses what we deliver."
-          },
-          "responsibleAi": {
-            "title": "Responsible AI",
-            "description": "Privacy, compliance, bias prevention, and quality controls — designed in from day one, not bolted on after."
           }
         }
       },

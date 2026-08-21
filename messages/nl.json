@@ -83,17 +83,17 @@
         "title": "AI Producten & Services",
         "focus": "Van concept tot productie — wij ontwerpen, bouwen en leveren AI die je team en klanten daadwerkelijk gebruiken.",
         "items": {
-          "experienceDesign": {
-            "title": "AI-ervaringsontwerp",
-            "description": "Hoe AI past in de klantreis of medewerkersreis. We brengen touchpoints in kaart, ontwerpen interacties en prototypen de ervaring voordat we bouwen."
-          },
           "aiAgents": {
             "title": "AI-agents & automatisering",
             "description": "Autonome systemen die meerstapsprocessen afhandelen. Van klantenservice-agents tot interne procesautomatisering — met menselijk toezicht waar het ertoe doet."
           },
-          "customDevelopment": {
-            "title": "AI-ontwikkeling op maat",
-            "description": "Productiewaardige AI-applicaties gebouwd voor jouw specifieke context. Wij leveren werkende software, geen presentaties."
+          "bespokeSystems": {
+            "title": "Maatwerksystemen",
+            "description": "Systemen gebouwd voor jouw proces, niet andersom. Geen off-the-shelf in een mal — software die doet wat je nodig hebt."
+          },
+          "legacyReplacement": {
+            "title": "Legacy vervangen",
+            "description": "Oude systemen eruit, werkende software ervoor. Data, processen en mensen mee — zonder het bedrijf een half jaar stil te zetten."
           },
           "rapidPrototyping": {
             "title": "Rapid prototyping",
@@ -102,14 +102,6 @@
           "systemIntegration": {
             "title": "Systeemintegratie",
             "description": "AI verbonden met je bestaande stack — CRM, ERP, datawarehouse, interne tools. Geen eilandoplossingen."
-          },
-          "adoptionEnablement": {
-            "title": "Adoptie & verandermanagement",
-            "description": "Bouwen is het halve werk. Wij zorgen dat je team begrijpt, vertrouwt en daadwerkelijk gebruikt wat we opleveren."
-          },
-          "responsibleAi": {
-            "title": "Verantwoorde AI",
-            "description": "Privacy, compliance, bias-preventie en kwaliteitscontroles — vanaf dag één ingebouwd, niet achteraf erbij geplakt."
           }
         }
       },
