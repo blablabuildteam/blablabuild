@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import dynamic from 'next/dynamic';
+
+const HeroCanvasEffect = dynamic(() => import('./HeroCanvasEffect'), { ssr: false });
 import { useLocale } from 'next-intl';
 import { NoiseLayer } from './V2Atoms';
 import V2DirectHelp from './V2DirectHelp';
@@ -97,22 +100,6 @@ export default function V2Hero() {
   const yBg = useTransform(scrollYProgress, [0, 1], [0, 140]);
   const opacityHero = useTransform(scrollYProgress, [0, 1], [1, 0.5]);
 
-  const mouseX = useMotionValue(0.5);
-  const mouseY = useMotionValue(0.5);
-  const sx = useSpring(mouseX, { stiffness: 80, damping: 25, mass: 0.5 });
-  const sy = useSpring(mouseY, { stiffness: 80, damping: 25, mass: 0.5 });
-
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      mouseX.set((e.clientX - rect.left) / rect.width);
-      mouseY.set((e.clientY - rect.top) / rect.height);
-    };
-    window.addEventListener('mousemove', onMove);
-    return () => window.removeEventListener('mousemove', onMove);
-  }, [mouseX, mouseY]);
-
   useEffect(() => {
     const id = setInterval(() => {
       setActivePillar((prev) => {
@@ -143,17 +130,7 @@ export default function V2Hero() {
         />
       </motion.div>
 
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 hidden lg:block"
-        style={{
-          background: useTransform(
-            [sx, sy] as any,
-            ([x, y]: number[]) =>
-              `radial-gradient(circle 380px at ${x * 100}% ${y * 100}%, rgba(206,255,0,0.08), transparent 65%)`
-          ),
-        }}
-      />
+      <HeroCanvasEffect />
 
       <NoiseLayer opacity={0.18} />
 
@@ -218,7 +195,7 @@ export default function V2Hero() {
               <V2DirectHelp source="v2-hero" align="left" openUpOnDesktop />
               <a
                 href="#cases"
-                className="group inline-flex h-12 items-center gap-2 rounded-full border border-white/15 px-5 text-sm font-medium text-white transition-colors hover:border-white/40 md:h-[52px] md:px-6 md:text-[15px]"
+                className="group inline-flex h-12 items-center gap-2 rounded-full border border-white/15 bg-[#0a0b0e]/40 px-5 text-sm font-medium text-white backdrop-blur-[6px] transition-colors hover:border-white/40 hover:bg-[#0a0b0e]/55 md:h-[52px] md:px-6 md:text-[15px]"
               >
                 {locale === 'en' ? 'See the work' : 'Bekijk onze cases'}
               </a>
@@ -232,7 +209,7 @@ export default function V2Hero() {
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.55 }}
             className="col-span-12 lg:col-span-4 lg:pl-6"
           >
-            <div className="relative flex h-full flex-col rounded-2xl border border-white/8 bg-white/[0.025] p-5 backdrop-blur-sm md:p-6">
+            <div className="relative flex h-full flex-col rounded-2xl border border-white/10 bg-[#0a0b0e]/45 p-5 backdrop-blur-[6px] md:p-6">
               <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/45">
                 {locale === 'en' ? '§ practices' : '§ focusgebieden'}
               </div>
