@@ -36,7 +36,7 @@ export default function V2Approach() {
       <div className="relative mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-24">
         <div className="grid grid-cols-12 gap-x-6 gap-y-6 md:gap-x-10">
           <div className="col-span-12 md:col-span-7">
-            <SectionLabel index="03" label={lang === 'en' ? 'Our approach' : 'Onze aanpak'} />
+            <SectionLabel index="02" label={lang === 'en' ? 'Our approach' : 'Onze aanpak'} />
             <h2 className="mt-5 font-host text-3xl font-light leading-[1.0] tracking-tight md:text-[3.75rem]">
               {lang === 'en' ? 'No agency ' : 'Geen agency '}
               <span className="font-medium text-bla-lime">{lang === 'en' ? 'bullsh*t.' : 'bullsh*t.'}</span>
@@ -47,8 +47,8 @@ export default function V2Approach() {
           <div className="col-span-12 md:col-span-5 md:pt-12">
             <p className="max-w-md font-host text-base leading-relaxed text-white/75 md:text-lg">
               {lang === 'en'
-                ? 'Three steps. Problem to result.'
-                : 'Drie stappen. Van probleem naar resultaat.'}
+                ? 'Every practice above follows the same three steps. Simple, direct, done.'
+                : 'Elk focusgebied hierboven doorloopt dezelfde drie stappen. Simpel, direct, klaar.'}
             </p>
           </div>
         </div>

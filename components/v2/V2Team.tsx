@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
@@ -99,11 +99,12 @@ export default function V2Team() {
     [t]
   );
 
-  // Shuffle friends once on mount so order varies per visit
-  const shuffledFriends = useMemo(
-    () => [...FRIENDS].sort(() => Math.random() - 0.5),
-    []
-  );
+  // Keep initial render deterministic to avoid SSR/client hydration mismatch.
+  // Then randomize once mounted on the client.
+  const [shuffledFriends, setShuffledFriends] = useState(FRIENDS);
+  useEffect(() => {
+    setShuffledFriends([...FRIENDS].sort(() => Math.random() - 0.5));
+  }, []);
 
   return (
     <section
@@ -113,7 +114,7 @@ export default function V2Team() {
       <div className="mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-24">
         <div className="grid grid-cols-12 gap-x-6 gap-y-6 md:gap-x-10">
           <div className="col-span-12 md:col-span-7">
-            <SectionLabel index="04" label={lang === 'en' ? 'Who builds' : 'Wie bouwt'} tone="dark" />
+            <SectionLabel index="04" label={lang === 'en' ? 'Who delivers' : 'Wie levert'} tone="dark" />
             <h2 className="mt-5 font-host text-3xl font-light leading-[1.0] tracking-tight text-[#14181d] md:text-[3.5rem]">
               {lang === 'en' ? 'Two founders. ' : 'Twee founders. '}
               <span className="font-medium text-[#14181d]">

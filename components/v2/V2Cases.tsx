@@ -170,7 +170,7 @@ export default function V2Cases() {
       <div className="relative mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-24">
         <div className="mb-10 flex flex-col gap-5 md:mb-14 md:flex-row md:items-end md:justify-between">
           <div>
-            <SectionLabel index="02" label={lang === 'en' ? 'Selected work' : 'Geselecteerd werk'} />
+            <SectionLabel index="03" label={lang === 'en' ? 'Selected work' : 'Geselecteerd werk'} />
             <h2 className="mt-5 max-w-3xl font-host text-3xl font-light leading-[1.0] tracking-tight md:text-[3.5rem]">
               {lang === 'en' ? 'Real work. ' : 'Echt werk. '}
               <span className="font-medium text-bla-lime">{lang === 'en' ? 'Real results.' : 'Echt resultaat.'}</span>

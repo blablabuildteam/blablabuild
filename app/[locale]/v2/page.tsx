@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import V2Nav from '@/components/v2/V2Nav';
 import V2Hero from '@/components/v2/V2Hero';
 import V2Pillars from '@/components/v2/V2Pillars';
+import V2AITransformation from '@/components/v2/V2AITransformation';
 import V2Cases from '@/components/v2/V2Cases';
 import V2Approach from '@/components/v2/V2Approach';
 import V2Team from '@/components/v2/V2Team';
@@ -65,8 +66,9 @@ export default function V2Page() {
       <V2Nav activeSection={activeSection} />
       <V2Hero />
       <V2Pillars />
-      <V2Cases />
       <V2Approach />
+      <V2AITransformation />
+      <V2Cases />
       <V2Team />
       <V2Value />
       <V2Footer />

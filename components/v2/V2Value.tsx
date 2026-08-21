@@ -74,7 +74,7 @@ function ValueCardBlock({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.55, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-      className="flex flex-col rounded-2xl border border-[#14181d]/8 bg-white/60 p-6 md:p-8"
+      className="flex flex-col rounded-2xl border border-white/8 bg-white/[0.04] p-6 md:p-8"
     >
       {collapsible ? (
         <button
@@ -83,17 +83,17 @@ function ValueCardBlock({
           aria-expanded={open}
           className="relative w-full pr-7 text-left"
         >
-          <h3 className="truncate font-host text-[15px] font-medium leading-snug text-[#14181d] md:text-base">
+          <h3 className="truncate font-host text-[15px] font-medium leading-snug text-white md:text-base">
             {card.title[lang]}
           </h3>
-          <span className="absolute -right-1 top-0 inline-flex h-7 w-7 items-center justify-center rounded-full border border-[#14181d]/12 text-[#14181d]/50">
+          <span className="absolute -right-1 top-0 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/12 text-white/50">
             <ChevronDown
               className={`h-3.5 w-3.5 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
             />
           </span>
         </button>
       ) : (
-        <h3 className="font-host text-lg font-medium leading-snug text-[#14181d] md:text-xl">
+        <h3 className="font-host text-lg font-medium leading-snug text-white md:text-xl">
           {card.title[lang]}
         </h3>
       )}
@@ -106,14 +106,14 @@ function ValueCardBlock({
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="overflow-hidden font-host text-sm leading-relaxed text-[#14181d]/75"
+              className="overflow-hidden font-host text-sm leading-relaxed text-white/70"
             >
               <span className="mt-4 block">{card.description[lang]}</span>
             </motion.p>
           )}
         </AnimatePresence>
       ) : (
-        <p className="mt-4 flex-1 font-host text-sm leading-relaxed text-[#14181d]/75 md:text-[15px] md:leading-relaxed">
+        <p className="mt-4 flex-1 font-host text-sm leading-relaxed text-white/70 md:text-[15px] md:leading-relaxed">
           {card.description[lang]}
         </p>
       )}
@@ -128,7 +128,7 @@ export default function V2Value() {
   const [businessFirst, directCollab, builtInWeeks, agencyStandards, tangibleRoi] = VALUE_CARDS;
 
   return (
-    <section id="waarde" className="relative w-full overflow-hidden bg-bla-lime text-[#14181d]">
+    <section id="waarde" className="relative w-full overflow-hidden bg-[#0a0b0e] text-white">
       <div className="mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-24">
         {/* Desktop: 3×2 grid matching slide layout */}
         <div className="hidden gap-4 lg:grid lg:grid-cols-3 lg:items-end lg:gap-5">
@@ -139,11 +139,11 @@ export default function V2Value() {
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col justify-center self-start pr-4"
           >
-            <SectionLabel index="05" label="USP" tone="dark" />
-            <h2 className="mt-5 font-host text-4xl font-medium leading-[1.05] tracking-tight text-[#14181d] xl:text-5xl">
+            <SectionLabel index="05" label="USP" tone="light" />
+            <h2 className="mt-5 font-host text-4xl font-medium leading-[1.05] tracking-tight text-white xl:text-5xl">
               {lang === 'en' ? 'Why blablabuild?' : 'Waarom blablabuild?'}
             </h2>
-            <p className="mt-3 font-host text-lg text-[#14181d]/80 md:text-xl">
+            <p className="mt-3 font-host text-lg text-white/70 md:text-xl">
               {lang === 'en' ? 'The Business Behind the Build' : 'De business achter de build'}
             </p>
           </motion.div>
@@ -163,11 +163,11 @@ export default function V2Value() {
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             className="mb-8"
           >
-            <SectionLabel index="05" label="USP" tone="dark" />
-            <h2 className="mt-5 font-host text-3xl font-medium leading-[1.05] tracking-tight text-[#14181d] md:text-4xl">
+            <SectionLabel index="05" label="USP" tone="light" />
+            <h2 className="mt-5 font-host text-3xl font-medium leading-[1.05] tracking-tight text-white md:text-4xl">
               {lang === 'en' ? 'Why blablabuild?' : 'Waarom blablabuild?'}
             </h2>
-            <p className="mt-3 font-host text-base text-[#14181d]/80 md:text-lg">
+            <p className="mt-3 font-host text-base text-white/70 md:text-lg">
               {lang === 'en' ? 'The Business Behind the Build' : 'De business achter de build'}
             </p>
           </motion.div>

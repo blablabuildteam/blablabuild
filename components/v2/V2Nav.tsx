@@ -18,8 +18,8 @@ interface V2NavProps {
 
 const NAV_SECTIONS = [
   { id: 'oplossingen', key: 'solutions' },
-  { id: 'cases', key: 'cases' },
   { id: 'aanpak', key: 'approach' },
+  { id: 'cases', key: 'cases' },
   { id: 'over-ons', key: 'team' },
   { id: 'waarde', key: 'value' },
 ] as const;
