@@ -387,6 +387,15 @@ html {
   to   { transform: translate3d(-50%, 0, 0); }
 }
 
+@keyframes v2-eco-flow {
+  to { stroke-dashoffset: -24; }
+}
+
+@keyframes v2-eco-travel {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+
 body::-webkit-scrollbar {
   display: none;
 }

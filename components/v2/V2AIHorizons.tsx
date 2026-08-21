@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, FileBarChart, FileSpreadsheet, FileType, Sparkles, Upload } from 'lucide-react';
+import { BookOpen, FileBarChart, FileSpreadsheet, FileType, Pause, Play, Sparkles, Upload } from 'lucide-react';
 
 interface HorizonStage {
   id: string;
@@ -60,7 +60,7 @@ interface V2AIHorizonsProps {
   lang: 'en' | 'nl';
 }
 
-function LoadingDots({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
+function LoadingDots({ size = 'md', paused = false }: { size?: 'sm' | 'md' | 'lg'; paused?: boolean }) {
   const dot = size === 'lg' ? 'h-2 w-2' : size === 'sm' ? 'h-1 w-1' : 'h-1.5 w-1.5';
   const gap = size === 'lg' ? 'gap-1.5' : size === 'sm' ? 'gap-0.5' : 'gap-1';
 
@@ -70,16 +70,66 @@ function LoadingDots({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
         <motion.span
           key={i}
           className={`${dot} rounded-full bg-bla-lime/80`}
-          animate={{ opacity: [0.25, 1, 0.25], scale: [0.85, 1.15, 0.85] }}
-          transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.18 }}
+          animate={paused ? { opacity: 0.7, scale: 1 } : { opacity: [0.25, 1, 0.25], scale: [0.85, 1.15, 0.85] }}
+          transition={paused ? { duration: 0.2 } : { duration: 0.9, repeat: Infinity, delay: i * 0.18 }}
         />
       ))}
     </span>
   );
 }
 
+function usePausedRef(paused: boolean) {
+  const ref = useRef(paused);
+  ref.current = paused;
+  return ref;
+}
+
+function createPauseClock(
+  pausedRef: { current: boolean },
+  timeouts: ReturnType<typeof setTimeout>[],
+  cancelledRef: { current: boolean }
+) {
+  function sleep(ms: number) {
+    return new Promise<void>((resolve) => {
+      timeouts.push(setTimeout(resolve, ms));
+    });
+  }
+
+  async function wait(ms: number) {
+    let left = ms;
+    while (left > 0 && !cancelledRef.current) {
+      if (pausedRef.current) {
+        await sleep(50);
+        continue;
+      }
+      const slice = Math.min(50, left);
+      const started = Date.now();
+      await sleep(slice);
+      if (!pausedRef.current) {
+        left -= Date.now() - started;
+      }
+    }
+  }
+
+  async function typeOut(text: string, setTyped: (value: string) => void, stepMs: number) {
+    let i = 0;
+    while (i < text.length && !cancelledRef.current) {
+      if (pausedRef.current) {
+        await sleep(50);
+        continue;
+      }
+      i += 1;
+      setTyped(text.slice(0, i));
+      await sleep(stepMs);
+    }
+  }
+
+  return { wait, typeOut };
+}
+
 export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
   const [activeStage, setActiveStage] = useState(0);
+  const [paused, setPaused] = useState(false);
   const stages = lang === 'en' ? STAGES_EN : STAGES_NL;
 
   return (
@@ -105,16 +155,28 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
           {stages.map((stage, i) => {
             const isActive = i === activeStage;
             return (
-              <motion.button
+              <motion.div
                 key={stage.id}
-                type="button"
-                onClick={() => setActiveStage(i)}
+                role="button"
+                tabIndex={0}
                 aria-pressed={isActive}
+                onClick={() => {
+                  if (i === activeStage) return;
+                  setActiveStage(i);
+                  setPaused(false);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key !== 'Enter' && event.key !== ' ') return;
+                  event.preventDefault();
+                  if (i === activeStage) return;
+                  setActiveStage(i);
+                  setPaused(false);
+                }}
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: 0.45, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className={`group flex w-full items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/20 md:flex-1 md:px-5 ${
+                className={`group flex w-full cursor-pointer items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/20 md:flex-1 md:px-5 ${
                   isActive
                     ? 'border-[#14181d] bg-white shadow-[0_18px_40px_-24px_rgba(20,24,29,0.35)]'
                     : 'border-[#14181d]/10 bg-white/70 hover:border-[#14181d]/25 hover:bg-white'
@@ -143,20 +205,34 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
                     {stage.action}
                   </div>
                 </div>
-                <span
-                  className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${
-                    isActive
-                      ? 'border-[#14181d] bg-[#14181d]'
-                      : 'border-[#14181d]/15 group-hover:border-[#14181d]/30'
-                  }`}
-                >
+                {isActive ? (
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setPaused((current) => !current);
+                    }}
+                    aria-label={
+                      paused
+                        ? lang === 'en' ? 'Play animation' : 'Animatie afspelen'
+                        : lang === 'en' ? 'Pause animation' : 'Animatie pauzeren'
+                    }
+                    className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#14181d] bg-[#14181d] text-bla-lime transition-transform duration-200 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/25"
+                  >
+                    {paused ? (
+                      <Play className="h-2.5 w-2.5 fill-current" />
+                    ) : (
+                      <Pause className="h-2.5 w-2.5 fill-current" />
+                    )}
+                  </button>
+                ) : (
                   <span
-                    className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${
-                      isActive ? 'bg-bla-lime' : 'bg-[#14181d]/20 group-hover:bg-[#14181d]/40'
-                    }`}
-                  />
-                </span>
-              </motion.button>
+                    className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#14181d]/15 transition-colors duration-300 group-hover:border-[#14181d]/30"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#14181d]/20 transition-colors duration-300 group-hover:bg-[#14181d]/40" />
+                  </span>
+                )}
+              </motion.div>
             );
           })}
         </div>
@@ -173,7 +249,7 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 className="h-full"
               >
-                <HorizonVisual stage={activeStage} lang={lang} />
+                <HorizonVisual stage={activeStage} lang={lang} paused={paused} />
               </motion.div>
             </AnimatePresence>
           </div>
@@ -183,7 +259,7 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
   );
 }
 
-function HorizonVisual({ stage, lang }: { stage: number; lang: 'en' | 'nl' }) {
+function HorizonVisual({ stage, lang, paused }: { stage: number; lang: 'en' | 'nl'; paused: boolean }) {
   return (
     <div className="flex h-full items-center justify-center overflow-hidden rounded-2xl border border-[#14181d]/20 bg-[#14181d]">
       <AnimatePresence mode="wait">
@@ -195,10 +271,10 @@ function HorizonVisual({ stage, lang }: { stage: number; lang: 'en' | 'nl' }) {
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="flex h-full w-full items-center justify-center"
         >
-          {stage === 0 && <CopilotVisual lang={lang} />}
-          {stage === 1 && <SpecialistVisual lang={lang} />}
-          {stage === 2 && <AgentWorkflowVisual lang={lang} />}
-          {stage === 3 && <EcosystemVisual lang={lang} />}
+          {stage === 0 && <CopilotVisual lang={lang} paused={paused} />}
+          {stage === 1 && <SpecialistVisual lang={lang} paused={paused} />}
+          {stage === 2 && <AgentWorkflowVisual lang={lang} paused={paused} />}
+          {stage === 3 && <EcosystemVisual lang={lang} paused={paused} />}
         </motion.div>
       </AnimatePresence>
     </div>
@@ -231,66 +307,50 @@ const COPILOT_RESPONSES = {
 
 type CopilotPhase = 'idle' | 'typing' | 'sending' | 'waiting' | 'responding' | 'done';
 
-function useCopilotLoop(lang: 'en' | 'nl') {
+function useCopilotLoop(lang: 'en' | 'nl', paused: boolean) {
   const [phase, setPhase] = useState<CopilotPhase>('idle');
   const [typedPrompt, setTypedPrompt] = useState('');
   const [sentPrompt, setSentPrompt] = useState('');
   const [responseLines, setResponseLines] = useState(0);
+  const pausedRef = usePausedRef(paused);
 
   const prompt = COPILOT_PROMPTS[lang];
   const response = COPILOT_RESPONSES[lang];
 
   useEffect(() => {
-    let cancelled = false;
+    const cancelledRef = { current: false };
     const timeouts: ReturnType<typeof setTimeout>[] = [];
-    const intervals: ReturnType<typeof setInterval>[] = [];
-
-    function wait(ms: number) {
-      return new Promise<void>((resolve) => {
-        timeouts.push(setTimeout(resolve, ms));
-      });
-    }
+    const { wait, typeOut } = createPauseClock(pausedRef, timeouts, cancelledRef);
 
     async function run() {
-      while (!cancelled) {
+      while (!cancelledRef.current) {
         setPhase('idle');
         setTypedPrompt('');
         setSentPrompt('');
         setResponseLines(0);
         await wait(700);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         setPhase('typing');
-        await new Promise<void>((resolve) => {
-          let i = 0;
-          const id = setInterval(() => {
-            i += 1;
-            setTypedPrompt(prompt.slice(0, i));
-            if (i >= prompt.length) {
-              clearInterval(id);
-              resolve();
-            }
-          }, 26);
-          intervals.push(id);
-        });
-        if (cancelled) return;
+        await typeOut(prompt, setTypedPrompt, 26);
+        if (cancelledRef.current) return;
 
         await wait(280);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         setPhase('sending');
         setSentPrompt(prompt);
         setTypedPrompt('');
         await wait(420);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         setPhase('waiting');
         await wait(1100);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         setPhase('responding');
         for (let line = 1; line <= response.length; line++) {
-          if (cancelled) return;
+          if (cancelledRef.current) return;
           setResponseLines(line);
           await wait(360);
         }
@@ -303,17 +363,16 @@ function useCopilotLoop(lang: 'en' | 'nl') {
     run();
 
     return () => {
-      cancelled = true;
+      cancelledRef.current = true;
       timeouts.forEach(clearTimeout);
-      intervals.forEach(clearInterval);
     };
-  }, [lang, prompt, response]);
+  }, [lang, pausedRef, prompt, response]);
 
   return { phase, typedPrompt, sentPrompt, responseLines, response };
 }
 
-function CopilotVisual({ lang }: { lang: 'en' | 'nl' }) {
-  const { phase, typedPrompt, sentPrompt, responseLines, response } = useCopilotLoop(lang);
+function CopilotVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean }) {
+  const { phase, typedPrompt, sentPrompt, responseLines, response } = useCopilotLoop(lang, paused);
   const showWaiting = phase === 'waiting';
   const showResponse = responseLines > 0;
   const canSend = phase === 'typing' && typedPrompt.length > 8;
@@ -369,7 +428,7 @@ function CopilotVisual({ lang }: { lang: 'en' | 'nl' }) {
                 <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-bla-lime/70">
                   AI
                 </span>
-                <LoadingDots size="lg" />
+                <LoadingDots size="lg" paused={paused} />
               </motion.div>
             )}
 
@@ -540,13 +599,14 @@ const SPECIALIST_CHAT_RESPONSE = {
   ],
 };
 
-function useSpecialistLoop(lang: 'en' | 'nl') {
+function useSpecialistLoop(lang: 'en' | 'nl', paused: boolean) {
   const [scene, setScene] = useState<SpecialistScene>(0);
   const [docCount, setDocCount] = useState(0);
   const [instructionLines, setInstructionLines] = useState(0);
   const [chatPhase, setChatPhase] = useState<'idle' | 'typing' | 'sent' | 'thinking' | 'responding' | 'done'>('idle');
   const [typedChat, setTypedChat] = useState('');
   const [responseLines, setResponseLines] = useState(0);
+  const pausedRef = usePausedRef(paused);
 
   const docs = SPECIALIST_DOCS[lang];
   const instructions = SPECIALIST_INSTRUCTIONS[lang];
@@ -554,18 +614,12 @@ function useSpecialistLoop(lang: 'en' | 'nl') {
   const chatResponse = SPECIALIST_CHAT_RESPONSE[lang];
 
   useEffect(() => {
-    let cancelled = false;
+    const cancelledRef = { current: false };
     const timeouts: ReturnType<typeof setTimeout>[] = [];
-    const intervals: ReturnType<typeof setInterval>[] = [];
-
-    function wait(ms: number) {
-      return new Promise<void>((resolve) => {
-        timeouts.push(setTimeout(resolve, ms));
-      });
-    }
+    const { wait, typeOut } = createPauseClock(pausedRef, timeouts, cancelledRef);
 
     async function run() {
-      while (!cancelled) {
+      while (!cancelledRef.current) {
         // --- Scene 1: Knowledge base / document upload ---
         setScene(0);
         setDocCount(0);
@@ -574,67 +628,56 @@ function useSpecialistLoop(lang: 'en' | 'nl') {
         setTypedChat('');
         setResponseLines(0);
         await wait(600);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         for (let i = 1; i <= docs.length; i++) {
-          if (cancelled) return;
+          if (cancelledRef.current) return;
           setDocCount(i);
           await wait(700);
         }
         await wait(2200);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         // --- Scene 2: System instructions ---
         setScene(1);
         setDocCount(0);
         await wait(500);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         for (let i = 1; i <= instructions.length; i++) {
-          if (cancelled) return;
+          if (cancelledRef.current) return;
           setInstructionLines(i);
           await wait(900);
         }
         await wait(2200);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         // --- Scene 3: Invoke the skill in chat ---
         setScene(2);
         setInstructionLines(0);
         setChatPhase('idle');
         await wait(500);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         setChatPhase('typing');
-        await new Promise<void>((resolve) => {
-          let i = 0;
-          const id = setInterval(() => {
-            i += 1;
-            setTypedChat(chatPrompt.slice(0, i));
-            if (i >= chatPrompt.length) {
-              clearInterval(id);
-              resolve();
-            }
-          }, 28);
-          intervals.push(id);
-        });
-        if (cancelled) return;
+        await typeOut(chatPrompt, setTypedChat, 28);
+        if (cancelledRef.current) return;
 
         await wait(350);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         setChatPhase('sent');
         setTypedChat('');
         await wait(400);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         setChatPhase('thinking');
         await wait(1200);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         setChatPhase('responding');
         for (let line = 1; line <= chatResponse.length; line++) {
-          if (cancelled) return;
+          if (cancelledRef.current) return;
           setResponseLines(line);
           await wait(320);
         }
@@ -646,11 +689,10 @@ function useSpecialistLoop(lang: 'en' | 'nl') {
 
     run();
     return () => {
-      cancelled = true;
+      cancelledRef.current = true;
       timeouts.forEach(clearTimeout);
-      intervals.forEach(clearInterval);
     };
-  }, [lang, docs, instructions, chatPrompt, chatResponse]);
+  }, [lang, pausedRef, docs, instructions, chatPrompt, chatResponse]);
 
   return { scene, docCount, instructionLines, chatPhase, typedChat, responseLines, docs, instructions, chatPrompt, chatResponse };
 }
@@ -670,8 +712,8 @@ function SkillBadge({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' })
   );
 }
 
-function SpecialistVisual({ lang }: { lang: 'en' | 'nl' }) {
-  const { scene, docCount, instructionLines, chatPhase, typedChat, responseLines, docs, instructions, chatPrompt, chatResponse } = useSpecialistLoop(lang);
+function SpecialistVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean }) {
+  const { scene, docCount, instructionLines, chatPhase, typedChat, responseLines, docs, instructions, chatPrompt, chatResponse } = useSpecialistLoop(lang, paused);
 
   const skillName = SPECIALIST_SKILL_NAME[lang];
 
@@ -924,7 +966,7 @@ function SpecialistVisual({ lang }: { lang: 'en' | 'nl' }) {
                     className="flex items-center gap-2 self-start"
                   >
                     <div className="flex items-center rounded-2xl rounded-bl-md border border-bla-lime/20 bg-bla-lime/[0.05] px-3 py-2">
-                      <LoadingDots size="md" />
+                      <LoadingDots size="md" paused={paused} />
                     </div>
                   </motion.div>
                 )}
@@ -1078,32 +1120,44 @@ const TOTAL_TASKS = WORKFLOW_NODES.reduce((s, n) => s + n.tasks.length, 0);
 const TASK_DURATION_MS = 1400;
 const PAUSE_BEFORE_RESTART_MS = 2600;
 
-function useWorkflowLoop() {
+function useWorkflowLoop(paused: boolean) {
   const [tick, setTick] = useState(-1);
+  const pausedRef = usePausedRef(paused);
 
   useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>;
-    function step(current: number) {
-      const next = current + 1;
-      if (next > TOTAL_TASKS) {
-        timeout = setTimeout(() => {
-          setTick(-1);
-          timeout = setTimeout(() => step(-1), 400);
-        }, PAUSE_BEFORE_RESTART_MS);
-      } else {
-        setTick(next);
-        timeout = setTimeout(() => step(next), TASK_DURATION_MS);
+    const cancelledRef = { current: false };
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    const { wait } = createPauseClock(pausedRef, timeouts, cancelledRef);
+
+    async function run() {
+      while (!cancelledRef.current) {
+        setTick(-1);
+        await wait(600);
+        if (cancelledRef.current) return;
+
+        for (let next = 0; next <= TOTAL_TASKS; next++) {
+          setTick(next);
+          await wait(next === TOTAL_TASKS ? PAUSE_BEFORE_RESTART_MS : TASK_DURATION_MS);
+          if (cancelledRef.current) return;
+        }
+
+        setTick(-1);
+        await wait(400);
       }
     }
-    timeout = setTimeout(() => step(-1), 600);
-    return () => clearTimeout(timeout);
-  }, []);
+
+    run();
+    return () => {
+      cancelledRef.current = true;
+      timeouts.forEach(clearTimeout);
+    };
+  }, [pausedRef]);
 
   return tick;
 }
 
-function AgentWorkflowVisual({ lang }: { lang: 'en' | 'nl' }) {
-  const tick = useWorkflowLoop();
+function AgentWorkflowVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean }) {
+  const tick = useWorkflowLoop(paused);
   const allDone = tick >= TOTAL_TASKS;
 
   let tasksBefore = 0;
@@ -1138,13 +1192,15 @@ function AgentWorkflowVisual({ lang }: { lang: 'en' | 'nl' }) {
         >
           {allDone
             ? lang === 'en' ? 'complete' : 'voltooid'
-            : lang === 'en' ? 'running' : 'bezig'}
+            : paused
+              ? lang === 'en' ? 'paused' : 'gepauzeerd'
+              : lang === 'en' ? 'running' : 'bezig'}
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 py-10 lg:grid-cols-4 lg:gap-3">
+      <div className="grid grid-cols-2 gap-3 py-10 lg:flex lg:items-stretch lg:gap-0">
         {nodes.map((node, i) => (
-          <div key={node.label} className="flex items-stretch">
+          <div key={node.label} className="flex min-w-0 items-stretch lg:flex-1">
             <motion.div
               className="relative flex min-h-0 flex-1 flex-col rounded-2xl border p-3.5"
               animate={{
@@ -1182,24 +1238,28 @@ function AgentWorkflowVisual({ lang }: { lang: 'en' | 'nl' }) {
                       style={{ bottom: '100%', left: 'calc(50% - 14px)' }}
                     >
                       {/* Outgoing (dashes flow up) */}
-                      <motion.line
+                      <line
                         x1="8" y1="400" x2="8" y2="0"
                         stroke="rgba(206,255,0,0.7)"
                         strokeWidth="1.5"
                         strokeLinecap="round"
                         strokeDasharray="4 5"
-                        animate={{ strokeDashoffset: [0, -18] }}
-                        transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                        style={{
+                          animation: 'v2-eco-flow 0.8s linear infinite',
+                          animationPlayState: paused ? 'paused' : 'running',
+                        }}
                       />
                       {/* Incoming (dashes flow down) */}
-                      <motion.line
+                      <line
                         x1="20" y1="0" x2="20" y2="400"
                         stroke="rgba(34,197,94,0.7)"
                         strokeWidth="1.5"
                         strokeLinecap="round"
                         strokeDasharray="4 5"
-                        animate={{ strokeDashoffset: [0, -18] }}
-                        transition={{ duration: 0.8, repeat: Infinity, ease: 'linear', delay: 0.3 }}
+                        style={{
+                          animation: 'v2-eco-flow 0.8s 0.3s linear infinite',
+                          animationPlayState: paused ? 'paused' : 'running',
+                        }}
                       />
                     </svg>
 
@@ -1213,24 +1273,28 @@ function AgentWorkflowVisual({ lang }: { lang: 'en' | 'nl' }) {
                       style={{ top: '100%', left: 'calc(50% - 14px)' }}
                     >
                       {/* Outgoing (dashes flow down, away from card) */}
-                      <motion.line
+                      <line
                         x1="8" y1="0" x2="8" y2="400"
                         stroke="rgba(206,255,0,0.7)"
                         strokeWidth="1.5"
                         strokeLinecap="round"
                         strokeDasharray="4 5"
-                        animate={{ strokeDashoffset: [0, -18] }}
-                        transition={{ duration: 0.8, repeat: Infinity, ease: 'linear', delay: 0.15 }}
+                        style={{
+                          animation: 'v2-eco-flow 0.8s 0.15s linear infinite',
+                          animationPlayState: paused ? 'paused' : 'running',
+                        }}
                       />
                       {/* Incoming (dashes flow up, into card) */}
-                      <motion.line
+                      <line
                         x1="20" y1="400" x2="20" y2="0"
                         stroke="rgba(34,197,94,0.7)"
                         strokeWidth="1.5"
                         strokeLinecap="round"
                         strokeDasharray="4 5"
-                        animate={{ strokeDashoffset: [0, -18] }}
-                        transition={{ duration: 0.8, repeat: Infinity, ease: 'linear', delay: 0.45 }}
+                        style={{
+                          animation: 'v2-eco-flow 0.8s 0.45s linear infinite',
+                          animationPlayState: paused ? 'paused' : 'running',
+                        }}
                       />
                     </svg>
                   </motion.div>
@@ -1257,7 +1321,7 @@ function AgentWorkflowVisual({ lang }: { lang: 'en' | 'nl' }) {
                   </span>
                 ) : node.isActive ? (
                   <span className="mt-0.5 shrink-0">
-                    <LoadingDots size="sm" />
+                    <LoadingDots size="sm" paused={paused} />
                   </span>
                 ) : (
                   <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-white/15" />
@@ -1294,7 +1358,7 @@ function AgentWorkflowVisual({ lang }: { lang: 'en' | 'nl' }) {
                         </span>
                       ) : active ? (
                         <span className="flex h-3.5 w-[18px] shrink-0 items-center justify-center">
-                          <LoadingDots size="sm" />
+                          <LoadingDots size="sm" paused={paused} />
                         </span>
                       ) : (
                         <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border border-white/15" />
@@ -1313,14 +1377,13 @@ function AgentWorkflowVisual({ lang }: { lang: 'en' | 'nl' }) {
             </motion.div>
 
             {i < nodes.length - 1 && (
-            {i < nodes.length - 1 && (
-              <div className="pointer-events-none absolute left-full top-1/2 z-10 hidden w-3 -translate-y-1/2 lg:block">
+              <div className="hidden w-4 shrink-0 items-center self-center lg:flex">
                 <motion.div
                   className="h-[2px] w-full rounded-full"
                   animate={{
-                    backgroundColor: node.isDone ? 'rgba(34,197,94,0.8)' : 'rgba(255,255,255,0.12)',
+                    backgroundColor: node.isDone ? 'rgba(34,197,94,0.85)' : 'rgba(255,255,255,0.18)',
                     boxShadow: node.isDone
-                      ? '0 0 8px rgba(34,197,94,0.5)'
+                      ? '0 0 8px rgba(34,197,94,0.55)'
                       : '0 0 0px rgba(34,197,94,0)',
                   }}
                   transition={{ duration: 0.45 }}
@@ -1431,46 +1494,42 @@ const INSIGHTS: EcosystemInsight[] = [
   },
 ];
 
-function useEcosystemLoop() {
+function useEcosystemLoop(paused: boolean) {
   const [activeInsight, setActiveInsight] = useState(-1);
   const [activeDepts, setActiveDepts] = useState<number[]>([]);
   const [pulsePhase, setPulsePhase] = useState(0);
+  const pausedRef = usePausedRef(paused);
 
   useEffect(() => {
-    let cancelled = false;
+    const cancelledRef = { current: false };
     const timeouts: ReturnType<typeof setTimeout>[] = [];
-
-    function wait(ms: number) {
-      return new Promise<void>((resolve) => {
-        timeouts.push(setTimeout(resolve, ms));
-      });
-    }
+    const { wait } = createPauseClock(pausedRef, timeouts, cancelledRef);
 
     async function run() {
       await wait(800);
       let idx = 0;
 
-      while (!cancelled) {
+      while (!cancelledRef.current) {
         const insight = INSIGHTS[idx % INSIGHTS.length];
         setActiveDepts([insight.from, insight.to]);
         setPulsePhase(1);
         await wait(600);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         setPulsePhase(2);
         await wait(500);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         setActiveInsight(idx % INSIGHTS.length);
         setPulsePhase(3);
         await wait(6200);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         setActiveInsight(-1);
         setActiveDepts([]);
         setPulsePhase(0);
         await wait(1100);
-        if (cancelled) return;
+        if (cancelledRef.current) return;
 
         idx++;
       }
@@ -1478,10 +1537,10 @@ function useEcosystemLoop() {
 
     run();
     return () => {
-      cancelled = true;
+      cancelledRef.current = true;
       timeouts.forEach(clearTimeout);
     };
-  }, []);
+  }, [pausedRef]);
 
   return { activeInsight, activeDepts, pulsePhase };
 }
@@ -1539,12 +1598,17 @@ function FlowingLink({
   highlighted,
   delay = 0,
   duration = 4.4,
+  paused = false,
 }: {
   d: string;
   highlighted: boolean;
   delay?: number;
   duration?: number;
+  paused?: boolean;
 }) {
+  const flowDuration = highlighted ? duration * 0.42 : duration;
+  const playState = paused ? 'paused' : 'running';
+
   return (
     <g>
       <path
@@ -1559,52 +1623,34 @@ function FlowingLink({
         fill="none"
         strokeLinecap="round"
         strokeDasharray={highlighted ? '1.8 2.1' : '1.15 3.6'}
+        style={{
+          animation: `v2-eco-flow ${flowDuration}s ${delay}s linear infinite`,
+          animationPlayState: playState,
+        }}
         animate={{
-          strokeDashoffset: [0, -24],
           stroke: highlighted ? 'rgba(206,255,0,0.9)' : 'rgba(206,255,0,0.2)',
           strokeWidth: highlighted ? 0.55 : 0.22,
         }}
-        transition={{
-          strokeDashoffset: {
-            duration: highlighted ? duration * 0.42 : duration,
-            repeat: Infinity,
-            ease: 'linear',
-            delay,
-          },
-          stroke: { duration: 0.4 },
-          strokeWidth: { duration: 0.4 },
-        }}
+        transition={{ duration: 0.4 }}
       />
-      <motion.circle
+      <circle
         r={highlighted ? 0.52 : 0.26}
         fill="#CEFF00"
         filter={highlighted ? 'url(#eco-glow)' : undefined}
-        style={{ offsetPath: `path("${d}")`, offsetRotate: '0deg' }}
-        animate={{
-          offsetDistance: ['0%', '100%'],
-          opacity: highlighted ? [0.25, 1, 1, 0.2] : [0.06, 0.28, 0.28, 0.06],
-        }}
-        transition={{
-          offsetDistance: {
-            duration: highlighted ? duration * 0.48 : duration,
-            repeat: Infinity,
-            ease: 'linear',
-            delay: delay + 0.35,
-          },
-          opacity: {
-            duration: highlighted ? duration * 0.48 : duration,
-            repeat: Infinity,
-            ease: 'linear',
-            delay: delay + 0.35,
-          },
+        style={{
+          offsetPath: `path("${d}")`,
+          offsetRotate: '0deg',
+          animation: `v2-eco-travel ${highlighted ? duration * 0.48 : duration}s ${delay + 0.35}s linear infinite`,
+          animationPlayState: playState,
+          opacity: highlighted ? 0.85 : 0.22,
         }}
       />
     </g>
   );
 }
 
-function EcosystemVisual({ lang = 'en' }: { lang?: 'en' | 'nl' }) {
-  const { activeInsight, activeDepts, pulsePhase } = useEcosystemLoop();
+function EcosystemVisual({ lang = 'en', paused = false }: { lang?: 'en' | 'nl'; paused?: boolean }) {
+  const { activeInsight, activeDepts, pulsePhase } = useEcosystemLoop(paused);
   const insight = activeInsight >= 0 ? INSIGHTS[activeInsight] : null;
 
   const RADIUS = 36;
@@ -1692,6 +1738,7 @@ function EcosystemVisual({ lang = 'en' }: { lang?: 'en' | 'nl' }) {
                 highlighted={isHighlighted}
                 delay={i * 0.28}
                 duration={4.2 + (i % 3) * 0.55}
+                paused={paused}
               />
             );
           })}
@@ -1710,6 +1757,7 @@ function EcosystemVisual({ lang = 'en' }: { lang?: 'en' | 'nl' }) {
                 highlighted={activeDepts.includes(i)}
                 delay={0.15 + i * 0.22}
                 duration={3.6 + (i % 2) * 0.5}
+                paused={paused}
               />
             );
           })}
@@ -1986,7 +2034,7 @@ function EcosystemVisual({ lang = 'en' }: { lang?: 'en' | 'nl' }) {
                 className="w-full rounded-xl border border-white/8 bg-white/[0.03] px-4 py-4 md:px-5"
               >
                 <div className="flex items-center gap-2.5">
-                  <LoadingDots size="md" />
+                  <LoadingDots size="md" paused={paused} />
                   <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">
                     {lang === 'en' ? 'Listening for a signal…' : 'Wacht op een signaal…'}
                   </span>
