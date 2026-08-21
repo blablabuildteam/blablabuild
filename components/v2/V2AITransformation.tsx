@@ -88,9 +88,13 @@ export default function V2AITransformation() {
                       { k: 'Proces', l: 'workflows in kaart & gereed' },
                       { k: 'Training', l: 'teams die blijven bijleren' },
                     ]
-                ).map((f) => (
-                  <div
+                ).map((f, i) => (
+                  <motion.div
                     key={f.k}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-40px' }}
+                    transition={{ duration: 0.4, delay: 0.12 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
                     className="rounded-xl border border-[#14181d]/8 bg-[#f1ede4]/60 p-3.5"
                   >
                     <div className="flex items-center gap-2">
@@ -100,7 +104,7 @@ export default function V2AITransformation() {
                     <div className="mt-1.5 font-host text-xs leading-relaxed text-[#14181d]/50">
                       {f.l}
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>

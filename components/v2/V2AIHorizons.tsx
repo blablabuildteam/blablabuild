@@ -24,7 +24,7 @@ const STAGES_EN: HorizonStage[] = [
   {
     id: 'agent',
     title: 'Agent',
-    action: 'AI runs multi-step workflows across your tools',
+    action: 'AI acts upon multiple systems and databases in a single workflow',
   },
   {
     id: 'ecosystem',
@@ -47,7 +47,7 @@ const STAGES_NL: HorizonStage[] = [
   {
     id: 'agent',
     title: 'Agent',
-    action: 'AI voert meerstaps-workflows uit over je tools heen',
+    action: 'AI grijpt in op meerdere systemen en databases in één workflow',
   },
   {
     id: 'ecosystem',
@@ -60,12 +60,36 @@ interface V2AIHorizonsProps {
   lang: 'en' | 'nl';
 }
 
+function LoadingDots({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
+  const dot = size === 'lg' ? 'h-2 w-2' : size === 'sm' ? 'h-1 w-1' : 'h-1.5 w-1.5';
+  const gap = size === 'lg' ? 'gap-1.5' : size === 'sm' ? 'gap-0.5' : 'gap-1';
+
+  return (
+    <span className={`inline-flex items-center ${gap}`} aria-hidden>
+      {[0, 1, 2].map((i) => (
+        <motion.span
+          key={i}
+          className={`${dot} rounded-full bg-bla-lime/80`}
+          animate={{ opacity: [0.25, 1, 0.25], scale: [0.85, 1.15, 0.85] }}
+          transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.18 }}
+        />
+      ))}
+    </span>
+  );
+}
+
 export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
   const [activeStage, setActiveStage] = useState(0);
   const stages = lang === 'en' ? STAGES_EN : STAGES_NL;
 
   return (
-    <div className="mt-10 border-t border-[#14181d]/10 pt-10 md:mt-14 md:pt-14">
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+      className="mt-10 border-t border-[#14181d]/10 pt-10 md:mt-14 md:pt-14"
+    >
       <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
         <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#14181d]/40">
           {lang === 'en' ? 'The four stages of AI transformation' : 'De vier fases van AI-transformatie'}
@@ -81,10 +105,15 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
           {stages.map((stage, i) => {
             const isActive = i === activeStage;
             return (
-              <button
+              <motion.button
                 key={stage.id}
+                type="button"
                 onClick={() => setActiveStage(i)}
                 aria-pressed={isActive}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.45, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
                 className={`group flex w-full items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/20 md:flex-1 md:px-5 ${
                   isActive
                     ? 'border-[#14181d] bg-white shadow-[0_18px_40px_-24px_rgba(20,24,29,0.35)]'
@@ -127,7 +156,7 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
                     }`}
                   />
                 </span>
-              </button>
+              </motion.button>
             );
           })}
         </div>
@@ -150,7 +179,7 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -340,16 +369,7 @@ function CopilotVisual({ lang }: { lang: 'en' | 'nl' }) {
                 <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-bla-lime/70">
                   AI
                 </span>
-                <div className="flex items-center gap-1.5">
-                  {[0, 1, 2].map((i) => (
-                    <motion.span
-                      key={i}
-                      className="h-2 w-2 rounded-full bg-bla-lime/80"
-                      animate={{ opacity: [0.25, 1, 0.25], scale: [0.85, 1.15, 0.85] }}
-                      transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.18 }}
-                    />
-                  ))}
-                </div>
+                <LoadingDots size="lg" />
               </motion.div>
             )}
 
@@ -903,15 +923,8 @@ function SpecialistVisual({ lang }: { lang: 'en' | 'nl' }) {
                     animate={{ opacity: 1 }}
                     className="flex items-center gap-2 self-start"
                   >
-                    <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-md border border-bla-lime/20 bg-bla-lime/[0.05] px-3 py-2">
-                      {[0, 1, 2].map((i) => (
-                        <motion.span
-                          key={i}
-                          className="h-1.5 w-1.5 rounded-full bg-bla-lime/70"
-                          animate={{ opacity: [0.3, 1, 0.3], scale: [0.85, 1.1, 0.85] }}
-                          transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.18 }}
-                        />
-                      ))}
+                    <div className="flex items-center rounded-2xl rounded-bl-md border border-bla-lime/20 bg-bla-lime/[0.05] px-3 py-2">
+                      <LoadingDots size="md" />
                     </div>
                   </motion.div>
                 )}
@@ -1148,7 +1161,7 @@ function AgentWorkflowVisual({ lang }: { lang: 'en' | 'nl' }) {
               }}
               transition={{ duration: 0.25 }}
             >
-              {/* Data flow connectors on the card border when active */}
+              {/* Data flow lines — dashed lines streaming out/in while active */}
               <AnimatePresence>
                 {node.isActive && (
                   <motion.div
@@ -1156,57 +1169,70 @@ function AgentWorkflowVisual({ lang }: { lang: 'en' | 'nl' }) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.35 }}
                     className="pointer-events-none"
                   >
-                    {/* Top connector dot — centered on top border */}
-                    <div
-                      className="absolute z-20 flex h-4 w-4 items-center justify-center rounded-full border border-bla-lime/60 bg-[#14181d]"
-                      style={{ top: '-8px', left: 'calc(50% - 8px)' }}
+                    {/* Lines above the card */}
+                    <svg
+                      width="28"
+                      height="400"
+                      viewBox="0 0 28 400"
+                      fill="none"
+                      className="absolute"
+                      style={{ bottom: '100%', left: 'calc(50% - 14px)' }}
                     >
-                      <div className="h-1.5 w-1.5 rounded-full bg-bla-lime/80" />
-                    </div>
+                      {/* Outgoing (dashes flow up) */}
+                      <motion.line
+                        x1="8" y1="400" x2="8" y2="0"
+                        stroke="rgba(206,255,0,0.7)"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeDasharray="4 5"
+                        animate={{ strokeDashoffset: [0, -18] }}
+                        transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                      />
+                      {/* Incoming (dashes flow down) */}
+                      <motion.line
+                        x1="20" y1="0" x2="20" y2="400"
+                        stroke="rgba(34,197,94,0.7)"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeDasharray="4 5"
+                        animate={{ strokeDashoffset: [0, -18] }}
+                        transition={{ duration: 0.8, repeat: Infinity, ease: 'linear', delay: 0.3 }}
+                      />
+                    </svg>
 
-                    {/* Line going up from top connector */}
-                    <div
-                      className="absolute z-10 flex flex-col items-center"
-                      style={{ bottom: 'calc(100% + 8px)', left: 'calc(50% - 4px)', width: '8px', height: '32px' }}
+                    {/* Lines below the card */}
+                    <svg
+                      width="28"
+                      height="400"
+                      viewBox="0 0 28 400"
+                      fill="none"
+                      className="absolute"
+                      style={{ top: '100%', left: 'calc(50% - 14px)' }}
                     >
-                      <svg width="8" height="6" viewBox="0 0 8 6" className="shrink-0 text-bla-lime/70">
-                        <path d="M4 0L7 5H1L4 0Z" fill="currentColor"/>
-                      </svg>
-                      <div className="relative w-[1.5px] flex-1 overflow-hidden bg-bla-lime/25">
-                        <motion.div
-                          className="absolute left-0 w-full bg-bla-lime/90"
-                          style={{ height: '10px', borderRadius: '1px' }}
-                          animate={{ top: ['100%', '-10px'] }}
-                          transition={{ duration: 0.9, repeat: Infinity, ease: 'linear' }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Bottom connector dot — centered on bottom border */}
-                    <div
-                      className="absolute z-20 flex h-4 w-4 items-center justify-center rounded-full border border-green-400/60 bg-[#14181d]"
-                      style={{ bottom: '-8px', left: 'calc(50% - 8px)' }}
-                    >
-                      <div className="h-1.5 w-1.5 rounded-full bg-green-400/80" />
-                    </div>
-
-                    {/* Line coming up from below into bottom connector */}
-                    <div
-                      className="absolute z-10 flex flex-col items-center"
-                      style={{ top: 'calc(100% + 8px)', left: 'calc(50% - 4px)', width: '8px', height: '32px' }}
-                    >
-                      <div className="relative w-[1.5px] flex-1 overflow-hidden bg-green-400/25">
-                        <motion.div
-                          className="absolute left-0 w-full bg-green-400/90"
-                          style={{ height: '10px', borderRadius: '1px' }}
-                          animate={{ bottom: ['-10px', '100%'] }}
-                          transition={{ duration: 0.9, repeat: Infinity, ease: 'linear', delay: 0.45 }}
-                        />
-                      </div>
-                    </div>
+                      {/* Outgoing (dashes flow down, away from card) */}
+                      <motion.line
+                        x1="8" y1="0" x2="8" y2="400"
+                        stroke="rgba(206,255,0,0.7)"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeDasharray="4 5"
+                        animate={{ strokeDashoffset: [0, -18] }}
+                        transition={{ duration: 0.8, repeat: Infinity, ease: 'linear', delay: 0.15 }}
+                      />
+                      {/* Incoming (dashes flow up, into card) */}
+                      <motion.line
+                        x1="20" y1="400" x2="20" y2="0"
+                        stroke="rgba(34,197,94,0.7)"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeDasharray="4 5"
+                        animate={{ strokeDashoffset: [0, -18] }}
+                        transition={{ duration: 0.8, repeat: Infinity, ease: 'linear', delay: 0.45 }}
+                      />
+                    </svg>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -1223,27 +1249,19 @@ function AgentWorkflowVisual({ lang }: { lang: 'en' | 'nl' }) {
                     {node.sub}
                   </div>
                 </div>
-                <span
-                  className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
-                    node.isDone
-                      ? 'border-green-400/70 bg-green-400'
-                      : node.isActive
-                        ? 'border-bla-lime/60 bg-bla-lime/15'
-                        : 'border-white/15'
-                  }`}
-                >
-                  {node.isDone ? (
+                {node.isDone ? (
+                  <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-green-400/70 bg-green-400">
                     <svg width="8" height="8" viewBox="0 0 8 8" className="text-[#14181d]">
                       <path d="M1.5 4.2l1.8 1.8 3.2-3.6" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-                  ) : node.isActive ? (
-                    <motion.span
-                      className="h-1.5 w-1.5 rounded-full bg-bla-lime"
-                      animate={{ opacity: [0.4, 1, 0.4] }}
-                      transition={{ duration: 0.9, repeat: Infinity }}
-                    />
-                  ) : null}
-                </span>
+                  </span>
+                ) : node.isActive ? (
+                  <span className="mt-0.5 shrink-0">
+                    <LoadingDots size="sm" />
+                  </span>
+                ) : (
+                  <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-white/15" />
+                )}
               </div>
 
               <div className="flex flex-col gap-1.5">
@@ -1268,27 +1286,19 @@ function AgentWorkflowVisual({ lang }: { lang: 'en' | 'nl' }) {
                       }}
                       transition={{ duration: 0.2 }}
                     >
-                      <span
-                        className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border ${
-                          done
-                            ? 'border-green-400/80 bg-green-400'
-                            : active
-                              ? 'border-bla-lime/70'
-                              : 'border-white/15'
-                        }`}
-                      >
-                        {done ? (
+                      {done ? (
+                        <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border border-green-400/80 bg-green-400">
                           <svg width="7" height="7" viewBox="0 0 8 8" className="text-[#14181d]">
                             <path d="M1.5 4.2l1.8 1.8 3.2-3.6" stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
-                        ) : active ? (
-                          <motion.span
-                            className="h-1.5 w-1.5 rounded-full bg-bla-lime"
-                            animate={{ scale: [0.8, 1.25, 0.8] }}
-                            transition={{ duration: 0.7, repeat: Infinity }}
-                          />
-                        ) : null}
-                      </span>
+                        </span>
+                      ) : active ? (
+                        <span className="flex h-3.5 w-[18px] shrink-0 items-center justify-center">
+                          <LoadingDots size="sm" />
+                        </span>
+                      ) : (
+                        <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border border-white/15" />
+                      )}
                       <span
                         className={`font-host text-[11px] leading-snug ${
                           done ? 'text-white/70' : active ? 'text-white/90' : 'text-white/35'
@@ -1303,23 +1313,18 @@ function AgentWorkflowVisual({ lang }: { lang: 'en' | 'nl' }) {
             </motion.div>
 
             {i < nodes.length - 1 && (
-              <div className="mx-1 hidden items-center lg:flex">
+            {i < nodes.length - 1 && (
+              <div className="pointer-events-none absolute left-full top-1/2 z-10 hidden w-3 -translate-y-1/2 lg:block">
                 <motion.div
-                  className="h-px w-2.5"
+                  className="h-[2px] w-full rounded-full"
                   animate={{
-                    backgroundColor: node.isDone ? 'rgba(34,197,94,0.55)' : 'rgba(255,255,255,0.15)',
+                    backgroundColor: node.isDone ? 'rgba(34,197,94,0.8)' : 'rgba(255,255,255,0.12)',
+                    boxShadow: node.isDone
+                      ? '0 0 8px rgba(34,197,94,0.5)'
+                      : '0 0 0px rgba(34,197,94,0)',
                   }}
+                  transition={{ duration: 0.45 }}
                 />
-                <motion.svg
-                  width="6"
-                  height="8"
-                  viewBox="0 0 5 6"
-                  animate={{
-                    color: node.isDone ? 'rgba(34,197,94,0.7)' : 'rgba(255,255,255,0.2)',
-                  }}
-                >
-                  <path d="M0.5 0.5l3.5 2.5-3.5 2.5" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                </motion.svg>
               </div>
             )}
           </div>
@@ -1950,11 +1955,25 @@ function EcosystemVisual({ lang = 'en' }: { lang?: 'en' | 'nl' }) {
                       </span>
                     </span>
                   </div>
-                  <h5 className="mt-3 font-host text-[15px] font-medium leading-snug text-white/90">
+                  <motion.h5
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="mt-3 font-host text-[15px] font-medium leading-snug text-white/90"
+                  >
                     {insight.title[lang]}
-                  </h5>
+                  </motion.h5>
                   <p className="mt-2 font-host text-[14px] leading-relaxed text-white/55">
-                    {insight.body[lang]}
+                    {insight.body[lang].split(' ').map((word, i) => (
+                      <motion.span
+                        key={`${word}-${i}`}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.16, delay: 0.22 + i * 0.028 }}
+                      >
+                        {word}{' '}
+                      </motion.span>
+                    ))}
                   </p>
                 </div>
               </motion.div>
@@ -1966,9 +1985,12 @@ function EcosystemVisual({ lang = 'en' }: { lang?: 'en' | 'nl' }) {
                 exit={{ opacity: 0 }}
                 className="w-full rounded-xl border border-white/8 bg-white/[0.03] px-4 py-4 md:px-5"
               >
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">
-                  {lang === 'en' ? 'Listening for a signal…' : 'Wacht op een signaal…'}
-                </span>
+                <div className="flex items-center gap-2.5">
+                  <LoadingDots size="md" />
+                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">
+                    {lang === 'en' ? 'Listening for a signal…' : 'Wacht op een signaal…'}
+                  </span>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
