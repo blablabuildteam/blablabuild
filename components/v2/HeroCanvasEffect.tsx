@@ -76,7 +76,7 @@ void main() {
   float w;
   vec3 pos = displaced(position, prox, w);
   float pulse = signal(position.xy);
-  vAlpha = (mix(0.03, 0.10, uMobile) + prox * 0.28 + clamp(w * 0.035, -0.01, 0.06) + pulse * mix(0.7, 1.2, uMobile)) * edgeFade(pos);
+  vAlpha = (mix(0.03, 0.06, uMobile) + prox * mix(0.28, 0.18, uMobile) + clamp(w * 0.035, -0.01, 0.06) + pulse * mix(0.7, 0.85, uMobile)) * edgeFade(pos);
 
   vec4 mv = modelViewMatrix * vec4(pos, 1.0);
   gl_Position = projectionMatrix * mv;
@@ -92,7 +92,7 @@ void main() {
   float w;
   vec3 pos = displaced(position, prox, w);
   float pulse = signal(position.xy);
-  vAlpha = (mix(0.05, 0.14, uMobile) + prox * 0.16 + clamp(w * 0.02, -0.006, 0.03) + pulse * mix(0.85, 1.35, uMobile)) * edgeFade(pos);
+  vAlpha = (mix(0.05, 0.08, uMobile) + prox * mix(0.16, 0.11, uMobile) + clamp(w * 0.02, -0.006, 0.03) + pulse * mix(0.85, 0.95, uMobile)) * edgeFade(pos);
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 }
@@ -314,7 +314,7 @@ function Particles({ compact }: { compact: boolean }) {
     [compact],
   );
 
-  uniforms.uColor.value.set(compact ? '#CEFF00' : '#A4C01C');
+  uniforms.uColor.value.set('#A4C01C');
   uniforms.uMobile.value = compact ? 1 : 0;
 
   const pulse = useRef({
@@ -477,7 +477,7 @@ export default function HeroCanvasEffect() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.2, delay: 0.15, ease: 'easeOut' }}
-      className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[100svh] w-full overflow-hidden"
+      className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[100svh] w-full overflow-hidden opacity-[0.72] md:opacity-100"
     >
       {/* Landscape canvas, centered — same framing as desktop, clipped to the phone. */}
       <div className="absolute left-1/2 top-0 h-full w-[160vh] -translate-x-1/2">

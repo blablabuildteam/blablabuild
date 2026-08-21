@@ -128,7 +128,7 @@ function createPauseClock(
 }
 
 export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
-  const [activeStage, setActiveStage] = useState(0);
+  const [activeStage, setActiveStage] = useState<number | null>(null);
   const [paused, setPaused] = useState(false);
   const stages = lang === 'en' ? STAGES_EN : STAGES_NL;
 
@@ -286,16 +286,18 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
         <div className="relative hidden md:col-span-8 md:block lg:col-span-9">
           <div className="md:absolute md:inset-0">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={stages[activeStage].id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="h-full"
-              >
-                <HorizonVisual stage={activeStage} lang={lang} paused={paused} />
-              </motion.div>
+              {activeStage !== null && (
+                <motion.div
+                  key={stages[activeStage].id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  className="h-full"
+                >
+                  <HorizonVisual stage={activeStage} lang={lang} paused={paused} />
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
         </div>
