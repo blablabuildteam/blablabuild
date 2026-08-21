@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, FileBarChart, FileSpreadsheet, FileType, Pause, Play, Sparkles, Upload } from 'lucide-react';
 
@@ -150,96 +150,111 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-5 md:items-stretch">
-        {/* Stages — stacked left */}
+        {/* Stages — stacked left, with inline visual on mobile */}
         <div className="flex flex-col gap-2 md:col-span-4 lg:col-span-3">
           {stages.map((stage, i) => {
             const isActive = i === activeStage;
             return (
-              <motion.div
-                key={stage.id}
-                role="button"
-                tabIndex={0}
-                aria-pressed={isActive}
-                onClick={() => {
-                  if (i === activeStage) return;
-                  setActiveStage(i);
-                  setPaused(false);
-                }}
-                onKeyDown={(event) => {
-                  if (event.key !== 'Enter' && event.key !== ' ') return;
-                  event.preventDefault();
-                  if (i === activeStage) return;
-                  setActiveStage(i);
-                  setPaused(false);
-                }}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.45, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className={`group flex w-full cursor-pointer items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/20 md:flex-1 md:px-5 ${
-                  isActive
-                    ? 'border-[#14181d] bg-white shadow-[0_18px_40px_-24px_rgba(20,24,29,0.35)]'
-                    : 'border-[#14181d]/10 bg-white/70 hover:border-[#14181d]/25 hover:bg-white'
-                }`}
-              >
-                <span
-                  className={`mt-0.5 font-mono text-[10px] tracking-[0.2em] transition-colors duration-300 ${
-                    isActive ? 'text-[#14181d]' : 'text-[#14181d]/30'
+              <Fragment key={stage.id}>
+                <motion.div
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={isActive}
+                  onClick={() => {
+                    if (i === activeStage) return;
+                    setActiveStage(i);
+                    setPaused(false);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key !== 'Enter' && event.key !== ' ') return;
+                    event.preventDefault();
+                    if (i === activeStage) return;
+                    setActiveStage(i);
+                    setPaused(false);
+                  }}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.45, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                  className={`group flex w-full cursor-pointer items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/20 md:flex-1 md:px-5 ${
+                    isActive
+                      ? 'border-[#14181d] bg-white shadow-[0_18px_40px_-24px_rgba(20,24,29,0.35)]'
+                      : 'border-[#14181d]/10 bg-white/70 hover:border-[#14181d]/25 hover:bg-white'
                   }`}
                 >
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div
-                    className={`font-host text-base font-medium transition-colors duration-300 ${
-                      isActive ? 'text-[#14181d]' : 'text-[#14181d]/55 group-hover:text-[#14181d]/85'
-                    }`}
-                  >
-                    {stage.title}
-                  </div>
-                  <div
-                    className={`mt-1 font-host text-xs leading-snug transition-colors duration-300 ${
-                      isActive ? 'text-[#14181d]/60' : 'text-[#14181d]/40 group-hover:text-[#14181d]/50'
-                    }`}
-                  >
-                    {stage.action}
-                  </div>
-                </div>
-                {isActive ? (
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setPaused((current) => !current);
-                    }}
-                    aria-label={
-                      paused
-                        ? lang === 'en' ? 'Play animation' : 'Animatie afspelen'
-                        : lang === 'en' ? 'Pause animation' : 'Animatie pauzeren'
-                    }
-                    className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#14181d] bg-[#14181d] text-bla-lime transition-transform duration-200 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/25"
-                  >
-                    {paused ? (
-                      <Play className="h-2.5 w-2.5 fill-current" />
-                    ) : (
-                      <Pause className="h-2.5 w-2.5 fill-current" />
-                    )}
-                  </button>
-                ) : (
                   <span
-                    className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#14181d]/15 transition-colors duration-300 group-hover:border-[#14181d]/30"
+                    className={`mt-0.5 font-mono text-[10px] tracking-[0.2em] transition-colors duration-300 ${
+                      isActive ? 'text-[#14181d]' : 'text-[#14181d]/30'
+                    }`}
                   >
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#14181d]/20 transition-colors duration-300 group-hover:bg-[#14181d]/40" />
+                    {String(i + 1).padStart(2, '0')}
                   </span>
+                  <div className="min-w-0 flex-1">
+                    <div
+                      className={`font-host text-base font-medium transition-colors duration-300 ${
+                        isActive ? 'text-[#14181d]' : 'text-[#14181d]/55 group-hover:text-[#14181d]/85'
+                      }`}
+                    >
+                      {stage.title}
+                    </div>
+                    <div
+                      className={`mt-1 font-host text-xs leading-snug transition-colors duration-300 ${
+                        isActive ? 'text-[#14181d]/60' : 'text-[#14181d]/40 group-hover:text-[#14181d]/50'
+                      }`}
+                    >
+                      {stage.action}
+                    </div>
+                  </div>
+                  {isActive ? (
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setPaused((current) => !current);
+                      }}
+                      aria-label={
+                        paused
+                          ? lang === 'en' ? 'Play animation' : 'Animatie afspelen'
+                          : lang === 'en' ? 'Pause animation' : 'Animatie pauzeren'
+                      }
+                      className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#14181d] bg-[#14181d] text-bla-lime transition-transform duration-200 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/25"
+                    >
+                      {paused ? (
+                        <Play className="h-2.5 w-2.5 fill-current" />
+                      ) : (
+                        <Pause className="h-2.5 w-2.5 fill-current" />
+                      )}
+                    </button>
+                  ) : (
+                    <span
+                      className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#14181d]/15 transition-colors duration-300 group-hover:border-[#14181d]/30"
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#14181d]/20 transition-colors duration-300 group-hover:bg-[#14181d]/40" />
+                    </span>
+                  )}
+                </motion.div>
+
+                {/* Mobile: visual appears directly under the active stage */}
+                {isActive && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                    className="md:hidden"
+                  >
+                    <div className="pt-1 pb-2">
+                      <HorizonVisual stage={activeStage} lang={lang} paused={paused} />
+                    </div>
+                  </motion.div>
                 )}
-              </motion.div>
+              </Fragment>
             );
           })}
         </div>
 
-        {/* Interactive visual — large frame, height locked to the stage list on desktop */}
-        <div className="relative md:col-span-8 lg:col-span-9">
-          <div className="h-[440px] md:absolute md:inset-0 md:h-auto">
+        {/* Desktop: visual panel (hidden on mobile — shown inline above) */}
+        <div className="relative hidden md:col-span-8 md:block lg:col-span-9">
+          <div className="md:absolute md:inset-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={stages[activeStage].id}
@@ -261,7 +276,7 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
 
 function HorizonVisual({ stage, lang, paused }: { stage: number; lang: 'en' | 'nl'; paused: boolean }) {
   return (
-    <div className="flex h-full items-center justify-center overflow-hidden rounded-2xl border border-[#14181d]/20 bg-[#14181d]">
+    <div className="flex min-h-[440px] flex-col overflow-hidden rounded-2xl border border-[#14181d]/20 bg-[#14181d] md:h-full md:min-h-0">
       <AnimatePresence mode="wait">
         <motion.div
           key={stage}
@@ -269,7 +284,7 @@ function HorizonVisual({ stage, lang, paused }: { stage: number; lang: 'en' | 'n
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.98 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="flex h-full w-full items-center justify-center"
+          className="flex flex-1 items-center justify-center"
         >
           {stage === 0 && <CopilotVisual lang={lang} paused={paused} />}
           {stage === 1 && <SpecialistVisual lang={lang} paused={paused} />}
@@ -1198,11 +1213,11 @@ function AgentWorkflowVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: bool
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 py-10 lg:flex lg:items-stretch lg:gap-0">
+      <div className="grid grid-cols-2 gap-2.5 py-4 sm:gap-3 sm:py-10 lg:flex lg:items-stretch lg:gap-0">
         {nodes.map((node, i) => (
           <div key={node.label} className="flex min-w-0 items-stretch lg:flex-1">
             <motion.div
-              className="relative flex min-h-0 flex-1 flex-col rounded-2xl border p-3.5"
+              className="relative flex min-h-0 flex-1 flex-col rounded-2xl border p-2.5 sm:p-3.5"
               animate={{
                 borderColor: node.isDone
                   ? 'rgba(34,197,94,0.55)'
@@ -1226,7 +1241,7 @@ function AgentWorkflowVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: bool
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.35 }}
-                    className="pointer-events-none"
+                    className="pointer-events-none hidden lg:block"
                   >
                     {/* Lines above the card */}
                     <svg
@@ -1335,7 +1350,7 @@ function AgentWorkflowVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: bool
                   return (
                     <motion.div
                       key={task}
-                      className="flex items-center gap-2 rounded-lg border px-2 py-1.5"
+                      className="flex items-center gap-1.5 rounded-lg border px-1.5 py-1 sm:gap-2 sm:px-2 sm:py-1.5"
                       animate={{
                         borderColor: done
                           ? 'rgba(34,197,94,0.35)'
@@ -1364,7 +1379,7 @@ function AgentWorkflowVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: bool
                         <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border border-white/15" />
                       )}
                       <span
-                        className={`font-host text-[11px] leading-snug ${
+                        className={`font-host text-[10px] leading-snug sm:text-[11px] ${
                           done ? 'text-white/70' : active ? 'text-white/90' : 'text-white/35'
                         }`}
                       >
@@ -1692,8 +1707,8 @@ function EcosystemVisual({ lang = 'en', paused = false }: { lang?: 'en' | 'nl'; 
       </div>
 
       {/* Main visualisation — organism + card grouped in the center */}
-      <div className="relative flex min-h-0 flex-1 items-center justify-center gap-5 overflow-hidden px-4 py-4 md:gap-8 md:px-8">
-        <div className="relative aspect-square w-[min(58%,340px)] min-w-[220px] shrink-0">
+      <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center gap-3 overflow-hidden px-4 py-4 md:flex-row md:gap-8 md:px-8">
+        <div className="relative aspect-square w-[min(50%,180px)] shrink-0 md:w-[min(58%,340px)] md:min-w-[220px]">
         <svg
           viewBox="0 0 100 100"
           className="absolute inset-0 h-full w-full"
@@ -1953,10 +1968,10 @@ function EcosystemVisual({ lang = 'en', paused = false }: { lang?: 'en' | 'nl'; 
           {/* Core label — sits just below the hub so it stays readable */}
           <div
             className="absolute flex flex-col items-center"
-            style={{ left: '50%', top: '50%', transform: 'translate(-50%, 22px)' }}
+            style={{ left: '50%', top: '50%', transform: 'translate(-50%, 16px)' }}
           >
             <motion.span
-              className="font-mono text-[8px] uppercase tracking-[0.22em] text-bla-lime md:text-[9px]"
+              className="font-mono text-[7px] uppercase tracking-[0.22em] text-bla-lime md:text-[9px]"
               animate={{
                 opacity: pulsePhase >= 2 ? [0.85, 1, 0.85] : 0.8,
               }}
@@ -1968,8 +1983,8 @@ function EcosystemVisual({ lang = 'en', paused = false }: { lang?: 'en' | 'nl'; 
         </div>
         </div>
 
-        {/* Insight card — sits next to the organism */}
-        <div className="relative flex w-[240px] shrink-0 items-center sm:w-[280px] md:w-[320px]">
+        {/* Insight card — below organism on mobile, beside it on desktop */}
+        <div className="relative flex w-full shrink-0 items-center md:w-[320px]">
           <AnimatePresence mode="wait">
             {insight ? (
               <motion.div
@@ -1980,8 +1995,8 @@ function EcosystemVisual({ lang = 'en', paused = false }: { lang?: 'en' | 'nl'; 
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                 className="w-full overflow-hidden rounded-xl border border-bla-lime/25 bg-[#14181d]/90 backdrop-blur-md"
               >
-                <div className="px-4 py-4 md:px-5 md:py-5">
-                  <div className="mb-3">
+                <div className="px-3 py-3 md:px-5 md:py-5">
+                  <div className="mb-2 md:mb-3">
                     <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-bla-lime/70">
                       {lang === 'en' ? 'Insight' : 'Inzicht'}
                     </span>
@@ -1989,7 +2004,7 @@ function EcosystemVisual({ lang = 'en', paused = false }: { lang?: 'en' | 'nl'; 
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 text-white/85">
                       <DeptIcon type={DEPARTMENTS[insight.from].icon} className="h-3.5 w-3.5 shrink-0 text-bla-lime" />
-                      <span className="font-host text-sm font-medium">
+                      <span className="font-host text-xs font-medium md:text-sm">
                         {DEPARTMENTS[insight.from].label[lang]}
                       </span>
                     </span>
@@ -1998,7 +2013,7 @@ function EcosystemVisual({ lang = 'en', paused = false }: { lang?: 'en' | 'nl'; 
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-white/85">
                       <DeptIcon type={DEPARTMENTS[insight.to].icon} className="h-3.5 w-3.5 shrink-0 text-bla-lime" />
-                      <span className="font-host text-sm font-medium">
+                      <span className="font-host text-xs font-medium md:text-sm">
                         {DEPARTMENTS[insight.to].label[lang]}
                       </span>
                     </span>
@@ -2007,11 +2022,11 @@ function EcosystemVisual({ lang = 'en', paused = false }: { lang?: 'en' | 'nl'; 
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="mt-3 font-host text-[15px] font-medium leading-snug text-white/90"
+                    className="mt-2 font-host text-[13px] font-medium leading-snug text-white/90 md:mt-3 md:text-[15px]"
                   >
                     {insight.title[lang]}
                   </motion.h5>
-                  <p className="mt-2 font-host text-[14px] leading-relaxed text-white/55">
+                  <p className="mt-1.5 font-host text-[12px] leading-relaxed text-white/55 md:mt-2 md:text-[14px]">
                     {insight.body[lang].split(' ').map((word, i) => (
                       <motion.span
                         key={`${word}-${i}`}
