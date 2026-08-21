@@ -53,12 +53,12 @@
     }
   },
   "intro": {
-    "heading": "AI is standaard geworden. Wij maken het waardevol.",
+    "heading": "AI is standaard geworden. Wij laten het voor je werken.",
     "description": "",
     "disclaimer": "We doen meer dan dit. Als we alles hadden opschreven, was dit je scroll-workout voor vandaag. Alles is bespreekbaar.",
     "pillars": {
       "marketing": {
-        "title": "Marketing",
+        "title": "Brand & Marketing",
         "focus": "Groei zonder slappe beloftes: merk dat klopt, boodschap die raakt, funnel die niet lekt—meer euro's op de bank.",
         "items": {
           "brandDevelopment": {
@@ -80,38 +80,54 @@
         }
       },
       "tooling": {
-        "title": "Tooling",
-        "focus": "Snel zichtbaar resultaat: bouwen, valideren, automatiseren zodat het team weer kan kletsen bij het koffiezetapparaat.",
+        "title": "AI Producten & Services",
+        "focus": "Van concept tot productie — wij ontwerpen, bouwen en leveren AI die je team en klanten daadwerkelijk gebruiken.",
         "items": {
-          "prototyping": {
-            "title": "Prototyping (PoC)",
-            "description": "Van idee naar iets tastbaars in weken, niet kwartalen. Fout mogen maken zit in de prijs."
+          "experienceDesign": {
+            "title": "AI-ervaringsontwerp",
+            "description": "Hoe AI past in de klantreis of medewerkersreis. We brengen touchpoints in kaart, ontwerpen interacties en prototypen de ervaring voordat we bouwen."
           },
-          "automation": {
-            "title": "Automatisering",
-            "description": "Dat wekelijkse rapport dat uit vijf tabbladen wordt geknipt? Voorbij. Je team doet weer het echte werk."
+          "aiAgents": {
+            "title": "AI-agents & automatisering",
+            "description": "Autonome systemen die meerstapsprocessen afhandelen. Van klantenservice-agents tot interne procesautomatisering — met menselijk toezicht waar het ertoe doet."
           },
-          "legacyReplacement": {
-            "title": "Oude Systemen Vervangen",
-            "description": "Stap voor stap, zonder big-bang-drama. Oud systeem weg, ambities weer vrij."
+          "customDevelopment": {
+            "title": "AI-ontwikkeling op maat",
+            "description": "Productiewaardige AI-applicaties gebouwd voor jouw specifieke context. Wij leveren werkende software, geen presentaties."
+          },
+          "rapidPrototyping": {
+            "title": "Rapid prototyping",
+            "description": "Van idee naar werkend proof-of-concept in weken. Snel falen, sneller leren, alleen investeren in wat werkt."
+          },
+          "systemIntegration": {
+            "title": "Systeemintegratie",
+            "description": "AI verbonden met je bestaande stack — CRM, ERP, datawarehouse, interne tools. Geen eilandoplossingen."
+          },
+          "adoptionEnablement": {
+            "title": "Adoptie & verandermanagement",
+            "description": "Bouwen is het halve werk. Wij zorgen dat je team begrijpt, vertrouwt en daadwerkelijk gebruikt wat we opleveren."
+          },
+          "responsibleAi": {
+            "title": "Verantwoorde AI",
+            "description": "Privacy, compliance, bias-preventie en kwaliteitscontroles — vanaf dag één ingebouwd, niet achteraf erbij geplakt."
           }
         }
       },
       "data": {
         "title": "Data",
-        "focus": "Inzicht dat de vergadering inkort: minder buikgevoel, meer 'dit zeggen de cijfers, dit doen we eraan'.",
+        "focus": "Zorg dat het schaalt met robuuste architectuur en organisatorische diepgang.",
         "items": {
+          "maturityAssessment": {
+            "title": "Data Maturity Assessment",
+            "description": "Begrijp waar je staat, wat haalbaar is en wat prioriteit heeft — op basis van je werkelijke stack, data en team."
+          },
           "dataCentralization": {
             "title": "Data Centralisatie",
-            "description": "Eén plek waar je durft te kijken. Geen 'welk bestand is leading?'-stress meer."
+            "description": "Eén plek waar je durft te kijken: datapipelines, governance, kwaliteit en één bron van waarheid."
           },
-          "dashboarding": {
-            "title": "Dashboarding",
-            "description": "Dashboards die mensen écht openen. Overzicht dat maandag richting geeft."
-          },
-          "talkToData": {
-            "title": "Praat met Data",
-            "description": "Stel je data een vraag in gewone taal. Antwoord zonder smalltalk, terwijl je nog weet waarom je vroeg."
+          "dashboardingInsight": {
+            "title": "Dashboarding & Insight",
+            "description": "Dashboards die teams écht gebruiken. Van ruwe data naar beslissingen — niet naar decoratie."
           }
         }
       }

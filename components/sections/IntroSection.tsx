@@ -72,19 +72,39 @@ export default function IntroSection() {
       focus: t('pillars.tooling.focus'),
       items: [
         {
-          key: 'prototyping',
-          title: t('pillars.tooling.items.prototyping.title'),
-          description: t('pillars.tooling.items.prototyping.description'),
+          key: 'experienceDesign',
+          title: t('pillars.tooling.items.experienceDesign.title'),
+          description: t('pillars.tooling.items.experienceDesign.description'),
         },
         {
-          key: 'automation',
-          title: t('pillars.tooling.items.automation.title'),
-          description: t('pillars.tooling.items.automation.description'),
+          key: 'aiAgents',
+          title: t('pillars.tooling.items.aiAgents.title'),
+          description: t('pillars.tooling.items.aiAgents.description'),
         },
         {
-          key: 'legacyReplacement',
-          title: t('pillars.tooling.items.legacyReplacement.title'),
-          description: t('pillars.tooling.items.legacyReplacement.description'),
+          key: 'customDevelopment',
+          title: t('pillars.tooling.items.customDevelopment.title'),
+          description: t('pillars.tooling.items.customDevelopment.description'),
+        },
+        {
+          key: 'rapidPrototyping',
+          title: t('pillars.tooling.items.rapidPrototyping.title'),
+          description: t('pillars.tooling.items.rapidPrototyping.description'),
+        },
+        {
+          key: 'systemIntegration',
+          title: t('pillars.tooling.items.systemIntegration.title'),
+          description: t('pillars.tooling.items.systemIntegration.description'),
+        },
+        {
+          key: 'adoptionEnablement',
+          title: t('pillars.tooling.items.adoptionEnablement.title'),
+          description: t('pillars.tooling.items.adoptionEnablement.description'),
+        },
+        {
+          key: 'responsibleAi',
+          title: t('pillars.tooling.items.responsibleAi.title'),
+          description: t('pillars.tooling.items.responsibleAi.description'),
         },
       ],
     },
@@ -95,19 +115,19 @@ export default function IntroSection() {
       focus: t('pillars.data.focus'),
       items: [
         {
+          key: 'maturityAssessment',
+          title: t('pillars.data.items.maturityAssessment.title'),
+          description: t('pillars.data.items.maturityAssessment.description'),
+        },
+        {
           key: 'dataCentralization',
           title: t('pillars.data.items.dataCentralization.title'),
           description: t('pillars.data.items.dataCentralization.description'),
         },
         {
-          key: 'dashboarding',
-          title: t('pillars.data.items.dashboarding.title'),
-          description: t('pillars.data.items.dashboarding.description'),
-        },
-        {
-          key: 'talkToData',
-          title: t('pillars.data.items.talkToData.title'),
-          description: t('pillars.data.items.talkToData.description'),
+          key: 'dashboardingInsight',
+          title: t('pillars.data.items.dashboardingInsight.title'),
+          description: t('pillars.data.items.dashboardingInsight.description'),
         },
       ],
     },

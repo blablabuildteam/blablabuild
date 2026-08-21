@@ -93,7 +93,12 @@ export default function V2Footer() {
               </a>
             ))}
           </nav>
-          <div className="text-sm text-white/45">© {new Date().getFullYear()} blablabuild · all rights reserved</div>
+          <div className="flex flex-col gap-1 text-sm text-white/45">
+            <span>© {new Date().getFullYear()} blablabuild · all rights reserved</span>
+            <a href="https://www.flaticon.com/free-icons/loud-speaker" title="loud speaker icons" className="text-[11px] text-white/25 transition-colors hover:text-white/45" target="_blank" rel="noopener noreferrer">Loud speaker icons created by BomSymbols - Flaticon</a>
+            <a href="https://www.flaticon.com/free-icons/brain" title="brain icons" className="text-[11px] text-white/25 transition-colors hover:text-white/45" target="_blank" rel="noopener noreferrer">Brain icons created by Magnific - Flaticon</a>
+            <a href="https://www.flaticon.com/free-icons/analysis" title="analysis icons" className="text-[11px] text-white/25 transition-colors hover:text-white/45" target="_blank" rel="noopener noreferrer">Analysis icons created by monkik - Flaticon</a>
+          </div>
         </div>
       </div>
     </footer>

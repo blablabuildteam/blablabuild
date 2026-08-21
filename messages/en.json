@@ -58,7 +58,7 @@
     "disclaimer": "We do more than this. If we'd written everything down, this would be your scroll workout for the day. Everything is on the table.",
     "pillars": {
       "marketing": {
-        "title": "Marketing",
+        "title": "Brand & Marketing",
         "focus": "Growth without soft promises: a brand that holds, messaging that lands, a funnel that doesn't leak—more money in the bank.",
         "items": {
           "brandDevelopment": {
@@ -80,38 +80,54 @@
         }
       },
       "tooling": {
-        "title": "Tooling",
-        "focus": "Fast, visible results: build, validate, automate—so your team can actually chat by the coffee machine again.",
+        "title": "AI Products & Services",
+        "focus": "From concept to production — we design, build, and ship AI that your team and customers actually use.",
         "items": {
-          "prototyping": {
-            "title": "Prototyping (PoC)",
-            "description": "From idea to something tangible in weeks, not quarters. Getting it wrong early is built into the price."
+          "experienceDesign": {
+            "title": "AI Experience Design",
+            "description": "How AI fits into the journey — for customers, employees, or both. We map touchpoints, design interactions, and prototype the experience before building."
           },
-          "automation": {
-            "title": "Automation",
-            "description": "That weekly report stitched from five tabs? Gone. Your team gets back to the work that actually matters."
+          "aiAgents": {
+            "title": "AI Agents & Automation",
+            "description": "Autonomous systems that handle multi-step workflows. From customer service agents to internal process automation — with human oversight where it matters."
           },
-          "legacyReplacement": {
-            "title": "Legacy Replacement",
-            "description": "Step by step, no big-bang drama. Old system out, ambitions back on track."
+          "customDevelopment": {
+            "title": "Custom AI Development",
+            "description": "Production-grade AI applications built for your specific context. We ship working software, not slide decks."
+          },
+          "rapidPrototyping": {
+            "title": "Rapid Prototyping",
+            "description": "From idea to working proof-of-concept in weeks. Fail fast, learn faster, invest only in what works."
+          },
+          "systemIntegration": {
+            "title": "System Integration",
+            "description": "AI connected to your existing stack — CRM, ERP, data warehouse, internal tools. No island solutions."
+          },
+          "adoptionEnablement": {
+            "title": "Adoption & Enablement",
+            "description": "Building it is half the work. We make sure your team understands, trusts, and actually uses what we deliver."
+          },
+          "responsibleAi": {
+            "title": "Responsible AI",
+            "description": "Privacy, compliance, bias prevention, and quality controls — designed in from day one, not bolted on after."
           }
         }
       },
       "data": {
         "title": "Data",
-        "focus": "Insight that shortens meetings: less gut feel, more 'what the numbers say—and what we do about it.'",
+        "focus": "Ensure it scales with resilient architecture and organizational depth.",
         "items": {
+          "maturityAssessment": {
+            "title": "Data Maturity Assessment",
+            "description": "Understand where you stand, what's achievable, and what to prioritize — based on your actual stack, data, and team."
+          },
           "dataCentralization": {
             "title": "Data Centralization",
-            "description": "One place you dare to look at. No more 'which file is gospel?' stress."
+            "description": "One place you dare to look at: pipelines, governance, quality, and a single source of truth."
           },
-          "dashboarding": {
-            "title": "Dashboarding",
-            "description": "Dashboards people actually open. The kind of overview that gives Monday a direction."
-          },
-          "talkToData": {
-            "title": "Talk to Data",
-            "description": "Ask your data a question in plain language. Answer without small talk, while you still remember why you asked."
+          "dashboardingInsight": {
+            "title": "Dashboarding & Insight",
+            "description": "Dashboards teams actually use. From raw data to decisions — not decoration."
           }
         }
       }
