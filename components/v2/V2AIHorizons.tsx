@@ -217,12 +217,42 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
                           ? lang === 'en' ? 'Play animation' : 'Animatie afspelen'
                           : lang === 'en' ? 'Pause animation' : 'Animatie pauzeren'
                       }
-                      className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#14181d] bg-[#14181d] text-bla-lime transition-transform duration-200 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/25"
+                      className="relative mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center overflow-visible rounded-full border border-[#14181d] bg-[#14181d] text-bla-lime transition-transform duration-200 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/25"
                     >
+                      {!paused && (
+                        <span className="pointer-events-none absolute left-1/2 top-1/2 h-[30px] w-[30px] -translate-x-1/2 -translate-y-1/2">
+                          <svg
+                            aria-hidden
+                            viewBox="0 0 28 28"
+                            className="h-full w-full animate-[spin_1.4s_linear_infinite] motion-reduce:animate-none"
+                          >
+                            <circle
+                              cx="14"
+                              cy="14"
+                              r="12.5"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeOpacity="0.22"
+                              strokeWidth="1.5"
+                            />
+                            <circle
+                              cx="14"
+                              cy="14"
+                              r="12.5"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.75"
+                              strokeLinecap="round"
+                              strokeDasharray="16 63"
+                              className="motion-reduce:hidden"
+                            />
+                          </svg>
+                        </span>
+                      )}
                       {paused ? (
-                        <Play className="h-2.5 w-2.5 fill-current" />
+                        <Play className="relative h-2.5 w-2.5 fill-current" />
                       ) : (
-                        <Pause className="h-2.5 w-2.5 fill-current" />
+                        <Pause className="relative h-2.5 w-2.5 fill-current" />
                       )}
                     </button>
                   ) : (

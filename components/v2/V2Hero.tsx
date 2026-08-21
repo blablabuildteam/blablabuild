@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
 const HeroCanvasEffect = dynamic(() => import('./HeroCanvasEffect'), { ssr: false });
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { NoiseLayer } from './V2Atoms';
 import V2DirectHelp from './V2DirectHelp';
 
@@ -52,21 +52,6 @@ function BrandTicker() {
 const PILLAR_KEYS = ['marketing', 'tooling', 'data'] as const;
 type PillarKey = (typeof PILLAR_KEYS)[number];
 
-const PILLAR_COPY: Record<PillarKey, { nl: string; en: string }> = {
-  marketing: {
-    nl: 'merken die mensen onthouden — en kopen.',
-    en: 'brands people remember — and buy from.',
-  },
-  tooling: {
-    nl: 'systemen die je team voelt op maandagochtend.',
-    en: 'systems your team feels on a Monday morning.',
-  },
-  data: {
-    nl: 'inzicht waardoor vergaderingen korter worden.',
-    en: 'insight that makes meetings shorter.',
-  },
-};
-
 const TICKER_NL = [
   'AI workflows',
   'data centralisatie',
@@ -90,6 +75,7 @@ const TICKER_EN = [
 
 export default function V2Hero() {
   const locale = useLocale();
+  const tIntro = useTranslations('intro');
   const containerRef = useRef<HTMLElement>(null);
   const [activePillar, setActivePillar] = useState<PillarKey>('marketing');
 
@@ -110,7 +96,6 @@ export default function V2Hero() {
     return () => clearInterval(id);
   }, []);
 
-  const pillarCopy = PILLAR_COPY[activePillar][locale === 'en' ? 'en' : 'nl'];
   const tickerWords = locale === 'en' ? TICKER_EN : TICKER_NL;
 
   return (
@@ -231,7 +216,7 @@ export default function V2Hero() {
                           isActive ? 'text-bla-lime' : 'text-white/40 group-hover/item:text-white/70'
                         }`}
                       >
-                        {k}
+                        {tIntro(`pillars.${k}.title`)}
                       </span>
                     </button>
                   );
@@ -243,9 +228,9 @@ export default function V2Hero() {
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
-                className="mt-4 font-host text-[13px] leading-snug text-white/75"
+                className="mt-4 hidden font-host text-[13px] leading-snug text-white/75 md:block"
               >
-                {pillarCopy}
+                {tIntro(`pillars.${activePillar}.focus`)}
               </motion.p>
 
               {/* Founders strip — past bij de rest van V2 (overlap avatars + label) */}
