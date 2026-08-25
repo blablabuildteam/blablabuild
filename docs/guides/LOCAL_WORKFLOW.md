@@ -32,9 +32,8 @@ Dat doet: `type-check` → `lint` → `build`. Als alles groen is, kun je commit
 
 ## Git workflow
 
-- **Origin:** `https://github.com/blablabuildteam/blablabuild.git`
-- **Live site:** `https://blablabuild-mu.vercel.app`
-- **Vercel:** `xk-growths-projects/blablabuild`
+- **Origin:** `https://github.com/blablabuildteam/blablabuild.git` — hier pushen we naartoe
+- **Vercel:** bestaand project **blablabuild** blijft staan; alleen de gekoppelde GitHub-repo wijzigen
 
 ### Dagelijkse flow
 
@@ -43,13 +42,13 @@ git add -A
 git status   # controleer dat er GEEN .env of .env.vercel tussen staat
 git commit -m "Beschrijving van je wijzigingen"
 git push origin main
-npx vercel --prod --yes   # tot GitHub auto-deploy staat
 ```
 
-### Automatische deploy (eenmalig)
+### GitHub in Vercel omhangen (eenmalig)
 
-Vercel → **blablabuild** → Settings → Git → Connect → `blablabuildteam/blablabuild`.  
-Repo niet zichtbaar? [Vercel GitHub App](https://github.com/apps/vercel) installeren voor `blablabuildteam`.
+Vercel → project **blablabuild** → **Settings → Git** → disconnect oude repo (`danieldevos90/blablabuild`) → connect `blablabuildteam/blablabuild` → branch `main`.
+
+Repo niet zichtbaar? [Vercel GitHub App](https://github.com/apps/vercel) → toegang geven tot `blablabuildteam`.
 
 ## Wat we niet meenemen (staat in .gitignore)
 
