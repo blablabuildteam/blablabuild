@@ -140,13 +140,15 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
       transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
       className="mt-10 border-t border-[#14181d]/10 pt-10 md:mt-14 md:pt-14"
     >
-      <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
-        <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#14181d]/40">
+      <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
+        <h3 className="font-host text-xl font-light text-[#14181d] md:text-2xl">
           {lang === 'en' ? 'The four stages of AI transformation' : 'De vier fases van AI-transformatie'}
-        </div>
-        <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#14181d]/35">
-          {lang === 'en' ? '↳ select a stage to explore' : '↳ kies een fase om te verkennen'}
-        </div>
+        </h3>
+        <p className="font-host text-sm text-[#14181d]/45">
+          {lang === 'en'
+            ? `Showing: ${stages[activeStage].title}`
+            : `Nu: ${stages[activeStage].title}`}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-5 md:items-stretch">
@@ -237,9 +239,8 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
                 {/* Mobile: visual appears directly under the active stage */}
                 {isActive && (
                   <motion.div
-                    initial={{ opacity: 0 }}
+                    initial={false}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                     className="md:hidden"
                   >
                     <div className="pt-1 pb-2">
@@ -253,9 +254,9 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
         </div>
 
         {/* Desktop: visual panel (hidden on mobile — shown inline above) */}
-        <div className="relative hidden md:col-span-8 md:block lg:col-span-9">
+        <div className="relative hidden min-h-[440px] md:col-span-8 md:block lg:col-span-9">
           <div className="md:absolute md:inset-0">
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={stages[activeStage].id}
                 initial={{ opacity: 0, y: 10 }}
@@ -277,7 +278,7 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
 function HorizonVisual({ stage, lang, paused }: { stage: number; lang: 'en' | 'nl'; paused: boolean }) {
   return (
     <div className="flex min-h-[440px] flex-col overflow-hidden rounded-2xl border border-[#14181d]/20 bg-[#14181d] md:h-full md:min-h-0">
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={stage}
           initial={{ opacity: 0, scale: 0.96 }}

@@ -17,10 +17,7 @@ export default function V2Footer() {
         <div className="mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-24">
           <div className="grid grid-cols-12 gap-x-6 gap-y-8 md:gap-x-10">
             <div className="col-span-12 md:col-span-8">
-              <div className="font-mono text-[11px] uppercase tracking-[0.28em] text-[#14181d]/55">
-                § {lang === 'en' ? 'Let\'s build' : 'Laten we bouwen'}
-              </div>
-              <h2 className="mt-5 font-host text-3xl font-light leading-[1.05] tracking-tight text-[#14181d] md:text-[4.25rem]">
+              <h2 className="font-host text-3xl font-light leading-[1.05] tracking-tight text-[#14181d] md:text-[4.25rem]">
                 {lang === 'en' ? 'What keeps you up at night?' : "Wat houdt je 's nachts wakker?"}
                 <br />
                 <span className="font-medium text-[#14181d]">
@@ -61,7 +58,7 @@ export default function V2Footer() {
             <span className="font-light text-[#14181d]/85">blabla</span>
             <span className="font-bold">build</span>
           </motion.div>
-          <div className="mt-3 flex flex-col gap-1 font-mono text-[11px] uppercase tracking-[0.32em] text-[#14181d]/40 md:flex-row md:items-center md:gap-4 md:text-xs">
+          <div className="mt-3 flex flex-col gap-1 font-host text-[14px] text-[#14181d]/45 md:flex-row md:items-center md:gap-4">
             <span>Talk less.</span>
             <span aria-hidden className="hidden h-px w-6 bg-[#14181d]/20 md:block" />
             <span className="font-medium text-[#14181d]">Build more.</span>

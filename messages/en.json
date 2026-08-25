@@ -120,6 +120,10 @@
           "dashboardingInsight": {
             "title": "Dashboarding & Insight",
             "description": "Dashboards teams actually use. From raw data to decisions — not decoration."
+          },
+          "talkToData": {
+            "title": "Talk to your data",
+            "description": "Ask questions in plain language and get answers instantly. No SQL, no tickets — insight when you need it."
           }
         }
       }

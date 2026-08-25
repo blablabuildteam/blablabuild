@@ -8,40 +8,65 @@ const HeroCanvasEffect = dynamic(() => import('./HeroCanvasEffect'), { ssr: fals
 import { useLocale } from 'next-intl';
 import { NoiseLayer } from './V2Atoms';
 import V2DirectHelp from './V2DirectHelp';
+import Image from 'next/image';
 
-// Brand names displayed as text ticker — swap for real logos once sized
-const BRAND_NAMES = [
-  'Heineken', 'Adidas', 'Eneco', 'Bitvavo',
-  'Rabobank', 'McLaren', 'Ajax', 'Diageo', 'Puig',
+const BRAND_LOGOS = [
+  { src: '/profile-brand-logos/heineken.png', alt: 'Heineken', w: 72 },
+  { src: '/profile-brand-logos/adidas.png', alt: 'Adidas', w: 56 },
+  { src: '/profile-brand-logos/eneco.png', alt: 'Eneco', w: 64 },
+  { src: '/profile-brand-logos/bitvavo.png', alt: 'Bitvavo', w: 72 },
+  { src: '/profile-brand-logos/rabobank.png', alt: 'Rabobank', w: 80 },
+  { src: '/profile-brand-logos/mclaren.png', alt: 'McLaren', w: 72 },
+  { src: '/profile-brand-logos/ajax.png', alt: 'Ajax', w: 48 },
+  { src: '/profile-brand-logos/diageo.png', alt: 'Diageo', w: 64 },
 ];
 
-function BrandTicker() {
-  // Two copies side-by-side so marquee-scroll (-50%) loops seamlessly
-  const items = [...BRAND_NAMES, ...BRAND_NAMES];
+function BrandLogoTicker() {
+  const items = [...BRAND_LOGOS, ...BRAND_LOGOS];
   return (
     <div
       className="overflow-hidden"
       style={{
-        maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
-        WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
+        maskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
+        WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
       }}
     >
-      <div
-        className="flex w-max"
-        style={{ animation: 'marquee-scroll 18s linear infinite' }}
-      >
-        {items.map((name, i) => (
-          <span
-            key={i}
-            className="inline-flex shrink-0 items-center gap-2.5 px-2.5"
-          >
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/45">
-              {name}
-            </span>
-            <span
-              aria-hidden
-              className="inline-block h-[3px] w-[3px] rounded-full bg-white/20"
+      <div className="flex w-max items-center gap-8" style={{ animation: 'marquee-scroll 22s linear infinite' }}>
+        {items.map((logo, i) => (
+          <span key={`${logo.alt}-${i}`} className="inline-flex h-6 shrink-0 items-center opacity-45">
+            <Image
+              src={logo.src}
+              alt={logo.alt}
+              width={logo.w}
+              height={24}
+              className="h-5 w-auto max-w-[80px] object-contain brightness-0 invert"
             />
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function HeroTicker({ words }: { words: string[] }) {
+  const items = [...words, ...words];
+  return (
+    <div
+      className="overflow-hidden"
+      style={{
+        maskImage: 'linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)',
+        WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)',
+      }}
+    >
+      <div className="flex w-max items-center" style={{ animation: 'marquee-scroll 45s linear infinite' }}>
+        {items.map((word, i) => (
+          <span key={`${word}-${i}`} className="inline-flex shrink-0 items-center">
+            <span className="mx-4 font-host text-[11px] font-medium uppercase tracking-[0.16em] text-white/55">
+              {word}
+            </span>
+            <span aria-hidden className="select-none text-[11px] text-white/30">
+              ·
+            </span>
           </span>
         ))}
       </div>
@@ -51,6 +76,12 @@ function BrandTicker() {
 
 const PILLAR_KEYS = ['marketing', 'tooling', 'data'] as const;
 type PillarKey = (typeof PILLAR_KEYS)[number];
+
+const PILLAR_LABELS: Record<PillarKey, { nl: string; en: string }> = {
+  marketing: { nl: 'Marketing', en: 'Marketing' },
+  tooling: { nl: 'AI & tooling', en: 'AI & tooling' },
+  data: { nl: 'Data', en: 'Data' },
+};
 
 const PILLAR_COPY: Record<PillarKey, { nl: string; en: string }> = {
   marketing: {
@@ -88,7 +119,110 @@ const TICKER_EN = [
   'enterprise prototyping',
 ];
 
-export default function V2Hero() {
+export type V2HeroVariant = 'punchy' | 'editorial' | 'editorial-b';
+
+function HeroHeadline({
+  variant,
+  locale,
+}: {
+  variant: V2HeroVariant;
+  locale: string;
+}) {
+  const isEn = locale === 'en';
+
+  if (variant === 'punchy') {
+    return (
+      <h1 className="font-host font-light tracking-[-0.035em] text-white text-[clamp(2.4rem,6.4vw,5.6rem)] leading-[0.98]">
+        <span className="block overflow-hidden">
+          <motion.span
+            initial={{ y: '110%', opacity: 0 }}
+            animate={{ y: '0%', opacity: 1 }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+            className="inline-block"
+          >
+            Talk less.
+          </motion.span>
+        </span>
+        <span className="block overflow-hidden">
+          <motion.span
+            initial={{ y: '110%', opacity: 0 }}
+            animate={{ y: '0%', opacity: 1 }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.18 }}
+            className="inline-block font-medium text-bla-lime"
+          >
+            Build more.
+          </motion.span>
+        </span>
+        <span className="block overflow-hidden">
+          <motion.span
+            initial={{ y: '110%', opacity: 0 }}
+            animate={{ y: '0%', opacity: 1 }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.32 }}
+            className="inline-block text-white/85"
+          >
+            Ship what works.
+          </motion.span>
+        </span>
+      </h1>
+    );
+  }
+
+  const lines =
+    variant === 'editorial-b'
+      ? isEn
+        ? ['Less noise.', 'More results.', 'Brand, AI and data your team actually uses.']
+        : ['Minder ruis.', 'Meer resultaat.', 'Merk, AI en data die je team écht gebruikt.']
+      : isEn
+        ? ['We help growing teams', 'with brand, AI and data', 'they actually use.']
+        : ['We helpen teams groeien', 'met merk, AI en data', 'die écht gebruikt worden.'];
+
+  return (
+    <h1 className="font-host font-light tracking-[-0.035em] text-white text-[clamp(2.2rem,5.8vw,5.2rem)] leading-[1.02]">
+      {lines.map((line, i) => (
+        <span key={line} className="block overflow-hidden">
+          <motion.span
+            initial={{ y: '110%', opacity: 0 }}
+            animate={{ y: '0%', opacity: 1 }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.05 + i * 0.12 }}
+            className={`inline-block ${i === lines.length - 1 ? 'font-medium text-bla-lime' : i === 0 ? 'text-white' : 'text-white/85'}`}
+          >
+            {line}
+          </motion.span>
+        </span>
+      ))}
+    </h1>
+  );
+}
+
+function HeroSubcopy({ variant, locale }: { variant: V2HeroVariant; locale: string }) {
+  const isEn = locale === 'en';
+
+  const copy =
+    variant === 'editorial-b'
+      ? isEn
+        ? 'From brand to AI to data — we design, build and deliver what sticks.'
+        : 'Van merk tot AI tot data — we ontwerpen, bouwen en leveren wat beklijft.'
+      : variant === 'editorial'
+        ? isEn
+          ? 'From brand to AI to data — concrete, usable, and built to move your business forward.'
+          : 'Van merk tot AI tot data — concreet, bruikbaar, en gebouwd om je bedrijf vooruit te helpen.'
+        : isEn
+          ? 'We turn AI, data and digital products into systems that genuinely move your business forward — less noise, more results.'
+          : 'We zetten AI, data en digitale producten om in systemen die je bedrijf écht vooruit helpen — minder ruis, meer resultaat.';
+
+  return (
+    <motion.p
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.9, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="mt-7 max-w-xl font-host text-base leading-relaxed text-white/65 md:text-lg md:leading-relaxed"
+    >
+      {copy}
+    </motion.p>
+  );
+}
+
+export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant }) {
   const locale = useLocale();
   const containerRef = useRef<HTMLElement>(null);
   const [activePillar, setActivePillar] = useState<PillarKey>('marketing');
@@ -112,6 +246,7 @@ export default function V2Hero() {
 
   const pillarCopy = PILLAR_COPY[activePillar][locale === 'en' ? 'en' : 'nl'];
   const tickerWords = locale === 'en' ? TICKER_EN : TICKER_NL;
+  const isEn = locale === 'en';
 
   return (
     <section
@@ -138,53 +273,10 @@ export default function V2Hero() {
         style={{ opacity: opacityHero }}
         className="relative mx-auto flex w-full max-w-[1320px] flex-1 flex-col justify-center px-5 sm:px-8 md:px-10"
       >
-
-        {/* Hero headline */}
         <div className="relative grid grid-cols-12 gap-x-4 gap-y-10 pb-12 pt-10 md:gap-y-14 md:pb-14 md:pt-16">
           <div className="col-span-12 lg:col-span-8">
-            <h1 className="font-host font-light tracking-[-0.035em] text-white text-[clamp(2.4rem,6.4vw,5.6rem)] leading-[0.98]">
-              <span className="block overflow-hidden">
-                <motion.span
-                  initial={{ y: '110%', opacity: 0 }}
-                  animate={{ y: '0%', opacity: 1 }}
-                  transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
-                  className="inline-block"
-                >
-                  Talk less.
-                </motion.span>
-              </span>
-              <span className="block overflow-hidden">
-                <motion.span
-                  initial={{ y: '110%', opacity: 0 }}
-                  animate={{ y: '0%', opacity: 1 }}
-                  transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.18 }}
-                  className="inline-block font-medium text-bla-lime"
-                >
-                  Build more.
-                </motion.span>
-              </span>
-              <span className="block overflow-hidden">
-                <motion.span
-                  initial={{ y: '110%', opacity: 0 }}
-                  animate={{ y: '0%', opacity: 1 }}
-                  transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.32 }}
-                  className="inline-block text-white/85"
-                >
-                  Ship what works.
-                </motion.span>
-              </span>
-            </h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-7 max-w-xl font-host text-base leading-relaxed text-white/70 md:text-lg"
-            >
-              {locale === 'en'
-                ? 'We turn AI, data and digital products into systems that genuinely move your business forward — less noise, more results.'
-                : 'We zetten AI, data en digitale producten om in systemen die je bedrijf écht vooruit helpen — minder ruis, meer resultaat.'}
-            </motion.p>
+            <HeroHeadline variant={variant} locale={locale} />
+            <HeroSubcopy variant={variant} locale={locale} />
 
             <motion.div
               initial={{ opacity: 0, y: 16 }}
@@ -197,41 +289,41 @@ export default function V2Hero() {
                 href="#cases"
                 className="group inline-flex h-12 items-center gap-2 rounded-full border border-white/15 bg-[#0a0b0e]/40 px-5 text-sm font-medium text-white backdrop-blur-[6px] transition-colors hover:border-white/40 hover:bg-[#0a0b0e]/55 md:h-[52px] md:px-6 md:text-[15px]"
               >
-                {locale === 'en' ? 'See the work' : 'Bekijk onze cases'}
+                {isEn ? 'See the work' : 'Bekijk onze cases'}
               </a>
             </motion.div>
           </div>
 
-          {/* Right column: pillar rotator + team showcase */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.55 }}
-            className="col-span-12 lg:col-span-4 lg:pl-6"
+            className="col-span-12 hidden lg:col-span-4 lg:block lg:pl-6"
           >
             <div className="relative flex h-full flex-col rounded-2xl border border-white/10 bg-[#0a0b0e]/45 p-5 backdrop-blur-[6px] md:p-6">
-              <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/45">
-                {locale === 'en' ? '§ practices' : '§ focusgebieden'}
-              </div>
+              <p className="font-host text-[15px] text-white/50">
+                {isEn ? 'What we build' : 'Wat we bouwen'}
+              </p>
 
               <div className="mt-4 space-y-0.5">
                 {PILLAR_KEYS.map((k, i) => {
                   const isActive = activePillar === k;
+                  const label = PILLAR_LABELS[k][isEn ? 'en' : 'nl'];
                   return (
                     <button
                       key={k}
                       onClick={() => setActivePillar(k)}
                       className="group/item flex w-full items-baseline gap-3 py-1 text-left transition-opacity"
                     >
-                      <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
-                        0{i + 1}
+                      <span className="font-host text-[13px] tabular-nums text-white/30">
+                        {String(i + 1).padStart(2, '0')}
                       </span>
                       <span
                         className={`font-host text-xl font-light leading-none transition-colors md:text-2xl ${
                           isActive ? 'text-bla-lime' : 'text-white/40 group-hover/item:text-white/70'
                         }`}
                       >
-                        {k}
+                        {label}
                       </span>
                     </button>
                   );
@@ -243,16 +335,14 @@ export default function V2Hero() {
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
-                className="mt-4 font-host text-[13px] leading-snug text-white/75"
+                className="mt-4 max-w-[28ch] font-host text-[13px] leading-snug text-white/70"
               >
                 {pillarCopy}
               </motion.p>
 
-              {/* Founders strip — past bij de rest van V2 (overlap avatars + label) */}
-              <div className="mt-auto border-t border-white/8 pt-5">
-                <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.28em] text-white/45">
-                  § founders
-                </div>
+              <div className="mt-auto pt-7">
+                <div className="mb-4 h-px w-12 bg-white/20" aria-hidden />
+                <p className="mb-4 font-host text-[15px] text-white/50">Founders</p>
                 <div className="flex items-center gap-4">
                   <div className="flex shrink-0 -space-x-2.5">
                     {[
@@ -272,49 +362,26 @@ export default function V2Hero() {
                     <div className="truncate font-host text-[14px] text-white/90 md:text-[15px]">
                       Xennith · Kevin
                     </div>
-                    <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.22em] text-bla-lime/85">
-                      {locale === 'en' ? '25+ years experience' : '25+ jaar ervaring'}
+                    <div className="mt-0.5 font-host text-[13px] text-bla-lime/85">
+                      {isEn ? '25+ years experience' : '25+ jaar ervaring'}
                     </div>
                   </div>
                 </div>
 
-                {/* Brand ticker — text-based, no image dependencies */}
                 <div className="mt-5">
-                  <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">
-                    {locale === 'en' ? 'shipped for' : 'gewerkt voor'}
-                  </div>
-                  <BrandTicker /></div>
+                  <p className="mb-2 font-host text-[13px] text-white/40">
+                    {isEn ? 'Shipped for' : 'Gewerkt voor'}
+                  </p>
+                  <BrandLogoTicker />
+                </div>
               </div>
             </div>
           </motion.div>
         </div>
       </motion.div>
 
-      {/* Bottom ticker — inline, geen component-dependency */}
-      <div className="relative border-t border-white/8 bg-[#0a0b0e]/60 py-4 backdrop-blur-sm overflow-hidden"
-        style={{
-          maskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
-        }}
-      >
-        <div
-          className="flex w-max"
-          style={{ animation: 'marquee-scroll 45s linear infinite' }}
-        >
-          {[...tickerWords, ...tickerWords].flatMap((w, i) => [
-            <span
-              key={`w-${i}`}
-              className="mx-3 shrink-0 font-mono text-[12px] uppercase tracking-[0.22em] text-white/55"
-            >
-              {w}
-            </span>,
-            <span
-              key={`d-${i}`}
-              className="inline-block shrink-0 h-[5px] w-[5px] rounded-full bg-bla-lime/70"
-              aria-hidden
-            />,
-          ])}
-        </div>
+      <div className="relative border-t border-white/8 bg-[#0a0b0e]/60 py-4 backdrop-blur-sm">
+        <HeroTicker words={tickerWords} />
       </div>
     </section>
   );

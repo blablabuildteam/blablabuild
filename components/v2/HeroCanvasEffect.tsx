@@ -1,13 +1,13 @@
 'use client';
 
-import { useRef, useMemo, useEffect, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { useRef, useMemo, useEffect, useState, type ReactNode } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { motion } from 'framer-motion';
 import * as THREE from 'three';
 
 const PATH_MAX = 64;
-const PLANE_W = 22;
-const PLANE_H = 15;
+const PLANE_W = 40;
+const PLANE_H = 18;
 const GRID_COLS = 141;
 const GRID_ROWS = 96;
 
@@ -60,8 +60,9 @@ vec3 displaced(vec3 pos, out float prox, out float w) {
 }
 
 float edgeFade(vec3 pos) {
-  float edgeX = smoothstep(11.0, 9.0, abs(pos.x));
-  float edgeY = smoothstep(7.5, 5.5, abs(pos.y));
+  // Soft fade only at the extreme edges so ultrawide screens stay covered
+  float edgeX = smoothstep(20.0, 17.5, abs(pos.x));
+  float edgeY = smoothstep(9.0, 7.0, abs(pos.y));
   return edgeX * edgeY;
 }
 `;
@@ -237,7 +238,7 @@ function Particles() {
   const matRef = useRef<THREE.ShaderMaterial>(null);
   const pointer = useRef({ x: 0, y: 0, ready: false });
 
-  const geo = useMemo(() => new THREE.PlaneGeometry(22, 15, 140, 95), []);
+  const geo = useMemo(() => new THREE.PlaneGeometry(PLANE_W, PLANE_H, 140, 95), []);
   const wireGeo = useMemo(() => {
     const src = geo.attributes.position;
     const cols = geo.parameters.widthSegments + 1;
@@ -405,6 +406,13 @@ function Particles() {
   );
 }
 
+function FullBleedScale({ children }: { children: ReactNode }) {
+  const { viewport } = useThree();
+  // Cover full viewport width even on ultrawide — plane is PLANE_W world units
+  const scale = Math.max(1.2, (viewport.width * 1.35) / PLANE_W);
+  return <group scale={[scale, Math.max(1.1, scale * 0.92), 1]}>{children}</group>;
+}
+
 export default function HeroCanvasEffect() {
   const [show, setShow] = useState(false);
 
@@ -428,16 +436,18 @@ export default function HeroCanvasEffect() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.5, delay: 0.3, ease: 'easeOut' }}
-      className="pointer-events-none absolute inset-0"
+      className="pointer-events-none absolute inset-0 overflow-hidden"
       style={{ zIndex: 0 }}
     >
       <Canvas
-        camera={{ position: [0, 0, 8], fov: 60 }}
+        camera={{ position: [0, 0, 7.2], fov: 55 }}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance', toneMapping: THREE.NoToneMapping }}
-        style={{ background: 'transparent' }}
+        style={{ background: 'transparent', width: '100%', height: '100%' }}
         dpr={[1, 1.5]}
       >
-        <Particles />
+        <FullBleedScale>
+          <Particles />
+        </FullBleedScale>
       </Canvas>
     </motion.div>
   );

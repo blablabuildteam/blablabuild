@@ -120,6 +120,10 @@
           "dashboardingInsight": {
             "title": "Dashboarding & Insight",
             "description": "Dashboards die teams écht gebruiken. Van ruwe data naar beslissingen — niet naar decoratie."
+          },
+          "talkToData": {
+            "title": "Praat met je data",
+            "description": "Stel vragen in gewone taal en krijg direct antwoord. Geen SQL, geen tickets — inzicht wanneer je het nodig hebt."
           }
         }
       }

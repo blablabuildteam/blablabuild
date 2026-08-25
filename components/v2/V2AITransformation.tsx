@@ -40,10 +40,7 @@ export default function V2AITransformation() {
           className="grid grid-cols-12 items-start gap-6"
         >
           <div className="col-span-12 md:col-span-7">
-            <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#14181d]/45">
-              &sect; {lang === 'en' ? 'AI transformation that sticks' : 'AI-transformatie die beklijft'}
-            </div>
-            <h2 className="mt-4 font-host text-3xl font-light leading-tight text-[#14181d] md:text-5xl">
+            <h2 className="font-host text-3xl font-light leading-tight text-[#14181d] md:text-5xl">
               {lang === 'en' ? 'AI Transformation' : 'AI Transformatie'}
             </h2>
             <p className="mt-5 max-w-2xl font-host text-base leading-relaxed text-[#14181d]/70 md:text-[17px]">
@@ -66,9 +63,9 @@ export default function V2AITransformation() {
           </div>
           <div className="col-span-12 md:col-span-5">
             <div className="rounded-2xl border border-[#14181d]/10 bg-white p-5 md:p-6">
-              <div className="font-mono text-[9px] uppercase tracking-[0.24em] text-[#14181d]/40">
+              <p className="font-host text-[14px] text-[#14181d]/50">
                 {lang === 'en' ? 'What most businesses underestimate' : 'Wat de meeste bedrijven onderschatten'}
-              </div>
+              </p>
               <p className="mt-2 font-host text-sm leading-relaxed text-[#14181d]/60">
                 {lang === 'en'
                   ? 'The models are here — yet the business isn\'t changing. Transformation rests on four foundations that need attention at the same time:'
@@ -116,11 +113,10 @@ export default function V2AITransformation() {
 
         {/* How we start — static, deliberately quiet */}
         <div className="mt-12 border-t border-[#14181d]/10 pt-10 md:mt-16 md:pt-12">
-          <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#14181d]/40">
-            {lang === 'en' ? 'our approach in four steps' : 'onze aanpak in vier stappen'}
-          </div>
-
-          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4 md:gap-8">
+          <h3 className="mb-6 font-host text-lg font-medium text-[#14181d]">
+            {lang === 'en' ? 'Our approach in four steps' : 'Onze aanpak in vier stappen'}
+          </h3>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4 md:gap-8">
             {steps.map((step, i) => (
               <motion.div
                 key={step.title}
@@ -130,7 +126,7 @@ export default function V2AITransformation() {
                 transition={{ duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
                 className="border-l border-[#14181d]/12 pl-4"
               >
-                <div className="font-mono text-[10px] tracking-[0.2em] text-[#14181d]/30">
+                <div className="font-host text-[13px] tabular-nums text-[#14181d]/30">
                   {String(i + 1).padStart(2, '0')}
                 </div>
                 <h4 className="mt-2 font-host text-sm font-medium text-[#14181d]">{step.title}</h4>

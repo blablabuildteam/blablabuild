@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocale } from 'next-intl';
 import { ChevronDown } from 'lucide-react';
-import { SectionLabel } from './V2Atoms';
 
 interface ValueCard {
   id: string;
@@ -139,8 +138,7 @@ export default function V2Value() {
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col justify-center self-start pr-4"
           >
-            <SectionLabel index="05" label="USP" tone="light" />
-            <h2 className="mt-5 font-host text-4xl font-medium leading-[1.05] tracking-tight text-white xl:text-5xl">
+            <h2 className="font-host text-4xl font-medium leading-[1.05] tracking-tight text-white xl:text-5xl">
               {lang === 'en' ? 'Why blablabuild?' : 'Waarom blablabuild?'}
             </h2>
             <p className="mt-3 font-host text-lg text-white/70 md:text-xl">
@@ -163,8 +161,7 @@ export default function V2Value() {
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             className="mb-8"
           >
-            <SectionLabel index="05" label="USP" tone="light" />
-            <h2 className="mt-5 font-host text-3xl font-medium leading-[1.05] tracking-tight text-white md:text-4xl">
+            <h2 className="font-host text-3xl font-medium leading-[1.05] tracking-tight text-white md:text-4xl">
               {lang === 'en' ? 'Why blablabuild?' : 'Waarom blablabuild?'}
             </h2>
             <p className="mt-3 font-host text-base text-white/70 md:text-lg">

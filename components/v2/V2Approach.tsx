@@ -3,7 +3,7 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
-import { SectionLabel, NoiseLayer } from './V2Atoms';
+import { NoiseLayer } from './V2Atoms';
 
 const STEPS = ['blabla', 'build', 'scale'] as const;
 const RAIL_START = 0.18;
@@ -14,11 +14,13 @@ function ApproachStep({
   title,
   description,
   progress,
+  lang,
 }: {
   index: number;
   title: string;
   description: string;
   progress: MotionValue<number>;
+  lang: 'en' | 'nl';
 }) {
   // Dots sit at the left of each equal column: 0%, ~33%, ~67%.
   const dotAt = index / STEPS.length;
@@ -47,9 +49,9 @@ function ApproachStep({
 
       <motion.div
         style={{ color: labelColor }}
-        className="font-mono text-[11px] uppercase tracking-[0.28em]"
+        className="font-host text-sm text-white/45"
       >
-        {`step 0${index + 1}`}
+        {lang === 'en' ? `Step ${index + 1}` : `Stap ${index + 1}`}
       </motion.div>
       <motion.h3
         style={{ color: titleColor, textShadow: titleShadow }}
@@ -96,8 +98,7 @@ export default function V2Approach() {
       <div className="relative mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-24">
         <div className="grid grid-cols-12 gap-x-6 gap-y-6 md:gap-x-10">
           <div className="col-span-12 md:col-span-7">
-            <SectionLabel index="02" label={lang === 'en' ? 'Our approach' : 'Onze aanpak'} />
-            <h2 className="mt-5 font-host text-3xl font-light leading-[1.0] tracking-tight md:text-[3.75rem]">
+            <h2 className="font-host text-3xl font-light leading-[1.0] tracking-tight md:text-[3.75rem]">
               {lang === 'en' ? 'No agency ' : 'Geen agency '}
               <span className="font-medium text-bla-lime">{lang === 'en' ? 'bullsh*t.' : 'bullsh*t.'}</span>
               <br />
@@ -130,6 +131,7 @@ export default function V2Approach() {
                 title={t(`steps.${step}.title`)}
                 description={t(`steps.${step}.description`)}
                 progress={scrollYProgress}
+                lang={lang}
               />
             ))}
           </div>

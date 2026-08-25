@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
 import { LinkedinIcon } from '@/components/ui/icons/il-linkedin';
-import { SectionLabel } from './V2Atoms';
 
 interface Friend {
   id: string;
@@ -114,8 +113,7 @@ export default function V2Team() {
       <div className="mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-24">
         <div className="grid grid-cols-12 gap-x-6 gap-y-6 md:gap-x-10">
           <div className="col-span-12 md:col-span-7">
-            <SectionLabel index="04" label={lang === 'en' ? 'Who delivers' : 'Wie levert'} tone="dark" />
-            <h2 className="mt-5 font-host text-3xl font-light leading-[1.0] tracking-tight text-[#14181d] md:text-[3.5rem]">
+            <h2 className="font-host text-3xl font-light leading-[1.0] tracking-tight text-[#14181d] md:text-[3.5rem]">
               {lang === 'en' ? 'Two founders. ' : 'Twee founders. '}
               <span className="font-medium text-[#14181d]">
                 {lang === 'en' ? '25+ years experience.' : '25+ jaar ervaring.'}
@@ -173,7 +171,7 @@ export default function V2Team() {
                         <h3 className="font-host text-base font-medium text-[#14181d] md:text-lg">
                           {f.name}
                         </h3>
-                        <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#14181d]/45">
+                        <span className="font-host text-[13px] text-[#14181d]/45">
                           {f.role}
                         </span>
                       </div>
@@ -209,7 +207,7 @@ export default function V2Team() {
                       whileHover={{ x: 2 }}
                       whileTap={{ scale: 0.97 }}
                       transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                      className="group mt-2 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.22em] text-[#14181d]/55 transition-colors hover:text-[#14181d]"
+                      className="group mt-2 inline-flex items-center gap-1.5 font-host text-[13px] text-[#14181d]/55 transition-colors hover:text-[#14181d]"
                     >
                       <motion.span
                         key={expanded[f.id] ? 'less' : 'more'}
@@ -240,7 +238,7 @@ export default function V2Team() {
               </div>
 
               <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-[#14181d]/8 pt-4">
-                <span className="w-full font-mono text-[10px] uppercase tracking-[0.22em] text-[#14181d]/45 sm:w-auto">
+                <span className="w-full font-host text-[13px] text-[#14181d]/45 sm:w-auto">
                   {t('experienceWithBrands')}
                 </span>
                 {f.brands.map((b) => (
@@ -302,7 +300,7 @@ export default function V2Team() {
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <p className="font-host text-[15px] font-medium leading-tight text-[#14181d]">{f.name}</p>
-                      <span className="mt-0.5 inline-block rounded-full bg-[#14181d]/6 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-[#14181d]/50">
+                      <span className="mt-0.5 inline-block rounded-full bg-[#14181d]/6 px-2 py-0.5 font-host text-[12px] text-[#14181d]/50">
                         {lang === 'en' ? f.expertise.en : f.expertise.nl}
                       </span>
                     </div>

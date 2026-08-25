@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
 import { ArrowUpRight, X } from 'lucide-react';
-import { NoiseLayer, SectionLabel, MarqueeStrip } from './V2Atoms';
+import { NoiseLayer, MarqueeStrip } from './V2Atoms';
 
 type Tag = 'marketing' | 'tooling' | 'data';
 
@@ -170,8 +170,7 @@ export default function V2Cases() {
       <div className="relative mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-24">
         <div className="mb-10 flex flex-col gap-5 md:mb-14 md:flex-row md:items-end md:justify-between">
           <div>
-            <SectionLabel index="03" label={lang === 'en' ? 'Selected work' : 'Geselecteerd werk'} />
-            <h2 className="mt-5 max-w-3xl font-host text-3xl font-light leading-[1.0] tracking-tight md:text-[3.5rem]">
+            <h2 className="max-w-3xl font-host text-3xl font-light leading-[1.0] tracking-tight md:text-[3.5rem]">
               {lang === 'en' ? 'Real work. ' : 'Echt werk. '}
               <span className="font-medium text-bla-lime">{lang === 'en' ? 'Real results.' : 'Echt resultaat.'}</span>
             </h2>
@@ -207,7 +206,7 @@ export default function V2Cases() {
               />
 
               {/* index marker */}
-              <div className="absolute left-5 top-5 font-mono text-[10px] uppercase tracking-[0.22em] text-white/35">
+              <div className="absolute left-5 top-5 font-host text-[13px] tabular-nums text-white/35">
                 / 0{i + 1}
               </div>
               <div className="absolute right-5 top-5">
@@ -258,7 +257,7 @@ export default function V2Cases() {
       {/* Logo marquee strip */}
       <div className="relative border-t border-white/8 bg-[#08090c]/60 py-10 md:py-12">
         <div className="mx-auto mb-6 max-w-[1320px] px-5 sm:px-8 md:px-10">
-          <div className="font-mono text-[11px] uppercase tracking-[0.28em] text-white/50">
+          <div className="font-host text-[15px] text-white/50">
             {tCommon('trustedBy')}
           </div>
         </div>
@@ -399,7 +398,7 @@ export default function V2Cases() {
 function Field({ label, body }: { label: string; body: string }) {
   return (
     <div>
-      <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.28em] text-bla-lime/85">§ {label}</div>
+      <div className="mb-2 font-host text-[15px] text-bla-lime/85">{label}</div>
       <p className="font-host text-base leading-relaxed text-white/80 md:text-[17px]">{body}</p>
     </div>
   );

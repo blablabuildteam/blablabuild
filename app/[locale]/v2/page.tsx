@@ -64,7 +64,7 @@ export default function V2Page() {
   return (
     <div className="min-h-screen w-full bg-[#0a0b0e] text-white">
       <V2Nav activeSection={activeSection} />
-      <V2Hero />
+      <V2Hero variant="punchy" />
       <V2Pillars />
       <V2Approach />
       <V2AITransformation />

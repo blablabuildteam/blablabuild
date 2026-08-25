@@ -39,26 +39,24 @@ export function GridLayer({ className = '' }: { className?: string }) {
   );
 }
 
+/** Quiet section intro — sentence case, no mono/uppercase (Northlane-style). */
 export function SectionLabel({
-  index,
   label,
   tone = 'light',
   className = '',
+  index: _index,
 }: {
-  index: string;
   label: string;
   tone?: 'light' | 'dark';
   className?: string;
+  /** @deprecated ignored — kept so existing call sites compile */
+  index?: string;
 }) {
-  const colorPrimary = tone === 'dark' ? 'text-bla-dark' : 'text-bla-white';
-  const colorMuted = tone === 'dark' ? 'text-bla-dark/45' : 'text-white/45';
-  const dot = tone === 'dark' ? 'bg-bla-dark/30' : 'bg-white/30';
+  const color = tone === 'dark' ? 'text-[#14181d]/50' : 'text-white/50';
   return (
-    <div className={`flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.28em] ${className}`}>
-      <span className={`${colorMuted}`}>§ {index}</span>
-      <span className={`h-px w-8 ${dot}`} />
-      <span className={`${colorPrimary} font-medium`}>{label}</span>
-    </div>
+    <p className={`font-host text-[15px] leading-snug md:text-base ${color} ${className}`}>
+      {label}
+    </p>
   );
 }
 

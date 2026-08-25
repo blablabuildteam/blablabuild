@@ -175,7 +175,7 @@ export default function V2StrategyCases({ lang }: V2StrategyCasesProps) {
                           <button
                             type="button"
                             onClick={() => setActive(null)}
-                            className="mb-4 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.22em] text-white/50 transition-colors hover:text-white/80"
+                            className="mb-4 inline-flex items-center gap-1.5 font-host text-[13px] text-white/50 transition-colors hover:text-white/80"
                           >
                             <ArrowLeft className="h-3 w-3" />
                             {lang === 'en' ? 'All case studies' : 'Alle case studies'}
@@ -192,12 +192,12 @@ export default function V2StrategyCases({ lang }: V2StrategyCasesProps) {
                         </>
                       ) : (
                         <>
-                          <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-bla-lime/85">
-                            § {lang === 'en' ? 'case studies' : 'case studies'}
-                          </div>
+                          <p className="font-host text-[15px] text-bla-lime/85">
+                            {lang === 'en' ? 'Case studies' : 'Case studies'}
+                          </p>
                           <h3
                             id="strategy-cases-title"
-                            className="mt-3 font-host text-xl font-medium leading-snug text-white md:text-2xl"
+                            className="mt-2 font-host text-xl font-medium leading-snug text-white md:text-2xl"
                           >
                             {lang === 'en' ? 'Proven at enterprise scale' : 'Bewezen op enterprise-schaal'}
                           </h3>
@@ -272,7 +272,7 @@ export default function V2StrategyCases({ lang }: V2StrategyCasesProps) {
                               }}
                             />
                             <div className="relative flex items-start justify-between gap-3">
-                              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/35">
+                              <span className="font-host text-[13px] tabular-nums text-white/35">
                                 / 0{i + 1}
                               </span>
                               <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 text-white/40 transition-all group-hover:border-bla-lime/60 group-hover:bg-bla-lime group-hover:text-bla-dark">
@@ -288,7 +288,7 @@ export default function V2StrategyCases({ lang }: V2StrategyCasesProps) {
                               </p>
                             </div>
                             <div className="relative mt-5 border-t border-white/8 pt-4">
-                              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-bla-lime">
+                              <span className="font-host text-[13px] text-bla-lime">
                                 {lang === 'en' ? 'View case study' : 'Bekijk case study'}
                               </span>
                             </div>
@@ -310,9 +310,7 @@ export default function V2StrategyCases({ lang }: V2StrategyCasesProps) {
 function CaseField({ label, body }: { label: string; body: string }) {
   return (
     <div>
-      <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.28em] text-bla-lime">
-        § {label}
-      </div>
+      <div className="mb-2 font-host text-[15px] text-bla-lime">{label}</div>
       <p className="font-host text-base leading-relaxed text-white/80 md:text-[17px]">{body}</p>
     </div>
   );
