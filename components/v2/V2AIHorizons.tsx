@@ -1,7 +1,7 @@
 'use client';
 
 import { Fragment, useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { BookOpen, FileBarChart, FileSpreadsheet, FileType, Pause, Play, Sparkles, Upload } from 'lucide-react';
 
 interface HorizonStage {
@@ -128,9 +128,10 @@ function createPauseClock(
 }
 
 export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
-  const [activeStage, setActiveStage] = useState<number | null>(null);
+  const [activeStage, setActiveStage] = useState(0);
   const [paused, setPaused] = useState(false);
   const stages = lang === 'en' ? STAGES_EN : STAGES_NL;
+  const activeStageData = stages[activeStage];
 
   return (
     <motion.div
@@ -145,13 +146,9 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
           {lang === 'en' ? 'The four stages of AI transformation' : 'De vier fases van AI-transformatie'}
         </h3>
         <p className="font-host text-sm text-[#14181d]/45">
-          {activeStage === null
-            ? lang === 'en'
-              ? 'Select a stage'
-              : 'Kies een fase'
-            : lang === 'en'
-              ? `Showing: ${stages[activeStage].title}`
-              : `Nu: ${stages[activeStage].title}`}
+          {lang === 'en'
+            ? `Showing: ${activeStageData.title}`
+            : `Nu: ${activeStageData.title}`}
         </p>
       </div>
 
@@ -278,7 +275,7 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
                     className="md:hidden"
                   >
                     <div className="pt-1 pb-2">
-                      <HorizonVisual stage={activeStage} lang={lang} paused={paused} />
+                      <HorizonVisual stage={i} lang={lang} paused={paused} />
                     </div>
                   </motion.div>
                 )}
@@ -290,19 +287,17 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
         {/* Desktop: visual panel (hidden on mobile — shown inline above) */}
         <div className="relative hidden min-h-[440px] md:col-span-8 md:block lg:col-span-9">
           <div className="md:absolute md:inset-0">
-            <AnimatePresence mode="wait" initial={false}>
-              {activeStage !== null && (
-                <motion.div
-                  key={stages[activeStage].id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                  className="h-full"
-                >
-                  <HorizonVisual stage={activeStage} lang={lang} paused={paused} />
-                </motion.div>
-              )}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={stages[activeStage].id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                className="h-full"
+              >
+                <HorizonVisual stage={activeStage} lang={lang} paused={paused} />
+              </motion.div>
             </AnimatePresence>
           </div>
         </div>
@@ -312,14 +307,25 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
 }
 
 function HorizonVisual({ stage, lang, paused }: { stage: number; lang: 'en' | 'nl'; paused: boolean }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(containerRef, { amount: 0.25, margin: '0px 0px -60px 0px' });
+  const [playKey, setPlayKey] = useState(0);
+
+  useEffect(() => {
+    if (inView) setPlayKey((key) => key + 1);
+  }, [inView, stage]);
+
   return (
-    <div className="flex min-h-[440px] flex-col overflow-hidden rounded-2xl border border-[#14181d]/20 bg-[#14181d] md:h-full md:min-h-0">
-      <AnimatePresence mode="wait" initial={false}>
+    <div
+      ref={containerRef}
+      className="flex min-h-[440px] flex-col overflow-hidden rounded-2xl border border-[#14181d]/20 bg-[#14181d] md:h-full md:min-h-0"
+    >
+      <AnimatePresence mode="wait">
         <motion.div
-          key={stage}
-          initial={{ opacity: 0, scale: 0.96 }}
+          key={`${stage}-${playKey}`}
+          initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.98 }}
+          exit={{ opacity: 0, scale: 0.99 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="flex flex-1 items-center justify-center"
         >

@@ -61,16 +61,22 @@
       "headlineAccent": "Wij laten het voor je werken.",
       "intro": "Drie focusgebieden die elkaar versterken. Een beeld van wat we doen — geen complete lijst.",
       "scope": "Begin waar de hefboom het grootst is. Staat je vraag er niet tussen? Alles is bespreekbaar.",
-      "hint": "Hover voor een snelle preview — klik voor meer uitleg."
+      "hint": "Hover voor een snelle preview — klik voor meer uitleg.",
+      "transformationTeaser": {
+        "eyebrow": "Voor teams die verder willen",
+        "title": "AI Transformatie",
+        "description": "Van eerste adoptie tot een verbonden organisatie. Vier fases — van assistent tot ecosystem — met een route die bij je bedrijf past.",
+        "cta": "Bekijk de vier fases"
+      }
     },
     "heroSub": {
       "line1": "Genoeg gepraat over AI.",
-      "line2": "Tijd om iets neer te zetten dat maandag draait."
+      "line2": "Laten we het inzetten om je business te laten groeien én je te ontzorgen."
     },
     "pillars": {
       "marketing": {
         "title": "Brand & Marketing",
-        "focus": "Groei zonder slappe beloftes: merk dat klopt, boodschap die raakt, funnel die niet lekt—meer euro's op de bank.",
+        "focus": "Merk, websites, campagnes en SEO — gebouwd om te groeien en te converteren, niet om te imponeren.",
         "items": {
           "brandDevelopment": {
             "title": "Merkontwikkeling",
@@ -92,7 +98,7 @@
       },
       "tooling": {
         "title": "AI Producten & Services",
-        "focus": "Van concept tot productie — wij ontwerpen, bouwen en leveren AI die je team en klanten daadwerkelijk gebruiken.",
+        "focus": "AI-producten, agents en maatwerk — van prototype tot productie, gebouwd om je team elke dag te gebruiken.",
         "items": {
           "aiAgents": {
             "title": "AI-agents & automatisering",
@@ -118,7 +124,7 @@
       },
       "data": {
         "title": "Data",
-        "focus": "Zorg dat het schaalt met robuuste architectuur en organisatorische diepgang.",
+        "focus": "Data op orde, inzicht op scherm — dashboards en infrastructuur waar je beslissingen op baseert.",
         "items": {
           "maturityAssessment": {
             "title": "Data Maturity Assessment",

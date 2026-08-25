@@ -61,16 +61,22 @@
       "headlineAccent": "We make it pay off.",
       "intro": "Three practices that reinforce each other. A picture of what we do — not an exhaustive list.",
       "scope": "Start where the leverage is highest. Don't see your question here? Everything's on the table.",
-      "hint": "Hover for a quick preview — click for details."
+      "hint": "Hover for a quick preview — click for details.",
+      "transformationTeaser": {
+        "eyebrow": "For teams ready to go further",
+        "title": "AI Transformation",
+        "description": "From first adoption to a connected organisation. Four stages — from assistant to ecosystem — with a route that fits your business.",
+        "cta": "See the four stages"
+      }
     },
     "heroSub": {
       "line1": "Enough talk about AI.",
-      "line2": "Time to ship something that's running by Monday."
+      "line2": "Let's put it to work to grow your business — and unburden you."
     },
     "pillars": {
       "marketing": {
         "title": "Brand & Marketing",
-        "focus": "Growth without soft promises: a brand that holds, messaging that lands, a funnel that doesn't leak—more money in the bank.",
+        "focus": "Brand, websites, campaigns and SEO — built to grow and convert, not to impress.",
         "items": {
           "brandDevelopment": {
             "title": "Brand Development",
@@ -92,7 +98,7 @@
       },
       "tooling": {
         "title": "AI Products & Services",
-        "focus": "From concept to production — we design, build, and ship AI that your team and customers actually use.",
+        "focus": "AI products, agents and bespoke systems — from prototype to production, built for daily use.",
         "items": {
           "aiAgents": {
             "title": "AI Agents & Automation",
@@ -118,7 +124,7 @@
       },
       "data": {
         "title": "Data",
-        "focus": "Ensure it scales with resilient architecture and organizational depth.",
+        "focus": "Data in order, insight on screen — dashboards and infrastructure you can actually steer on.",
         "items": {
           "maturityAssessment": {
             "title": "Data Maturity Assessment",

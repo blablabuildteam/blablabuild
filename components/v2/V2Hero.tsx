@@ -78,6 +78,12 @@ function HeroTicker({ words }: { words: string[] }) {
 const PILLAR_KEYS = ['marketing', 'tooling', 'data'] as const;
 type PillarKey = (typeof PILLAR_KEYS)[number];
 
+const PILLAR_LABELS: Record<PillarKey, { nl: string; en: string }> = {
+  marketing: { nl: 'Marketing', en: 'Marketing' },
+  tooling: { nl: 'AI Producten', en: 'AI Products' },
+  data: { nl: 'Data', en: 'Data' },
+};
+
 const TICKER_NL = [
   'AI workflows',
   'data centralisatie',
@@ -229,6 +235,7 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
   const t = useTranslations('intro');
   const containerRef = useRef<HTMLElement>(null);
   const [activePillar, setActivePillar] = useState<PillarKey>('marketing');
+  const [pillarAutoCycle, setPillarAutoCycle] = useState(true);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -237,6 +244,7 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
   const yBg = useTransform(scrollYProgress, [0, 1], [0, 140]);
 
   useEffect(() => {
+    if (!pillarAutoCycle) return;
     const id = setInterval(() => {
       setActivePillar((prev) => {
         const i = PILLAR_KEYS.indexOf(prev);
@@ -244,7 +252,12 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
       });
     }, 2800);
     return () => clearInterval(id);
-  }, []);
+  }, [pillarAutoCycle]);
+
+  const handlePillarSelect = (key: PillarKey) => {
+    setPillarAutoCycle(false);
+    setActivePillar(key);
+  };
 
   const tickerWords = locale === 'en' ? TICKER_EN : TICKER_NL;
   const isEn = locale === 'en';
@@ -302,7 +315,7 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.55 }}
             className="col-span-12 hidden lg:col-span-4 lg:block lg:pl-6"
           >
-            <div className="relative flex h-full flex-col rounded-2xl border border-white/10 bg-[#0a0b0e]/82 p-5 backdrop-blur-md md:bg-[#0a0b0e]/45 md:p-6 md:backdrop-blur-[6px]">
+            <div className="relative flex h-full min-h-[480px] flex-col rounded-2xl border border-white/10 bg-[#0a0b0e]/82 p-5 backdrop-blur-md md:min-h-[520px] md:bg-[#0a0b0e]/45 md:p-6 md:backdrop-blur-[6px]">
               <p className="font-host text-[15px] text-white/50">
                 {isEn ? 'What we build' : 'Wat we bouwen'}
               </p>
@@ -310,11 +323,12 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
               <div className="mt-4 space-y-0.5">
                 {PILLAR_KEYS.map((k, i) => {
                   const isActive = activePillar === k;
-                  const label = t(`pillars.${k}.title`);
+                  const label = PILLAR_LABELS[k][isEn ? 'en' : 'nl'];
                   return (
                     <button
                       key={k}
-                      onClick={() => setActivePillar(k)}
+                      type="button"
+                      onClick={() => handlePillarSelect(k)}
                       className="group/item flex w-full items-baseline gap-3 py-1 text-left transition-opacity"
                     >
                       <span className="font-host text-[13px] tabular-nums text-white/30">
@@ -337,13 +351,12 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
-                className="mt-4 hidden max-w-[28ch] font-host text-[13px] leading-snug text-white/75 md:block"
+                className="mt-5 flex-1 font-host text-[13px] leading-relaxed text-white/75 text-pretty md:text-[14px] md:leading-[1.55]"
               >
                 {t(`pillars.${activePillar}.focus`)}
               </motion.p>
 
-              <div className="mt-auto pt-7">
-                <div className="mb-4 h-px w-12 bg-white/20" aria-hidden />
+              <div className="mt-6 pt-5 border-t border-white/8">
                 <p className="mb-4 font-host text-[15px] text-white/50">Founders</p>
                 <div className="flex items-center gap-4">
                   <div className="flex shrink-0 -space-x-2.5">

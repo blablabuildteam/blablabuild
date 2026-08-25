@@ -18,7 +18,7 @@ Korte checklist zodat je lokaal kunt werken en niets kapotmaakt bij uploaden.
    ```bash
    npm run dev
    ```
-   Open [http://localhost:3000](http://localhost:3000).
+   Open [http://localhost:3002](http://localhost:3002) (NL) of [http://localhost:3002/en](http://localhost:3002/en).
 
 ## Voor je pusht (uploaden)
 

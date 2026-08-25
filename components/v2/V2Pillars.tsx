@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
-import Image from 'next/image';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, ChevronDown } from 'lucide-react';
+import { smoothScrollToId } from '@/lib/utils';
+import { PillarIcon } from './PillarIcons';
 import {
   CapabilityPreviewModal,
   CapabilityPreviewPopover,
@@ -36,43 +37,6 @@ const PILLAR_META: Record<PillarKey, { number: string; itemKeys: string[] }> = {
 };
 
 const PILLAR_KEYS: PillarKey[] = ['marketing', 'tooling', 'data'];
-
-function PillarIcon({ pillar }: { pillar: PillarKey }) {
-  if (pillar === 'marketing') {
-    return (
-      <Image
-        src="/icons/loud-speaker.png"
-        alt=""
-        width={36}
-        height={36}
-        aria-hidden
-        className="opacity-50"
-      />
-    );
-  }
-  if (pillar === 'tooling') {
-    return (
-      <Image
-        src="/icons/ai-brain.png"
-        alt=""
-        width={36}
-        height={36}
-        aria-hidden
-        className="opacity-50"
-      />
-    );
-  }
-  return (
-    <Image
-      src="/icons/data-analysis.png"
-      alt=""
-      width={36}
-      height={36}
-      aria-hidden
-      className="opacity-50"
-    />
-  );
-}
 
 export default function V2Pillars() {
   const t = useTranslations('intro');
@@ -143,10 +107,10 @@ export default function V2Pillars() {
                   delay: pillarIdx * 0.12,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="flex h-full flex-col rounded-2xl border border-[#14181d]/10 bg-white p-6 shadow-[0_30px_60px_-30px_rgba(20,24,29,0.18)] md:p-8"
+                className="group flex h-full flex-col rounded-2xl border border-[#14181d]/10 bg-white p-6 shadow-[0_30px_60px_-30px_rgba(20,24,29,0.18)] md:p-8"
               >
                 <div className="flex items-start justify-between">
-                  <PillarIcon pillar={pillarKey} />
+                  <PillarIcon name={pillarKey} />
                   <span className="font-host text-sm tabular-nums text-[#14181d]/30">
                     {meta.number}
                   </span>
@@ -217,6 +181,44 @@ export default function V2Pillars() {
             );
           })}
         </div>
+
+        <motion.button
+          type="button"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.65, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.995 }}
+          onClick={() => smoothScrollToId('ai-transformatie', 96, 1300)}
+          className="group mt-5 flex w-full cursor-pointer flex-col gap-6 rounded-2xl border border-[#14181d]/10 bg-white p-6 text-left shadow-[0_30px_60px_-30px_rgba(20,24,29,0.18)] transition-[border-color,box-shadow] duration-300 hover:border-[#14181d]/20 hover:shadow-[0_36px_70px_-28px_rgba(20,24,29,0.22)] md:flex-row md:items-center md:gap-8 md:p-8"
+        >
+          <div className="flex w-full items-start justify-between md:w-auto md:shrink-0 md:flex-col md:items-start md:gap-6">
+            <PillarIcon name="transformation" />
+            <span className="font-host text-sm tabular-nums text-[#14181d]/30">04</span>
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <p className="font-host text-[13px] uppercase tracking-[0.14em] text-[#14181d]/45">
+              {t('pillarsSection.transformationTeaser.eyebrow')}
+            </p>
+            <h3 className="mt-2 font-host text-[1.45rem] font-semibold leading-tight text-[#14181d] md:text-[1.55rem]">
+              {t('pillarsSection.transformationTeaser.title')}
+            </h3>
+            <p className="mt-3 max-w-3xl font-host text-sm leading-relaxed text-[#14181d]/55 md:text-[15px]">
+              {t('pillarsSection.transformationTeaser.description')}
+            </p>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2 border-t border-[#14181d]/10 pt-4 md:border-t-0 md:pt-0 md:pl-2">
+            <span className="font-host text-[15px] font-medium text-[#14181d]/75 transition-colors duration-300 group-hover:text-[#14181d]">
+              {t('pillarsSection.transformationTeaser.cta')}
+            </span>
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#14181d]/12 bg-[#f1ede4]/50 transition-all duration-300 group-hover:border-[#14181d]/25 group-hover:bg-bla-lime/15">
+              <ChevronDown className="h-4 w-4 text-[#14181d]/50 transition-all duration-300 group-hover:translate-y-0.5 group-hover:text-[#14181d]" />
+            </span>
+          </div>
+        </motion.button>
       </div>
 
       <AnimatePresence>
