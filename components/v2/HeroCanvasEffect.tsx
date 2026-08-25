@@ -18,6 +18,7 @@ uniform vec2 uPath[64];
 uniform float uPathLen;
 uniform float uPulse;
 uniform float uPulseGain;
+uniform float uMobile;
 
 varying float vAlpha;
 
@@ -76,7 +77,7 @@ void main() {
   float w;
   vec3 pos = displaced(position, prox, w);
   float pulse = signal(position.xy);
-  vAlpha = (0.03 + prox * 0.28 + clamp(w * 0.035, -0.01, 0.06) + pulse * 0.7) * edgeFade(pos);
+  vAlpha = (mix(0.03, 0.06, uMobile) + prox * mix(0.28, 0.18, uMobile) + clamp(w * 0.035, -0.01, 0.06) + pulse * mix(0.7, 0.85, uMobile)) * edgeFade(pos);
 
   vec4 mv = modelViewMatrix * vec4(pos, 1.0);
   gl_Position = projectionMatrix * mv;
@@ -92,7 +93,7 @@ void main() {
   float w;
   vec3 pos = displaced(position, prox, w);
   float pulse = signal(position.xy);
-  vAlpha = (0.05 + prox * 0.16 + clamp(w * 0.02, -0.006, 0.03) + pulse * 0.85) * edgeFade(pos);
+  vAlpha = (mix(0.05, 0.08, uMobile) + prox * mix(0.16, 0.11, uMobile) + clamp(w * 0.02, -0.006, 0.03) + pulse * mix(0.85, 0.95, uMobile)) * edgeFade(pos);
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 }
@@ -181,8 +182,8 @@ function walkGrid(
   return cells;
 }
 
-function generateSignalPath() {
-  const throughCenter = Math.random() < 0.68;
+function generateSignalPath(preferCenter = false) {
+  const throughCenter = preferCenter || Math.random() < 0.68;
   const horizontal = Math.random() < 0.55;
   const fromStartEdge = Math.random() < 0.5;
 
@@ -234,11 +235,13 @@ function generateSignalPath() {
   return cells.slice(0, PATH_MAX).map((cell) => cellToXY(cell.c, cell.r));
 }
 
-function Particles() {
+function Particles({ compact }: { compact: boolean }) {
   const matRef = useRef<THREE.ShaderMaterial>(null);
   const pointer = useRef({ x: 0, y: 0, ready: false });
 
-  const geo = useMemo(() => new THREE.PlaneGeometry(PLANE_W, PLANE_H, 140, 95), []);
+  const segsW = compact ? 70 : 140;
+  const segsH = compact ? 48 : 95;
+  const geo = useMemo(() => new THREE.PlaneGeometry(PLANE_W, PLANE_H, segsW, segsH), [segsW, segsH]);
   const wireGeo = useMemo(() => {
     const src = geo.attributes.position;
     const cols = geo.parameters.widthSegments + 1;
@@ -266,6 +269,13 @@ function Particles() {
     grid.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
     return grid;
   }, [geo]);
+
+  useEffect(() => {
+    return () => {
+      geo.dispose();
+      wireGeo.dispose();
+    };
+  }, [geo, wireGeo]);
 
   const tracking = useMemo(() => {
     const rotation = new THREE.Euler(PLANE_ROT_X, 0, 0);
@@ -300,16 +310,21 @@ function Particles() {
       uPathLen: { value: 0 },
       uPulse: { value: -1 },
       uPulseGain: { value: 0 },
+      uMobile: { value: compact ? 1 : 0 },
     }),
-    [],
+    [compact],
   );
 
+  uniforms.uColor.value.set('#A4C01C');
+  uniforms.uMobile.value = compact ? 1 : 0;
+
   const pulse = useRef({
-    phase: 'wait' as 'travel' | 'wait',
+    phase: (compact ? 'travel' : 'wait') as 'travel' | 'wait',
     elapsed: 0,
     duration: 2.6,
-    wait: 0.4,
+    wait: compact ? 0 : 0.4,
   });
+  const seeded = useRef(false);
 
   const writePath = (points: Array<{ x: number; y: number }>) => {
     const slots = uniforms.uPath.value as THREE.Vector2[];
@@ -321,14 +336,15 @@ function Particles() {
   };
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
+    if (compact) return;
+    const onMouse = (e: MouseEvent) => {
       pointer.current.x = e.clientX;
       pointer.current.y = e.clientY;
       pointer.current.ready = true;
     };
-    window.addEventListener('mousemove', handler, { passive: true });
-    return () => window.removeEventListener('mousemove', handler);
-  }, []);
+    window.addEventListener('mousemove', onMouse, { passive: true });
+    return () => window.removeEventListener('mousemove', onMouse);
+  }, [compact]);
 
   useFrame(({ clock, gl, camera }, delta) => {
     const mat = matRef.current;
@@ -349,15 +365,24 @@ function Particles() {
 
     const dt = Math.min(delta, 0.05);
     const p = pulse.current;
+    if (compact && !seeded.current) {
+      seeded.current = true;
+      writePath(generateSignalPath(true));
+      p.phase = 'travel';
+      p.elapsed = 0;
+      p.duration = 2.0;
+      uniforms.uPulse.value = 0;
+      uniforms.uPulseGain.value = 1;
+    }
     p.elapsed += dt;
 
     if (p.phase === 'wait') {
       uniforms.uPulseGain.value *= 0.9;
       if (p.elapsed >= p.wait) {
-        writePath(generateSignalPath());
+        writePath(generateSignalPath(compact));
         p.phase = 'travel';
         p.elapsed = 0;
-        p.duration = 2.2 + Math.random() * 1.2;
+        p.duration = compact ? 1.8 + Math.random() * 0.8 : 2.2 + Math.random() * 1.2;
         uniforms.uPulse.value = 0;
         uniforms.uPulseGain.value = 1;
       }
@@ -368,7 +393,7 @@ function Particles() {
       if (t >= 1) {
         p.phase = 'wait';
         p.elapsed = 0;
-        p.wait = 1.6 + Math.random() * 2.4;
+        p.wait = compact ? 0.7 + Math.random() * 1.1 : 1.6 + Math.random() * 2.4;
       }
     }
 
@@ -414,41 +439,73 @@ function FullBleedScale({ children }: { children: ReactNode }) {
 }
 
 export default function HeroCanvasEffect() {
+  const wrapRef = useRef<HTMLDivElement>(null);
   const [show, setShow] = useState(false);
+  const [compact, setCompact] = useState(false);
+  const [inView, setInView] = useState(true);
 
   useEffect(() => {
-    const mqSize = window.matchMedia('(min-width: 1024px)');
     const mqMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => setShow(mqSize.matches && !mqMotion.matches);
+    const mqCompact = window.matchMedia('(max-width: 1023px)');
+    const update = () => {
+      setShow(!mqMotion.matches);
+      setCompact(mqCompact.matches);
+    };
     update();
-    mqSize.addEventListener('change', update);
     mqMotion.addEventListener('change', update);
+    mqCompact.addEventListener('change', update);
     return () => {
-      mqSize.removeEventListener('change', update);
       mqMotion.removeEventListener('change', update);
+      mqCompact.removeEventListener('change', update);
     };
   }, []);
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          return;
+        }
+        if (entry.boundingClientRect.height > 0) setInView(false);
+      },
+      { threshold: 0.01 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [show]);
 
   if (!show) return null;
 
   return (
     <motion.div
+      ref={wrapRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 1.5, delay: 0.3, ease: 'easeOut' }}
-      className="pointer-events-none absolute inset-0 overflow-hidden"
-      style={{ zIndex: 0 }}
+      transition={{ duration: 1.2, delay: 0.15, ease: 'easeOut' }}
+      className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[100svh] w-full overflow-hidden opacity-[0.72] md:opacity-100"
     >
-      <Canvas
-        camera={{ position: [0, 0, 7.2], fov: 55 }}
-        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance', toneMapping: THREE.NoToneMapping }}
-        style={{ background: 'transparent', width: '100%', height: '100%' }}
-        dpr={[1, 1.5]}
-      >
-        <FullBleedScale>
-          <Particles />
-        </FullBleedScale>
-      </Canvas>
+      <div className="absolute left-1/2 top-0 h-full w-[160vh] -translate-x-1/2">
+        <Canvas
+          camera={{ position: [0, 0, 8], fov: 60 }}
+          frameloop={inView ? 'always' : 'never'}
+          gl={{
+            antialias: !compact,
+            alpha: true,
+            powerPreference: 'high-performance',
+            toneMapping: THREE.NoToneMapping,
+          }}
+          onCreated={({ gl }) => {
+            gl.setClearColor(0x000000, 0);
+          }}
+          style={{ background: 'transparent', width: '100%', height: '100%' }}
+          dpr={compact ? 1 : [1, 1.5]}
+        >
+          <Particles compact={compact} />
+        </Canvas>
+      </div>
     </motion.div>
   );
 }

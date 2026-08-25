@@ -78,21 +78,6 @@ function HeroTicker({ words }: { words: string[] }) {
 const PILLAR_KEYS = ['marketing', 'tooling', 'data'] as const;
 type PillarKey = (typeof PILLAR_KEYS)[number];
 
-const PILLAR_COPY: Record<PillarKey, { nl: string; en: string }> = {
-  marketing: {
-    nl: 'merk en groei die blijft hangen.',
-    en: 'brand and growth that sticks.',
-  },
-  tooling: {
-    nl: 'producten en systemen die echt gebruikt worden.',
-    en: 'products and systems people actually use.',
-  },
-  data: {
-    nl: 'inzicht waar je op kunt sturen.',
-    en: 'insight you can act on.',
-  },
-};
-
 const TICKER_NL = [
   'AI workflows',
   'data centralisatie',
@@ -250,7 +235,6 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
     offset: ['start start', 'end start'],
   });
   const yBg = useTransform(scrollYProgress, [0, 1], [0, 140]);
-  const opacityHero = useTransform(scrollYProgress, [0, 1], [1, 0.5]);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -262,7 +246,6 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
     return () => clearInterval(id);
   }, []);
 
-  const pillarCopy = PILLAR_COPY[activePillar][locale === 'en' ? 'en' : 'nl'];
   const tickerWords = locale === 'en' ? TICKER_EN : TICKER_NL;
   const isEn = locale === 'en';
 
@@ -287,10 +270,7 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
 
       <NoiseLayer opacity={0.18} />
 
-      <motion.div
-        style={{ opacity: opacityHero }}
-        className="relative mx-auto flex w-full max-w-[1320px] flex-1 flex-col justify-center px-5 sm:px-8 md:px-10"
-      >
+      <div className="relative mx-auto flex w-full max-w-[1320px] flex-1 flex-col justify-center px-5 sm:px-8 md:px-10">
         <div className="relative grid grid-cols-12 gap-x-4 gap-y-10 pb-12 pt-10 md:gap-y-14 md:pb-14 md:pt-16">
           <div className="col-span-12 lg:col-span-8">
             <HeroHeadline variant={variant} locale={locale} />
@@ -309,7 +289,7 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
                   e.preventDefault();
                   smoothScrollToId('oplossingen');
                 }}
-                className="group inline-flex h-12 items-center gap-2 rounded-full border border-white/15 bg-[#0a0b0e]/40 px-5 text-sm font-medium text-white backdrop-blur-[6px] transition-colors hover:border-white/40 hover:bg-[#0a0b0e]/55 md:h-[52px] md:px-6 md:text-[15px]"
+                className="group inline-flex h-12 items-center gap-2 rounded-full border border-white/15 bg-[#0a0b0e]/80 px-5 text-sm font-medium text-white backdrop-blur-md transition-colors hover:border-white/40 hover:bg-[#0a0b0e]/90 md:h-[52px] md:bg-[#0a0b0e]/40 md:px-6 md:text-[15px] md:backdrop-blur-[6px] md:hover:bg-[#0a0b0e]/55"
               >
                 {isEn ? 'See what we do' : 'Bekijk wat we doen'}
               </a>
@@ -322,7 +302,7 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.55 }}
             className="col-span-12 hidden lg:col-span-4 lg:block lg:pl-6"
           >
-            <div className="relative flex h-full flex-col rounded-2xl border border-white/10 bg-[#0a0b0e]/45 p-5 backdrop-blur-[6px] md:p-6">
+            <div className="relative flex h-full flex-col rounded-2xl border border-white/10 bg-[#0a0b0e]/82 p-5 backdrop-blur-md md:bg-[#0a0b0e]/45 md:p-6 md:backdrop-blur-[6px]">
               <p className="font-host text-[15px] text-white/50">
                 {isEn ? 'What we build' : 'Wat we bouwen'}
               </p>
@@ -357,9 +337,9 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
-                className="mt-4 max-w-[28ch] font-host text-[13px] leading-snug text-white/70"
+                className="mt-4 hidden max-w-[28ch] font-host text-[13px] leading-snug text-white/75 md:block"
               >
-                {pillarCopy}
+                {t(`pillars.${activePillar}.focus`)}
               </motion.p>
 
               <div className="mt-auto pt-7">
@@ -400,9 +380,9 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
             </div>
           </motion.div>
         </div>
-      </motion.div>
+      </div>
 
-      <div className="relative border-t border-white/8 bg-[#0a0b0e]/60 py-4 backdrop-blur-sm">
+      <div className="relative overflow-hidden border-t border-white/8 bg-[#0a0b0e]/85 py-4 backdrop-blur-md md:bg-[#0a0b0e]/60 md:backdrop-blur-sm">
         <HeroTicker words={tickerWords} />
       </div>
     </section>
