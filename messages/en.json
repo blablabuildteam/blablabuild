@@ -56,6 +56,13 @@
     "heading": "AI is standard now. We make it valuable.",
     "description": "",
     "disclaimer": "We do more than this. If we'd written everything down, this would be your scroll workout for the day. Everything is on the table.",
+    "pillarsSection": {
+      "headline": "AI is the default.",
+      "headlineAccent": "We make it pay off.",
+      "intro": "These are our three pillars — brand & marketing, AI products and data. Where we build most and where clients hire us. A picture of what we do, not an exhaustive list.",
+      "scope": "Start where the leverage is highest. Don't see your question here? Everything's on the table.",
+      "hint": "Hover for a quick preview — click for details."
+    },
     "pillars": {
       "marketing": {
         "title": "Brand & Marketing",

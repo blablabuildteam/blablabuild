@@ -56,6 +56,13 @@
     "heading": "AI is standaard geworden. Wij laten het voor je werken.",
     "description": "",
     "disclaimer": "We doen meer dan dit. Als we alles hadden opschreven, was dit je scroll-workout voor vandaag. Alles is bespreekbaar.",
+    "pillarsSection": {
+      "headline": "AI is standaard.",
+      "headlineAccent": "Wij laten het voor je werken.",
+      "intro": "Dit zijn onze drie pijlers — brand & marketing, AI-producten en data. Waar we het meest mee bouwen en waar klanten ons voor inhuren. Een beeld van wat we doen, geen complete lijst.",
+      "scope": "Begin waar de hefboom het grootst is. Staat je vraag er niet tussen? Alles is bespreekbaar.",
+      "hint": "Hover voor een snelle preview — klik voor meer uitleg."
+    },
     "pillars": {
       "marketing": {
         "title": "Brand & Marketing",

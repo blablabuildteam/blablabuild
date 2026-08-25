@@ -113,20 +113,17 @@ export default function V2Pillars() {
       <div className="relative mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-24">
         <div className="mb-14 md:mb-20">
           <h2 className="font-host text-3xl font-light leading-tight tracking-tight text-[#14181d] md:text-[3.5rem]">
-            {lang === 'en' ? 'AI is the default. ' : 'AI is standaard. '}
-            <span className="font-medium text-[#14181d]">
-              {lang === 'en' ? 'We make it pay off.' : 'Wij laten het voor je werken.'}
-            </span>
+            {t('pillarsSection.headline')}{' '}
+            <span className="font-medium text-[#14181d]">{t('pillarsSection.headlineAccent')}</span>
           </h2>
-          <p className="mt-6 font-host text-base leading-relaxed text-[#14181d]/70 md:text-lg">
-            {lang === 'en'
-              ? 'Three practices that reinforce each other. Pick one to start — we plug in where the leverage is highest.'
-              : 'Drie focusgebieden die elkaar versterken. Begin met één — we starten waar de hefboom het grootst is.'}
+          <p className="mt-6 max-w-3xl font-host text-base leading-relaxed text-[#14181d]/70 md:text-lg">
+            {t('pillarsSection.intro')}
+          </p>
+          <p className="mt-3 max-w-3xl font-host text-sm leading-relaxed text-[#14181d]/55 md:text-[15px]">
+            {t('pillarsSection.scope')}
           </p>
           <p className="mt-2 hidden font-host text-sm text-[#14181d]/45 md:block">
-            {lang === 'en'
-              ? 'Hover for a quick preview — click for details.'
-              : 'Hover voor een snelle preview — klik voor meer uitleg.'}
+            {t('pillarsSection.hint')}
           </p>
         </div>
 
