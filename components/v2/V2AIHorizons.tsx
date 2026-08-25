@@ -145,9 +145,13 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
           {lang === 'en' ? 'The four stages of AI transformation' : 'De vier fases van AI-transformatie'}
         </h3>
         <p className="font-host text-sm text-[#14181d]/45">
-          {lang === 'en'
-            ? `Showing: ${stages[activeStage].title}`
-            : `Nu: ${stages[activeStage].title}`}
+          {activeStage === null
+            ? lang === 'en'
+              ? 'Select a stage'
+              : 'Kies een fase'
+            : lang === 'en'
+              ? `Showing: ${stages[activeStage].title}`
+              : `Nu: ${stages[activeStage].title}`}
         </p>
       </div>
 
