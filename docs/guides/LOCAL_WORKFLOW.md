@@ -32,9 +32,9 @@ Dat doet: `type-check` → `lint` → `build`. Als alles groen is, kun je commit
 
 ## Git workflow
 
-- **Origin (jouw push-target):** `https://github.com/blablabuildteam/blablabuild.git` — hier pushen wij altijd naartoe
-- **Upstream (live deploy):** `https://github.com/danieldevos90/blablabuild.git` — Vercel deployt vanaf `main` op deze repo
-- **Branch:** werk op `main` of maak een feature-branch
+- **Origin:** `https://github.com/blablabuildteam/blablabuild.git`
+- **Live site:** `https://blablabuild-mu.vercel.app`
+- **Vercel:** `xk-growths-projects/blablabuild`
 
 ### Dagelijkse flow
 
@@ -43,16 +43,13 @@ git add -A
 git status   # controleer dat er GEEN .env of .env.vercel tussen staat
 git commit -m "Beschrijving van je wijzigingen"
 git push origin main
+npx vercel --prod --yes   # tot GitHub auto-deploy staat
 ```
 
-### Live zetten
+### Automatische deploy (eenmalig)
 
-Vercel hangt aan `danieldevos90/blablabuild`. Na push naar `blablabuildteam`:
-
-1. Open een PR van `blablabuildteam/main` → `danieldevos90/main` (of vraag Daniel om te mergen)
-2. Na merge op Daniel's repo gaat de site automatisch live
-
-Of: Daniel geeft `blablabuildteam` write access op `danieldevos90/blablabuild` — dan kun je direct `git push upstream main` doen.
+Vercel → **blablabuild** → Settings → Git → Connect → `blablabuildteam/blablabuild`.  
+Repo niet zichtbaar? [Vercel GitHub App](https://github.com/apps/vercel) installeren voor `blablabuildteam`.
 
 ## Wat we niet meenemen (staat in .gitignore)
 
