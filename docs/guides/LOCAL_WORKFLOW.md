@@ -32,16 +32,27 @@ Dat doet: `type-check` → `lint` → `build`. Als alles groen is, kun je commit
 
 ## Git workflow
 
-- **Remote:** `origin` wijst naar `https://github.com/danieldevos90/blablabuild.git`
+- **Origin (jouw push-target):** `https://github.com/blablabuildteam/blablabuild.git` — hier pushen wij altijd naartoe
+- **Upstream (live deploy):** `https://github.com/danieldevos90/blablabuild.git` — Vercel deployt vanaf `main` op deze repo
 - **Branch:** werk op `main` of maak een feature-branch
-- **Eerste push** (als je lokaal begon vanaf een ZIP):
-  ```bash
-  git add -A
-  git status   # controleer dat er GEEN .env of .env.vercel tussen staat
-  git commit -m "Beschrijving van je wijzigingen"
-  git push -u origin main
-  ```
-- **Volgende keren:** `git add` → `git commit` → `git push`
+
+### Dagelijkse flow
+
+```bash
+git add -A
+git status   # controleer dat er GEEN .env of .env.vercel tussen staat
+git commit -m "Beschrijving van je wijzigingen"
+git push origin main
+```
+
+### Live zetten
+
+Vercel hangt aan `danieldevos90/blablabuild`. Na push naar `blablabuildteam`:
+
+1. Open een PR van `blablabuildteam/main` → `danieldevos90/main` (of vraag Daniel om te mergen)
+2. Na merge op Daniel's repo gaat de site automatisch live
+
+Of: Daniel geeft `blablabuildteam` write access op `danieldevos90/blablabuild` — dan kun je direct `git push upstream main` doen.
 
 ## Wat we niet meenemen (staat in .gitignore)
 
