@@ -113,8 +113,10 @@ export default function V2Pillars() {
       <div className="relative mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-24">
         <div className="mb-14 md:mb-20">
           <h2 className="font-host text-3xl font-light leading-tight tracking-tight text-[#14181d] md:text-[3.5rem]">
-            {t('pillarsSection.headline')}{' '}
-            <span className="font-medium text-[#14181d]">{t('pillarsSection.headlineAccent')}</span>
+            {t('pillarsSection.headline')}
+            {t('pillarsSection.headlineAccent') ? (
+              <span className="font-medium text-[#14181d]"> {t('pillarsSection.headlineAccent')}</span>
+            ) : null}
           </h2>
           <p className="mt-6 max-w-3xl font-host text-base leading-relaxed text-[#14181d]/70 md:text-lg">
             {t('pillarsSection.intro')}

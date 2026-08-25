@@ -5,10 +5,11 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
 const HeroCanvasEffect = dynamic(() => import('./HeroCanvasEffect'), { ssr: false });
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { NoiseLayer } from './V2Atoms';
 import V2DirectHelp from './V2DirectHelp';
 import Image from 'next/image';
+import { smoothScrollToId } from '@/lib/utils';
 
 const BRAND_LOGOS = [
   { src: '/profile-brand-logos/heineken.png', alt: 'Heineken', w: 72 },
@@ -77,24 +78,18 @@ function HeroTicker({ words }: { words: string[] }) {
 const PILLAR_KEYS = ['marketing', 'tooling', 'data'] as const;
 type PillarKey = (typeof PILLAR_KEYS)[number];
 
-const PILLAR_LABELS: Record<PillarKey, { nl: string; en: string }> = {
-  marketing: { nl: 'Marketing', en: 'Marketing' },
-  tooling: { nl: 'AI & tooling', en: 'AI & tooling' },
-  data: { nl: 'Data', en: 'Data' },
-};
-
 const PILLAR_COPY: Record<PillarKey, { nl: string; en: string }> = {
   marketing: {
-    nl: 'merken die mensen onthouden — en kopen.',
-    en: 'brands people remember — and buy from.',
+    nl: 'merk en groei die blijft hangen.',
+    en: 'brand and growth that sticks.',
   },
   tooling: {
-    nl: 'systemen die je team voelt op maandagochtend.',
-    en: 'systems your team feels on a Monday morning.',
+    nl: 'producten en systemen die echt gebruikt worden.',
+    en: 'products and systems people actually use.',
   },
   data: {
-    nl: 'inzicht waardoor vergaderingen korter worden.',
-    en: 'insight that makes meetings shorter.',
+    nl: 'inzicht waar je op kunt sturen.',
+    en: 'insight you can act on.',
   },
 };
 
@@ -194,21 +189,43 @@ function HeroHeadline({
   );
 }
 
-function HeroSubcopy({ variant, locale }: { variant: V2HeroVariant; locale: string }) {
+function HeroSubcopy({
+  variant,
+  locale,
+  t,
+}: {
+  variant: V2HeroVariant;
+  locale: string;
+  t: ReturnType<typeof useTranslations<'intro'>>;
+}) {
   const isEn = locale === 'en';
+
+  if (variant === 'punchy') {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.9, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        className="mt-7 max-w-lg space-y-1.5"
+      >
+        <p className="font-host text-lg leading-snug text-white/90 md:text-[1.35rem] md:leading-snug">
+          {t('heroSub.line1')}
+        </p>
+        <p className="font-host text-base leading-snug text-white/50 md:text-lg">
+          {t('heroSub.line2')}
+        </p>
+      </motion.div>
+    );
+  }
 
   const copy =
     variant === 'editorial-b'
       ? isEn
         ? 'From brand to AI to data — we design, build and deliver what sticks.'
         : 'Van merk tot AI tot data — we ontwerpen, bouwen en leveren wat beklijft.'
-      : variant === 'editorial'
-        ? isEn
-          ? 'From brand to AI to data — concrete, usable, and built to move your business forward.'
-          : 'Van merk tot AI tot data — concreet, bruikbaar, en gebouwd om je bedrijf vooruit te helpen.'
-        : isEn
-          ? 'We turn AI, data and digital products into systems that genuinely move your business forward — less noise, more results.'
-          : 'We zetten AI, data en digitale producten om in systemen die je bedrijf écht vooruit helpen — minder ruis, meer resultaat.';
+      : isEn
+        ? 'From brand to AI to data — concrete, usable, and built to move your business forward.'
+        : 'Van merk tot AI tot data — concreet, bruikbaar, en gebouwd om je bedrijf vooruit te helpen.';
 
   return (
     <motion.p
@@ -224,6 +241,7 @@ function HeroSubcopy({ variant, locale }: { variant: V2HeroVariant; locale: stri
 
 export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant }) {
   const locale = useLocale();
+  const t = useTranslations('intro');
   const containerRef = useRef<HTMLElement>(null);
   const [activePillar, setActivePillar] = useState<PillarKey>('marketing');
 
@@ -276,7 +294,7 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
         <div className="relative grid grid-cols-12 gap-x-4 gap-y-10 pb-12 pt-10 md:gap-y-14 md:pb-14 md:pt-16">
           <div className="col-span-12 lg:col-span-8">
             <HeroHeadline variant={variant} locale={locale} />
-            <HeroSubcopy variant={variant} locale={locale} />
+            <HeroSubcopy variant={variant} locale={locale} t={t} />
 
             <motion.div
               initial={{ opacity: 0, y: 16 }}
@@ -286,10 +304,14 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
             >
               <V2DirectHelp source="v2-hero" align="left" openUpOnDesktop />
               <a
-                href="#cases"
+                href="#oplossingen"
+                onClick={(e) => {
+                  e.preventDefault();
+                  smoothScrollToId('oplossingen');
+                }}
                 className="group inline-flex h-12 items-center gap-2 rounded-full border border-white/15 bg-[#0a0b0e]/40 px-5 text-sm font-medium text-white backdrop-blur-[6px] transition-colors hover:border-white/40 hover:bg-[#0a0b0e]/55 md:h-[52px] md:px-6 md:text-[15px]"
               >
-                {isEn ? 'See the work' : 'Bekijk onze cases'}
+                {isEn ? 'See what we do' : 'Bekijk wat we doen'}
               </a>
             </motion.div>
           </div>
@@ -308,7 +330,7 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
               <div className="mt-4 space-y-0.5">
                 {PILLAR_KEYS.map((k, i) => {
                   const isActive = activePillar === k;
-                  const label = PILLAR_LABELS[k][isEn ? 'en' : 'nl'];
+                  const label = t(`pillars.${k}.title`);
                   return (
                     <button
                       key={k}

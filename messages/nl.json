@@ -59,9 +59,13 @@
     "pillarsSection": {
       "headline": "AI is standaard.",
       "headlineAccent": "Wij laten het voor je werken.",
-      "intro": "Dit zijn onze drie pijlers — brand & marketing, AI-producten en data. Waar we het meest mee bouwen en waar klanten ons voor inhuren. Een beeld van wat we doen, geen complete lijst.",
+      "intro": "Drie focusgebieden die elkaar versterken. Een beeld van wat we doen — geen complete lijst.",
       "scope": "Begin waar de hefboom het grootst is. Staat je vraag er niet tussen? Alles is bespreekbaar.",
       "hint": "Hover voor een snelle preview — klik voor meer uitleg."
+    },
+    "heroSub": {
+      "line1": "Genoeg gepraat over AI.",
+      "line2": "Tijd om iets neer te zetten dat maandag draait."
     },
     "pillars": {
       "marketing": {

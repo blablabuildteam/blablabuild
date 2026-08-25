@@ -10,6 +10,7 @@ import {
   buildLocaleSwitchPath,
   saveScrollForLocaleSwitch,
 } from '@/lib/localeSwitch';
+import { smoothScrollToId } from '@/lib/utils';
 import type { Locale } from '@/i18n/request';
 
 interface V2NavProps {
@@ -51,10 +52,7 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
 
   const scrollToSection = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
-    const el = document.getElementById(id);
-    if (!el) return;
-    const top = el.getBoundingClientRect().top + window.scrollY - 96;
-    window.scrollTo({ top, behavior: 'smooth' });
+    smoothScrollToId(id);
     setIsMenuOpen(false);
   };
 

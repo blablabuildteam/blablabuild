@@ -59,9 +59,13 @@
     "pillarsSection": {
       "headline": "AI is the default.",
       "headlineAccent": "We make it pay off.",
-      "intro": "These are our three pillars — brand & marketing, AI products and data. Where we build most and where clients hire us. A picture of what we do, not an exhaustive list.",
+      "intro": "Three practices that reinforce each other. A picture of what we do — not an exhaustive list.",
       "scope": "Start where the leverage is highest. Don't see your question here? Everything's on the table.",
       "hint": "Hover for a quick preview — click for details."
+    },
+    "heroSub": {
+      "line1": "Enough talk about AI.",
+      "line2": "Time to ship something that's running by Monday."
     },
     "pillars": {
       "marketing": {

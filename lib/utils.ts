@@ -100,3 +100,28 @@ export function formatCurrency(amount: number): string {
     maximumFractionDigits: 0,
   }).format(amount)
 }
+
+function easeInOutCubic(t: number): number {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+}
+
+/** Smooth scroll to a section id — slower and eased vs native anchor jump. */
+export function smoothScrollToId(id: string, offset = 96, duration = 1000): void {
+  const el = document.getElementById(id)
+  if (!el) return
+
+  const target = el.getBoundingClientRect().top + window.scrollY - offset
+  const start = window.scrollY
+  const distance = target - start
+  if (Math.abs(distance) < 2) return
+
+  const startTime = performance.now()
+
+  const step = (now: number) => {
+    const progress = Math.min((now - startTime) / duration, 1)
+    window.scrollTo(0, start + distance * easeInOutCubic(progress))
+    if (progress < 1) requestAnimationFrame(step)
+  }
+
+  requestAnimationFrame(step)
+}
