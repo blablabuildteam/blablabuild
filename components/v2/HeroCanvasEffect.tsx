@@ -61,10 +61,9 @@ vec3 displaced(vec3 pos, out float prox, out float w) {
 }
 
 float edgeFade(vec3 pos) {
-  // Soft fade only at the extreme edges so ultrawide screens stay covered
-  float edgeX = smoothstep(20.0, 17.5, abs(pos.x));
-  float edgeY = smoothstep(9.0, 7.0, abs(pos.y));
-  return edgeX * edgeY;
+  // Only soften the very top/bottom — keep full width so signal paths reach the sides
+  float edgeY = smoothstep(9.2, 7.8, abs(pos.y));
+  return edgeY;
 }
 `;
 
@@ -433,9 +432,9 @@ function Particles({ compact }: { compact: boolean }) {
 
 function FullBleedScale({ children }: { children: ReactNode }) {
   const { viewport } = useThree();
-  // Cover full viewport width even on ultrawide — plane is PLANE_W world units
-  const scale = Math.max(1.2, (viewport.width * 1.35) / PLANE_W);
-  return <group scale={[scale, Math.max(1.1, scale * 0.92), 1]}>{children}</group>;
+  // Cover full viewport width on ultrawide — plane is PLANE_W world units
+  const scale = Math.max(1.35, (viewport.width * 1.55) / PLANE_W);
+  return <group scale={[scale, Math.max(1.15, scale * 0.94), 1]}>{children}</group>;
 }
 
 export default function HeroCanvasEffect() {
@@ -485,9 +484,9 @@ export default function HeroCanvasEffect() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.2, delay: 0.15, ease: 'easeOut' }}
-      className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[100svh] w-full overflow-hidden opacity-[0.72] md:opacity-100"
+      className="pointer-events-none absolute inset-0 z-0 h-[100svh] w-full overflow-hidden opacity-[0.72] md:opacity-100"
     >
-      <div className="absolute left-1/2 top-0 h-full w-[160vh] -translate-x-1/2">
+      <div className="absolute inset-0 min-w-full">
         <Canvas
           camera={{ position: [0, 0, 8], fov: 60 }}
           frameloop={inView ? 'always' : 'never'}
