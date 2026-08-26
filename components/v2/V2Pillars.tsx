@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
-import { ArrowUpRight, ChevronDown } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, ChevronRight } from 'lucide-react';
 import { smoothScrollToId } from '@/lib/utils';
 import { PillarIcon } from './PillarIcons';
 import {
@@ -88,6 +88,9 @@ export default function V2Pillars() {
           <p className="mt-3 max-w-3xl font-host text-sm leading-relaxed text-[#14181d]/55 md:text-[15px]">
             {t('pillarsSection.scope')}
           </p>
+          <p className="mt-2 font-host text-sm text-[#14181d]/45 md:hidden">
+            {t('pillarsSection.hintMobile')}
+          </p>
           <p className="mt-2 hidden font-host text-sm text-[#14181d]/45 md:block">
             {t('pillarsSection.hint')}
           </p>
@@ -161,13 +164,20 @@ export default function V2Pillars() {
                             {t(`pillars.${pillarKey}.items.${itemKey}.title`)}
                           </span>
                           {previewId && (
-                            <ArrowUpRight
-                              className={`h-3.5 w-3.5 shrink-0 transition-all ${
-                                isHovered
-                                  ? 'translate-x-0 translate-y-0 text-bla-lime opacity-100'
-                                  : '-translate-x-1 translate-y-1 text-[#14181d]/20 opacity-0 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:text-[#14181d]/40 group-hover:opacity-100'
-                              }`}
-                            />
+                            <>
+                              <ChevronRight
+                                className={`h-4 w-4 shrink-0 text-[#14181d]/35 md:hidden ${
+                                  isHovered ? 'text-bla-lime' : ''
+                                }`}
+                              />
+                              <ArrowUpRight
+                                className={`hidden h-3.5 w-3.5 shrink-0 transition-all md:block ${
+                                  isHovered
+                                    ? 'translate-x-0 translate-y-0 text-bla-lime opacity-100'
+                                    : '-translate-x-1 translate-y-1 text-[#14181d]/20 opacity-0 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:text-[#14181d]/40 group-hover:opacity-100'
+                                }`}
+                              />
+                            </>
                           )}
                           <span className="font-host text-[13px] tabular-nums text-[#14181d]/25">
                             {String(itemIdx + 1).padStart(2, '0')}

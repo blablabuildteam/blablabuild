@@ -62,6 +62,7 @@
       "intro": "Three practices that reinforce each other. A picture of what we do — not an exhaustive list.",
       "scope": "Start where the leverage is highest. Don't see your question here? Everything's on the table.",
       "hint": "Hover for a quick preview — click for details.",
+      "hintMobile": "Tap a topic for more detail.",
       "transformationTeaser": {
         "eyebrow": "For teams ready to go further",
         "title": "AI Transformation",
@@ -98,7 +99,7 @@
       },
       "tooling": {
         "title": "AI Products & Services",
-        "focus": "AI products, agents and bespoke systems — from prototype to production, built for daily use.",
+        "focus": "AI products, agents and bespoke systems — from prototype to production, built to take work off your plate.",
         "items": {
           "aiAgents": {
             "title": "AI Agents & Automation",

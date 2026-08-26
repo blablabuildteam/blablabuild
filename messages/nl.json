@@ -62,6 +62,7 @@
       "intro": "Drie focusgebieden die elkaar versterken. Een beeld van wat we doen — geen complete lijst.",
       "scope": "Begin waar de hefboom het grootst is. Staat je vraag er niet tussen? Alles is bespreekbaar.",
       "hint": "Hover voor een snelle preview — klik voor meer uitleg.",
+      "hintMobile": "Tik op een onderwerp voor meer uitleg.",
       "transformationTeaser": {
         "eyebrow": "Voor teams die verder willen",
         "title": "AI Transformatie",
@@ -98,7 +99,7 @@
       },
       "tooling": {
         "title": "AI Producten & Services",
-        "focus": "AI-producten, agents en maatwerk — van prototype tot productie, gebouwd om je team elke dag te gebruiken.",
+        "focus": "AI-producten, agents en maatwerk — van prototype tot productie, gebouwd om werk uit handen te nemen.",
         "items": {
           "aiAgents": {
             "title": "AI-agents & automatisering",

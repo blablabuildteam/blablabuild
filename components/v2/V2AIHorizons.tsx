@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
-import { BookOpen, FileBarChart, FileSpreadsheet, FileType, Pause, Play, Sparkles, Upload } from 'lucide-react';
+import { BookOpen, ChevronRight, FileBarChart, FileSpreadsheet, FileType, Pause, Play, Sparkles, Upload } from 'lucide-react';
 
 interface HorizonStage {
   id: string;
@@ -159,7 +159,7 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
             const isActive = i === activeStage;
             return (
               <Fragment key={stage.id}>
-                <motion.div
+                <div
                   role="button"
                   tabIndex={0}
                   aria-pressed={isActive}
@@ -175,14 +175,10 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
                     setActiveStage(i);
                     setPaused(false);
                   }}
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-40px' }}
-                  transition={{ duration: 0.45, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                  className={`group flex w-full cursor-pointer items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/20 md:flex-1 md:px-5 ${
+                  className={`group flex w-full cursor-pointer items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-[border-color,background-color,box-shadow,color] duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/20 md:flex-1 md:px-5 ${
                     isActive
                       ? 'border-[#14181d] bg-white shadow-[0_18px_40px_-24px_rgba(20,24,29,0.35)]'
-                      : 'border-[#14181d]/10 bg-white/70 hover:border-[#14181d]/25 hover:bg-white'
+                      : 'border-[#14181d]/10 bg-white hover:border-[#14181d]/25'
                   }`}
                 >
                   <span
@@ -261,23 +257,21 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
                   ) : (
                     <span
                       className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#14181d]/15 transition-colors duration-300 group-hover:border-[#14181d]/30"
+                      aria-hidden
                     >
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#14181d]/20 transition-colors duration-300 group-hover:bg-[#14181d]/40" />
+                      <ChevronRight className="h-3.5 w-3.5 text-[#14181d]/30 transition-colors duration-300 group-hover:text-[#14181d]/50 md:hidden" />
+                      <span className="hidden h-1.5 w-1.5 rounded-full bg-[#14181d]/20 transition-colors duration-300 group-hover:bg-[#14181d]/40 md:block" />
                     </span>
                   )}
-                </motion.div>
+                </div>
 
                 {/* Mobile: visual appears directly under the active stage */}
                 {isActive && (
-                  <motion.div
-                    initial={false}
-                    animate={{ opacity: 1 }}
-                    className="md:hidden"
-                  >
+                  <div className="md:hidden">
                     <div className="pt-1 pb-2">
                       <HorizonVisual stage={i} lang={lang} paused={paused} />
                     </div>
-                  </motion.div>
+                  </div>
                 )}
               </Fragment>
             );
