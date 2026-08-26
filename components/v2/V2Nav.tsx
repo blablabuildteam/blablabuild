@@ -51,16 +51,10 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
   }, [isMobile]);
 
   const homeBase = locale === 'en' ? '/en' : '/';
-  const casesHref = `${homeBase}/cases`;
+  const onSubpage = pathname.includes('/cases');
 
   const scrollToSection = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
-    const onSubpage = pathname.includes('/cases');
-    if (id === 'cases') {
-      router.push(casesHref);
-      setIsMenuOpen(false);
-      return;
-    }
     if (onSubpage) {
       window.location.href = `${homeBase}#${id}`;
       setIsMenuOpen(false);
@@ -71,8 +65,7 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
   };
 
   const sectionHref = (id: string) => {
-    if (id === 'cases') return casesHref;
-    if (pathname.includes('/cases')) return `${homeBase}#${id}`;
+    if (onSubpage) return `${homeBase}#${id}`;
     return `#${id}`;
   };
 
