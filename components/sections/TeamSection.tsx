@@ -57,7 +57,7 @@ export default function TeamSection() {
         role: t('founders.xennith.role'),
         description: t('founders.xennith.description'),
         linkedin: 'https://www.linkedin.com/in/xennith/',
-        image: '/img/xennith-profile.png',
+        image: '/img/xennith-profile-v2.png',
         linkedinLabel: t('founders.xennith.linkedinLabel'),
       },
       {

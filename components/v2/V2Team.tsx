@@ -58,7 +58,7 @@ const FRIENDS: Friend[] = [
 const FOUNDERS = [
   {
     id: 'xennith',
-    image: '/img/xennith-profile.png',
+    image: '/img/xennith-profile-v2.png',
     linkedin: 'https://www.linkedin.com/in/xennith/',
     brands: [
       { src: '/profile-brand-logos/starbucks2.png', alt: 'Starbucks' },

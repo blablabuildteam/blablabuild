@@ -361,7 +361,7 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
                 <div className="flex items-center gap-4">
                   <div className="flex shrink-0 -space-x-2.5">
                     {[
-                      { src: '/img/xennith-profile.png', name: 'Xennith' },
+                      { src: '/img/xennith-profile-v2.png', name: 'Xennith' },
                       { src: '/img/kevin-profile.png', name: 'Kevin' },
                     ].map((f) => (
                       <span
