@@ -487,6 +487,20 @@ export default function PrioritizeView({
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_320px]">
+        {useCases.length === 0 ? (
+          <div className="rounded-xl border border-amber-400/25 bg-amber-400/[0.06] px-5 py-8 text-center">
+            <p className="font-host text-base text-amber-200">No use cases loaded in this session.</p>
+            <p className="mt-2 text-[13px] text-white/50">
+              Join session code <span className="font-mono text-white/80">adsomnia-workshop</span> — the board still has 60+ cases on the server.
+            </p>
+            <a
+              href="?s=adsomnia-workshop"
+              className="mt-4 inline-flex rounded-full border border-bla-lime/30 bg-bla-lime/10 px-4 py-2 text-sm text-bla-lime"
+            >
+              Open adsomnia-workshop
+            </a>
+          </div>
+        ) : (
         <Reorder.Group
           axis="y"
           values={filtered}
@@ -495,7 +509,7 @@ export default function PrioritizeView({
         >
           {filtered.length === 0 && (
             <p className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-8 text-center text-sm text-white/40">
-              No cases match these filters.
+              No cases match these filters. ({useCases.length} total in session)
             </p>
           )}
           {filtered.map((uc) => {
@@ -512,6 +526,7 @@ export default function PrioritizeView({
             );
           })}
         </Reorder.Group>
+        )}
 
         <aside className="lg:sticky lg:top-24 lg:self-start">
           {selected ? (

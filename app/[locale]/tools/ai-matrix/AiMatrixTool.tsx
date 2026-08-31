@@ -595,12 +595,14 @@ export default function AiMatrixTool() {
     }
   };
 
-  const replaceAllUseCases = (cases: UseCase[]) => {
+  const replaceAllUseCases = useCallback((cases: UseCase[]) => {
+    // Never wipe a populated board with an empty replace
+    if (cases.length === 0) return;
     knownIdsRef.current = new Set(cases.map((u) => u.id));
     setUseCases(cases);
     writeLocal(sessionId, cases);
     setLastUpdated(new Date());
-  };
+  }, [sessionId]);
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
