@@ -32,7 +32,6 @@ import {
 } from './types';
 import { suggestionFor } from './deliverySuggestions';
 import {
-  ROADMAP_TARGETS,
   ensureRanks,
   migrateLegacyStatuses,
   proposeRoadmap,
