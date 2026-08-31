@@ -179,7 +179,9 @@ export async function PUT(
     const key = KEY(params.sessionId);
 
     if (body && typeof body === 'object' && 'action' in body && body.action === 'meta') {
-      const meta = await saveMeta(key, body.meta ?? {});
+      const incoming =
+        body.meta && typeof body.meta === 'object' ? (body.meta as SessionMeta) : ({} as SessionMeta);
+      const meta = await saveMeta(key, incoming);
       const { useCases } = await getSession(key);
       return NextResponse.json({ ok: true, kv: true, meta, useCases });
     }
