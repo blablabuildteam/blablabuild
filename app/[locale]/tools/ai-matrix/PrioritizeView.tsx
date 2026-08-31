@@ -23,7 +23,6 @@ import {
   Q_META,
   ROADMAP_STATUSES,
   calcScore,
-  effortFromImplementation,
   getDeptColor,
   getQuadrant,
   normalizePriorityStatus,
@@ -64,12 +63,16 @@ function ScoreStepper({
   label: string;
 }) {
   return (
-    <label className="flex min-w-[72px] flex-col gap-1.5">
+    <label className="flex min-w-[88px] flex-col gap-1.5">
       <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">{label}</span>
       <div className="flex items-center gap-1.5">
         <button
           type="button"
-          onClick={() => onChange(Math.max(1, value - 1))}
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onChange(Math.max(1, value - 1));
+          }}
           className="grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-white/60 hover:bg-white/10"
         >
           −
@@ -77,7 +80,11 @@ function ScoreStepper({
         <span className="w-7 text-center font-mono text-base text-white">{value}</span>
         <button
           type="button"
-          onClick={() => onChange(Math.min(5, value + 1))}
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onChange(Math.min(5, value + 1));
+          }}
           className="grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-white/60 hover:bg-white/10"
         >
           +
@@ -105,7 +112,6 @@ function PriorityRow({
   const statusMeta = PRIORITY_STATUS_META[status];
   const q = getQuadrant(uc);
   const total = calcScore(uc.scores);
-  const effort = effortFromImplementation(uc.scores.implementation);
   const partners = uc.deliveryPartners?.length ? uc.deliveryPartners : (['tbd'] as DeliveryPartner[]);
 
   const patchScores = (key: keyof Scores, value: number) => {
@@ -184,14 +190,10 @@ function PriorityRow({
                 onChange={(n) => patchScores('businessImpact', n)}
               />
               <ScoreStepper
-                label="Speed"
+                label="Speed to build"
                 value={uc.scores.implementation}
                 onChange={(n) => patchScores('implementation', n)}
               />
-              <div className="flex min-w-[56px] flex-col gap-1.5">
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">Effort</span>
-                <span className="font-mono text-base text-white/70">{effort}</span>
-              </div>
               <div className="flex min-w-[56px] flex-col gap-1.5">
                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">Total</span>
                 <span className="font-mono text-base text-bla-lime">{total.toFixed(1)}</span>
