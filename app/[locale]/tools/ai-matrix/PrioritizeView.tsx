@@ -37,6 +37,7 @@ import {
   migrateLegacyStatuses,
   proposeRoadmap,
 } from './roadmapProposal';
+import RoadmapTimeline from './RoadmapTimeline';
 
 const DETAIL_SCORE_KEYS: { key: keyof Scores; label: string }[] = [
   { key: 'frequency', label: 'Frequency' },
@@ -465,6 +466,14 @@ export default function PrioritizeView({
           </div>
         </div>
       </div>
+
+      <RoadmapTimeline
+        useCases={useCases}
+        selectedId={selectedId}
+        onSelect={(id) => setSelectedId((prev) => (prev === id ? null : id))}
+        activeFilter={filterStatus === 'kill' ? 'all' : filterStatus}
+        onFilterHorizon={(status) => setFilterStatus(status)}
+      />
 
       <div className="mt-6 flex flex-wrap items-center gap-2">
         <Filter className="h-3.5 w-3.5 text-white/35" />

@@ -124,7 +124,12 @@ export const PRIORITY_STATUS_META: Record<
 };
 
 /** Roadmap stages only (no Kill) — for filters / counts */
-export const ROADMAP_STATUSES: PriorityStatus[] = ['now', 'near', 'next', 'later'];
+export const ROADMAP_STATUSES: Array<Exclude<PriorityStatus, 'kill'>> = [
+  'now',
+  'near',
+  'next',
+  'later',
+];
 
 export const DELIVERY_META: Record<
   DeliveryPartner,
