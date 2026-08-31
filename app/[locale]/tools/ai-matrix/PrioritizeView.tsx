@@ -36,6 +36,7 @@ import {
   migrateLegacyStatuses,
   proposeRoadmap,
 } from './roadmapProposal';
+import { PROJECT_CLUSTERS, projectForCase } from './projectClusters';
 
 const IMPACT_HINT =
   'Business upside if this works well — hours saved, fewer errors, more revenue or margin. 1 = small improvement · 5 = big, material impact on the team or P&L. (Workshop score: Impact.)';
@@ -208,12 +209,17 @@ function PriorityRow({
               >
                 {Q_META[q].label}
               </span>
-              <span
-                className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] ${statusMeta.border} ${statusMeta.bg} ${statusMeta.color}`}
-              >
-                {statusMeta.label}
+            <span
+              className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] ${statusMeta.border} ${statusMeta.bg} ${statusMeta.color}`}
+            >
+              {statusMeta.label}
+            </span>
+            {projectForCase(uc.id) && (
+              <span className="rounded-full border border-white/15 bg-white/[0.04] px-2.5 py-0.5 font-mono text-[10px] text-white/55">
+                {projectForCase(uc.id)!.name}
               </span>
-            </div>
+            )}
+          </div>
             <p className="mt-2 font-host text-lg font-medium leading-snug text-white md:text-xl">
               {uc.name}
             </p>
@@ -312,8 +318,9 @@ export default function PrioritizeView({
   onReplaceAll,
 }: Props) {
   const [filterDept, setFilterDept] = useState('all');
-  const [filterStatus, setFilterStatus] = useState<'all' | PriorityStatus>('now');
+  const [filterStatus, setFilterStatus] = useState<'all' | PriorityStatus>('all');
   const [filterDelivery, setFilterDelivery] = useState<'all' | DeliveryPartner>('all');
+  const [filterProject, setFilterProject] = useState('all');
   const [hideKill, setHideKill] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -337,9 +344,13 @@ export default function PrioritizeView({
         const partners = uc.deliveryPartners?.length ? uc.deliveryPartners : ['tbd'];
         if (!partners.includes(filterDelivery)) return false;
       }
+      if (filterProject !== 'all') {
+        const proj = projectForCase(uc.id);
+        if (!proj || proj.id !== filterProject) return false;
+      }
       return true;
     });
-  }, [ordered, filterDept, filterStatus, filterDelivery, hideKill]);
+  }, [ordered, filterDept, filterStatus, filterDelivery, filterProject, hideKill]);
 
   const counts = useMemo(() => {
     const c: Record<PriorityStatus, number> = {
@@ -487,23 +498,38 @@ export default function PrioritizeView({
           </p>
           <h2 className="mt-1 font-host text-2xl font-light text-white md:text-3xl">Prioritize</h2>
           <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-white/55">
-            Go through cases calmly: rank, set{' '}
-            <span className="text-white/75">Now → Near → Next → Later</span>, assign delivery. When
-            the shortlist feels right, open the <span className="text-white/75">Roadmap</span> tab for
-            the calendar view.
+            Rank use cases, then roll them into <span className="text-white/75">projects</span> (same
+            stack / outcome). Filter by horizon or project — list shows all by default (kills hidden).
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setFilterStatus('all')}
+            className={`min-w-[56px] rounded-xl border px-3 py-2 text-center ${
+              filterStatus === 'all'
+                ? 'border-white/25 bg-white/10 text-white'
+                : 'border-white/10 bg-white/[0.03] text-white/50 hover:text-white/80'
+            }`}
+          >
+            <p className="font-mono text-[9px] uppercase tracking-[0.12em]">All</p>
+            <p className="font-host text-lg">{hideKill ? useCases.length - counts.kill : useCases.length}</p>
+          </button>
           {ROADMAP_STATUSES.map((s) => {
             const meta = PRIORITY_STATUS_META[s];
+            const active = filterStatus === s;
             return (
-              <div
+              <button
                 key={s}
-                className={`min-w-[64px] rounded-xl border px-3 py-2 text-center ${meta.border} ${meta.bg}`}
+                type="button"
+                onClick={() => setFilterStatus(active ? 'all' : s)}
+                className={`min-w-[64px] rounded-xl border px-3 py-2 text-center ${meta.border} ${
+                  active ? meta.bg : 'bg-transparent'
+                }`}
               >
                 <p className={`font-mono text-[9px] uppercase tracking-[0.12em] ${meta.color}`}>{meta.short}</p>
                 <p className={`font-host text-lg ${meta.color}`}>{counts[s]}</p>
-              </div>
+              </button>
             );
           })}
           <div className="min-w-[64px] rounded-xl border border-red-400/25 bg-red-400/10 px-3 py-2 text-center">
@@ -513,8 +539,54 @@ export default function PrioritizeView({
         </div>
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center gap-2">
+      {/* Project clusters */}
+      <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3.5">
+        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+          Proposed projects · click to filter
+        </p>
+        <div className="mt-2.5 flex flex-wrap gap-1.5">
+          <button
+            type="button"
+            onClick={() => setFilterProject('all')}
+            className={`rounded-full border px-2.5 py-1 text-[11px] ${
+              filterProject === 'all'
+                ? 'border-bla-lime/35 bg-bla-lime/10 text-bla-lime'
+                : 'border-white/10 text-white/45 hover:text-white/70'
+            }`}
+          >
+            All projects
+          </button>
+          {PROJECT_CLUSTERS.map((p) => {
+            const n = p.caseIds.filter((id) => useCases.some((u) => u.id === id)).length;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                title={p.summary}
+                onClick={() => setFilterProject(filterProject === p.id ? 'all' : p.id)}
+                className={`rounded-full border px-2.5 py-1 text-[11px] ${
+                  filterProject === p.id
+                    ? 'border-bla-lime/35 bg-bla-lime/10 text-bla-lime'
+                    : 'border-white/10 text-white/45 hover:text-white/70'
+                }`}
+              >
+                {p.name} · {n}
+              </button>
+            );
+          })}
+        </div>
+        {filterProject !== 'all' && (
+          <p className="mt-2.5 max-w-3xl text-[12px] leading-relaxed text-white/50">
+            {PROJECT_CLUSTERS.find((p) => p.id === filterProject)?.rationale}
+          </p>
+        )}
+      </div>
+
+      <div className="mt-5 flex flex-wrap items-center gap-2">
         <Filter className="h-3.5 w-3.5 text-white/35" />
+        <span className="font-mono text-[11px] text-white/40">
+          Showing {filtered.length} of {useCases.length}
+        </span>
         <select
           value={filterDept}
           onChange={(e) => setFilterDept(e.target.value)}
@@ -695,6 +767,19 @@ export default function PrioritizeView({
                   </p>
                   <p className="mt-1 text-[12px] leading-relaxed text-white/65">
                     {selectedSuggestion.note}
+                  </p>
+                </div>
+              )}
+              {projectForCase(selected.id) && (
+                <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/35">
+                    Proposed project
+                  </p>
+                  <p className="mt-1 text-[13px] font-medium text-white/85">
+                    {projectForCase(selected.id)!.name}
+                  </p>
+                  <p className="mt-1 text-[12px] leading-relaxed text-white/50">
+                    {projectForCase(selected.id)!.rationale}
                   </p>
                 </div>
               )}
