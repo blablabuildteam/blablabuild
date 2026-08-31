@@ -37,6 +37,7 @@ import {
   proposeRoadmap,
 } from './roadmapProposal';
 import { PROJECT_CLUSTERS, projectAccent, projectForCase, resolveProjectHorizon } from './projectClusters';
+import PrioritizePlaybook from './PrioritizePlaybook';
 
 const IMPACT_HINT =
   'Business upside if this works well — hours saved, fewer errors, more revenue or margin. 1 = small improvement · 5 = big, material impact on the team or P&L. (Workshop score: Impact.)';
@@ -539,8 +540,12 @@ export default function PrioritizeView({
         </div>
       </div>
 
+      <div className="mt-8">
+        <PrioritizePlaybook sessionId={sessionId} useCases={useCases} />
+      </div>
+
       {/* Project clusters */}
-      <div className="mt-6">
+      <div className="mt-2">
         <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">

@@ -3,12 +3,15 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const KEY = (id: string) => `ai-matrix:${id.toLowerCase().replace(/[^a-z0-9-]/g, '-')}`;
 const TTL = 60 * 60 * 24 * 90; // 90 days — workshop boards need to outlive the follow-up window
+/** Reserved hash field — not a use case */
+const META_FIELD = '__prioritize_meta__';
 
 const KV_READY = Boolean(
   process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
 );
 
 type UseCaseRecord = { id: string; [key: string]: unknown };
+type SessionMeta = Record<string, unknown>;
 
 async function redisCommand(...args: string[]): Promise<unknown> {
   const res = await fetch(process.env.KV_REST_API_URL!, {
@@ -24,31 +27,51 @@ async function redisCommand(...args: string[]): Promise<unknown> {
   return data.result;
 }
 
-function parseHashEntries(entries: unknown): UseCaseRecord[] {
-  if (!Array.isArray(entries) || entries.length === 0) return [];
+function parseHashEntries(entries: unknown): { useCases: UseCaseRecord[]; meta: SessionMeta | null } {
+  if (!Array.isArray(entries) || entries.length === 0) return { useCases: [], meta: null };
   const useCases: UseCaseRecord[] = [];
+  let meta: SessionMeta | null = null;
   for (let i = 0; i < entries.length; i += 2) {
+    const field = entries[i];
     const raw = entries[i + 1];
     if (typeof raw !== 'string') continue;
+    if (field === META_FIELD) {
+      try {
+        meta = JSON.parse(raw) as SessionMeta;
+      } catch {
+        meta = null;
+      }
+      continue;
+    }
     try {
       useCases.push(JSON.parse(raw) as UseCaseRecord);
     } catch {
-      // skip malformed entries
+      // skip malformed
     }
   }
-  return useCases;
+  return { useCases, meta };
 }
 
-async function getUseCases(key: string): Promise<UseCaseRecord[]> {
+async function getSession(key: string): Promise<{ useCases: UseCaseRecord[]; meta: SessionMeta | null }> {
   const keyType = await redisCommand('TYPE', key);
   if (keyType === 'hash') {
     return parseHashEntries(await redisCommand('HGETALL', key));
   }
   if (keyType === 'string') {
     const data = await kv.get<UseCaseRecord[]>(key);
-    return data ?? [];
+    return { useCases: data ?? [], meta: null };
   }
-  return [];
+  return { useCases: [], meta: null };
+}
+
+async function getUseCases(key: string): Promise<UseCaseRecord[]> {
+  return (await getSession(key)).useCases;
+}
+
+async function saveMeta(key: string, meta: SessionMeta): Promise<SessionMeta> {
+  await redisCommand('HSET', key, META_FIELD, JSON.stringify(meta));
+  await redisCommand('EXPIRE', key, String(TTL));
+  return meta;
 }
 
 async function saveUseCase(key: string, useCase: UseCaseRecord): Promise<UseCaseRecord[]> {
@@ -99,18 +122,17 @@ export async function GET(
   { params }: { params: { sessionId: string } }
 ) {
   if (!KV_READY) {
-    return NextResponse.json({ useCases: [], kv: false });
+    return NextResponse.json({ useCases: [], meta: null, kv: false });
   }
   try {
     const key = KEY(params.sessionId);
-    const useCases = await getUseCases(key);
-    // Opening an active board renews retention so sessions don't silently expire.
-    if (useCases.length > 0) {
+    const { useCases, meta } = await getSession(key);
+    if (useCases.length > 0 || meta) {
       await redisCommand('EXPIRE', key, String(TTL));
     }
-    return NextResponse.json({ useCases, kv: true });
+    return NextResponse.json({ useCases, meta, kv: true });
   } catch {
-    return NextResponse.json({ useCases: [], kv: false });
+    return NextResponse.json({ useCases: [], meta: null, kv: false });
   }
 }
 
@@ -147,10 +169,20 @@ export async function PUT(
     | {
         action: 'batch';
         items: UseCaseRecord[];
+      }
+    | {
+        action: 'meta';
+        meta: SessionMeta;
       };
 
   try {
     const key = KEY(params.sessionId);
+
+    if (body && typeof body === 'object' && 'action' in body && body.action === 'meta') {
+      const meta = await saveMeta(key, body.meta ?? {});
+      const { useCases } = await getSession(key);
+      return NextResponse.json({ ok: true, kv: true, meta, useCases });
+    }
 
     if (
       body &&
