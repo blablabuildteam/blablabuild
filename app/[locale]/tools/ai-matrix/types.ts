@@ -1,7 +1,23 @@
 export type QuadrantKey = 'quick' | 'strategic' | 'low' | 'later';
 export type ClaudeFit = 'good' | 'stretch' | 'blocked';
 export type ReviewStatus = 'pending' | 'reviewed' | 'needs-split' | 'deferred';
-export type PriorityStatus = 'now' | 'backlog' | 'kill';
+export type PriorityStatus = 'now' | 'near' | 'next' | 'later' | 'kill';
+
+export function normalizePriorityStatus(
+  status?: string | null
+): PriorityStatus {
+  if (status === 'backlog') return 'later';
+  if (
+    status === 'now' ||
+    status === 'near' ||
+    status === 'next' ||
+    status === 'later' ||
+    status === 'kill'
+  ) {
+    return status;
+  }
+  return 'later';
+}
 export type DeliveryPartner =
   | 'adsomnia'
   | 'blablabuild'
@@ -63,21 +79,39 @@ export interface UseCase {
 
 export const PRIORITY_STATUS_META: Record<
   PriorityStatus,
-  { label: string; short: string; color: string; bg: string; border: string }
+  { label: string; short: string; color: string; bg: string; border: string; hint: string }
 > = {
   now: {
     label: 'Now',
     short: 'Now',
     color: 'text-bla-lime',
     bg: 'bg-bla-lime/10',
-    border: 'border-bla-lime/30',
+    border: 'border-bla-lime/35',
+    hint: 'Start this horizon',
   },
-  backlog: {
-    label: 'Backlog',
-    short: 'Backlog',
+  near: {
+    label: 'Near',
+    short: 'Near',
+    color: 'text-cyan-300',
+    bg: 'bg-cyan-400/10',
+    border: 'border-cyan-400/30',
+    hint: 'Right after Now',
+  },
+  next: {
+    label: 'Next',
+    short: 'Next',
     color: 'text-sky-300',
     bg: 'bg-sky-400/10',
     border: 'border-sky-400/30',
+    hint: 'Following wave',
+  },
+  later: {
+    label: 'Later',
+    short: 'Later',
+    color: 'text-white/55',
+    bg: 'bg-white/5',
+    border: 'border-white/15',
+    hint: 'Parked / later horizon',
   },
   kill: {
     label: 'Kill',
@@ -85,8 +119,12 @@ export const PRIORITY_STATUS_META: Record<
     color: 'text-red-300',
     bg: 'bg-red-400/10',
     border: 'border-red-400/30',
+    hint: 'Drop or merge',
   },
 };
+
+/** Roadmap stages only (no Kill) — for filters / counts */
+export const ROADMAP_STATUSES: PriorityStatus[] = ['now', 'near', 'next', 'later'];
 
 export const DELIVERY_META: Record<
   DeliveryPartner,

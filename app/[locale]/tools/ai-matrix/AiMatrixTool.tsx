@@ -15,7 +15,7 @@ const SHOW_REVIEW = process.env.NODE_ENV === 'development';
 type QuadrantKey = 'quick' | 'strategic' | 'low' | 'later';
 type View = 'landing' | 'matrix' | 'add' | 'workshop' | 'results' | 'claude' | 'review' | 'prioritize';
 type ClaudeFit = 'good' | 'stretch' | 'blocked';
-type PriorityStatus = 'now' | 'backlog' | 'kill';
+type PriorityStatus = 'now' | 'near' | 'next' | 'later' | 'kill';
 type DeliveryPartner =
   | 'adsomnia'
   | 'blablabuild'
