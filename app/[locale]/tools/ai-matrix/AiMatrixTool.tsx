@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, ChevronRight, ArrowLeft, BarChart3, Copy, Check, Users, RefreshCw, Info, Share2, Download, Trophy, AlertTriangle, Star, Code2, ClipboardCheck, HelpCircle, ListOrdered } from 'lucide-react';
+import { Plus, X, ChevronRight, ArrowLeft, BarChart3, Copy, Check, Users, RefreshCw, Info, Share2, Download, Trophy, AlertTriangle, Star, Code2, ClipboardCheck, HelpCircle, ListOrdered, Map as MapIcon } from 'lucide-react';
 import ClaudeCasesView from './ClaudeCasesView';
 import ReviewView from './ReviewView';
 import PrioritizeView from './PrioritizeView';
+import RoadmapView from './RoadmapView';
 
 /** Internal normalize/review UI — local `npm run dev` only, never on shared/production URLs */
 const SHOW_REVIEW = process.env.NODE_ENV === 'development';
@@ -13,7 +14,7 @@ const SHOW_REVIEW = process.env.NODE_ENV === 'development';
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type QuadrantKey = 'quick' | 'strategic' | 'low' | 'later';
-type View = 'landing' | 'matrix' | 'add' | 'workshop' | 'results' | 'claude' | 'review' | 'prioritize';
+type View = 'landing' | 'matrix' | 'add' | 'workshop' | 'results' | 'claude' | 'review' | 'prioritize' | 'roadmap';
 type ClaudeFit = 'good' | 'stretch' | 'blocked';
 type PriorityStatus = 'now' | 'near' | 'next' | 'later' | 'kill';
 type DeliveryPartner =
@@ -1769,6 +1770,11 @@ export default function AiMatrixTool() {
                   <ListOrdered className="h-3 w-3" />
                   <span className="hidden sm:inline">Prioritize</span>
                 </button>
+                <button onClick={() => setView('roadmap')}
+                  className={`flex h-7 items-center gap-1.5 rounded-full px-3 text-xs transition-colors ${view === 'roadmap' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white'}`}>
+                  <MapIcon className="h-3 w-3" />
+                  <span className="hidden sm:inline">Roadmap</span>
+                </button>
                 {SHOW_REVIEW && (
                   <button onClick={() => setView('review')}
                     className={`flex h-7 items-center gap-1.5 rounded-full px-3 text-xs transition-colors ${view === 'review' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white'}`}>
@@ -1836,6 +1842,13 @@ export default function AiMatrixTool() {
                 onBack={() => setView('matrix')}
                 onUpdate={updateUseCase}
                 onReplaceAll={replaceAllUseCases}
+              />
+            )}
+            {view === 'roadmap' && (
+              <RoadmapView
+                useCases={useCases}
+                onBack={() => setView('matrix')}
+                onGoPrioritize={() => setView('prioritize')}
               />
             )}
             {SHOW_REVIEW && view === 'review' && (

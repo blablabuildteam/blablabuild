@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   Filter,
   GripVertical,
+  Info,
   Map,
   RotateCcw,
   Sparkles,
@@ -36,7 +37,12 @@ import {
   migrateLegacyStatuses,
   proposeRoadmap,
 } from './roadmapProposal';
-import RoadmapTimeline from './RoadmapTimeline';
+
+const IMPACT_HINT =
+  'Business upside if this works well — hours saved, fewer errors, more revenue or margin. 1 = small improvement · 5 = big, material impact on the team or P&L. (Workshop score: Impact.)';
+
+const SPEED_HINT =
+  'How fast can we ship a useful first version? 1 = many months / heavy integrations · 5 = days or weeks (Slack helper, draft tool, local Claude skill).';
 
 const DETAIL_SCORE_KEYS: { key: keyof Scores; label: string }[] = [
   { key: 'frequency', label: 'Frequency' },
@@ -57,14 +63,50 @@ function ScoreStepper({
   value,
   onChange,
   label,
+  hint,
 }: {
   value: number;
   onChange: (n: number) => void;
   label: string;
+  hint?: string;
 }) {
+  const [showHint, setShowHint] = useState(false);
+
   return (
-    <label className="flex min-w-[88px] flex-col gap-1.5">
-      <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">{label}</span>
+    <label className="relative flex min-w-[88px] flex-col gap-1.5">
+      <span className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">
+        {label}
+        {hint && (
+          <button
+            type="button"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowHint((v) => !v);
+            }}
+            className="grid h-4 w-4 place-items-center rounded-full border border-white/20 text-white/45 hover:border-white/40 hover:text-white/80"
+            aria-label={`Info: ${label}`}
+          >
+            <Info className="h-2.5 w-2.5" />
+          </button>
+        )}
+      </span>
+      {hint && showHint && (
+        <div className="absolute left-0 top-6 z-20 w-64 rounded-xl border border-white/15 bg-[#12141a] p-3 text-[12px] font-normal normal-case tracking-normal text-white/70 shadow-xl">
+          {hint}
+          <button
+            type="button"
+            className="mt-2 block text-[11px] text-bla-lime/80"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowHint(false);
+            }}
+          >
+            Got it
+          </button>
+        </div>
+      )}
       <div className="flex items-center gap-1.5">
         <button
           type="button"
@@ -186,11 +228,13 @@ function PriorityRow({
             <div className="flex flex-wrap items-end gap-4 sm:gap-5">
               <ScoreStepper
                 label="Impact"
+                hint={IMPACT_HINT}
                 value={uc.scores.businessImpact}
                 onChange={(n) => patchScores('businessImpact', n)}
               />
               <ScoreStepper
                 label="Speed to build"
+                hint={SPEED_HINT}
                 value={uc.scores.implementation}
                 onChange={(n) => patchScores('implementation', n)}
               />
@@ -269,7 +313,7 @@ export default function PrioritizeView({
   onReplaceAll,
 }: Props) {
   const [filterDept, setFilterDept] = useState('all');
-  const [filterStatus, setFilterStatus] = useState<'all' | PriorityStatus>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | PriorityStatus>('now');
   const [filterDelivery, setFilterDelivery] = useState<'all' | DeliveryPartner>('all');
   const [hideKill, setHideKill] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -442,11 +486,12 @@ export default function PrioritizeView({
           <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-bla-lime/70">
             § prioritize · internal
           </p>
-          <h2 className="mt-1 font-host text-2xl font-light text-white md:text-3xl">Roadmap backlog</h2>
+          <h2 className="mt-1 font-host text-2xl font-light text-white md:text-3xl">Prioritize</h2>
           <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-white/55">
-            Drag to rank. Set <span className="text-white/75">Now → Near → Next → Later</span> for the
-            story. Scores inform — your order decides. First cut: ~{ROADMAP_TARGETS.now} Now, ~
-            {ROADMAP_TARGETS.near} Near, ~{ROADMAP_TARGETS.next} Next.
+            Go through cases calmly: rank, set{' '}
+            <span className="text-white/75">Now → Near → Next → Later</span>, assign delivery. When
+            the shortlist feels right, open the <span className="text-white/75">Roadmap</span> tab for
+            the calendar view.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -468,14 +513,6 @@ export default function PrioritizeView({
           </div>
         </div>
       </div>
-
-      <RoadmapTimeline
-        useCases={useCases}
-        selectedId={selectedId}
-        onSelect={(id) => setSelectedId((prev) => (prev === id ? null : id))}
-        activeFilter={filterStatus === 'kill' ? 'all' : filterStatus}
-        onFilterHorizon={(status) => setFilterStatus(status)}
-      />
 
       <div className="mt-6 flex flex-wrap items-center gap-2">
         <Filter className="h-3.5 w-3.5 text-white/35" />
