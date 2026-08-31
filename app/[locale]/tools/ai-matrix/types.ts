@@ -1,6 +1,13 @@
 export type QuadrantKey = 'quick' | 'strategic' | 'low' | 'later';
 export type ClaudeFit = 'good' | 'stretch' | 'blocked';
 export type ReviewStatus = 'pending' | 'reviewed' | 'needs-split' | 'deferred';
+export type PriorityStatus = 'now' | 'backlog' | 'kill';
+export type DeliveryPartner =
+  | 'adsomnia'
+  | 'blablabuild'
+  | 'harlem-next'
+  | 'bending-the-rules'
+  | 'tbd';
 
 export interface Scores {
   businessImpact: number;
@@ -38,6 +45,11 @@ export interface UseCase {
   howToGuide?: string;
   definitionOfDone?: string;
   claudeReviewedByBlaBlaBuild?: boolean;
+  /** Manual backlog order — lower = higher priority. Drag source of truth. */
+  priorityRank?: number;
+  priorityStatus?: PriorityStatus;
+  /** Who delivers / builds (multi). */
+  deliveryPartners?: DeliveryPartner[];
   originalInput?: {
     name?: string;
     description?: string;
@@ -48,6 +60,77 @@ export interface UseCase {
     savedAt?: string;
   };
 }
+
+export const PRIORITY_STATUS_META: Record<
+  PriorityStatus,
+  { label: string; short: string; color: string; bg: string; border: string }
+> = {
+  now: {
+    label: 'Now',
+    short: 'Now',
+    color: 'text-bla-lime',
+    bg: 'bg-bla-lime/10',
+    border: 'border-bla-lime/30',
+  },
+  backlog: {
+    label: 'Backlog',
+    short: 'Backlog',
+    color: 'text-sky-300',
+    bg: 'bg-sky-400/10',
+    border: 'border-sky-400/30',
+  },
+  kill: {
+    label: 'Kill',
+    short: 'Kill',
+    color: 'text-red-300',
+    bg: 'bg-red-400/10',
+    border: 'border-red-400/30',
+  },
+};
+
+export const DELIVERY_META: Record<
+  DeliveryPartner,
+  { label: string; short: string; color: string; bg: string; border: string }
+> = {
+  adsomnia: {
+    label: 'Adsomnia',
+    short: 'Ads',
+    color: 'text-pink-300',
+    bg: 'bg-pink-400/10',
+    border: 'border-pink-400/30',
+  },
+  blablabuild: {
+    label: 'blablabuild',
+    short: 'bla',
+    color: 'text-bla-lime',
+    bg: 'bg-bla-lime/10',
+    border: 'border-bla-lime/30',
+  },
+  'harlem-next': {
+    label: 'Harlem Next',
+    short: 'HN',
+    color: 'text-violet-300',
+    bg: 'bg-violet-400/10',
+    border: 'border-violet-400/30',
+  },
+  'bending-the-rules': {
+    label: 'Bending the Rules',
+    short: 'BtR',
+    color: 'text-orange-300',
+    bg: 'bg-orange-400/10',
+    border: 'border-orange-400/30',
+  },
+  tbd: {
+    label: 'TBD',
+    short: 'TBD',
+    color: 'text-white/50',
+    bg: 'bg-white/5',
+    border: 'border-white/15',
+  },
+};
+
+export const ALL_DELIVERY_PARTNERS = Object.keys(DELIVERY_META) as DeliveryPartner[];
+export const ALL_PRIORITY_STATUSES = Object.keys(PRIORITY_STATUS_META) as PriorityStatus[];
 
 export const DEPT_COLORS: Record<string, string> = {
   'Affiliate Management': '#f472b6',
@@ -89,6 +172,19 @@ export function sortUseCasesByScore(cases: UseCase[]): UseCase[] {
     const diff = calcScore(b.scores) - calcScore(a.scores);
     return diff !== 0 ? diff : a.id.localeCompare(b.id);
   });
+}
+
+export function sortUseCasesByPriority(cases: UseCase[]): UseCase[] {
+  const allRanked = cases.every((uc) => typeof uc.priorityRank === 'number');
+  if (!allRanked) return sortUseCasesByScore(cases);
+  return [...cases].sort((a, b) => {
+    const diff = (a.priorityRank ?? 0) - (b.priorityRank ?? 0);
+    return diff !== 0 ? diff : a.id.localeCompare(b.id);
+  });
+}
+
+export function effortFromImplementation(implementation: number): number {
+  return 6 - implementation;
 }
 
 export function sortByDeptThenName(a: UseCase, b: UseCase): number {

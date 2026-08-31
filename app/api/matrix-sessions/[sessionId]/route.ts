@@ -134,12 +134,67 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: { sessionId: string } }
 ) {
-  const useCase = (await req.json()) as UseCaseRecord;
   if (!KV_READY) {
     return NextResponse.json({ ok: false, kv: false });
   }
+
+  const body = (await req.json()) as
+    | UseCaseRecord
+    | {
+        action: 'reorder';
+        items: { id: string; priorityRank: number }[];
+      }
+    | {
+        action: 'batch';
+        items: UseCaseRecord[];
+      };
+
   try {
-    const useCases = await updateUseCase(KEY(params.sessionId), useCase);
+    const key = KEY(params.sessionId);
+
+    if (
+      body &&
+      typeof body === 'object' &&
+      'action' in body &&
+      body.action === 'reorder' &&
+      Array.isArray(body.items)
+    ) {
+      const existing = await getUseCases(key);
+      const byId = new Map(existing.map((uc) => [uc.id, uc]));
+      for (const item of body.items) {
+        const prev = byId.get(item.id);
+        if (!prev) continue;
+        const next = { ...prev, priorityRank: item.priorityRank };
+        byId.set(item.id, next);
+        await redisCommand('HSET', key, item.id, JSON.stringify(next));
+      }
+      await redisCommand('EXPIRE', key, String(TTL));
+      return NextResponse.json({ ok: true, kv: true, useCases: Array.from(byId.values()) });
+    }
+
+    if (
+      body &&
+      typeof body === 'object' &&
+      'action' in body &&
+      body.action === 'batch' &&
+      Array.isArray(body.items)
+    ) {
+      const existing = await getUseCases(key);
+      const byId = new Map(existing.map((uc) => [uc.id, uc]));
+      for (const patch of body.items) {
+        if (!patch?.id) continue;
+        const prev = byId.get(String(patch.id));
+        if (!prev) continue;
+        const merged = freezeOriginalIfNeeded(prev, { ...prev, ...patch, id: String(patch.id) });
+        byId.set(String(patch.id), merged);
+        await redisCommand('HSET', key, String(patch.id), JSON.stringify(merged));
+      }
+      await redisCommand('EXPIRE', key, String(TTL));
+      return NextResponse.json({ ok: true, kv: true, useCases: Array.from(byId.values()) });
+    }
+
+    const useCase = body as UseCaseRecord;
+    const useCases = await updateUseCase(key, useCase);
     return NextResponse.json({ ok: true, kv: true, useCases });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to update';
