@@ -36,7 +36,7 @@ import {
   migrateLegacyStatuses,
   proposeRoadmap,
 } from './roadmapProposal';
-import { PROJECT_CLUSTERS, projectForCase } from './projectClusters';
+import { PROJECT_CLUSTERS, projectAccent, projectForCase, resolveProjectHorizon } from './projectClusters';
 
 const IMPACT_HINT =
   'Business upside if this works well — hours saved, fewer errors, more revenue or margin. 1 = small improvement · 5 = big, material impact on the team or P&L. (Workshop score: Impact.)';
@@ -540,43 +540,79 @@ export default function PrioritizeView({
       </div>
 
       {/* Project clusters */}
-      <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3.5">
-        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-          Proposed projects · click to filter
-        </p>
-        <div className="mt-2.5 flex flex-wrap gap-1.5">
-          <button
-            type="button"
-            onClick={() => setFilterProject('all')}
-            className={`rounded-full border px-2.5 py-1 text-[11px] ${
-              filterProject === 'all'
-                ? 'border-bla-lime/35 bg-bla-lime/10 text-bla-lime'
-                : 'border-white/10 text-white/45 hover:text-white/70'
-            }`}
-          >
-            All projects
-          </button>
+      <div className="mt-6">
+        <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+              Proposed projects
+            </p>
+            <p className="mt-1 text-[13px] text-white/45">
+              Click a card to filter use cases. These are delivery buckets — not final scope.
+            </p>
+          </div>
+          {filterProject !== 'all' && (
+            <button
+              type="button"
+              onClick={() => setFilterProject('all')}
+              className="rounded-full border border-white/15 px-3 py-1.5 text-[12px] text-white/60 hover:text-white"
+            >
+              Clear project filter
+            </button>
+          )}
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {PROJECT_CLUSTERS.map((p) => {
-            const n = p.caseIds.filter((id) => useCases.some((u) => u.id === id)).length;
+            const members = useCases.filter((u) => p.caseIds.includes(u.id));
+            const n = members.length;
+            const active = filterProject === p.id;
+            const accent = projectAccent(p.id);
+            const horizon = resolveProjectHorizon(p, useCases);
+            const hMeta = PRIORITY_STATUS_META[horizon];
             return (
               <button
                 key={p.id}
                 type="button"
-                title={p.summary}
-                onClick={() => setFilterProject(filterProject === p.id ? 'all' : p.id)}
-                className={`rounded-full border px-2.5 py-1 text-[11px] ${
-                  filterProject === p.id
-                    ? 'border-bla-lime/35 bg-bla-lime/10 text-bla-lime'
-                    : 'border-white/10 text-white/45 hover:text-white/70'
+                onClick={() => setFilterProject(active ? 'all' : p.id)}
+                className={`rounded-2xl border p-4 text-left transition-colors ${
+                  active
+                    ? 'border-bla-lime/40 bg-bla-lime/[0.06]'
+                    : 'border-white/10 bg-[#0d0f12] hover:border-white/20'
                 }`}
               >
-                {p.name} · {n}
+                <div className="flex items-start justify-between gap-2">
+                  <span
+                    className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: accent }}
+                  />
+                  <span
+                    className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] ${hMeta.border} ${hMeta.bg} ${hMeta.color}`}
+                  >
+                    {hMeta.short}
+                  </span>
+                </div>
+                <h3 className="mt-2.5 font-host text-[16px] font-medium leading-snug text-white">
+                  {p.name}
+                </h3>
+                <p className="mt-1.5 text-[12px] leading-relaxed text-white/50 line-clamp-2">
+                  {p.summary}
+                </p>
+                <div className="mt-3 flex items-center justify-between gap-2 border-t border-white/8 pt-2.5">
+                  <span className="font-mono text-[11px] text-white/40">
+                    {n} use case{n === 1 ? '' : 's'}
+                  </span>
+                  {active && (
+                    <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-bla-lime">
+                      Filtered
+                    </span>
+                  )}
+                </div>
               </button>
             );
           })}
         </div>
         {filterProject !== 'all' && (
-          <p className="mt-2.5 max-w-3xl text-[12px] leading-relaxed text-white/50">
+          <p className="mt-3 max-w-3xl text-[13px] leading-relaxed text-white/50">
+            <span className="text-white/70">Why together: </span>
             {PROJECT_CLUSTERS.find((p) => p.id === filterProject)?.rationale}
           </p>
         )}

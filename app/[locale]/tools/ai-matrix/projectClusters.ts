@@ -210,3 +210,62 @@ export function projectForCase(caseId: string): ProjectCluster | undefined {
 export function unclusteredCaseIds(allIds: string[]): string[] {
   return allIds.filter((id) => !CASE_TO_PROJECT.has(id));
 }
+
+/** Stable accent per project for cards / timeline bars */
+export const PROJECT_ACCENT: Record<string, string> = {
+  'email-ongage': '#f97316',
+  'affiliate-partner-ops': '#f472b6',
+  'media-buy-performance': '#60a5fa',
+  'adops-tracker': '#a3e635',
+  'bi-pricing-payouts': '#a78bfa',
+  'finance-intel': '#34d399',
+  'hr-enablement': '#fbbf24',
+  'api-growth': '#22d3ee',
+  'crm-platform': '#94a3b8',
+  'pm-intake': '#e879f9',
+  'meeting-productivity': '#fb7185',
+};
+
+export function projectAccent(projectId: string): string {
+  return PROJECT_ACCENT[projectId] || '#ceff00';
+}
+
+const HORIZON_RANK: Record<string, number> = {
+  now: 0,
+  near: 1,
+  next: 2,
+  later: 3,
+  kill: 4,
+};
+
+/**
+ * Project horizon = earliest non-kill member status, else suggestedHorizon.
+ */
+export function resolveProjectHorizon(
+  cluster: ProjectCluster,
+  cases: { id: string; priorityStatus?: string }[]
+): Exclude<PriorityStatus, 'kill'> {
+  const members = cases.filter(
+    (c) => cluster.caseIds.includes(c.id) && c.priorityStatus !== 'kill'
+  );
+  if (members.length === 0) {
+    const s = cluster.suggestedHorizon;
+    return s && s !== 'kill' ? s : 'later';
+  }
+  let best: Exclude<PriorityStatus, 'kill'> = 'later';
+  let bestRank = 99;
+  for (const m of members) {
+    const raw = m.priorityStatus === 'backlog' ? 'later' : m.priorityStatus || 'later';
+    if (raw === 'kill') continue;
+    const status = (['now', 'near', 'next', 'later'].includes(raw) ? raw : 'later') as Exclude<
+      PriorityStatus,
+      'kill'
+    >;
+    const r = HORIZON_RANK[status] ?? 3;
+    if (r < bestRank) {
+      bestRank = r;
+      best = status;
+    }
+  }
+  return best;
+}

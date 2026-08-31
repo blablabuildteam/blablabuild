@@ -7,9 +7,7 @@ import {
   type UseCase,
   PRIORITY_STATUS_META,
   ROADMAP_STATUSES,
-  getDeptColor,
   normalizePriorityStatus,
-  sortUseCasesByPriority,
 } from './types';
 import {
   HORIZON_WINDOW,
@@ -20,8 +18,22 @@ import {
   monthLabel,
   monthRangeLabel,
 } from './RoadmapTimeline';
+import {
+  PROJECT_CLUSTERS,
+  type ProjectCluster,
+  projectAccent,
+  resolveProjectHorizon,
+} from './projectClusters';
 
 type HorizonFocus = 'now' | 'now-near' | 'all';
+
+interface ProjectRow {
+  cluster: ProjectCluster;
+  members: UseCase[];
+  horizon: Exclude<PriorityStatus, 'kill'>;
+  /** Calendar duration hint (parallel-aware). */
+  months: number;
+}
 
 interface Props {
   useCases: UseCase[];
@@ -31,7 +43,7 @@ interface Props {
 
 export default function RoadmapView({ useCases, onBack, onGoPrioritize }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [focus, setFocus] = useState<HorizonFocus>('now');
+  const [focus, setFocus] = useState<HorizonFocus>('now-near');
 
   const visibleHorizons = useMemo(() => {
     if (focus === 'now') return ['now'] as const;
@@ -39,15 +51,30 @@ export default function RoadmapView({ useCases, onBack, onGoPrioritize }: Props)
     return ROADMAP_STATUSES;
   }, [focus]);
 
-  const counts = useMemo(() => {
-    const c: Record<string, number> = { now: 0, near: 0, next: 0, later: 0, kill: 0 };
-    useCases.forEach((uc) => {
-      c[normalizePriorityStatus(uc.priorityStatus)] += 1;
-    });
-    return c;
+  const projects = useMemo((): ProjectRow[] => {
+    return PROJECT_CLUSTERS.map((cluster) => {
+      const members = useCases
+        .filter((u) => cluster.caseIds.includes(u.id))
+        .filter((u) => normalizePriorityStatus(u.priorityStatus) !== 'kill');
+      const horizon = resolveProjectHorizon(cluster, useCases);
+      // Parallel delivery: take max case duration, not full sum
+      const months =
+        members.length === 0
+          ? 1
+          : Math.max(...members.map((m) => estimateMonths(m)), 1);
+      return { cluster, members, horizon, months };
+    }).filter((p) => p.members.length > 0);
   }, [useCases]);
 
-  const selected = selectedId ? useCases.find((u) => u.id === selectedId) : null;
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { now: 0, near: 0, next: 0, later: 0 };
+    projects.forEach((p) => {
+      c[p.horizon] = (c[p.horizon] || 0) + 1;
+    });
+    return c;
+  }, [projects]);
+
+  const selected = selectedId ? projects.find((p) => p.cluster.id === selectedId) : null;
 
   const monthTicks = useMemo(
     () => Array.from({ length: TIMELINE_MONTHS }, (_, i) => i),
@@ -55,15 +82,14 @@ export default function RoadmapView({ useCases, onBack, onGoPrioritize }: Props)
   );
 
   const lanes = useMemo(() => {
-    const ordered = sortUseCasesByPriority(useCases);
     return visibleHorizons.map((horizon) => {
-      const items = ordered.filter(
-        (uc) => normalizePriorityStatus(uc.priorityStatus) === horizon
-      );
-      const months = items.reduce((sum, uc) => sum + estimateMonths(uc), 0);
-      return { horizon, items, months };
+      const items = projects
+        .filter((p) => p.horizon === horizon)
+        .sort((a, b) => b.members.length - a.members.length);
+      const load = items.reduce((sum, p) => sum + p.months, 0);
+      return { horizon, items, load };
     });
-  }, [useCases, visibleHorizons]);
+  }, [projects, visibleHorizons]);
 
   return (
     <div className="mx-auto w-full max-w-[1400px]">
@@ -79,13 +105,15 @@ export default function RoadmapView({ useCases, onBack, onGoPrioritize }: Props)
       <div className="flex flex-wrap items-end justify-between gap-5">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-bla-lime/70">
-            § roadmap · internal
+            § roadmap · projects
           </p>
-          <h2 className="mt-1 font-host text-2xl font-light text-white md:text-3xl">Timeline</h2>
+          <h2 className="mt-1 font-host text-2xl font-light text-white md:text-3xl">
+            Project timeline
+          </h2>
           <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-white/55">
-            Calendar {monthLabel(0, ROADMAP_START)} → {monthLabel(TIMELINE_MONTHS - 1, ROADMAP_START)}.
-            Rank cases in <span className="text-white/75">Prioritize</span> first — start here with{' '}
-            <span className="text-bla-lime">Now</span>, then open Near / full year when ready.
+            {monthLabel(0, ROADMAP_START)} → {monthLabel(TIMELINE_MONTHS - 1, ROADMAP_START)}. One
+            bar per <span className="text-white/75">project</span> (bundled use cases). Horizon =
+            earliest active case in that project. Duration ≈ longest case (parallel work).
           </p>
         </div>
         {onGoPrioritize && (
@@ -94,7 +122,7 @@ export default function RoadmapView({ useCases, onBack, onGoPrioritize }: Props)
             onClick={onGoPrioritize}
             className="rounded-full border border-white/15 px-4 py-2 text-[13px] text-white/70 hover:border-bla-lime/30 hover:text-bla-lime"
           >
-            Open Prioritize →
+            Adjust in Prioritize →
           </button>
         )}
       </div>
@@ -103,9 +131,15 @@ export default function RoadmapView({ useCases, onBack, onGoPrioritize }: Props)
         <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/35">Show</span>
         {(
           [
-            { id: 'now' as const, label: `Now only (${counts.now})` },
-            { id: 'now-near' as const, label: `Now + Near (${counts.now + counts.near})` },
-            { id: 'all' as const, label: `Full year (${counts.now + counts.near + counts.next + counts.later})` },
+            { id: 'now' as const, label: `Now (${counts.now || 0} projects)` },
+            {
+              id: 'now-near' as const,
+              label: `Now + Near (${(counts.now || 0) + (counts.near || 0)})`,
+            },
+            {
+              id: 'all' as const,
+              label: `Full year (${projects.length})`,
+            },
           ]
         ).map((opt) => (
           <button
@@ -125,7 +159,7 @@ export default function RoadmapView({ useCases, onBack, onGoPrioritize }: Props)
 
       <section className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-[#0d0f12]">
         <div className="border-b border-white/8 px-5 py-3">
-          <div className="relative ml-[min(42%,280px)] h-7 md:ml-[280px]">
+          <div className="relative ml-[min(48%,300px)] h-7 md:ml-[300px]">
             {monthTicks.map((m) => (
               <div
                 key={m}
@@ -137,7 +171,7 @@ export default function RoadmapView({ useCases, onBack, onGoPrioritize }: Props)
               </div>
             ))}
           </div>
-          <div className="relative mt-1 ml-[min(42%,280px)] h-2 overflow-hidden rounded-full bg-white/[0.04] md:ml-[280px]">
+          <div className="relative mt-1 ml-[min(48%,300px)] h-2 overflow-hidden rounded-full bg-white/[0.04] md:ml-[300px]">
             {ROADMAP_STATUSES.map((h) => {
               const win = HORIZON_WINDOW[h];
               const meta = PRIORITY_STATUS_META[h];
@@ -157,13 +191,13 @@ export default function RoadmapView({ useCases, onBack, onGoPrioritize }: Props)
         </div>
 
         <div className="divide-y divide-white/6">
-          {lanes.map(({ horizon, items, months }) => {
+          {lanes.map(({ horizon, items, load }) => {
             const meta = PRIORITY_STATUS_META[horizon];
             const win = HORIZON_WINDOW[horizon];
 
             return (
-              <div key={horizon} className="px-4 py-4 md:px-5">
-                <div className="mb-3 flex flex-wrap items-center gap-2.5">
+              <div key={horizon} className="px-4 py-5 md:px-5">
+                <div className="mb-4 flex flex-wrap items-center gap-2.5">
                   <span
                     className={`rounded-full border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.14em] ${meta.border} ${meta.bg} ${meta.color}`}
                   >
@@ -173,68 +207,78 @@ export default function RoadmapView({ useCases, onBack, onGoPrioritize }: Props)
                     {monthRangeLabel(win.start, win.end)}
                   </span>
                   <span className="text-[12px] text-white/40">
-                    {items.length} · ~{months.toFixed(months % 1 ? 1 : 0)} mo load
+                    {items.length} project{items.length === 1 ? '' : 's'} · ~{load.toFixed(load % 1 ? 1 : 0)}{' '}
+                    mo span
                   </span>
                 </div>
 
                 {items.length === 0 ? (
                   <p className="py-3 text-[13px] text-white/30">
-                    Nothing in {meta.label} yet — set horizons in Prioritize.
+                    No projects in {meta.label} yet.
                   </p>
                 ) : (
-                  <ul className="space-y-2">
-                    {items.map((uc, idx) => {
-                      const dur = estimateMonths(uc);
+                  <ul className="space-y-2.5">
+                    {items.map((row, idx) => {
+                      const { cluster, members, months } = row;
+                      const accent = projectAccent(cluster.id);
                       const slot = items.length <= 1 ? 0 : idx / Math.max(1, items.length - 1);
                       const windowSpan = win.end - win.start;
-                      const maxStart = Math.max(0, windowSpan - dur);
+                      const maxStart = Math.max(0, windowSpan - months);
                       const start = win.start + slot * maxStart;
-                      const widthPct = Math.max(8, (dur / TIMELINE_MONTHS) * 100);
+                      const widthPct = Math.max(10, (months / TIMELINE_MONTHS) * 100);
                       const leftPct = (start / TIMELINE_MONTHS) * 100;
-                      const isSelected = selectedId === uc.id;
-                      const color = getDeptColor(uc.label || 'General');
-                      const durLabel = formatDuration(dur);
+                      const isSelected = selectedId === cluster.id;
+                      const durLabel = formatDuration(months);
 
                       return (
-                        <li key={uc.id}>
+                        <li key={cluster.id}>
                           <button
                             type="button"
                             onClick={() =>
-                              setSelectedId((prev) => (prev === uc.id ? null : uc.id))
+                              setSelectedId((prev) =>
+                                prev === cluster.id ? null : cluster.id
+                              )
                             }
-                            className={`grid w-full grid-cols-1 items-center gap-2 rounded-xl border px-3 py-2.5 text-left transition-colors md:grid-cols-[280px_1fr] md:gap-4 ${
+                            className={`grid w-full grid-cols-1 items-center gap-3 rounded-2xl border px-4 py-3.5 text-left transition-colors md:grid-cols-[300px_1fr] ${
                               isSelected
-                                ? 'border-bla-lime/40 bg-bla-lime/[0.04]'
-                                : 'border-white/8 bg-white/[0.02] hover:border-white/15'
+                                ? 'border-bla-lime/40 bg-bla-lime/[0.05]'
+                                : 'border-white/10 bg-white/[0.02] hover:border-white/20'
                             }`}
                           >
                             <div className="min-w-0">
                               <div className="flex items-center gap-2">
                                 <span
-                                  className="h-2 w-2 shrink-0 rounded-full"
-                                  style={{ backgroundColor: color }}
+                                  className="h-2.5 w-2.5 shrink-0 rounded-full"
+                                  style={{ backgroundColor: accent }}
                                 />
-                                <span className="truncate font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
-                                  {uc.label || 'General'}
+                                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
+                                  {members.length} use cases
                                 </span>
                               </div>
-                              <p className="mt-1 truncate font-host text-[14px] font-medium text-white md:text-[15px]">
-                                {uc.name}
+                              <p className="mt-1.5 font-host text-[15px] font-medium leading-snug text-white md:text-base">
+                                {cluster.name}
                               </p>
-                              <p className="mt-0.5 font-mono text-[11px] text-white/40">{durLabel}</p>
+                              <p className="mt-1 line-clamp-1 text-[12px] text-white/45">
+                                {cluster.summary}
+                              </p>
+                              <p className="mt-1.5 font-mono text-[11px] text-white/40">{durLabel}</p>
                             </div>
 
-                            <div className="relative hidden h-9 md:block">
+                            <div className="relative hidden h-11 md:block">
                               <div
-                                className="absolute inset-y-1 rounded-md border px-2"
+                                className="absolute inset-y-1 flex items-center overflow-hidden rounded-lg border px-3"
                                 style={{
                                   left: `${leftPct}%`,
                                   width: `${widthPct}%`,
-                                  minWidth: 48,
-                                  backgroundColor: `${color}33`,
-                                  borderColor: `${color}66`,
+                                  minWidth: 64,
+                                  backgroundColor: `${accent}28`,
+                                  borderColor: `${accent}66`,
                                 }}
-                              />
+                              >
+                                <span className="truncate font-mono text-[10px] text-white/70">
+                                  {durLabel}
+                                </span>
+                              </div>
                             </div>
                           </button>
                         </li>
@@ -253,25 +297,45 @@ export default function RoadmapView({ useCases, onBack, onGoPrioritize }: Props)
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/35">
-                {selected.label || 'General'} ·{' '}
-                {PRIORITY_STATUS_META[normalizePriorityStatus(selected.priorityStatus)].label}
+                {PRIORITY_STATUS_META[selected.horizon].label} · {selected.members.length} use
+                cases
               </p>
-              <h3 className="mt-1 font-host text-lg text-white">{selected.name}</h3>
+              <h3 className="mt-1 font-host text-xl text-white">{selected.cluster.name}</h3>
+              <p className="mt-2 text-[13px] leading-relaxed text-white/55">
+                {selected.cluster.rationale}
+              </p>
             </div>
             <span className="shrink-0 font-mono text-[12px] text-bla-lime">
-              {formatDuration(estimateMonths(selected))}
+              {formatDuration(selected.months)}
             </span>
           </div>
-          <p className="mt-3 text-[13px] leading-relaxed text-white/55">
-            {selected.description || 'No description.'}
-          </p>
+          <ul className="mt-4 space-y-1.5 border-t border-white/8 pt-4">
+            {selected.members
+              .slice()
+              .sort(
+                (a, b) =>
+                  (a.priorityRank ?? 0) - (b.priorityRank ?? 0)
+              )
+              .map((uc) => (
+                <li
+                  key={uc.id}
+                  className="flex flex-wrap items-baseline justify-between gap-2 text-[13px]"
+                >
+                  <span className="text-white/80">{uc.name}</span>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
+                    {PRIORITY_STATUS_META[normalizePriorityStatus(uc.priorityStatus)].short} ·{' '}
+                    {formatDuration(estimateMonths(uc))}
+                  </span>
+                </li>
+              ))}
+          </ul>
         </div>
       )}
 
       <p className="mt-4 flex items-start gap-2 text-[12px] leading-relaxed text-white/35">
         <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-        Duration comes from Speed to build (workshop score). Many cases can run in parallel — load is
-        not one single queue.
+        Move use cases between horizons in Prioritize — the project bar follows the earliest
+        member. Refine clusters in code (`projectClusters.ts`) as you agree scope with Sietse.
       </p>
     </div>
   );
