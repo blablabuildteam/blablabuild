@@ -66,6 +66,8 @@ export interface UseCase {
   priorityStatus?: PriorityStatus;
   /** Who delivers / builds (multi). */
   deliveryPartners?: DeliveryPartner[];
+  /** Case triage: interesting enough to keep? */
+  interest?: 'yes' | 'maybe' | 'no';
   originalInput?: {
     name?: string;
     description?: string;

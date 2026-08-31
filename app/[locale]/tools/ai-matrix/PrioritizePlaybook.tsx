@@ -25,52 +25,47 @@ export interface PrioritizeMeta {
 
 const PRE_STEPS = [
   {
-    id: 'pre-kill',
-    title: 'Kill & merges',
-    detail: 'Example, handbook-duplicaten, CPM-in-doc — afvinken of mergen.',
+    id: 'pre-cases',
+    title: 'Use cases triageën (Yes / Maybe / No)',
+    detail: 'Open elk project, beoordeel of de case interessant is — nog geen project-kill.',
   },
   {
     id: 'pre-projects',
-    title: 'Projectkaarten nalopen',
-    detail: 'Per project: houden / splitsen / park. Max 1–2 case-wijzigingen per ronde.',
+    title: 'Projecten bevestigen',
+    detail: 'Na triage: Keep / Split / Park. Alleen op wat overblijft (Yes/Maybe).',
   },
   {
     id: 'pre-now',
     title: 'Now-shortlist voorstellen',
-    detail: 'Max 2–3 projecten in Now. Rest Near/Next/Later — ook bij hoge score.',
+    detail: 'Max 2–3 projecten in Now. Rest Near/Next/Later.',
   },
   {
     id: 'pre-owners',
     title: 'Owners + delivery (draft)',
-    detail: 'Adsomnia-naam + Ads / bla / HN / BtR / TBD als jullie suggestie.',
-  },
-  {
-    id: 'pre-story',
-    title: 'Eén zin per Now-project',
-    detail: '“Wat leveren we op?” — als de zin niet lukt, is het project te breed.',
+    detail: 'Adsomnia-naam + Ads / bla / HN / BtR / TBD.',
   },
 ] as const;
 
 const SIETSE_STEPS = [
   {
-    id: 'sietse-kill',
-    title: 'Kill/merge akkoord (~10 min)',
-    detail: 'Snel door de Kill-lijst en duplicaten.',
+    id: 'sietse-cases',
+    title: 'Cases Yes/No akkoord (~15 min)',
+    detail: 'Snel door Maybe’s en No’s — wat valt echt af?',
   },
   {
     id: 'sietse-projects',
-    title: 'Project scope (~20 min)',
-    detail: 'Per project: keep / split / park. Noteer wat erin of eruit moet.',
+    title: 'Project scope (~15 min)',
+    detail: 'Keep / Split / Park op de overgebleven cases.',
   },
   {
     id: 'sietse-now',
     title: 'Now = 2–3 projecten (~10 min)',
-    detail: 'Gezamenlijk kiezen wat eerst start — geen hele backlog herschikken.',
+    detail: 'Wat starten we eerst?',
   },
   {
     id: 'sietse-open',
     title: 'Open vragen (~5 min)',
-    detail: 'Delivery TBD, Harlem Next / BtR check, wat later naar WorkSpace gaat.',
+    detail: 'Delivery TBD, HN/BtR, WorkSpace later.',
   },
 ] as const;
 
@@ -120,7 +115,7 @@ function lsKey(sid: string) {
 }
 
 export default function PrioritizePlaybook({ sessionId, useCases }: Props) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [meta, setMeta] = useState<PrioritizeMeta>({ projectDecisions: {}, checklist: {} });
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -349,7 +344,8 @@ export default function PrioritizePlaybook({ sessionId, useCases }: Props) {
               3 · Decision log per project
             </p>
             <p className="mt-1 text-[12px] text-white/40">
-              Keep = één initiatief · Split = twee projecten · Park = later · Kill = niet doen
+              Pas ná case triage. Keep = één initiatief · Split = twee · Park = later · Kill =
+              project weg
             </p>
             <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
               {PROJECT_CLUSTERS.map((p) => {

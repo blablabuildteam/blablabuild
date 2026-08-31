@@ -1,56 +1,31 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Reorder, useDragControls } from 'framer-motion';
+import { ArrowLeft, ChevronDown, ChevronRight } from 'lucide-react';
 import {
-  ArrowLeft,
-  Filter,
-  GripVertical,
-  Info,
-  Map,
-  RotateCcw,
-  Sparkles,
-  X,
-} from 'lucide-react';
-import {
-  type DeliveryPartner,
   type PriorityStatus,
-  type Scores,
   type UseCase,
-  ALL_DELIVERY_PARTNERS,
-  ALL_PRIORITY_STATUSES,
-  DELIVERY_META,
   PRIORITY_STATUS_META,
-  Q_META,
   ROADMAP_STATUSES,
   calcScore,
   getDeptColor,
-  getQuadrant,
   normalizePriorityStatus,
-  sortUseCasesByPriority,
   sortUseCasesByScore,
 } from './types';
-import { suggestionFor } from './deliverySuggestions';
 import {
   ensureRanks,
   migrateLegacyStatuses,
   proposeRoadmap,
 } from './roadmapProposal';
-import { PROJECT_CLUSTERS, projectAccent, projectForCase, resolveProjectHorizon } from './projectClusters';
+import {
+  PROJECT_CLUSTERS,
+  projectAccent,
+  resolveProjectHorizon,
+  unclusteredCaseIds,
+} from './projectClusters';
 import PrioritizePlaybook from './PrioritizePlaybook';
 
-const IMPACT_HINT =
-  'Business upside if this works well — hours saved, fewer errors, more revenue or margin. 1 = small improvement · 5 = big, material impact on the team or P&L. (Workshop score: Impact.)';
-
-const SPEED_HINT =
-  'How fast can we ship a useful first version? 1 = many months / heavy integrations · 5 = days or weeks (Slack helper, draft tool, local Claude skill).';
-
-const DETAIL_SCORE_KEYS: { key: keyof Scores; label: string }[] = [
-  { key: 'frequency', label: 'Frequency' },
-  { key: 'aiSuitability', label: 'AI fit' },
-  { key: 'risk', label: 'Safety' },
-  { key: 'adoption', label: 'Adoption' },
-];
+export type CaseInterest = 'yes' | 'maybe' | 'no';
 
 interface Props {
   useCases: UseCase[];
@@ -60,254 +35,179 @@ interface Props {
   onReplaceAll: (cases: UseCase[]) => void;
 }
 
-function ScoreStepper({
-  value,
-  onChange,
-  label,
-  hint,
-}: {
-  value: number;
-  onChange: (n: number) => void;
-  label: string;
-  hint?: string;
-}) {
-  const [showHint, setShowHint] = useState(false);
-
-  return (
-    <label className="relative flex min-w-[88px] flex-col gap-1.5">
-      <span className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">
-        {label}
-        {hint && (
-          <button
-            type="button"
-            onPointerDown={(e) => e.stopPropagation()}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowHint((v) => !v);
-            }}
-            className="grid h-4 w-4 place-items-center rounded-full border border-white/20 text-white/45 hover:border-white/40 hover:text-white/80"
-            aria-label={`Info: ${label}`}
-          >
-            <Info className="h-2.5 w-2.5" />
-          </button>
-        )}
-      </span>
-      {hint && showHint && (
-        <div className="absolute left-0 top-6 z-20 w-64 rounded-xl border border-white/15 bg-[#12141a] p-3 text-[12px] font-normal normal-case tracking-normal text-white/70 shadow-xl">
-          {hint}
-          <button
-            type="button"
-            className="mt-2 block text-[11px] text-bla-lime/80"
-            onClick={(e) => {
-              e.preventDefault();
-              setShowHint(false);
-            }}
-          >
-            Got it
-          </button>
-        </div>
-      )}
-      <div className="flex items-center gap-1.5">
-        <button
-          type="button"
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            onChange(Math.max(1, value - 1));
-          }}
-          className="grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-white/60 hover:bg-white/10"
-        >
-          −
-        </button>
-        <span className="w-7 text-center font-mono text-base text-white">{value}</span>
-        <button
-          type="button"
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            onChange(Math.min(5, value + 1));
-          }}
-          className="grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-white/60 hover:bg-white/10"
-        >
-          +
-        </button>
-      </div>
-    </label>
-  );
+function getInterest(uc: UseCase): CaseInterest {
+  if (uc.interest === 'yes' || uc.interest === 'maybe' || uc.interest === 'no') return uc.interest;
+  if (normalizePriorityStatus(uc.priorityStatus) === 'kill') return 'no';
+  return 'yes';
 }
 
-function PriorityRow({
+function CaseRow({
   uc,
-  rankDisplay,
-  selected,
-  onSelect,
   onUpdate,
 }: {
   uc: UseCase;
-  rankDisplay: number;
-  selected: boolean;
-  onSelect: () => void;
   onUpdate: (uc: UseCase) => void;
 }) {
-  const controls = useDragControls();
-  const status = normalizePriorityStatus(uc.priorityStatus);
-  const statusMeta = PRIORITY_STATUS_META[status];
-  const q = getQuadrant(uc);
+  const interest = getInterest(uc);
   const total = calcScore(uc.scores);
-  const partners = uc.deliveryPartners?.length ? uc.deliveryPartners : (['tbd'] as DeliveryPartner[]);
 
-  const patchScores = (key: keyof Scores, value: number) => {
-    onUpdate({ ...uc, scores: { ...uc.scores, [key]: value } });
-  };
-
-  const togglePartner = (partner: DeliveryPartner) => {
-    const current = new Set(uc.deliveryPartners ?? []);
-    if (current.has(partner)) current.delete(partner);
-    else current.add(partner);
-    if (partner !== 'tbd') current.delete('tbd');
-    if (current.size === 0) current.add('tbd');
-    onUpdate({ ...uc, deliveryPartners: Array.from(current) });
+  const setInterest = (next: CaseInterest) => {
+    onUpdate({
+      ...uc,
+      interest: next,
+      priorityStatus: next === 'no' ? 'kill' : normalizePriorityStatus(uc.priorityStatus) === 'kill' ? 'later' : uc.priorityStatus,
+    });
   };
 
   return (
-    <Reorder.Item
-      value={uc}
-      id={uc.id}
-      dragListener={false}
-      dragControls={controls}
-      className={`rounded-2xl border bg-[#0d0f12] ${
-        selected ? 'border-bla-lime/40' : 'border-white/10'
-      } ${status === 'kill' ? 'opacity-55' : ''}`}
+    <div
+      className={`flex flex-col gap-2 rounded-xl border px-3 py-3 sm:flex-row sm:items-center sm:justify-between ${
+        interest === 'no'
+          ? 'border-white/8 bg-white/[0.015] opacity-50'
+          : 'border-white/10 bg-white/[0.03]'
+      }`}
     >
-      <div className="flex gap-4 p-4 md:gap-5 md:p-5">
-        <div className="flex shrink-0 flex-col items-center gap-2 pt-0.5">
-          <button
-            type="button"
-            onPointerDown={(e) => controls.start(e)}
-            className="grid h-10 w-10 cursor-grab place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-white/45 active:cursor-grabbing"
-            aria-label="Drag to reorder"
-          >
-            <GripVertical className="h-4 w-4" />
-          </button>
-          <span className="font-mono text-[12px] text-white/40">#{rankDisplay}</span>
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className="h-1.5 w-1.5 rounded-full"
+            style={{ backgroundColor: getDeptColor(uc.label || 'General') }}
+          />
+          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
+            {uc.label || 'General'}
+          </span>
+          <span className="font-mono text-[10px] text-white/30">score {total.toFixed(1)}</span>
         </div>
+        <p className="mt-1 font-host text-[14px] font-medium text-white">{uc.name}</p>
+      </div>
+      <div className="flex shrink-0 flex-wrap gap-1.5">
+        {(
+          [
+            { id: 'yes' as const, label: 'Yes', cls: 'border-bla-lime/35 bg-bla-lime/10 text-bla-lime' },
+            { id: 'maybe' as const, label: 'Maybe', cls: 'border-amber-400/35 bg-amber-400/10 text-amber-300' },
+            { id: 'no' as const, label: 'No', cls: 'border-red-400/35 bg-red-400/10 text-red-300' },
+          ]
+        ).map((opt) => (
+          <button
+            key={opt.id}
+            type="button"
+            onClick={() => setInterest(opt.id)}
+            className={`rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] ${
+              interest === opt.id ? opt.cls : 'border-white/10 text-white/35 hover:text-white/60'
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-        <div className="min-w-0 flex-1 space-y-4">
-          {/* Title band */}
-          <button type="button" onClick={onSelect} className="w-full text-left">
-            <div className="flex flex-wrap items-center gap-2">
-              <span
-                className="inline-block h-2 w-2 rounded-full"
-                style={{ backgroundColor: getDeptColor(uc.label || 'General') }}
-              />
-              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-white/45">
-                {uc.label || 'General'}
-              </span>
-              <span
-                className="rounded-full px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em]"
-                style={{ color: Q_META[q].dot, backgroundColor: `${Q_META[q].dot}22` }}
-              >
-                {Q_META[q].label}
-              </span>
+function ProjectBlock({
+  projectId,
+  name,
+  summary,
+  rationale,
+  members,
+  expanded,
+  onToggle,
+  onUpdate,
+  onSetHorizon,
+}: {
+  projectId: string;
+  name: string;
+  summary: string;
+  rationale: string;
+  members: UseCase[];
+  expanded: boolean;
+  onToggle: () => void;
+  onUpdate: (uc: UseCase) => void;
+  onSetHorizon: (status: PriorityStatus) => void;
+}) {
+  const accent = projectAccent(projectId);
+  const horizon = resolveProjectHorizon(
+    { id: projectId, name, summary, rationale, caseIds: members.map((m) => m.id) },
+    members
+  );
+  const hMeta = PRIORITY_STATUS_META[horizon];
+  const yes = members.filter((m) => getInterest(m) === 'yes').length;
+  const maybe = members.filter((m) => getInterest(m) === 'maybe').length;
+  const no = members.filter((m) => getInterest(m) === 'no').length;
+
+  return (
+    <div
+      className={`overflow-hidden rounded-2xl border ${
+        expanded ? 'border-white/20 bg-[#0d0f12]' : 'border-white/10 bg-[#0d0f12]/80'
+      }`}
+    >
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-start gap-3 px-4 py-4 text-left md:px-5"
+      >
+        <span className="mt-1 text-white/40">
+          {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+        </span>
+        <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: accent }} />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="font-host text-[17px] font-medium text-white md:text-lg">{name}</h3>
             <span
-              className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] ${statusMeta.border} ${statusMeta.bg} ${statusMeta.color}`}
+              className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] ${hMeta.border} ${hMeta.bg} ${hMeta.color}`}
             >
-              {statusMeta.label}
+              {hMeta.short}
             </span>
-            {projectForCase(uc.id) && (
-              <span className="rounded-full border border-white/15 bg-white/[0.04] px-2.5 py-0.5 font-mono text-[10px] text-white/55">
-                {projectForCase(uc.id)!.name}
-              </span>
+          </div>
+          <p className="mt-1 text-[13px] leading-relaxed text-white/50">{summary}</p>
+          <p className="mt-2 font-mono text-[11px] text-white/35">
+            {members.length} cases · yes {yes} · maybe {maybe} · no {no}
+          </p>
+        </div>
+      </button>
+
+      {expanded && (
+        <div className="space-y-3 border-t border-white/8 px-4 pb-4 pt-3 md:px-5">
+          <p className="text-[12px] leading-relaxed text-white/40">
+            <span className="text-white/55">Why together:</span> {rationale}
+          </p>
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="mr-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
+              Project horizon
+            </span>
+            {ROADMAP_STATUSES.map((s) => {
+              const meta = PRIORITY_STATUS_META[s];
+              const active = horizon === s;
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => onSetHorizon(s)}
+                  className={`rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] ${
+                    active
+                      ? `${meta.border} ${meta.bg} ${meta.color}`
+                      : 'border-white/10 text-white/35 hover:text-white/60'
+                  }`}
+                >
+                  {meta.short}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="space-y-2">
+            {members.length === 0 ? (
+              <p className="rounded-xl border border-dashed border-white/10 px-3 py-4 text-[13px] text-white/35">
+                Alle cases hier zijn No (of verborgen). Zet “Show No cases” aan om ze te zien.
+              </p>
+            ) : (
+              members.map((uc) => <CaseRow key={uc.id} uc={uc} onUpdate={onUpdate} />)
             )}
           </div>
-            <p className="mt-2 font-host text-lg font-medium leading-snug text-white md:text-xl">
-              {uc.name}
-            </p>
-            <p className="mt-1.5 text-[13px] text-white/40">
-              Owner: {uc.owner?.trim() ? uc.owner : '—'}
-            </p>
-          </button>
-
-          {/* Metrics + roadmap */}
-          <div className="grid gap-4 border-t border-white/8 pt-4 lg:grid-cols-[1fr_1.1fr]">
-            <div className="flex flex-wrap items-end gap-4 sm:gap-5">
-              <ScoreStepper
-                label="Impact"
-                hint={IMPACT_HINT}
-                value={uc.scores.businessImpact}
-                onChange={(n) => patchScores('businessImpact', n)}
-              />
-              <ScoreStepper
-                label="Speed to build"
-                hint={SPEED_HINT}
-                value={uc.scores.implementation}
-                onChange={(n) => patchScores('implementation', n)}
-              />
-              <div className="flex min-w-[56px] flex-col gap-1.5">
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">Total</span>
-                <span className="font-mono text-base text-bla-lime">{total.toFixed(1)}</span>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <p className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">
-                  Roadmap
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {ALL_PRIORITY_STATUSES.map((s) => {
-                    const meta = PRIORITY_STATUS_META[s];
-                    const active = status === s;
-                    return (
-                      <button
-                        key={s}
-                        type="button"
-                        title={meta.hint}
-                        onClick={() => onUpdate({ ...uc, priorityStatus: s })}
-                        className={`rounded-full border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
-                          active
-                            ? `${meta.border} ${meta.bg} ${meta.color}`
-                            : 'border-white/10 text-white/35 hover:text-white/65'
-                        }`}
-                      >
-                        {meta.short}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              <div>
-                <p className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">
-                  Delivery
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {ALL_DELIVERY_PARTNERS.map((p) => {
-                    const meta = DELIVERY_META[p];
-                    const active = partners.includes(p);
-                    if (p === 'tbd' && !active) return null;
-                    return (
-                      <button
-                        key={p}
-                        type="button"
-                        onClick={() => togglePartner(p)}
-                        className={`rounded-full border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.1em] transition-colors ${
-                          active
-                            ? `${meta.border} ${meta.bg} ${meta.color}`
-                            : 'border-white/10 text-white/30 hover:text-white/55'
-                        }`}
-                      >
-                        {meta.short}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
-    </Reorder.Item>
+      )}
+    </div>
   );
 }
 
@@ -318,63 +218,14 @@ export default function PrioritizeView({
   onUpdate,
   onReplaceAll,
 }: Props) {
-  const [filterDept, setFilterDept] = useState('all');
-  const [filterStatus, setFilterStatus] = useState<'all' | PriorityStatus>('all');
-  const [filterDelivery, setFilterDelivery] = useState<'all' | DeliveryPartner>('all');
-  const [filterProject, setFilterProject] = useState('all');
-  const [hideKill, setHideKill] = useState(true);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(PROJECT_CLUSTERS[0]?.id ?? null);
+  const [hideNo, setHideNo] = useState(true);
   const initDone = useRef(false);
-
-  const depts = useMemo(() => {
-    const set = new Set<string>();
-    useCases.forEach((uc) => set.add(uc.label || 'General'));
-    return Array.from(set).sort();
-  }, [useCases]);
-
-  const ordered = useMemo(() => sortUseCasesByPriority(useCases), [useCases]);
-
-  const filtered = useMemo(() => {
-    return ordered.filter((uc) => {
-      if (filterDept !== 'all' && (uc.label || 'General') !== filterDept) return false;
-      const status = normalizePriorityStatus(uc.priorityStatus);
-      if (hideKill && status === 'kill') return false;
-      if (filterStatus !== 'all' && status !== filterStatus) return false;
-      if (filterDelivery !== 'all') {
-        const partners = uc.deliveryPartners?.length ? uc.deliveryPartners : ['tbd'];
-        if (!partners.includes(filterDelivery)) return false;
-      }
-      if (filterProject !== 'all') {
-        const proj = projectForCase(uc.id);
-        if (!proj || proj.id !== filterProject) return false;
-      }
-      return true;
-    });
-  }, [ordered, filterDept, filterStatus, filterDelivery, filterProject, hideKill]);
-
-  const counts = useMemo(() => {
-    const c: Record<PriorityStatus, number> = {
-      now: 0,
-      near: 0,
-      next: 0,
-      later: 0,
-      kill: 0,
-    };
-    useCases.forEach((uc) => {
-      c[normalizePriorityStatus(uc.priorityStatus)] += 1;
-    });
-    return c;
-  }, [useCases]);
-
-  const selected = selectedId ? useCases.find((uc) => uc.id === selectedId) : null;
-  const selectedSuggestion = selected ? suggestionFor(selected.id) : null;
 
   const persistBatch = useCallback(
     async (next: UseCase[]) => {
       if (next.length === 0) return;
       onReplaceAll(next);
-      setSaving(true);
       try {
         await fetch(`/api/matrix-sessions/${sessionId}`, {
           method: 'PUT',
@@ -388,101 +239,81 @@ export default function PrioritizeView({
               deliveryPartners: uc.deliveryPartners,
               owner: uc.owner,
               scores: uc.scores,
+              interest: uc.interest,
             })),
           }),
         });
-      } finally {
-        setSaving(false);
+      } catch {
+        // local already updated
       }
     },
     [onReplaceAll, sessionId]
   );
 
-  const persistReorder = useCallback(
-    async (next: UseCase[]) => {
-      if (next.length === 0) return;
-      const ranked = next.map((uc, i) => ({ ...uc, priorityRank: i }));
-      onReplaceAll(ranked);
-      setSaving(true);
-      try {
-        await fetch(`/api/matrix-sessions/${sessionId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'reorder',
-            items: ranked.map((uc) => ({ id: uc.id, priorityRank: uc.priorityRank })),
-          }),
-        });
-      } finally {
-        setSaving(false);
-      }
-    },
-    [onReplaceAll, sessionId]
-  );
-
-  // First open: migrate legacy backlog → later, fill delivery/ranks; propose roadmap if still all "later"/backlog-ish
   useEffect(() => {
     if (initDone.current || useCases.length === 0) return;
     initDone.current = true;
-
     const hasLegacyBacklog = useCases.some((uc) => (uc.priorityStatus as string | undefined) === 'backlog');
     const needsDelivery = useCases.some((uc) => !uc.deliveryPartners?.length);
     const needsRank = useCases.some((uc) => typeof uc.priorityRank !== 'number');
-    const onlyLaterOrMissing = useCases.every((uc) => {
-      const s = uc.priorityStatus as string | undefined;
-      return !s || s === 'backlog' || s === 'later' || s === 'kill';
-    });
     const hasRoadmapSpread = useCases.some((uc) => {
       const s = normalizePriorityStatus(uc.priorityStatus);
       return s === 'now' || s === 'near' || s === 'next';
     });
-
     if (hasLegacyBacklog || needsDelivery || needsRank || !hasRoadmapSpread) {
-      if (!hasRoadmapSpread || onlyLaterOrMissing) {
-        void persistBatch(proposeRoadmap(useCases));
-      } else {
-        const migrated = ensureRanks(migrateLegacyStatuses(useCases));
-        void persistBatch(migrated);
-      }
+      if (!hasRoadmapSpread) void persistBatch(proposeRoadmap(useCases));
+      else void persistBatch(ensureRanks(migrateLegacyStatuses(useCases)));
     }
   }, [useCases, persistBatch]);
 
-  const applyRoadmapProposal = () => {
-    void persistBatch(proposeRoadmap(useCases));
-  };
+  const projects = useMemo(() => {
+    return PROJECT_CLUSTERS.filter((cluster) =>
+      useCases.some((u) => cluster.caseIds.includes(u.id))
+    );
+  }, [useCases]);
 
-  const applyDeliveryOnly = () => {
-    const next = sortUseCasesByPriority(useCases).map((uc) => {
-      const sug = suggestionFor(uc.id);
-      return {
-        ...uc,
-        priorityStatus: normalizePriorityStatus(
-          sug.priorityStatus === 'kill' ? 'kill' : uc.priorityStatus
-        ),
-        deliveryPartners: sug.deliveryPartners,
-      };
+  const unclusteredIds = useMemo(
+    () => unclusteredCaseIds(useCases.map((u) => u.id)),
+    [useCases]
+  );
+
+  const unclustered = useMemo(() => {
+    let list = useCases.filter((u) => unclusteredIds.includes(u.id));
+    if (hideNo) list = list.filter((u) => getInterest(u) !== 'no');
+    return sortUseCasesByScore(list);
+  }, [useCases, hideNo, unclusteredIds]);
+
+  const sortMembers = (list: UseCase[]) =>
+    [...list].sort((a, b) => {
+      const order = { yes: 0, maybe: 1, no: 2 };
+      const d = order[getInterest(a)] - order[getInterest(b)];
+      return d !== 0 ? d : calcScore(b.scores) - calcScore(a.scores);
+    });
+
+  const stats = useMemo(() => {
+    let yes = 0;
+    let maybe = 0;
+    let no = 0;
+    useCases.forEach((u) => {
+      const i = getInterest(u);
+      if (i === 'yes') yes++;
+      else if (i === 'maybe') maybe++;
+      else no++;
+    });
+    return { yes, maybe, no };
+  }, [useCases]);
+
+  const setProjectHorizon = (caseIds: string[], status: PriorityStatus) => {
+    const next = useCases.map((uc) => {
+      if (!caseIds.includes(uc.id)) return uc;
+      if (getInterest(uc) === 'no') return uc;
+      return { ...uc, priorityStatus: status };
     });
     void persistBatch(next);
   };
 
-  const resetRanksByScore = () => {
-    const next = sortUseCasesByScore(useCases).map((uc, i) => ({ ...uc, priorityRank: i }));
-    void persistReorder(next);
-  };
-
-  const handleReorderFiltered = (newFiltered: UseCase[]) => {
-    const filteredIds = new Set(filtered.map((uc) => uc.id));
-    const full = sortUseCasesByPriority(useCases);
-    let fi = 0;
-    const merged = full.map((uc) => {
-      if (!filteredIds.has(uc.id)) return uc;
-      return newFiltered[fi++];
-    });
-    void persistReorder(merged);
-  };
-
   return (
-    <div className="mx-auto w-full max-w-[1400px]">
+    <div className="mx-auto w-full max-w-[1100px]">
       <button
         type="button"
         onClick={onBack}
@@ -492,346 +323,83 @@ export default function PrioritizeView({
         Back to matrix
       </button>
 
-      <div className="flex flex-wrap items-end justify-between gap-5">
-        <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-bla-lime/70">
-            § prioritize · internal
-          </p>
-          <h2 className="mt-1 font-host text-2xl font-light text-white md:text-3xl">Prioritize</h2>
-          <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-white/55">
-            Rank use cases, then roll them into <span className="text-white/75">projects</span> (same
-            stack / outcome). Filter by horizon or project — list shows all by default (kills hidden).
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="mb-6">
+        <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-bla-lime/70">
+          § prioritize · internal
+        </p>
+        <h2 className="mt-1 font-host text-2xl font-light text-white md:text-3xl">Prioritize</h2>
+        <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-white/55">
+          Eerst use cases: <span className="text-white/80">Yes / Maybe / No</span>. Daarna projecten
+          bevestigen. Pas daarna Now-shortlist met Sietse.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <span className="rounded-full border border-bla-lime/25 bg-bla-lime/10 px-3 py-1 font-mono text-[11px] text-bla-lime">
+            Yes {stats.yes}
+          </span>
+          <span className="rounded-full border border-amber-400/25 bg-amber-400/10 px-3 py-1 font-mono text-[11px] text-amber-300">
+            Maybe {stats.maybe}
+          </span>
+          <span className="rounded-full border border-red-400/25 bg-red-400/10 px-3 py-1 font-mono text-[11px] text-red-300">
+            No {stats.no}
+          </span>
           <button
             type="button"
-            onClick={() => setFilterStatus('all')}
-            className={`min-w-[56px] rounded-xl border px-3 py-2 text-center ${
-              filterStatus === 'all'
-                ? 'border-white/25 bg-white/10 text-white'
-                : 'border-white/10 bg-white/[0.03] text-white/50 hover:text-white/80'
-            }`}
+            onClick={() => setHideNo((v) => !v)}
+            className="rounded-full border border-white/10 px-3 py-1 text-[12px] text-white/45 hover:text-white/70"
           >
-            <p className="font-mono text-[9px] uppercase tracking-[0.12em]">All</p>
-            <p className="font-host text-lg">{hideKill ? useCases.length - counts.kill : useCases.length}</p>
+            {hideNo ? 'Show No cases' : 'Hide No cases'}
           </button>
-          {ROADMAP_STATUSES.map((s) => {
-            const meta = PRIORITY_STATUS_META[s];
-            const active = filterStatus === s;
-            return (
-              <button
-                key={s}
-                type="button"
-                onClick={() => setFilterStatus(active ? 'all' : s)}
-                className={`min-w-[64px] rounded-xl border px-3 py-2 text-center ${meta.border} ${
-                  active ? meta.bg : 'bg-transparent'
-                }`}
-              >
-                <p className={`font-mono text-[9px] uppercase tracking-[0.12em] ${meta.color}`}>{meta.short}</p>
-                <p className={`font-host text-lg ${meta.color}`}>{counts[s]}</p>
-              </button>
-            );
-          })}
-          <div className="min-w-[64px] rounded-xl border border-red-400/25 bg-red-400/10 px-3 py-2 text-center">
-            <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-red-300">Kill</p>
-            <p className="font-host text-lg text-red-300">{counts.kill}</p>
-          </div>
         </div>
       </div>
 
-      <div className="mt-8">
-        <PrioritizePlaybook sessionId={sessionId} useCases={useCases} />
+      <PrioritizePlaybook sessionId={sessionId} useCases={useCases} />
+
+      <div className="mt-2 mb-3">
+        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+          Projects · open to triage cases
+        </p>
       </div>
 
-      {/* Project clusters */}
-      <div className="mt-2">
-        <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
-          <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-              Proposed projects
-            </p>
-            <p className="mt-1 text-[13px] text-white/45">
-              Click a card to filter use cases. These are delivery buckets — not final scope.
-            </p>
-          </div>
-          {filterProject !== 'all' && (
-            <button
-              type="button"
-              onClick={() => setFilterProject('all')}
-              className="rounded-full border border-white/15 px-3 py-1.5 text-[12px] text-white/60 hover:text-white"
-            >
-              Clear project filter
-            </button>
-          )}
-        </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {PROJECT_CLUSTERS.map((p) => {
-            const members = useCases.filter((u) => p.caseIds.includes(u.id));
-            const n = members.length;
-            const active = filterProject === p.id;
-            const accent = projectAccent(p.id);
-            const horizon = resolveProjectHorizon(p, useCases);
-            const hMeta = PRIORITY_STATUS_META[horizon];
-            return (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => setFilterProject(active ? 'all' : p.id)}
-                className={`rounded-2xl border p-4 text-left transition-colors ${
-                  active
-                    ? 'border-bla-lime/40 bg-bla-lime/[0.06]'
-                    : 'border-white/10 bg-[#0d0f12] hover:border-white/20'
-                }`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <span
-                    className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full"
-                    style={{ backgroundColor: accent }}
-                  />
-                  <span
-                    className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] ${hMeta.border} ${hMeta.bg} ${hMeta.color}`}
-                  >
-                    {hMeta.short}
-                  </span>
-                </div>
-                <h3 className="mt-2.5 font-host text-[16px] font-medium leading-snug text-white">
-                  {p.name}
-                </h3>
-                <p className="mt-1.5 text-[12px] leading-relaxed text-white/50 line-clamp-2">
-                  {p.summary}
-                </p>
-                <div className="mt-3 flex items-center justify-between gap-2 border-t border-white/8 pt-2.5">
-                  <span className="font-mono text-[11px] text-white/40">
-                    {n} use case{n === 1 ? '' : 's'}
-                  </span>
-                  {active && (
-                    <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-bla-lime">
-                      Filtered
-                    </span>
-                  )}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-        {filterProject !== 'all' && (
-          <p className="mt-3 max-w-3xl text-[13px] leading-relaxed text-white/50">
-            <span className="text-white/70">Why together: </span>
-            {PROJECT_CLUSTERS.find((p) => p.id === filterProject)?.rationale}
-          </p>
+      <div className="space-y-3">
+        {projects.map((cluster) => {
+          const allMembers = useCases.filter((u) => cluster.caseIds.includes(u.id));
+          const visible = hideNo
+            ? allMembers.filter((u) => getInterest(u) !== 'no')
+            : allMembers;
+          return (
+            <ProjectBlock
+              key={cluster.id}
+              projectId={cluster.id}
+              name={cluster.name}
+              summary={cluster.summary}
+              rationale={cluster.rationale}
+              members={sortMembers(visible)}
+              expanded={expandedId === cluster.id}
+              onToggle={() => setExpandedId((id) => (id === cluster.id ? null : cluster.id))}
+              onUpdate={onUpdate}
+              onSetHorizon={(status) => setProjectHorizon(cluster.caseIds, status)}
+            />
+          );
+        })}
+
+        {unclusteredIds.length > 0 && (
+          <ProjectBlock
+            projectId="unclustered"
+            name="Unclustered"
+            summary="Cases zonder projectbucket — triage of later toewijzen."
+            rationale="Nog geen cluster; Yes/Maybe hier houden tot je weet waar ze horen."
+            members={unclustered}
+            expanded={expandedId === 'unclustered'}
+            onToggle={() => setExpandedId((id) => (id === 'unclustered' ? null : 'unclustered'))}
+            onUpdate={onUpdate}
+            onSetHorizon={(status) => setProjectHorizon(unclusteredIds, status)}
+          />
         )}
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center gap-2">
-        <Filter className="h-3.5 w-3.5 text-white/35" />
-        <span className="font-mono text-[11px] text-white/40">
-          Showing {filtered.length} of {useCases.length}
-        </span>
-        <select
-          value={filterDept}
-          onChange={(e) => setFilterDept(e.target.value)}
-          className="rounded-lg border border-white/10 bg-[#0d0f12] px-2.5 py-1.5 text-[12px] text-white/80"
-        >
-          <option value="all">All depts</option>
-          {depts.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
-          ))}
-        </select>
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value as 'all' | PriorityStatus)}
-          className="rounded-lg border border-white/10 bg-[#0d0f12] px-2.5 py-1.5 text-[12px] text-white/80"
-        >
-          <option value="all">All horizons</option>
-          {ALL_PRIORITY_STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {PRIORITY_STATUS_META[s].label}
-            </option>
-          ))}
-        </select>
-        <select
-          value={filterDelivery}
-          onChange={(e) => setFilterDelivery(e.target.value as 'all' | DeliveryPartner)}
-          className="rounded-lg border border-white/10 bg-[#0d0f12] px-2.5 py-1.5 text-[12px] text-white/80"
-        >
-          <option value="all">All delivery</option>
-          {ALL_DELIVERY_PARTNERS.map((p) => (
-            <option key={p} value={p}>
-              {DELIVERY_META[p].label}
-            </option>
-          ))}
-        </select>
-        <button
-          type="button"
-          onClick={() => setHideKill((v) => !v)}
-          className={`rounded-lg border px-2.5 py-1.5 text-[12px] ${
-            hideKill
-              ? 'border-red-400/30 bg-red-400/10 text-red-300'
-              : 'border-white/10 text-white/50 hover:text-white/80'
-          }`}
-        >
-          {hideKill ? 'Kills hidden' : 'Show kills'}
-        </button>
-        <div className="flex-1" />
-        <button
-          type="button"
-          onClick={applyRoadmapProposal}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-bla-lime/25 bg-bla-lime/10 px-3 py-1.5 text-[12px] text-bla-lime hover:bg-bla-lime/15"
-        >
-          <Map className="h-3.5 w-3.5" />
-          Apply roadmap proposal
-        </button>
-        <button
-          type="button"
-          onClick={applyDeliveryOnly}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-2.5 py-1.5 text-[12px] text-white/50 hover:text-white/80"
-        >
-          <Sparkles className="h-3.5 w-3.5" />
-          Re-apply delivery
-        </button>
-        <button
-          type="button"
-          onClick={resetRanksByScore}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-2.5 py-1.5 text-[12px] text-white/50 hover:text-white/80"
-        >
-          <RotateCcw className="h-3.5 w-3.5" />
-          Sort by score
-        </button>
-        {saving && <span className="font-mono text-[10px] text-white/35">Saving…</span>}
-      </div>
-
-      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[1fr_340px]">
-        {useCases.length === 0 ? (
-          <div className="rounded-xl border border-amber-400/25 bg-amber-400/[0.06] px-5 py-8 text-center">
-            <p className="font-host text-base text-amber-200">No use cases loaded in this session.</p>
-            <p className="mt-2 text-[13px] text-white/50">
-              Join session code{' '}
-              <span className="font-mono text-white/80">adsomnia-workshop</span>.
-            </p>
-            <a
-              href="?s=adsomnia-workshop"
-              className="mt-4 inline-flex rounded-full border border-bla-lime/30 bg-bla-lime/10 px-4 py-2 text-sm text-bla-lime"
-            >
-              Open adsomnia-workshop
-            </a>
-          </div>
-        ) : (
-          <Reorder.Group
-            axis="y"
-            values={filtered}
-            onReorder={handleReorderFiltered}
-            className="flex flex-col gap-3"
-          >
-            {filtered.length === 0 && (
-              <p className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-8 text-center text-sm text-white/40">
-                No cases match these filters. ({useCases.length} total in session)
-              </p>
-            )}
-            {filtered.map((uc) => {
-              const rankDisplay = (uc.priorityRank ?? 0) + 1;
-              return (
-                <PriorityRow
-                  key={uc.id}
-                  uc={uc}
-                  rankDisplay={rankDisplay}
-                  selected={selectedId === uc.id}
-                  onSelect={() => setSelectedId(uc.id === selectedId ? null : uc.id)}
-                  onUpdate={onUpdate}
-                />
-              );
-            })}
-          </Reorder.Group>
-        )}
-
-        <aside className="xl:sticky xl:top-24 xl:self-start">
-          {selected ? (
-            <div className="rounded-2xl border border-white/10 bg-[#0d0f12] p-5">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">Detail</p>
-                  <h3 className="mt-1 font-host text-lg font-medium text-white">{selected.name}</h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedId(null)}
-                  className="grid h-8 w-8 place-items-center rounded-full border border-white/10 text-white/50 hover:text-white"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              <p className="mt-3 text-[13px] leading-relaxed text-white/55">
-                {selected.description || 'No description.'}
-              </p>
-              {selected.solution && (
-                <div className="mt-3">
-                  <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-bla-lime/60">Solution</p>
-                  <p className="mt-1 text-[13px] leading-relaxed text-white/60">{selected.solution}</p>
-                </div>
-              )}
-
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                {DETAIL_SCORE_KEYS.map(({ key, label }) => (
-                  <ScoreStepper
-                    key={key}
-                    label={label}
-                    value={selected.scores[key]}
-                    onChange={(n) =>
-                      onUpdate({
-                        ...selected,
-                        scores: { ...selected.scores, [key]: n },
-                      })
-                    }
-                  />
-                ))}
-              </div>
-
-              <label className="mt-4 block">
-                <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/35">
-                  Owner (Adsomnia)
-                </span>
-                <input
-                  value={selected.owner || ''}
-                  onChange={(e) => onUpdate({ ...selected, owner: e.target.value })}
-                  placeholder="Name at Adsomnia"
-                  className="mt-1.5 w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-[13px] text-white placeholder:text-white/25"
-                />
-              </label>
-
-              {selectedSuggestion?.note && (
-                <div className="mt-4 rounded-xl border border-bla-lime/20 bg-bla-lime/[0.06] px-3 py-2.5">
-                  <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-bla-lime/70">
-                    Our suggestion
-                  </p>
-                  <p className="mt-1 text-[12px] leading-relaxed text-white/65">
-                    {selectedSuggestion.note}
-                  </p>
-                </div>
-              )}
-              {projectForCase(selected.id) && (
-                <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5">
-                  <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/35">
-                    Proposed project
-                  </p>
-                  <p className="mt-1 text-[13px] font-medium text-white/85">
-                    {projectForCase(selected.id)!.name}
-                  </p>
-                  <p className="mt-1 text-[12px] leading-relaxed text-white/50">
-                    {projectForCase(selected.id)!.rationale}
-                  </p>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] px-4 py-10 text-center text-[13px] text-white/35">
-              Select a case for detail scores, owner, and our delivery note.
-            </div>
-          )}
-        </aside>
-      </div>
+      <p className="mt-6 text-[12px] text-white/30">
+        Open een project → Yes / Maybe / No per case → daarna Keep / Split / Park in de playbook.
+      </p>
     </div>
   );
 }

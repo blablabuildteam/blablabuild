@@ -64,6 +64,7 @@ interface UseCase {
   priorityRank?: number;
   priorityStatus?: PriorityStatus;
   deliveryPartners?: DeliveryPartner[];
+  interest?: 'yes' | 'maybe' | 'no';
   originalInput?: {
     name?: string;
     description?: string;
