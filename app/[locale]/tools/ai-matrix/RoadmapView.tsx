@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Info } from 'lucide-react';
 import {
   type PriorityStatus,
@@ -19,11 +19,12 @@ import {
   monthRangeLabel,
 } from './RoadmapTimeline';
 import {
-  PROJECT_CLUSTERS,
   type ProjectCluster,
   projectAccent,
   resolveProjectHorizon,
 } from './projectClusters';
+import { resolveClusters } from './projectDraft';
+import { loadPrioritizeMeta } from './prioritizeMeta';
 
 type HorizonFocus = 'now' | 'now-near' | 'all';
 
@@ -37,13 +38,27 @@ interface ProjectRow {
 
 interface Props {
   useCases: UseCase[];
+  sessionId: string;
   onBack: () => void;
   onGoPrioritize?: () => void;
 }
 
-export default function RoadmapView({ useCases, onBack, onGoPrioritize }: Props) {
+export default function RoadmapView({ useCases, sessionId, onBack, onGoPrioritize }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [focus, setFocus] = useState<HorizonFocus>('now-near');
+  const [clusters, setClusters] = useState<ProjectCluster[]>(() => resolveClusters(null));
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const meta = await loadPrioritizeMeta(sessionId);
+      if (cancelled) return;
+      setClusters(resolveClusters(meta.clusters));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionId]);
 
   const visibleHorizons = useMemo(() => {
     if (focus === 'now') return ['now'] as const;
@@ -52,19 +67,20 @@ export default function RoadmapView({ useCases, onBack, onGoPrioritize }: Props)
   }, [focus]);
 
   const projects = useMemo((): ProjectRow[] => {
-    return PROJECT_CLUSTERS.map((cluster) => {
-      const members = useCases
-        .filter((u) => cluster.caseIds.includes(u.id))
-        .filter((u) => normalizePriorityStatus(u.priorityStatus) !== 'kill');
-      const horizon = resolveProjectHorizon(cluster, useCases);
-      // Parallel delivery: take max case duration, not full sum
-      const months =
-        members.length === 0
-          ? 1
-          : Math.max(...members.map((m) => estimateMonths(m)), 1);
-      return { cluster, members, horizon, months };
-    }).filter((p) => p.members.length > 0);
-  }, [useCases]);
+    return clusters
+      .map((cluster) => {
+        const members = useCases
+          .filter((u) => cluster.caseIds.includes(u.id))
+          .filter((u) => normalizePriorityStatus(u.priorityStatus) !== 'kill');
+        const horizon = resolveProjectHorizon(cluster, useCases);
+        const months =
+          members.length === 0
+            ? 1
+            : Math.max(...members.map((m) => estimateMonths(m)), 1);
+        return { cluster, members, horizon, months };
+      })
+      .filter((p) => p.members.length > 0);
+  }, [useCases, clusters]);
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { now: 0, near: 0, next: 0, later: 0 };
@@ -335,7 +351,7 @@ export default function RoadmapView({ useCases, onBack, onGoPrioritize }: Props)
       <p className="mt-4 flex items-start gap-2 text-[12px] leading-relaxed text-white/35">
         <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
         Move use cases between horizons in Prioritize — the project bar follows the earliest
-        member. Refine clusters in code (`projectClusters.ts`) as you agree scope with Sietse.
+        member. Refine grouping in Prioritize → Grouping (saved on this session).
       </p>
     </div>
   );

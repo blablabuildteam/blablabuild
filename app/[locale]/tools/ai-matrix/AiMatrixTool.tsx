@@ -7,7 +7,12 @@ import ClaudeCasesView from './ClaudeCasesView';
 import ReviewView from './ReviewView';
 import PrioritizeView from './PrioritizeView';
 import RoadmapView from './RoadmapView';
-
+import {
+  workshopDescription,
+  workshopLabel,
+  workshopName,
+  workshopSolution,
+} from './types';
 /** Internal normalize/review UI — local `npm run dev` only, never on shared/production URLs */
 const SHOW_REVIEW = process.env.NODE_ENV === 'development';
 
@@ -474,9 +479,9 @@ function MatrixPlot({ useCases, hoveredId, selectedId, onHover, onSelect }: {
           <div className="flex items-start gap-2">
             <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: getDeptColor(hoverPoint.uc.label || 'General') }} />
             <div className="min-w-0 flex-1">
-              <p className="text-[13px] font-medium leading-snug text-white">{hoverPoint.uc.name}</p>
+              <p className="text-[13px] font-medium leading-snug text-white">{workshopName(hoverPoint.uc)}</p>
               <p className="mt-1 font-mono text-[10px] text-white/40">
-                {hoverPoint.uc.label || 'General'} · {Q_META[getQuadrant(hoverPoint.uc)].label} · {calcScore(hoverPoint.uc.scores).toFixed(1)}
+                {workshopLabel(hoverPoint.uc) || hoverPoint.uc.label || 'General'} · {Q_META[getQuadrant(hoverPoint.uc)].label} · {calcScore(hoverPoint.uc.scores).toFixed(1)}
                 {isHighRisk(hoverPoint.uc) ? ' · High risk' : ''}
               </p>
             </div>
@@ -625,7 +630,7 @@ export default function AiMatrixTool() {
         if (silent && knownIdsRef.current.size > 0) {
           const fresh = incoming.filter((uc) => !knownIdsRef.current.has(uc.id));
           if (fresh.length === 1) {
-            showToast(`${fresh[0].addedBy || 'Someone'} added "${fresh[0].name}"`);
+            showToast(`${fresh[0].addedBy || 'Someone'} added "${workshopName(fresh[0])}"`);
           } else if (fresh.length > 1) {
             showToast(`${fresh.length} new use cases added`);
           }
@@ -1037,7 +1042,7 @@ export default function AiMatrixTool() {
               {filteredUseCases.map((uc) => {
                 const q = getQuadrant(uc);
                 const score = calcScore(uc.scores);
-                const dept = uc.label || 'General';
+                const dept = workshopLabel(uc) || uc.label || 'General';
                 return (
                   <div
                     key={uc.id}
@@ -1061,7 +1066,7 @@ export default function AiMatrixTool() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-baseline gap-2">
                         <p className={`min-w-0 flex-1 truncate text-[13px] font-medium ${uc.presented ? 'text-white/55' : 'text-white/90'}`}>
-                          {uc.name}
+                          {workshopName(uc)}
                         </p>
                         <span className="shrink-0 font-mono text-[11px] tabular-nums text-white/40">{score.toFixed(1)}</span>
                       </div>
@@ -1148,7 +1153,7 @@ export default function AiMatrixTool() {
                 : filteredUseCases.filter((uc) => getQuadrant(uc) === 'quick').map((uc) => (
                     <span key={uc.id} className="inline-flex items-center gap-1.5 rounded-full border border-bla-lime/30 bg-bla-lime/10 px-3 py-1 text-xs font-medium text-bla-lime">
                       <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: getDeptColor(uc.label || 'General') }} />
-                      {uc.name}
+                      {workshopName(uc)}
                     </span>
                   ))
               }
@@ -1162,7 +1167,7 @@ export default function AiMatrixTool() {
         const uc = selectedCase;
         const q = getQuadrant(uc);
         const score = calcScore(uc.scores);
-        const dept = uc.label || 'General';
+        const dept = workshopLabel(uc) || uc.label || 'General';
         const highRisk = isHighRisk(uc);
         const koFailed = (Object.values(uc.knockout) as (boolean | null)[]).some((v) => v === false);
         return (
@@ -1178,7 +1183,7 @@ export default function AiMatrixTool() {
                   }}
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="font-host text-[18px] font-medium leading-snug text-white">{uc.name}</p>
+                  <p className="font-host text-[18px] font-medium leading-snug text-white">{workshopName(uc)}</p>
                   <p className="mt-1 font-mono text-[11px] text-white/40">
                     by <span className="text-white/65">{uc.addedBy || 'Unknown'}</span>
                   </p>
@@ -1264,12 +1269,20 @@ export default function AiMatrixTool() {
 
               <div className="mb-4 space-y-3">
                 <div>
-                  <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">Problem</p>
-                  <p className="text-[13px] leading-relaxed text-white/70">{uc.description || 'No problem statement yet.'}</p>
+                  <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                    Problem · workshop (v1)
+                  </p>
+                  <p className="text-[13px] leading-relaxed text-white/70">
+                    {workshopDescription(uc) || 'No problem statement yet.'}
+                  </p>
                 </div>
                 <div>
-                  <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">Solution / AI</p>
-                  <p className="text-[13px] leading-relaxed text-bla-lime/75">{uc.solution || 'No solution sketched yet.'}</p>
+                  <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                    Solution / AI · workshop (v1)
+                  </p>
+                  <p className="text-[13px] leading-relaxed text-bla-lime/75">
+                    {workshopSolution(uc) || 'No solution sketched yet.'}
+                  </p>
                 </div>
               </div>
 
@@ -1658,7 +1671,7 @@ export default function AiMatrixTool() {
               {quickWins.map((uc, i) => (
                 <div key={uc.id} className="flex items-center gap-3">
                   <span className="font-mono text-sm font-medium text-bla-lime">{i + 1}</span>
-                  <span className="flex-1 text-sm font-medium text-white">{uc.name}</span>
+                  <span className="flex-1 text-sm font-medium text-white">{workshopName(uc)}</span>
                   {isHighRisk(uc) && <AlertTriangle className="h-3.5 w-3.5 text-red-400" />}
                   <span className="font-mono text-xs text-bla-lime/80">{calcScore(uc.scores).toFixed(2)}</span>
                 </div>
@@ -1678,8 +1691,10 @@ export default function AiMatrixTool() {
                   <span className="w-5 shrink-0 text-center font-mono text-xs text-white/30">{i + 1}</span>
                   <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: Q_META[q].dot }} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-white">{uc.name}</p>
-                    {uc.description && <p className="truncate text-xs text-white/40">{uc.description}</p>}
+                    <p className="truncate text-sm font-medium text-white">{workshopName(uc)}</p>
+                    {workshopDescription(uc) && (
+                      <p className="truncate text-xs text-white/40">{workshopDescription(uc)}</p>
+                    )}
                   </div>
                   {isHighRisk(uc) && (
                     <span className="hidden items-center gap-0.5 rounded-full bg-red-400/10 px-1.5 py-px font-mono text-[9px] text-red-400 sm:flex">
@@ -1848,6 +1863,7 @@ export default function AiMatrixTool() {
             {view === 'roadmap' && (
               <RoadmapView
                 useCases={useCases}
+                sessionId={sessionId}
                 onBack={() => setView('matrix')}
                 onGoPrioritize={() => setView('prioritize')}
               />

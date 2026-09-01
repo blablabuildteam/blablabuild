@@ -66,8 +66,12 @@ export interface UseCase {
   priorityStatus?: PriorityStatus;
   /** Who delivers / builds (multi). */
   deliveryPartners?: DeliveryPartner[];
-  /** Case triage: interesting enough to keep? */
+  /** Case triage: interesting enough to keep? (v2 prioritize — does not change workshop v1) */
   interest?: 'yes' | 'maybe' | 'no';
+  /**
+   * Frozen workshop submission (v1). Matrix overview always shows these fields.
+   * Prioritize / Review edits live on the top-level fields as v2 working copy.
+   */
   originalInput?: {
     name?: string;
     description?: string;
@@ -77,6 +81,64 @@ export interface UseCase {
     scores?: Scores;
     savedAt?: string;
   };
+}
+
+/** Snapshot current copy into originalInput if not frozen yet. */
+export function ensureWorkshopOriginal<T extends UseCase>(uc: T): T {
+  if (uc.originalInput && typeof uc.originalInput === 'object') return uc;
+  return {
+    ...uc,
+    originalInput: {
+      name: uc.name,
+      description: uc.description,
+      solution: uc.solution,
+      label: uc.label,
+      knockout: uc.knockout,
+      scores: uc.scores,
+      savedAt: new Date().toISOString(),
+    },
+  };
+}
+
+type WorkshopFields = {
+  name: string;
+  description: string;
+  solution?: string;
+  label?: string;
+  originalInput?: {
+    name?: string;
+    description?: string;
+    solution?: string;
+    label?: string;
+  } | null;
+};
+
+/** Workshop v1 title — what people submitted. */
+export function workshopName(uc: WorkshopFields): string {
+  return uc.originalInput?.name ?? uc.name;
+}
+
+export function workshopDescription(uc: WorkshopFields): string {
+  return uc.originalInput?.description ?? uc.description;
+}
+
+export function workshopSolution(uc: WorkshopFields): string | undefined {
+  return uc.originalInput?.solution ?? uc.solution;
+}
+
+export function workshopLabel(uc: WorkshopFields): string | undefined {
+  return uc.originalInput?.label ?? uc.label;
+}
+
+/** True when prioritize/review changed title/problem/solution vs workshop. */
+export function hasV2CopyChange(uc: WorkshopFields): boolean {
+  if (!uc.originalInput) return false;
+  const o = uc.originalInput;
+  return (
+    (o.name !== undefined && o.name !== uc.name) ||
+    (o.description !== undefined && o.description !== uc.description) ||
+    (o.solution !== undefined && (o.solution || '') !== (uc.solution || ''))
+  );
 }
 
 export const PRIORITY_STATUS_META: Record<

@@ -1,27 +1,16 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Check, ChevronDown, ChevronUp, ClipboardList } from 'lucide-react';
-import {
-  PROJECT_CLUSTERS,
-  projectAccent,
-  resolveProjectHorizon,
-} from './projectClusters';
+import { projectAccent, resolveProjectHorizon, type ProjectCluster } from './projectClusters';
 import { PRIORITY_STATUS_META, type UseCase } from './types';
+import type {
+  PrioritizeMetaState,
+  ProjectDecisionKind,
+} from './prioritizeMeta';
 
-export type ProjectDecisionKind = 'pending' | 'keep' | 'split' | 'park' | 'kill';
-
-export interface ProjectDecisionEntry {
-  decision: ProjectDecisionKind;
-  note: string;
-  updatedAt?: string;
-}
-
-export interface PrioritizeMeta {
-  projectDecisions?: Record<string, ProjectDecisionEntry>;
-  /** Checklist item ids marked done */
-  checklist?: Record<string, boolean>;
-}
+export type { ProjectDecisionKind, ProjectDecisionEntry } from './prioritizeMeta';
+export type PrioritizeMeta = PrioritizeMetaState;
 
 const PRE_STEPS = [
   {
@@ -31,8 +20,8 @@ const PRE_STEPS = [
   },
   {
     id: 'pre-projects',
-    title: 'Projecten bevestigen',
-    detail: 'Na triage: Keep / Split / Park. Alleen op wat overblijft (Yes/Maybe).',
+    title: 'Projecten bevestigen / herschikken',
+    detail: 'Grouping-modus: cases verplaatsen, mergen, nieuw project. Alleen op Yes/Maybe.',
   },
   {
     id: 'pre-now',
@@ -106,83 +95,28 @@ const DECISION_META: Record<
 };
 
 interface Props {
-  sessionId: string;
   useCases: UseCase[];
+  clusters: ProjectCluster[];
+  meta: PrioritizeMetaState;
+  saving?: boolean;
+  onMetaChange: (next: PrioritizeMetaState) => void;
+  onPersist: (next: PrioritizeMetaState) => void;
 }
 
-function lsKey(sid: string) {
-  return `ai-matrix-prioritize-meta:${sid}`;
-}
-
-export default function PrioritizePlaybook({ sessionId, useCases }: Props) {
+export default function PrioritizePlaybook({
+  useCases,
+  clusters,
+  meta,
+  saving,
+  onMetaChange,
+  onPersist,
+}: Props) {
   const [open, setOpen] = useState(false);
-  const [meta, setMeta] = useState<PrioritizeMeta>({ projectDecisions: {}, checklist: {} });
-  const [saving, setSaving] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-
-  const persist = useCallback(
-    async (next: PrioritizeMeta) => {
-      setMeta(next);
-      try {
-        window.localStorage.setItem(lsKey(sessionId), JSON.stringify(next));
-      } catch {
-        // ignore
-      }
-      setSaving(true);
-      try {
-        await fetch(`/api/matrix-sessions/${sessionId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'meta', meta: next }),
-        });
-      } finally {
-        setSaving(false);
-      }
-    },
-    [sessionId]
-  );
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      let local: PrioritizeMeta | null = null;
-      try {
-        const raw = window.localStorage.getItem(lsKey(sessionId));
-        if (raw) local = JSON.parse(raw) as PrioritizeMeta;
-      } catch {
-        local = null;
-      }
-      try {
-        const res = await fetch(`/api/matrix-sessions/${sessionId}`);
-        const data = await res.json();
-        if (cancelled) return;
-        const remote = (data.meta as PrioritizeMeta | null) || null;
-        const merged: PrioritizeMeta = {
-          projectDecisions: {
-            ...(local?.projectDecisions || {}),
-            ...(remote?.projectDecisions || {}),
-          },
-          checklist: {
-            ...(local?.checklist || {}),
-            ...(remote?.checklist || {}),
-          },
-        };
-        setMeta(merged);
-      } catch {
-        if (!cancelled && local) setMeta(local);
-      } finally {
-        if (!cancelled) setLoaded(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [sessionId]);
 
   const toggleCheck = (id: string) => {
     const checklist = { ...(meta.checklist || {}) };
     checklist[id] = !checklist[id];
-    void persist({ ...meta, checklist });
+    onPersist({ ...meta, checklist });
   };
 
   const setDecision = (projectId: string, decision: ProjectDecisionKind) => {
@@ -193,7 +127,7 @@ export default function PrioritizePlaybook({ sessionId, useCases }: Props) {
       note: projectDecisions[projectId]?.note || '',
       updatedAt: new Date().toISOString(),
     };
-    void persist({ ...meta, projectDecisions });
+    onPersist({ ...meta, projectDecisions });
   };
 
   const setNote = (projectId: string, note: string) => {
@@ -203,23 +137,21 @@ export default function PrioritizePlaybook({ sessionId, useCases }: Props) {
       note,
       updatedAt: new Date().toISOString(),
     };
-    setMeta({ ...meta, projectDecisions });
+    onMetaChange({ ...meta, projectDecisions });
   };
 
-  const flushNote = (projectId: string) => {
-    void persist(meta);
+  const flushNote = () => {
+    onPersist(meta);
   };
 
   const preDone = PRE_STEPS.filter((s) => meta.checklist?.[s.id]).length;
   const sietseDone = SIETSE_STEPS.filter((s) => meta.checklist?.[s.id]).length;
   const decisionsDone = useMemo(() => {
-    return PROJECT_CLUSTERS.filter((p) => {
+    return clusters.filter((p) => {
       const d = meta.projectDecisions?.[p.id]?.decision;
       return d && d !== 'pending';
     }).length;
-  }, [meta.projectDecisions]);
-
-  if (!loaded) return null;
+  }, [meta.projectDecisions, clusters]);
 
   return (
     <section className="mb-8 overflow-hidden rounded-2xl border border-white/10 bg-[#0d0f12]">
@@ -239,7 +171,7 @@ export default function PrioritizePlaybook({ sessionId, useCases }: Props) {
             <h3 className="font-host text-lg text-white">Stappen & decision log</h3>
             <p className="mt-0.5 text-[12px] text-white/40">
               Pre {preDone}/{PRE_STEPS.length} · Sietse {sietseDone}/{SIETSE_STEPS.length} · Projects{' '}
-              {decisionsDone}/{PROJECT_CLUSTERS.length}
+              {decisionsDone}/{clusters.length}
               {saving ? ' · saving…' : ''}
             </p>
           </div>
@@ -348,7 +280,7 @@ export default function PrioritizePlaybook({ sessionId, useCases }: Props) {
               project weg
             </p>
             <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
-              {PROJECT_CLUSTERS.map((p) => {
+              {clusters.map((p) => {
                 const entry = meta.projectDecisions?.[p.id] || {
                   decision: 'pending' as ProjectDecisionKind,
                   note: '',
@@ -400,7 +332,7 @@ export default function PrioritizePlaybook({ sessionId, useCases }: Props) {
                     <textarea
                       value={entry.note}
                       onChange={(e) => setNote(p.id, e.target.value)}
-                      onBlur={() => flushNote(p.id)}
+                      onBlur={flushNote}
                       placeholder="Notitie: wat erin/uit, owner, open vraag…"
                       rows={2}
                       className="mt-3 w-full resize-none rounded-xl border border-white/10 bg-[#0a0b0e] px-3 py-2 text-[12px] text-white/80 placeholder:text-white/25"

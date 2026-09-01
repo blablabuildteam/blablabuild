@@ -69,13 +69,18 @@ async function getUseCases(key: string): Promise<UseCaseRecord[]> {
 }
 
 async function saveMeta(key: string, meta: SessionMeta): Promise<SessionMeta> {
-  await redisCommand('HSET', key, META_FIELD, JSON.stringify(meta));
+  const { meta: prev } = await getSession(key);
+  // Top-level merge so checklist/decisions don't wipe clusters (and vice versa)
+  const merged: SessionMeta = { ...(prev || {}), ...meta };
+  await redisCommand('HSET', key, META_FIELD, JSON.stringify(merged));
   await redisCommand('EXPIRE', key, String(TTL));
-  return meta;
+  return merged;
 }
 
 async function saveUseCase(key: string, useCase: UseCaseRecord): Promise<UseCaseRecord[]> {
-  await redisCommand('HSET', key, useCase.id, JSON.stringify(useCase));
+  // New submissions: lock v1 immediately to the submitted copy
+  const locked = ensureFrozen(useCase);
+  await redisCommand('HSET', key, String(locked.id), JSON.stringify(locked));
   await redisCommand('EXPIRE', key, String(TTL));
   return getUseCases(key);
 }
@@ -86,15 +91,10 @@ async function removeUseCase(key: string, id: string): Promise<UseCaseRecord[]> 
   return getUseCases(key);
 }
 
-function freezeOriginalIfNeeded(prev: UseCaseRecord, next: UseCaseRecord): UseCaseRecord {
-  if (prev.originalInput) return next;
-  const copyChanged =
-    String(prev.name ?? '') !== String(next.name ?? '') ||
-    String(prev.description ?? '') !== String(next.description ?? '') ||
-    String(prev.solution ?? '') !== String(next.solution ?? '');
-  if (!copyChanged) return next;
+function ensureFrozen(prev: UseCaseRecord): UseCaseRecord {
+  if (prev.originalInput && typeof prev.originalInput === 'object') return prev;
   return {
-    ...next,
+    ...prev,
     originalInput: {
       name: String(prev.name ?? ''),
       description: String(prev.description ?? ''),
@@ -107,14 +107,55 @@ function freezeOriginalIfNeeded(prev: UseCaseRecord, next: UseCaseRecord): UseCa
   };
 }
 
+/**
+ * Merge an update onto a use case.
+ * - Locks workshop v1 into originalInput on first write
+ * - Never lets a client patch overwrite / clear originalInput
+ */
+function mergeUseCase(prev: UseCaseRecord, patch: UseCaseRecord): UseCaseRecord {
+  const base = ensureFrozen(prev);
+  const { originalInput: _ignored, id: _id, ...safePatch } = patch;
+  return {
+    ...base,
+    ...safePatch,
+    id: String(prev.id),
+    originalInput: base.originalInput,
+  };
+}
+
+function freezeOriginalIfNeeded(prev: UseCaseRecord, next: UseCaseRecord): UseCaseRecord {
+  return mergeUseCase(prev, next);
+}
+
 async function updateUseCase(key: string, useCase: UseCaseRecord): Promise<UseCaseRecord[]> {
   const existing = await getUseCases(key);
   const prev = existing.find((uc) => uc.id === useCase.id);
   if (!prev) throw new Error('Not found');
-  const merged = freezeOriginalIfNeeded(prev, { ...prev, ...useCase, id: useCase.id });
+  const merged = mergeUseCase(prev, useCase);
   await redisCommand('HSET', key, useCase.id, JSON.stringify(merged));
   await redisCommand('EXPIRE', key, String(TTL));
   return getUseCases(key);
+}
+
+/** Freeze workshop v1 for any case that still lacks originalInput. */
+async function freezeMissingOriginals(
+  key: string,
+  useCases: UseCaseRecord[]
+): Promise<UseCaseRecord[]> {
+  let changed = false;
+  const next = useCases.map((uc) => {
+    if (uc.originalInput && typeof uc.originalInput === 'object') return uc;
+    changed = true;
+    return ensureFrozen(uc);
+  });
+  if (!changed) return useCases;
+  for (const uc of next) {
+    if (!useCases.find((u) => u.id === uc.id)?.originalInput) {
+      await redisCommand('HSET', key, String(uc.id), JSON.stringify(uc));
+    }
+  }
+  await redisCommand('EXPIRE', key, String(TTL));
+  return next;
 }
 
 export async function GET(
@@ -126,8 +167,12 @@ export async function GET(
   }
   try {
     const key = KEY(params.sessionId);
-    const { useCases, meta } = await getSession(key);
-    if (useCases.length > 0 || meta) {
+    const session = await getSession(key);
+    let { useCases, meta } = session;
+    if (useCases.length > 0) {
+      useCases = await freezeMissingOriginals(key, useCases);
+      await redisCommand('EXPIRE', key, String(TTL));
+    } else if (meta) {
       await redisCommand('EXPIRE', key, String(TTL));
     }
     return NextResponse.json({ useCases, meta, kv: true });
