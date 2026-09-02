@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, ChevronDown, ChevronRight, Plus, FileText } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronRight } from 'lucide-react';
 import {
   type PriorityStatus,
   type UseCase,
@@ -12,7 +12,6 @@ import {
   getDeptColor,
   hasV2CopyChange,
   normalizePriorityStatus,
-  sortUseCasesByScore,
   workshopDescription,
   workshopName,
 } from './types';
@@ -28,11 +27,9 @@ import {
   type ProjectCluster,
 } from './projectClusters';
 import {
-  createProject,
   mergeProjectInto,
   moveCase,
   resolveClusters,
-  unclusteredIds,
   updateProjectFields,
 } from './projectDraft';
 import {
@@ -46,7 +43,6 @@ import {
   scoreProject,
   type ProjectScoreInputs,
 } from './projectScore';
-import PrioritizePlaybook from './PrioritizePlaybook';
 import ProjectPlanPanel from './ProjectPlanPanel';
 import type { ProjectPlan, BlaBlaRecommendation } from './projectPlanTypes';
 import {
@@ -756,19 +752,17 @@ export default function PrioritizeView({
   onUpdate,
   onReplaceAll,
 }: Props) {
-  const [mode, setMode] = useState<Mode>('planning');
+  const [mode] = useState<Mode>('planning');
   const [meta, setMeta] = useState<PrioritizeMetaState>({});
   const [metaLoaded, setMetaLoaded] = useState(false);
   const [savingMeta, setSavingMeta] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [hideNo, setHideNo] = useState(true);
   const initDone = useRef(false);
 
   const clusters = useMemo(
     () => resolveClusters(meta.clusters, meta.clustersSeedVersion),
     [meta.clusters, meta.clustersSeedVersion]
   );
-  const isCustomDraft = Boolean(meta.clusters && meta.clusters.length > 0);
 
   const persistMeta = useCallback(
     async (next: PrioritizeMetaState) => {
@@ -970,26 +964,14 @@ export default function PrioritizeView({
   }, [clusters, useCases]);
 
   const rankedProjects = useMemo(() => {
-    const list = mode === 'grouping' ? clusters : visibleProjects;
-    return [...list]
+    return [...visibleProjects]
       .map((cluster) => {
         const members = useCases.filter((u) => cluster.caseIds.includes(u.id));
         const scored = scoreProject(cluster, members, meta.projectScores?.[cluster.id]);
         return { cluster, members, scored };
       })
       .sort((a, b) => b.scored.total - a.scored.total || a.cluster.name.localeCompare(b.cluster.name));
-  }, [mode, clusters, visibleProjects, useCases, meta.projectScores]);
-
-  const orphanIds = useMemo(
-    () => unclusteredIds(clusters, useCases.map((u) => u.id)),
-    [clusters, useCases]
-  );
-
-  const unclustered = useMemo(() => {
-    let list = useCases.filter((u) => orphanIds.includes(u.id));
-    if (hideNo) list = list.filter((u) => getInterest(u) !== 'no');
-    return sortUseCasesByScore(list);
-  }, [useCases, hideNo, orphanIds]);
+  }, [visibleProjects, useCases, meta.projectScores]);
 
   const sortMembers = (list: UseCase[]) =>
     [...list].sort((a, b) => {
@@ -997,19 +979,6 @@ export default function PrioritizeView({
       const d = order[getInterest(a)] - order[getInterest(b)];
       return d !== 0 ? d : calcScore(b.scores) - calcScore(a.scores);
     });
-
-  const stats = useMemo(() => {
-    let yes = 0;
-    let maybe = 0;
-    let no = 0;
-    useCases.forEach((u) => {
-      const i = getInterest(u);
-      if (i === 'yes') yes++;
-      else if (i === 'maybe') maybe++;
-      else no++;
-    });
-    return { yes, maybe, no };
-  }, [useCases]);
 
   const setProjectHorizon = (projectId: string, status: PriorityStatus) => {
     if (status === 'kill') return;
@@ -1143,158 +1112,11 @@ export default function PrioritizeView({
           § prioritize · internal
         </p>
         <h2 className="mt-1 font-host text-2xl font-light text-white md:text-3xl">Prioritize</h2>
-        <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-white/55">
-          {mode === 'triage'
-            ? 'v2 triage (Yes / Maybe / Kill). Workshop submissions stay frozen in Matrix as v1.'
-            : mode === 'grouping'
-            ? 'v2 grouping draft: move, merge, rename, kill. Matrix overview keeps the original workshop cases untouched.'
-            : 'Plan mode: Define project plans, set project horizon (NOW/NEAR/NEXT/LATER), assign feature priority (HIGH/MEDIUM/LOW/BACKLOG), review blablabuild recommendations.'}
-        </p>
-
-        <div className="mt-4 grid gap-3 rounded-2xl border border-white/10 bg-white/[0.02] p-4 md:grid-cols-2">
-          <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-bla-lime/70">
-              Project titles · delivery initiatives
-            </p>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-white/50">
-              Names describe the <span className="text-white/75">outcome / system</span> you ship
-              (e.g. “Compliant Ongage send & craft”), not the workshop department. Features keep
-              their dept chip; rename anytime in Grouping.
-            </p>
-          </div>
-          <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-bla-lime/70">
-              Project score → roadmap order
-            </p>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-white/50">
-              <span className="text-white/75">Value 35%</span> +{' '}
-              <span className="text-white/75">Feasibility 25%</span> +{' '}
-              <span className="text-white/75">Urgency 20%</span> +{' '}
-              <span className="text-white/75">case evidence 20%</span> (avg Yes/Maybe workshop
-              scores). List is sorted by this total — then set Now horizon on max 2–3.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <div className="inline-flex rounded-full border border-white/10 bg-white/[0.03] p-0.5">
-            <button
-              type="button"
-              onClick={() => setMode('triage')}
-              className={`rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] ${
-                mode === 'triage' ? 'bg-bla-lime/20 text-bla-lime' : 'text-white/40 hover:text-white/70'
-              }`}
-            >
-              Triage
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode('grouping')}
-              className={`rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] ${
-                mode === 'grouping'
-                  ? 'bg-bla-lime/20 text-bla-lime'
-                  : 'text-white/40 hover:text-white/70'
-              }`}
-            >
-              Grouping
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode('planning')}
-              className={`rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] ${
-                mode === 'planning'
-                  ? 'bg-bla-lime/20 text-bla-lime'
-                  : 'text-white/40 hover:text-white/70'
-              }`}
-            >
-              <span className="flex items-center gap-1.5">
-                <FileText className="h-3 w-3" />
-                Planning
-              </span>
-            </button>
-          </div>
-
-          {mode === 'triage' && (
-            <>
-              <span className="rounded-full border border-bla-lime/25 bg-bla-lime/10 px-3 py-1 font-mono text-[11px] text-bla-lime">
-                Yes {stats.yes}
-              </span>
-              <span className="rounded-full border border-amber-400/25 bg-amber-400/10 px-3 py-1 font-mono text-[11px] text-amber-300">
-                Maybe {stats.maybe}
-              </span>
-              <span className="rounded-full border border-red-400/25 bg-red-400/10 px-3 py-1 font-mono text-[11px] text-red-300">
-                No {stats.no}
-              </span>
-              <button
-                type="button"
-                onClick={() => setHideNo((v) => !v)}
-                className="rounded-full border border-white/10 px-3 py-1 text-[12px] text-white/45 hover:text-white/70"
-              >
-                {hideNo ? 'Show No cases' : 'Hide No cases'}
-              </button>
-            </>
-          )}
-
-          {mode === 'grouping' && (
-            <>
-              <span className="rounded-full border border-white/10 px-3 py-1 font-mono text-[11px] text-white/45">
-                {isCustomDraft ? 'Draft saved' : 'Seed defaults'}
-                {savingMeta ? ' · saving…' : ''}
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  const name = window.prompt('New project name');
-                  if (!name?.trim()) return;
-                  const next = createProject(clusters, name.trim());
-                  persistClusters(next);
-                  setExpandedId(next[next.length - 1]?.id ?? null);
-                }}
-                className="inline-flex items-center gap-1.5 rounded-full border border-bla-lime/30 bg-bla-lime/10 px-3 py-1 text-[12px] text-bla-lime hover:bg-bla-lime/15"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                New project
-              </button>
-              {isCustomDraft && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (
-                      !window.confirm(
-                        'Reset grouping to the original seed projects? Your draft moves will be lost.'
-                      )
-                    ) {
-                      return;
-                    }
-                    void persistMeta({
-                      ...meta,
-                      clusters: null,
-                      clustersSeedVersion: CLUSTERS_SEED_VERSION,
-                      clustersUpdatedAt: new Date().toISOString(),
-                    });
-                  }}
-                  className="rounded-full border border-white/10 px-3 py-1 text-[12px] text-white/40 hover:text-white/70"
-                >
-                  Reset to seed
-                </button>
-              )}
-            </>
-          )}
-        </div>
       </div>
 
-      <PrioritizePlaybook
-        useCases={useCases}
-        clusters={clusters}
-        meta={meta}
-        saving={savingMeta}
-        onMetaChange={setMeta}
-        onPersist={(next) => void persistMeta(next)}
-      />
-
-      <div className="mt-2 mb-3 flex flex-wrap items-end justify-between gap-2">
+      <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
         <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-          Ranked by project score · open to triage / score
+          Projects
         </p>
         <p className="font-mono text-[10px] text-white/30">
           {rankedProjects.length} projects
@@ -1303,10 +1125,7 @@ export default function PrioritizeView({
 
       <div className="space-y-3">
         {rankedProjects.map(({ cluster, members: allMembers }, index) => {
-          const visible =
-            mode === 'triage' && hideNo
-              ? allMembers.filter((u) => getInterest(u) !== 'no')
-              : allMembers;
+          const visible = allMembers;
           return (
             <ProjectBlock
               key={cluster.id}
@@ -1351,11 +1170,6 @@ export default function PrioritizeView({
           );
         })}
       </div>
-
-      <p className="mt-6 text-[12px] text-white/30">
-        Tip: Grouping eerst kloppend maken → Triage Yes/Maybe/No → playbook Keep/Split → Now
-        shortlist.
-      </p>
     </div>
   );
 }
