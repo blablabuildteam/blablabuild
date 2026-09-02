@@ -24,7 +24,8 @@ import {
   resolveProjectHorizon,
 } from './projectClusters';
 import { resolveClusters } from './projectDraft';
-import { loadPrioritizeMeta } from './prioritizeMeta';
+import { loadPrioritizeMeta, type PrioritizeMetaState } from './prioritizeMeta';
+import { scoreProject, type ProjectScoreInputs } from './projectScore';
 
 type HorizonFocus = 'now' | 'now-near' | 'all';
 
@@ -34,6 +35,7 @@ interface ProjectRow {
   horizon: Exclude<PriorityStatus, 'kill'>;
   /** Calendar duration hint (parallel-aware). */
   months: number;
+  projectScore: number;
 }
 
 interface Props {
@@ -47,13 +49,17 @@ export default function RoadmapView({ useCases, sessionId, onBack, onGoPrioritiz
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [focus, setFocus] = useState<HorizonFocus>('now-near');
   const [clusters, setClusters] = useState<ProjectCluster[]>(() => resolveClusters(null));
+  const [projectScores, setProjectScores] = useState<
+    Record<string, Partial<ProjectScoreInputs>>
+  >({});
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const meta = await loadPrioritizeMeta(sessionId);
+      const meta = (await loadPrioritizeMeta(sessionId)) as PrioritizeMetaState;
       if (cancelled) return;
-      setClusters(resolveClusters(meta.clusters));
+      setClusters(resolveClusters(meta.clusters, meta.clustersSeedVersion));
+      setProjectScores(meta.projectScores || {});
     })();
     return () => {
       cancelled = true;
@@ -77,10 +83,11 @@ export default function RoadmapView({ useCases, sessionId, onBack, onGoPrioritiz
           members.length === 0
             ? 1
             : Math.max(...members.map((m) => estimateMonths(m)), 1);
-        return { cluster, members, horizon, months };
+        const projectScore = scoreProject(cluster, members, projectScores[cluster.id]).total;
+        return { cluster, members, horizon, months, projectScore };
       })
       .filter((p) => p.members.length > 0);
-  }, [useCases, clusters]);
+  }, [useCases, clusters, projectScores]);
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { now: 0, near: 0, next: 0, later: 0 };
@@ -101,7 +108,7 @@ export default function RoadmapView({ useCases, sessionId, onBack, onGoPrioritiz
     return visibleHorizons.map((horizon) => {
       const items = projects
         .filter((p) => p.horizon === horizon)
-        .sort((a, b) => b.members.length - a.members.length);
+        .sort((a, b) => b.projectScore - a.projectScore || b.members.length - a.members.length);
       const load = items.reduce((sum, p) => sum + p.months, 0);
       return { horizon, items, load };
     });
@@ -128,8 +135,9 @@ export default function RoadmapView({ useCases, sessionId, onBack, onGoPrioritiz
           </h2>
           <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-white/55">
             {monthLabel(0, ROADMAP_START)} → {monthLabel(TIMELINE_MONTHS - 1, ROADMAP_START)}. One
-            bar per <span className="text-white/75">project</span> (bundled use cases). Horizon =
-            earliest active case in that project. Duration ≈ longest case (parallel work).
+            bar per <span className="text-white/75">project</span>. Within each horizon, sorted by{' '}
+            <span className="text-white/75">project score</span> (Value / Feasibility / Urgency +
+            case evidence from Prioritize). Horizon = earliest active case.
           </p>
         </div>
         {onGoPrioritize && (
@@ -235,7 +243,7 @@ export default function RoadmapView({ useCases, sessionId, onBack, onGoPrioritiz
                 ) : (
                   <ul className="space-y-2.5">
                     {items.map((row, idx) => {
-                      const { cluster, members, months } = row;
+                      const { cluster, members, months, projectScore } = row;
                       const accent = projectAccent(cluster.id);
                       const slot = items.length <= 1 ? 0 : idx / Math.max(1, items.length - 1);
                       const windowSpan = win.end - win.start;
@@ -262,13 +270,16 @@ export default function RoadmapView({ useCases, sessionId, onBack, onGoPrioritiz
                             }`}
                           >
                             <div className="min-w-0">
-                              <div className="flex items-center gap-2">
+                              <div className="flex flex-wrap items-center gap-2">
                                 <span
                                   className="h-2.5 w-2.5 shrink-0 rounded-full"
                                   style={{ backgroundColor: accent }}
                                 />
                                 <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
-                                  {members.length} use cases
+                                  #{idx + 1} · {members.length} features
+                                </span>
+                                <span className="font-mono text-[10px] text-bla-lime/80">
+                                  score {projectScore.toFixed(1)}
                                 </span>
                               </div>
                               <p className="mt-1.5 font-host text-[15px] font-medium leading-snug text-white md:text-base">
@@ -313,8 +324,8 @@ export default function RoadmapView({ useCases, sessionId, onBack, onGoPrioritiz
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/35">
-                {PRIORITY_STATUS_META[selected.horizon].label} · {selected.members.length} use
-                cases
+                {PRIORITY_STATUS_META[selected.horizon].label} · score{' '}
+                {selected.projectScore.toFixed(1)} · {selected.members.length} features
               </p>
               <h3 className="mt-1 font-host text-xl text-white">{selected.cluster.name}</h3>
               <p className="mt-2 text-[13px] leading-relaxed text-white/55">

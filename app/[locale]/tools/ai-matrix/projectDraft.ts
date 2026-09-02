@@ -1,4 +1,4 @@
-import { PROJECT_CLUSTERS, type ProjectCluster } from './projectClusters';
+import { CLUSTERS_SEED_VERSION, PROJECT_CLUSTERS, type ProjectCluster } from './projectClusters';
 
 /** Deep-ish clone of default proposal (code seed). */
 export function cloneDefaultClusters(): ProjectCluster[] {
@@ -9,16 +9,37 @@ export function cloneDefaultClusters(): ProjectCluster[] {
   }));
 }
 
-/** Active draft, or seed defaults if none saved yet. */
-export function resolveClusters(draft: ProjectCluster[] | null | undefined): ProjectCluster[] {
-  if (Array.isArray(draft) && draft.length > 0) {
-    return draft.map((c) => ({
-      ...c,
-      caseIds: [...(c.caseIds || [])],
-      primaryDelivery: c.primaryDelivery ? [...c.primaryDelivery] : undefined,
-    }));
+/**
+ * Active draft, or seed defaults.
+ * When seed version bumps, refresh name/summary/rationale for known ids (keep caseIds).
+ */
+export function resolveClusters(
+  draft: ProjectCluster[] | null | undefined,
+  seedVersion?: number | null
+): ProjectCluster[] {
+  if (!Array.isArray(draft) || draft.length === 0) {
+    return cloneDefaultClusters();
   }
-  return cloneDefaultClusters();
+  const refreshCopy = !seedVersion || seedVersion < CLUSTERS_SEED_VERSION;
+  return draft.map((c) => {
+    const seed = PROJECT_CLUSTERS.find((s) => s.id === c.id);
+    if (!seed || c.id.startsWith('custom-')) {
+      return {
+        ...c,
+        caseIds: [...(c.caseIds || [])],
+        primaryDelivery: c.primaryDelivery ? [...c.primaryDelivery] : undefined,
+      };
+    }
+    return {
+      ...seed,
+      caseIds: [...(c.caseIds || [])],
+      // Keep user rename if they already customized after latest seed
+      name: refreshCopy ? seed.name : c.name || seed.name,
+      summary: refreshCopy ? seed.summary : c.summary || seed.summary,
+      rationale: refreshCopy ? seed.rationale : c.rationale || seed.rationale,
+      primaryDelivery: seed.primaryDelivery ? [...seed.primaryDelivery] : undefined,
+    };
+  });
 }
 
 export function unclusteredIds(clusters: ProjectCluster[], allCaseIds: string[]): string[] {

@@ -24,6 +24,7 @@ import {
 import {
   projectAccent,
   resolveProjectHorizon,
+  CLUSTERS_SEED_VERSION,
   type ProjectCluster,
 } from './projectClusters';
 import {
@@ -39,6 +40,11 @@ import {
   savePrioritizeMeta,
   type PrioritizeMetaState,
 } from './prioritizeMeta';
+import {
+  PROJECT_SCORE_DIMS,
+  scoreProject,
+  type ProjectScoreInputs,
+} from './projectScore';
 import PrioritizePlaybook from './PrioritizePlaybook';
 
 export type CaseInterest = 'yes' | 'maybe' | 'no';
@@ -346,6 +352,9 @@ function ProjectBlock({
   onMove,
   onRename,
   onMergeInto,
+  scoreInputs,
+  onScoreChange,
+  rank,
 }: {
   cluster: ProjectCluster;
   members: UseCase[];
@@ -358,10 +367,14 @@ function ProjectBlock({
   onMove: (caseId: string, target: string | 'unclustered') => void;
   onRename: (name: string, summary: string) => void;
   onMergeInto: (intoId: string) => void;
+  scoreInputs?: Partial<ProjectScoreInputs> | null;
+  onScoreChange: (patch: Partial<ProjectScoreInputs>) => void;
+  rank: number;
 }) {
   const accent = projectAccent(cluster.id);
   const horizon = resolveProjectHorizon(cluster, members);
   const hMeta = PRIORITY_STATUS_META[horizon];
+  const scored = scoreProject(cluster, members, scoreInputs);
   const yes = members.filter((m) => getInterest(m) === 'yes').length;
   const maybe = members.filter((m) => getInterest(m) === 'maybe').length;
   const no = members.filter((m) => getInterest(m) === 'no').length;
@@ -395,12 +408,15 @@ function ProjectBlock({
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full border border-white/15 bg-white/[0.04] px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-white/50">
-              Project
+              #{rank} · Project
             </span>
             <span
               className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] ${hMeta.border} ${hMeta.bg} ${hMeta.color}`}
             >
               {hMeta.short}
+            </span>
+            <span className="rounded-full border border-bla-lime/30 bg-bla-lime/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-bla-lime">
+              Score {scored.total.toFixed(1)}
             </span>
           </div>
           <h3 className="mt-1.5 font-host text-[17px] font-medium text-white md:text-lg">
@@ -430,7 +446,9 @@ function ProjectBlock({
           </div>
           <p className="mt-2 font-mono text-[11px] text-white/35">
             {members.length} features · yes {yes} · maybe {maybe} · no {no}
-            {depts.length > 1 ? ' · multi-dept' : ''}
+            {depts.length > 1 ? ' · multi-dept' : ''} · V {scored.inputs.value} · F{' '}
+            {scored.inputs.feasibility} · U {scored.inputs.urgency} · evidence{' '}
+            {scored.evidence.toFixed(1)}
           </p>
         </div>
       </button>
@@ -442,11 +460,64 @@ function ProjectBlock({
               Why this is one project (not a department)
             </p>
             <p className="mt-1.5 text-[12px] leading-relaxed text-white/50">{cluster.rationale}</p>
-            <p className="mt-2 text-[11px] leading-relaxed text-white/35">
-              Features keep their workshop department label. The project name is a delivery
-              initiative (shared stack, owner, or outcome) — rename freely in Grouping if the
-              label feels like “just a dept bucket”.
-            </p>
+          </div>
+
+          <div className="rounded-xl border border-bla-lime/20 bg-bla-lime/[0.04] px-3 py-3">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-bla-lime/70">
+                Project score · roadmap rank
+              </p>
+              <p className="mt-1 text-[13px] text-white/70">
+                Total <span className="font-mono text-bla-lime">{scored.total.toFixed(2)}</span> / 5
+                · {scored.activeCount} active features
+              </p>
+            </div>
+
+            <div className="mt-3 grid gap-2 sm:grid-cols-3">
+              {PROJECT_SCORE_DIMS.map((d) => (
+                <label key={d.key} className="block rounded-lg border border-white/10 bg-black/20 p-2.5">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-white/40">
+                    {d.label} · ×{(d.weight * 100).toFixed(0)}%
+                  </span>
+                  <select
+                    value={scored.inputs[d.key]}
+                    onChange={(e) =>
+                      onScoreChange({ [d.key]: Number(e.target.value) } as Partial<ProjectScoreInputs>)
+                    }
+                    onClick={(e) => e.stopPropagation()}
+                    className="mt-1.5 w-full rounded-md border border-white/15 bg-[#0a0b0e] px-2 py-1.5 text-[13px] text-white"
+                  >
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="mt-1 block text-[10px] leading-snug text-white/35">{d.hint}</span>
+                </label>
+              ))}
+            </div>
+
+            <div className="mt-3 space-y-1 border-t border-white/8 pt-2">
+                {scored.breakdown.map((row) => (
+                  <div
+                    key={row.label}
+                    className="flex justify-between font-mono text-[10px] text-white/45"
+                  >
+                    <span>
+                      {row.label}{' '}
+                      <span className="text-white/25">×{(row.weight * 100).toFixed(0)}%</span>
+                    </span>
+                    <span className="tabular-nums">
+                      {row.raw.toFixed(2)} → {row.contrib.toFixed(2)}
+                    </span>
+                  </div>
+                ))}
+                <p className="pt-1 text-[11px] leading-relaxed text-white/35">
+                  Case evidence = avg workshop score of Yes/Maybe (non-killed) features. Higher
+                  project score → pick earlier on the roadmap (still cap Now at 2–3 projects).
+                </p>
+              </div>
           </div>
 
           {mode === 'grouping' && (
@@ -572,7 +643,10 @@ export default function PrioritizeView({
   const [hideNo, setHideNo] = useState(true);
   const initDone = useRef(false);
 
-  const clusters = useMemo(() => resolveClusters(meta.clusters), [meta.clusters]);
+  const clusters = useMemo(
+    () => resolveClusters(meta.clusters, meta.clustersSeedVersion),
+    [meta.clusters, meta.clustersSeedVersion]
+  );
   const isCustomDraft = Boolean(meta.clusters && meta.clusters.length > 0);
 
   const persistMeta = useCallback(
@@ -595,6 +669,21 @@ export default function PrioritizeView({
         ...meta,
         clusters: nextClusters,
         clustersUpdatedAt: new Date().toISOString(),
+        clustersSeedVersion: CLUSTERS_SEED_VERSION,
+      });
+    },
+    [meta, persistMeta]
+  );
+
+  const setProjectScore = useCallback(
+    (projectId: string, patch: Partial<ProjectScoreInputs>) => {
+      const prev = meta.projectScores?.[projectId] || {};
+      void persistMeta({
+        ...meta,
+        projectScores: {
+          ...(meta.projectScores || {}),
+          [projectId]: { ...prev, ...patch },
+        },
       });
     },
     [meta, persistMeta]
@@ -605,9 +694,24 @@ export default function PrioritizeView({
     (async () => {
       const loaded = await loadPrioritizeMeta(sessionId);
       if (cancelled) return;
-      setMeta(loaded);
+      let next = loaded;
+      // Refresh seed titles into draft once when version bumps
+      if (
+        loaded.clusters?.length &&
+        (!loaded.clustersSeedVersion || loaded.clustersSeedVersion < CLUSTERS_SEED_VERSION)
+      ) {
+        const refreshed = resolveClusters(loaded.clusters, loaded.clustersSeedVersion);
+        next = {
+          ...loaded,
+          clusters: refreshed,
+          clustersSeedVersion: CLUSTERS_SEED_VERSION,
+          clustersUpdatedAt: new Date().toISOString(),
+        };
+        void savePrioritizeMeta(sessionId, next);
+      }
+      setMeta(next);
       setMetaLoaded(true);
-      const resolved = resolveClusters(loaded.clusters);
+      const resolved = resolveClusters(next.clusters, next.clustersSeedVersion);
       setExpandedId(resolved[0]?.id ?? 'unclustered');
     })();
     return () => {
@@ -664,6 +768,17 @@ export default function PrioritizeView({
   const visibleProjects = useMemo(() => {
     return clusters.filter((cluster) => useCases.some((u) => cluster.caseIds.includes(u.id)));
   }, [clusters, useCases]);
+
+  const rankedProjects = useMemo(() => {
+    const list = mode === 'grouping' ? clusters : visibleProjects;
+    return [...list]
+      .map((cluster) => {
+        const members = useCases.filter((u) => cluster.caseIds.includes(u.id));
+        const scored = scoreProject(cluster, members, meta.projectScores?.[cluster.id]);
+        return { cluster, members, scored };
+      })
+      .sort((a, b) => b.scored.total - a.scored.total || a.cluster.name.localeCompare(b.cluster.name));
+  }, [mode, clusters, visibleProjects, useCases, meta.projectScores]);
 
   const orphanIds = useMemo(
     () => unclusteredIds(clusters, useCases.map((u) => u.id)),
@@ -742,23 +857,24 @@ export default function PrioritizeView({
         <div className="mt-4 grid gap-3 rounded-2xl border border-white/10 bg-white/[0.02] p-4 md:grid-cols-2">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-bla-lime/70">
-              Project ≠ department
+              Project titles · delivery initiatives
             </p>
             <p className="mt-1.5 text-[12px] leading-relaxed text-white/50">
-              A <span className="text-white/75">project</span> is a delivery initiative (shared
-              stack, owner, or outcome). Features keep their workshop{' '}
-              <span className="text-white/75">dept</span> label — one project can mix depts. If a
-              name feels like “just Email” or “just HR”, rename it in Grouping.
+              Names describe the <span className="text-white/75">outcome / system</span> you ship
+              (e.g. “Compliant Ongage send & craft”), not the workshop department. Features keep
+              their dept chip; rename anytime in Grouping.
             </p>
           </div>
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-bla-lime/70">
-              Score · workshop formula
+              Project score → roadmap order
             </p>
             <p className="mt-1.5 text-[12px] leading-relaxed text-white/50">
-              Open <span className="text-white/75">how scored</span> on a feature: Impact 30%, How
-              often 20%, Fit for AI 20%, Speed / Low risk / Adoption 10% each. Same as the matrix —
-              scores don’t change when you regroup.
+              <span className="text-white/75">Value 35%</span> +{' '}
+              <span className="text-white/75">Feasibility 25%</span> +{' '}
+              <span className="text-white/75">Urgency 20%</span> +{' '}
+              <span className="text-white/75">case evidence 20%</span> (avg Yes/Maybe workshop
+              scores). List is sorted by this total — then set Now horizon on max 2–3.
             </p>
           </div>
         </div>
@@ -842,6 +958,7 @@ export default function PrioritizeView({
                     void persistMeta({
                       ...meta,
                       clusters: null,
+                      clustersSeedVersion: CLUSTERS_SEED_VERSION,
                       clustersUpdatedAt: new Date().toISOString(),
                     });
                   }}
@@ -866,18 +983,15 @@ export default function PrioritizeView({
 
       <div className="mt-2 mb-3 flex flex-wrap items-end justify-between gap-2">
         <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-          {mode === 'triage'
-            ? 'Delivery projects · open to triage features'
-            : 'Delivery projects · rename / move / merge (not dept folders)'}
+          Ranked by project score · open to triage / score
         </p>
         <p className="font-mono text-[10px] text-white/30">
-          {visibleProjects.length} projects · {orphanIds.length} unclustered
+          {rankedProjects.length} projects · {orphanIds.length} unclustered
         </p>
       </div>
 
       <div className="space-y-3">
-        {(mode === 'grouping' ? clusters : visibleProjects).map((cluster) => {
-          const allMembers = useCases.filter((u) => cluster.caseIds.includes(u.id));
+        {rankedProjects.map(({ cluster, members: allMembers }, index) => {
           const visible =
             mode === 'triage' && hideNo
               ? allMembers.filter((u) => getInterest(u) !== 'no')
@@ -908,6 +1022,9 @@ export default function PrioritizeView({
                 persistClusters(mergeProjectInto(clusters, cluster.id, intoId));
                 setExpandedId(intoId);
               }}
+              scoreInputs={meta.projectScores?.[cluster.id]}
+              onScoreChange={(patch) => setProjectScore(cluster.id, patch)}
+              rank={index + 1}
             />
           );
         })}

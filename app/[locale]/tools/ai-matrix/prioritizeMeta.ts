@@ -1,4 +1,5 @@
 import type { ProjectCluster } from './projectClusters';
+import type { ProjectScoreInputs } from './projectScore';
 
 export type ProjectDecisionKind = 'pending' | 'keep' | 'split' | 'park' | 'kill';
 
@@ -14,6 +15,10 @@ export interface PrioritizeMetaState {
   /** Editable project grouping (v2 draft). Null/absent = use code defaults. */
   clusters?: ProjectCluster[] | null;
   clustersUpdatedAt?: string;
+  /** Tracks which seed title/summary version the draft was last refreshed from */
+  clustersSeedVersion?: number;
+  /** Manual Value / Feasibility / Urgency (1–5) per project id */
+  projectScores?: Record<string, Partial<ProjectScoreInputs>>;
 }
 
 export function lsMetaKey(sessionId: string) {
@@ -41,7 +46,6 @@ export async function loadPrioritizeMeta(sessionId: string): Promise<PrioritizeM
         ...(local?.checklist || {}),
         ...(remote?.checklist || {}),
       },
-      // Prefer remote clusters if present, else local draft
       clusters:
         remote?.clusters && remote.clusters.length > 0
           ? remote.clusters
@@ -49,6 +53,11 @@ export async function loadPrioritizeMeta(sessionId: string): Promise<PrioritizeM
             ? local.clusters
             : null,
       clustersUpdatedAt: remote?.clustersUpdatedAt || local?.clustersUpdatedAt,
+      clustersSeedVersion: remote?.clustersSeedVersion ?? local?.clustersSeedVersion,
+      projectScores: {
+        ...(local?.projectScores || {}),
+        ...(remote?.projectScores || {}),
+      },
     };
   } catch {
     return local || {};
