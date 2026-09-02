@@ -6,7 +6,8 @@ import {
   AlertTriangle, Ban, Presentation,
 } from 'lucide-react';
 import {
-  type UseCase, type ClaudeFit, calcScore, getQuadrant, getDeptColor,
+  type UseCase, type ClaudeFit, type PresentationNextUnlock,
+  calcScore, getQuadrant, getDeptColor,
   Q_META, sortByDeptThenName, textChanged,
 } from './types';
 
@@ -34,6 +35,52 @@ const SCORE_KEYS: { key: keyof UseCase['scores']; label: string }[] = [
   { key: 'implementation', label: 'Speed' },
   { key: 'risk', label: 'Safety' },
   { key: 'adoption', label: 'Adaptability' },
+];
+
+const DEBRIEF_FIELDS: {
+  key: 'presentationOutcome' | 'presentationFinding' | 'presentationChallenge' | 'presentationAmbition';
+  label: string;
+  ask: string;
+  placeholder: string;
+}[] = [
+  {
+    key: 'presentationOutcome',
+    label: 'Outcome',
+    ask: 'What can you do now that you couldn’t 2 weeks ago?',
+    placeholder: 'Concrete capability unlocked…',
+  },
+  {
+    key: 'presentationFinding',
+    label: 'Finding',
+    ask: 'What did Claude surprise you with / change about the problem?',
+    placeholder: 'What you learned vs the original brief…',
+  },
+  {
+    key: 'presentationChallenge',
+    label: 'Challenge',
+    ask: 'Where did you get stuck? (data, access, judgment, format, trust)',
+    placeholder: 'The real blocker…',
+  },
+  {
+    key: 'presentationAmbition',
+    label: 'Ambition',
+    ask: 'If this had to work in real ops next month, what’s missing?',
+    placeholder: 'What level 2 needs…',
+  },
+];
+
+const PROBE_QUESTIONS = [
+  'What still requires a human decision?',
+  'Which system or person do you need that you didn’t have?',
+  'Would another department’s output make this 10× more useful?',
+  'If we connected one live tool (MCP), which one first?',
+];
+
+const NEXT_UNLOCK_OPTIONS: { id: PresentationNextUnlock; label: string; hint: string }[] = [
+  { id: 'data', label: 'Data', hint: 'Live / better inputs' },
+  { id: 'mcp', label: 'MCP / tool', hint: 'Connect a system' },
+  { id: 'cross-team', label: 'Cross-team', hint: 'Another dept' },
+  { id: 'workflow', label: 'Workflow', hint: 'Habit / trigger' },
 ];
 
 interface Props {
@@ -194,7 +241,14 @@ export default function ClaudeCasesView({ useCases, onBack, onUpdate }: Props) {
                   <span className={`font-mono text-[11px] ${uc.owner ? 'text-black/50' : 'text-amber-700'}`}>
                     {uc.owner || 'No owner yet'}
                   </span>
-                  <ArrowRight className="h-4 w-4 text-black/0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-black/55" aria-hidden />
+                  <div className="flex items-center gap-2">
+                    {(uc.presentationOutcome || uc.presentationFinding || uc.presentationChallenge || uc.presentationAmbition) && (
+                      <span className="rounded-full border border-[#4a5600]/25 bg-[#ceff00]/25 px-2 py-0.5 font-mono text-[9px] text-[#2a3200]">
+                        Debrief
+                      </span>
+                    )}
+                    <ArrowRight className="h-4 w-4 text-black/0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-black/55" aria-hidden />
+                  </div>
                 </div>
               </button>
             );
@@ -323,6 +377,87 @@ export default function ClaudeCasesView({ useCases, onBack, onUpdate }: Props) {
                   if (val !== (selected.definitionOfDone || '')) onUpdate({ ...selected, definitionOfDone: val || undefined });
                 }}
                 className="w-full resize-none rounded-lg border border-white/10 bg-black/25 px-3 py-2.5 text-[13px] leading-relaxed text-white/80 placeholder:text-white/25 outline-none focus:border-bla-lime/30" />
+            </div>
+
+            {/* Presentation debrief — live capture during office presentations */}
+            <div className="mt-6 rounded-xl border border-bla-lime/25 bg-bla-lime/[0.05] p-4 sm:p-5">
+              <div className="flex items-start gap-3">
+                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-bla-lime/15">
+                  <Presentation className="h-4 w-4 text-bla-lime" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-bla-lime/70">Presentation debrief</p>
+                  <p className="mt-1 text-[13px] leading-relaxed text-white/55">
+                    Capture these live while the team presents. This feeds the next, harder case (MCP, cross-team, or live data).
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 rounded-lg border border-white/10 bg-black/20 px-3.5 py-3">
+                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/35">Probe questions</p>
+                <ul className="mt-2 space-y-1.5">
+                  {PROBE_QUESTIONS.map((q) => (
+                    <li key={q} className="flex gap-2 text-[12px] leading-snug text-white/55">
+                      <span className="mt-0.5 shrink-0 font-mono text-bla-lime/60">→</span>
+                      <span>{q}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="mt-4 space-y-4">
+                {DEBRIEF_FIELDS.map((field) => (
+                  <div key={field.key}>
+                    <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-bla-lime/70">{field.label}</p>
+                      <p className="text-[11px] leading-snug text-white/40">{field.ask}</p>
+                    </div>
+                    <textarea
+                      defaultValue={selected[field.key] || ''}
+                      placeholder={field.placeholder}
+                      key={`${field.key}-${selected.id}-${selected[field.key] || ''}`}
+                      rows={3}
+                      onBlur={(e) => {
+                        const val = e.target.value.trim();
+                        if (val !== (selected[field.key] || '')) {
+                          onUpdate({ ...selected, [field.key]: val || undefined });
+                        }
+                      }}
+                      className="w-full resize-none rounded-lg border border-white/10 bg-black/25 px-3 py-2.5 text-[13px] leading-relaxed text-white/80 placeholder:text-white/25 outline-none focus:border-bla-lime/30"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4">
+                <p className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bla-lime/70">Next unlock</p>
+                <p className="mb-2 text-[11px] text-white/40">Tag what level 2 should add — pick one primary lever.</p>
+                <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+                  {NEXT_UNLOCK_OPTIONS.map((opt) => {
+                    const active = selected.presentationNextUnlock === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() =>
+                          onUpdate({
+                            ...selected,
+                            presentationNextUnlock: active ? undefined : opt.id,
+                          })
+                        }
+                        className={`rounded-lg border px-3 py-2.5 text-left transition-colors ${
+                          active
+                            ? 'border-bla-lime/40 bg-bla-lime/15 text-bla-lime'
+                            : 'border-white/10 text-white/50 hover:border-white/25 hover:text-white/75'
+                        }`}
+                      >
+                        <p className="text-[12px] font-medium">{opt.label}</p>
+                        <p className={`mt-0.5 font-mono text-[9px] ${active ? 'text-bla-lime/60' : 'text-white/30'}`}>{opt.hint}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
 
             <div className="mt-5 space-y-2">

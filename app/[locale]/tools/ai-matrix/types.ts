@@ -2,6 +2,8 @@ export type QuadrantKey = 'quick' | 'strategic' | 'low' | 'later';
 export type ClaudeFit = 'good' | 'stretch' | 'blocked';
 export type ReviewStatus = 'pending' | 'reviewed' | 'needs-split' | 'deferred';
 export type PriorityStatus = 'now' | 'near' | 'next' | 'later' | 'kill';
+/** What to unlock for the next (harder) Claude case after the presentation. */
+export type PresentationNextUnlock = 'data' | 'mcp' | 'cross-team' | 'workflow';
 
 export function normalizePriorityStatus(
   status?: string | null
@@ -61,6 +63,12 @@ export interface UseCase {
   howToGuide?: string;
   definitionOfDone?: string;
   claudeReviewedByBlaBlaBuild?: boolean;
+  /** Live capture during office presentations — feeds the next harder case. */
+  presentationOutcome?: string;
+  presentationFinding?: string;
+  presentationChallenge?: string;
+  presentationAmbition?: string;
+  presentationNextUnlock?: PresentationNextUnlock;
   /** Manual backlog order — lower = higher priority. Drag source of truth. */
   priorityRank?: number;
   priorityStatus?: PriorityStatus;

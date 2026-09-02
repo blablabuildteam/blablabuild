@@ -66,6 +66,11 @@ interface UseCase {
   howToGuide?: string;
   definitionOfDone?: string;
   claudeReviewedByBlaBlaBuild?: boolean;
+  presentationOutcome?: string;
+  presentationFinding?: string;
+  presentationChallenge?: string;
+  presentationAmbition?: string;
+  presentationNextUnlock?: 'data' | 'mcp' | 'cross-team' | 'workflow';
   priorityRank?: number;
   priorityStatus?: PriorityStatus;
   deliveryPartners?: DeliveryPartner[];
