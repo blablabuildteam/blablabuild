@@ -268,9 +268,53 @@ export const Q_META: Record<QuadrantKey, { dot: string; bg: string; label: strin
   later:     { dot: '#f59e0b', bg: 'rgba(245,158,11,0.05)',  label: 'Backlog',        desc: 'Low impact, high effort' },
 };
 
+/** Workshop scoring dimensions — same weights as matrix / Prioritize. */
+export const SCORE_DIMENSIONS: {
+  key: keyof Scores;
+  label: string;
+  weight: number;
+  hint: string;
+}[] = [
+  {
+    key: 'businessImpact',
+    label: 'Impact',
+    weight: 0.3,
+    hint: 'Business upside if this works',
+  },
+  {
+    key: 'frequency',
+    label: 'How often',
+    weight: 0.2,
+    hint: 'How often the work shows up',
+  },
+  {
+    key: 'aiSuitability',
+    label: 'Fit for AI',
+    weight: 0.2,
+    hint: 'How well AI/automation can do this',
+  },
+  {
+    key: 'implementation',
+    label: 'Speed to build',
+    weight: 0.1,
+    hint: 'How fast a useful first version ships',
+  },
+  {
+    key: 'risk',
+    label: 'Low risk',
+    weight: 0.1,
+    hint: 'Safety for data, compliance, business',
+  },
+  {
+    key: 'adoption',
+    label: 'Will it be used',
+    weight: 0.1,
+    hint: 'Likelihood the team adopts it',
+  },
+];
+
 export function calcScore(s: Scores): number {
-  return s.businessImpact * 0.3 + s.frequency * 0.2 + s.aiSuitability * 0.2 +
-    s.implementation * 0.1 + s.risk * 0.1 + s.adoption * 0.1;
+  return SCORE_DIMENSIONS.reduce((sum, d) => sum + s[d.key] * d.weight, 0);
 }
 
 export function getQuadrant(uc: UseCase): QuadrantKey {

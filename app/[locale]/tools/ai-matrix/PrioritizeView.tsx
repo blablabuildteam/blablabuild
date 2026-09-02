@@ -7,6 +7,7 @@ import {
   type UseCase,
   PRIORITY_STATUS_META,
   ROADMAP_STATUSES,
+  SCORE_DIMENSIONS,
   calcScore,
   getDeptColor,
   hasV2CopyChange,
@@ -57,6 +58,60 @@ function getInterest(uc: UseCase): CaseInterest {
   return 'yes';
 }
 
+function deptsInCases(members: UseCase[]): string[] {
+  const set = new Set<string>();
+  members.forEach((m) => set.add(m.label || 'General'));
+  return [...set].sort((a, b) => a.localeCompare(b));
+}
+
+function ScoreBreakdown({ uc }: { uc: UseCase }) {
+  const [open, setOpen] = useState(false);
+  const total = calcScore(uc.scores);
+
+  return (
+    <div className="mt-2">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-white/40 hover:text-white/70"
+      >
+        score {total.toFixed(1)} / 5
+        {open ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+        <span className="normal-case tracking-normal text-white/25">how scored</span>
+      </button>
+      {open && (
+        <div className="mt-2 space-y-1.5 rounded-xl border border-white/10 bg-black/25 px-3 py-2.5">
+          <p className="text-[11px] leading-relaxed text-white/45">
+            Workshop scores (1–5), weighted into one total. Same formula as the matrix.
+          </p>
+          {SCORE_DIMENSIONS.map((d) => {
+            const raw = uc.scores[d.key] ?? 0;
+            const contrib = raw * d.weight;
+            return (
+              <div
+                key={d.key}
+                className="flex items-baseline justify-between gap-3 font-mono text-[10px]"
+              >
+                <span className="min-w-0 text-white/55">
+                  {d.label}{' '}
+                  <span className="text-white/30">×{(d.weight * 100).toFixed(0)}%</span>
+                </span>
+                <span className="shrink-0 tabular-nums text-white/70">
+                  {raw}/5 → {contrib.toFixed(2)}
+                </span>
+              </div>
+            );
+          })}
+          <div className="flex justify-between border-t border-white/8 pt-1.5 font-mono text-[10px] text-bla-lime/80">
+            <span>Total</span>
+            <span className="tabular-nums">{total.toFixed(2)}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function CaseRow({
   uc,
   onUpdate,
@@ -73,7 +128,6 @@ function CaseRow({
   onMove: (caseId: string, target: string | 'unclustered') => void;
 }) {
   const interest = getInterest(uc);
-  const total = calcScore(uc.scores);
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(uc.name);
   const [description, setDescription] = useState(uc.description || '');
@@ -130,9 +184,8 @@ function CaseRow({
               style={{ backgroundColor: getDeptColor(uc.label || 'General') }}
             />
             <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
-              {uc.label || 'General'}
+              Dept · {uc.label || 'General'}
             </span>
-            <span className="font-mono text-[10px] text-white/30">score {total.toFixed(1)}</span>
             {interest === 'no' && (
               <span className="rounded-full border border-red-400/30 bg-red-400/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-red-300">
                 Killed · v2
@@ -196,10 +249,13 @@ function CaseRow({
                   {uc.description}
                 </p>
               ) : null}
+              <ScoreBreakdown uc={uc} />
               {changed && (
                 <p className="mt-1.5 font-mono text-[10px] text-white/30">
                   Workshop v1: {v1Name}
-                  {v1Desc && v1Desc !== uc.description ? ` · ${v1Desc.slice(0, 80)}${v1Desc.length > 80 ? '…' : ''}` : ''}
+                  {v1Desc && v1Desc !== uc.description
+                    ? ` · ${v1Desc.slice(0, 80)}${v1Desc.length > 80 ? '…' : ''}`
+                    : ''}
                 </p>
               )}
             </>
@@ -309,6 +365,7 @@ function ProjectBlock({
   const yes = members.filter((m) => getInterest(m) === 'yes').length;
   const maybe = members.filter((m) => getInterest(m) === 'maybe').length;
   const no = members.filter((m) => getInterest(m) === 'no').length;
+  const depts = deptsInCases(members);
   const [draftName, setDraftName] = useState(cluster.name);
   const [draftSummary, setDraftSummary] = useState(cluster.summary);
 
@@ -337,27 +394,60 @@ function ProjectBlock({
         />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-host text-[17px] font-medium text-white md:text-lg">
-              {cluster.name}
-            </h3>
+            <span className="rounded-full border border-white/15 bg-white/[0.04] px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-white/50">
+              Project
+            </span>
             <span
               className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] ${hMeta.border} ${hMeta.bg} ${hMeta.color}`}
             >
               {hMeta.short}
             </span>
           </div>
+          <h3 className="mt-1.5 font-host text-[17px] font-medium text-white md:text-lg">
+            {cluster.name}
+          </h3>
           <p className="mt-1 text-[13px] leading-relaxed text-white/50">{cluster.summary}</p>
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/30">
+              Depts involved
+            </span>
+            {depts.length === 0 ? (
+              <span className="font-mono text-[10px] text-white/25">—</span>
+            ) : (
+              depts.map((d) => (
+                <span
+                  key={d}
+                  className="inline-flex items-center gap-1 rounded-full border border-white/10 px-2 py-0.5 font-mono text-[10px] text-white/55"
+                >
+                  <span
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{ backgroundColor: getDeptColor(d) }}
+                  />
+                  {d}
+                </span>
+              ))
+            )}
+          </div>
           <p className="mt-2 font-mono text-[11px] text-white/35">
-            {members.length} cases · yes {yes} · maybe {maybe} · no {no}
+            {members.length} features · yes {yes} · maybe {maybe} · no {no}
+            {depts.length > 1 ? ' · multi-dept' : ''}
           </p>
         </div>
       </button>
 
       {expanded && (
         <div className="space-y-3 border-t border-white/8 px-4 pb-4 pt-3 md:px-5">
-          <p className="text-[12px] leading-relaxed text-white/40">
-            <span className="text-white/55">Why together:</span> {cluster.rationale}
-          </p>
+          <div className="rounded-xl border border-white/8 bg-white/[0.02] px-3 py-2.5">
+            <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
+              Why this is one project (not a department)
+            </p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-white/50">{cluster.rationale}</p>
+            <p className="mt-2 text-[11px] leading-relaxed text-white/35">
+              Features keep their workshop department label. The project name is a delivery
+              initiative (shared stack, owner, or outcome) — rename freely in Grouping if the
+              label feels like “just a dept bucket”.
+            </p>
+          </div>
 
           {mode === 'grouping' && (
             <div className="space-y-2 rounded-xl border border-white/10 bg-white/[0.02] p-3">
@@ -649,6 +739,30 @@ export default function PrioritizeView({
             : 'v2 grouping draft: move, merge, rename, kill. Matrix overview keeps the original workshop cases untouched.'}
         </p>
 
+        <div className="mt-4 grid gap-3 rounded-2xl border border-white/10 bg-white/[0.02] p-4 md:grid-cols-2">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-bla-lime/70">
+              Project ≠ department
+            </p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-white/50">
+              A <span className="text-white/75">project</span> is a delivery initiative (shared
+              stack, owner, or outcome). Features keep their workshop{' '}
+              <span className="text-white/75">dept</span> label — one project can mix depts. If a
+              name feels like “just Email” or “just HR”, rename it in Grouping.
+            </p>
+          </div>
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-bla-lime/70">
+              Score · workshop formula
+            </p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-white/50">
+              Open <span className="text-white/75">how scored</span> on a feature: Impact 30%, How
+              often 20%, Fit for AI 20%, Speed / Low risk / Adoption 10% each. Same as the matrix —
+              scores don’t change when you regroup.
+            </p>
+          </div>
+        </div>
+
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <div className="inline-flex rounded-full border border-white/10 bg-white/[0.03] p-0.5">
             <button
@@ -752,7 +866,9 @@ export default function PrioritizeView({
 
       <div className="mt-2 mb-3 flex flex-wrap items-end justify-between gap-2">
         <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-          {mode === 'triage' ? 'Projects · open to triage cases' : 'Projects · move / merge / rename'}
+          {mode === 'triage'
+            ? 'Delivery projects · open to triage features'
+            : 'Delivery projects · rename / move / merge (not dept folders)'}
         </p>
         <p className="font-mono text-[10px] text-white/30">
           {visibleProjects.length} projects · {orphanIds.length} unclustered
