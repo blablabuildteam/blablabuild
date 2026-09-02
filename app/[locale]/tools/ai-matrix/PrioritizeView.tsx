@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, ChevronDown, ChevronRight, Plus } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronRight, Plus, FileText } from 'lucide-react';
 import {
   type PriorityStatus,
   type UseCase,
@@ -39,6 +39,7 @@ import {
   loadPrioritizeMeta,
   savePrioritizeMeta,
   type PrioritizeMetaState,
+  type FeaturePhaseAssignment,
 } from './prioritizeMeta';
 import {
   PROJECT_SCORE_DIMS,
@@ -46,9 +47,25 @@ import {
   type ProjectScoreInputs,
 } from './projectScore';
 import PrioritizePlaybook from './PrioritizePlaybook';
+import ProjectPlanPanel from './ProjectPlanPanel';
+import type { ProjectPlan, BlaBlaRecommendation } from './projectPlanTypes';
+import {
+  loadProjectPlan,
+  loadRecommendationsForProject,
+  initializeFeaturePhases,
+  approveRecommendation,
+  rejectRecommendation,
+  calculatePhaseDistribution,
+  resolveFeatureCopy,
+} from './projectPlanHelpers';
+import { getSolutionsText } from './projectPlanTypes';
+import {
+  FEATURE_PRIORITY_META,
+  type FeaturePriority,
+} from './prioritizeMeta';
 
 export type CaseInterest = 'yes' | 'maybe' | 'no';
-type Mode = 'triage' | 'grouping';
+type Mode = 'triage' | 'grouping' | 'planning';
 
 interface Props {
   useCases: UseCase[];
@@ -355,6 +372,15 @@ function ProjectBlock({
   scoreInputs,
   onScoreChange,
   rank,
+  projectPlan,
+  onPlanChange,
+  featurePhases,
+  onFeaturePhaseChange,
+  recommendations,
+  onRecommendationAction,
+  onFeatureUpdate,
+  onFeatureDelete,
+  onAddFeature,
 }: {
   cluster: ProjectCluster;
   members: UseCase[];
@@ -370,17 +396,35 @@ function ProjectBlock({
   scoreInputs?: Partial<ProjectScoreInputs> | null;
   onScoreChange: (patch: Partial<ProjectScoreInputs>) => void;
   rank: number;
+  projectPlan?: ProjectPlan;
+  onPlanChange: (plan: ProjectPlan) => void;
+  featurePhases: Record<string, FeaturePhaseAssignment>;
+  onFeaturePhaseChange: (caseId: string, assignment: Partial<FeaturePhaseAssignment>) => void;
+  recommendations: BlaBlaRecommendation[];
+  onRecommendationAction: (recId: string, action: 'approve' | 'reject', reason?: string) => void;
+  onFeatureUpdate: (caseId: string, updates: { name?: string; description?: string }) => void;
+  onFeatureDelete: (caseId: string) => void;
+  onAddFeature: (feature: {
+    name: string;
+    description: string;
+    priority: FeaturePriority;
+    effort: 'xs' | 's' | 'm' | 'l' | 'xl';
+  }) => void;
 }) {
   const accent = projectAccent(cluster.id);
-  const horizon = resolveProjectHorizon(cluster, members);
-  const hMeta = PRIORITY_STATUS_META[horizon];
+  const horizon =
+    cluster.suggestedHorizon && cluster.suggestedHorizon !== 'kill'
+      ? cluster.suggestedHorizon
+      : resolveProjectHorizon(cluster, members);
   const scored = scoreProject(cluster, members, scoreInputs);
-  const yes = members.filter((m) => getInterest(m) === 'yes').length;
-  const maybe = members.filter((m) => getInterest(m) === 'maybe').length;
-  const no = members.filter((m) => getInterest(m) === 'no').length;
   const depts = deptsInCases(members);
   const [draftName, setDraftName] = useState(cluster.name);
   const [draftSummary, setDraftSummary] = useState(cluster.summary);
+  const priorityDist = calculatePhaseDistribution(
+    members.map((m) => m.id),
+    featurePhases
+  );
+  const visibleRecs = recommendations.filter((r) => r.status === 'suggested' || r.status === 'approved');
 
   useEffect(() => {
     setDraftName(cluster.name);
@@ -393,75 +437,149 @@ function ProjectBlock({
         expanded ? 'border-white/20 bg-[#0d0f12]' : 'border-white/10 bg-[#0d0f12]/80'
       }`}
     >
-      <button
-        type="button"
-        onClick={onToggle}
-        className="flex w-full items-start gap-3 px-4 py-4 text-left md:px-5"
-      >
-        <span className="mt-1 text-white/40">
+      <div className="flex w-full items-start gap-3 px-4 py-4 md:px-5">
+        <button
+          type="button"
+          onClick={onToggle}
+          className="mt-1 shrink-0 text-white/40"
+          aria-label={expanded ? 'Collapse project' : 'Expand project'}
+        >
           {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-        </span>
-        <span
+        </button>
+        <button
+          type="button"
+          onClick={onToggle}
           className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full"
           style={{ backgroundColor: accent }}
+          aria-hidden
         />
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full border border-white/15 bg-white/[0.04] px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-white/50">
-              #{rank} · Project
-            </span>
-            <span
-              className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] ${hMeta.border} ${hMeta.bg} ${hMeta.color}`}
-            >
-              {hMeta.short}
-            </span>
-            <span className="rounded-full border border-bla-lime/30 bg-bla-lime/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-bla-lime">
-              Score {scored.total.toFixed(1)}
-            </span>
-          </div>
-          <h3 className="mt-1.5 font-host text-[17px] font-medium text-white md:text-lg">
-            {cluster.name}
-          </h3>
-          <p className="mt-1 text-[13px] leading-relaxed text-white/50">{cluster.summary}</p>
-          <div className="mt-2 flex flex-wrap items-center gap-1.5">
-            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/30">
-              Depts involved
-            </span>
-            {depts.length === 0 ? (
-              <span className="font-mono text-[10px] text-white/25">—</span>
-            ) : (
-              depts.map((d) => (
-                <span
-                  key={d}
-                  className="inline-flex items-center gap-1 rounded-full border border-white/10 px-2 py-0.5 font-mono text-[10px] text-white/55"
-                >
+        <div className="min-w-0 flex-1 text-left">
+          <button type="button" onClick={onToggle} className="w-full text-left">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full border border-white/15 bg-white/[0.04] px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-white/50">
+                #{rank} · Project
+              </span>
+              {depts.length === 0 ? (
+                <span className="font-mono text-[10px] text-white/25">—</span>
+              ) : (
+                depts.map((d) => (
                   <span
-                    className="h-1.5 w-1.5 rounded-full"
-                    style={{ backgroundColor: getDeptColor(d) }}
-                  />
-                  {d}
+                    key={d}
+                    className="inline-flex items-center gap-1 rounded-full border border-white/10 px-2 py-0.5 font-mono text-[10px] text-white/55"
+                  >
+                    <span
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{ backgroundColor: getDeptColor(d) }}
+                    />
+                    {d}
+                  </span>
+                ))
+              )}
+            </div>
+            <h3 className="mt-1.5 font-host text-[17px] font-medium text-white md:text-lg">
+              {cluster.name}
+            </h3>
+            {projectPlan?.problemStatement ? (
+              <p className="mt-1.5 line-clamp-2 text-[12px] leading-relaxed text-white/40">
+                <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-white/30">
+                  Problem ·{' '}
                 </span>
-              ))
+                {projectPlan.problemStatement}
+              </p>
+            ) : null}
+            {getSolutionsText(projectPlan) ? (
+              <p className="mt-1 line-clamp-2 text-[12px] leading-relaxed text-white/40">
+                <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-white/30">
+                  Solution ·{' '}
+                </span>
+                {getSolutionsText(projectPlan)}
+              </p>
+            ) : null}
+            {(members.length > 0 || visibleRecs.length > 0) && (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {members.map((m) => {
+                  const copy = resolveFeatureCopy(m, featurePhases[m.id]);
+                  return (
+                    <span
+                      key={m.id}
+                      className="rounded border border-white/8 bg-white/[0.03] px-1.5 py-0.5 text-[10px] text-white/50"
+                    >
+                      {copy.title}
+                    </span>
+                  );
+                })}
+                {visibleRecs.map((r) => (
+                  <span
+                    key={r.id}
+                    className="rounded border border-amber-400/25 bg-amber-400/10 px-1.5 py-0.5 text-[10px] text-amber-200/80"
+                  >
+                    {r.title}
+                  </span>
+                ))}
+              </div>
             )}
+          </button>
+
+          <div className="mt-3 flex flex-wrap items-center gap-1.5">
+            <span className="mr-1 font-mono text-[9px] uppercase tracking-[0.12em] text-white/30">
+              Horizon
+            </span>
+            {ROADMAP_STATUSES.map((s) => {
+              const m = PRIORITY_STATUS_META[s];
+              const active = horizon === s;
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => onSetHorizon(s)}
+                  className={`rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] ${
+                    active
+                      ? `${m.border} ${m.bg} ${m.color}`
+                      : 'border-white/10 text-white/35 hover:text-white/60'
+                  }`}
+                >
+                  {m.short}
+                </button>
+              );
+            })}
           </div>
-          <p className="mt-2 font-mono text-[11px] text-white/35">
-            {members.length} features · yes {yes} · maybe {maybe} · no {no}
-            {depts.length > 1 ? ' · multi-dept' : ''} · V {scored.inputs.value} · F{' '}
-            {scored.inputs.feasibility} · U {scored.inputs.urgency} · evidence{' '}
-            {scored.evidence.toFixed(1)}
-          </p>
+
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+            {(['high', 'medium', 'low', 'backlog'] as const).map((p) => {
+              const count = priorityDist[p];
+              if (!count) return null;
+              const m = FEATURE_PRIORITY_META[p];
+              return (
+                <span
+                  key={p}
+                  className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] ${m.border} ${m.bg} ${m.color}`}
+                >
+                  {m.short} {count}
+                </span>
+              );
+            })}
+          </div>
         </div>
-      </button>
+      </div>
 
       {expanded && (
         <div className="space-y-3 border-t border-white/8 px-4 pb-4 pt-3 md:px-5">
-          <div className="rounded-xl border border-white/8 bg-white/[0.02] px-3 py-2.5">
-            <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
-              Why this is one project (not a department)
-            </p>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-white/50">{cluster.rationale}</p>
-          </div>
+          <ProjectPlanPanel
+            projectId={cluster.id}
+            projectName={cluster.name}
+            plan={projectPlan}
+            members={members}
+            featurePhases={featurePhases}
+            recommendations={recommendations}
+            onPlanChange={onPlanChange}
+            onFeaturePhaseChange={onFeaturePhaseChange}
+            onRecommendationAction={onRecommendationAction}
+            onFeatureUpdate={onFeatureUpdate}
+            onFeatureDelete={onFeatureDelete}
+            onAddFeature={onAddFeature}
+          />
 
+          {mode !== 'planning' && (
           <div className="rounded-xl border border-bla-lime/20 bg-bla-lime/[0.04] px-3 py-3">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-bla-lime/70">
@@ -519,6 +637,7 @@ function ProjectBlock({
                 </p>
               </div>
           </div>
+          )}
 
           {mode === 'grouping' && (
             <div className="space-y-2 rounded-xl border border-white/10 bg-white/[0.02] p-3">
@@ -603,6 +722,7 @@ function ProjectBlock({
             </div>
           )}
 
+          {mode !== 'planning' && (
           <div className="space-y-2">
             {members.length === 0 ? (
               <p className="rounded-xl border border-dashed border-white/10 px-3 py-4 text-[13px] text-white/35">
@@ -622,6 +742,7 @@ function ProjectBlock({
               ))
             )}
           </div>
+          )}
         </div>
       )}
     </div>
@@ -635,7 +756,7 @@ export default function PrioritizeView({
   onUpdate,
   onReplaceAll,
 }: Props) {
-  const [mode, setMode] = useState<Mode>('triage');
+  const [mode, setMode] = useState<Mode>('planning');
   const [meta, setMeta] = useState<PrioritizeMetaState>({});
   const [metaLoaded, setMetaLoaded] = useState(false);
   const [savingMeta, setSavingMeta] = useState(false);
@@ -688,6 +809,85 @@ export default function PrioritizeView({
     },
     [meta, persistMeta]
   );
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // NEW: Project Plan, Feature Phase, and Recommendation handlers
+  // ══════════════════════════════════════════════════════════════════════════
+
+  const setProjectPlan = useCallback(
+    (projectId: string, plan: ProjectPlan) => {
+      void persistMeta({
+        ...meta,
+        projectPlans: {
+          ...(meta.projectPlans || {}),
+          [projectId]: plan,
+        },
+      });
+    },
+    [meta, persistMeta]
+  );
+
+  const setFeaturePhase = useCallback(
+    (caseId: string, assignment: Partial<FeaturePhaseAssignment>) => {
+      const prev = meta.featurePhases?.[caseId] || {
+        caseId,
+        priority: 'backlog' as const,
+        effort: 'm' as const,
+        approved: false,
+      };
+      void persistMeta({
+        ...meta,
+        featurePhases: {
+          ...(meta.featurePhases || {}),
+          [caseId]: { ...prev, ...assignment, updatedAt: new Date().toISOString() },
+        },
+      });
+    },
+    [meta, persistMeta]
+  );
+
+  // Load recommendations from enhanced clusters when meta is loaded
+  const loadedRecommendations = useMemo(() => {
+    const result: Record<string, BlaBlaRecommendation> = { ...(meta.recommendations || {}) };
+
+    clusters.forEach((cluster) => {
+      const projectRecs = loadRecommendationsForProject(cluster.id, result);
+      projectRecs.forEach((rec) => {
+        if (!result[rec.id]) {
+          result[rec.id] = rec;
+        }
+      });
+    });
+
+    return result;
+  }, [clusters, meta.recommendations]);
+
+  const handleRecommendationAction = useCallback(
+    (recId: string, action: 'approve' | 'reject', reason?: string) => {
+      const rec =
+        meta.recommendations?.[recId] ?? loadedRecommendations[recId];
+      if (!rec) return;
+
+      const updated =
+        action === 'approve'
+          ? approveRecommendation(rec)
+          : rejectRecommendation(rec, reason);
+
+      void persistMeta({
+        ...meta,
+        recommendations: {
+          ...(meta.recommendations || {}),
+          [recId]: updated,
+        },
+      });
+    },
+    [meta, persistMeta, loadedRecommendations]
+  );
+
+  // Initialize feature phases for all use cases
+  const featurePhases = useMemo(() => {
+    return initializeFeaturePhases(useCases, meta.featurePhases || {});
+  }, [useCases, meta.featurePhases]);
 
   useEffect(() => {
     let cancelled = false;
@@ -811,17 +1011,112 @@ export default function PrioritizeView({
     return { yes, maybe, no };
   }, [useCases]);
 
-  const setProjectHorizon = (caseIds: string[], status: PriorityStatus) => {
-    const next = useCases.map((uc) => {
-      if (!caseIds.includes(uc.id)) return uc;
-      if (getInterest(uc) === 'no') return uc;
-      return { ...uc, priorityStatus: status };
-    });
-    void persistBatch(next);
+  const setProjectHorizon = (projectId: string, status: PriorityStatus) => {
+    if (status === 'kill') return;
+    persistClusters(
+      updateProjectFields(clusters, projectId, { suggestedHorizon: status })
+    );
   };
 
   const handleMove = (caseId: string, target: string | 'unclustered') => {
     persistClusters(moveCase(clusters, caseId, target));
+  };
+
+  const handleFeatureUpdate = (caseId: string, updates: { name?: string; description?: string }) => {
+    const uc = useCases.find((u) => u.id === caseId);
+    if (!uc) return;
+    onUpdate({
+      ...uc,
+      name: updates.name ?? uc.name,
+      description: updates.description ?? uc.description,
+    });
+  };
+
+  const handleAddFeature = (
+    clusterId: string,
+    feature: {
+      name: string;
+      description: string;
+      priority: FeaturePriority;
+      effort: 'xs' | 's' | 'm' | 'l' | 'xl';
+    }
+  ) => {
+    const newId = `new-${Date.now().toString(36)}`;
+    const newCase: UseCase = {
+      id: newId,
+      name: feature.name.trim(),
+      description: feature.description.trim(),
+      knockout: { recurring: null, costly: null, dataAvailable: null, standardized: null },
+      scores: {
+        businessImpact: 3,
+        frequency: 3,
+        aiSuitability: 3,
+        implementation: 3,
+        risk: 3,
+        adoption: 3,
+      },
+      label: 'General',
+      interest: 'yes',
+      priorityStatus: 'later',
+      originalInput: {
+        name: feature.name.trim(),
+        description: feature.description.trim(),
+        savedAt: new Date().toISOString(),
+      },
+    };
+    const nextClusters = moveCase(clusters, newId, clusterId);
+    const nextPhases = {
+      ...(meta.featurePhases || {}),
+      [newId]: {
+        caseId: newId,
+        priority: feature.priority,
+        effort: feature.effort,
+        transformedTitle: feature.name.trim(),
+        transformedDescription: feature.description.trim(),
+        approved: true,
+        updatedAt: new Date().toISOString(),
+      },
+    };
+    onReplaceAll([...useCases, newCase]);
+    void persistMeta({
+      ...meta,
+      clusters: nextClusters,
+      clustersUpdatedAt: new Date().toISOString(),
+      clustersSeedVersion: CLUSTERS_SEED_VERSION,
+      featurePhases: nextPhases,
+    });
+    void fetch(`/api/matrix-sessions/${sessionId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newCase),
+    }).catch(() => {
+      // local already updated
+    });
+  };
+
+  const handleDeleteFeature = (caseId: string, clusterId: string) => {
+    const nextClusters = clusters.map((c) =>
+      c.id === clusterId
+        ? { ...c, caseIds: c.caseIds.filter((id) => id !== caseId) }
+        : c
+    );
+    const nextPhases = { ...(meta.featurePhases || {}) };
+    delete nextPhases[caseId];
+    onReplaceAll(useCases.filter((u) => u.id !== caseId));
+    void persistMeta({
+      ...meta,
+      clusters: nextClusters,
+      clustersUpdatedAt: new Date().toISOString(),
+      clustersSeedVersion: CLUSTERS_SEED_VERSION,
+      featurePhases: nextPhases,
+    });
+    void fetch(`/api/matrix-sessions/${sessionId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: caseId }),
+    }).catch(() => {
+      // local already updated
+    });
   };
 
   if (!metaLoaded) {
@@ -851,7 +1146,9 @@ export default function PrioritizeView({
         <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-white/55">
           {mode === 'triage'
             ? 'v2 triage (Yes / Maybe / Kill). Workshop submissions stay frozen in Matrix as v1.'
-            : 'v2 grouping draft: move, merge, rename, kill. Matrix overview keeps the original workshop cases untouched.'}
+            : mode === 'grouping'
+            ? 'v2 grouping draft: move, merge, rename, kill. Matrix overview keeps the original workshop cases untouched.'
+            : 'Plan mode: Define project plans, set project horizon (NOW/NEAR/NEXT/LATER), assign feature priority (HIGH/MEDIUM/LOW/BACKLOG), review blablabuild recommendations.'}
         </p>
 
         <div className="mt-4 grid gap-3 rounded-2xl border border-white/10 bg-white/[0.02] p-4 md:grid-cols-2">
@@ -900,6 +1197,20 @@ export default function PrioritizeView({
               }`}
             >
               Grouping
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('planning')}
+              className={`rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] ${
+                mode === 'planning'
+                  ? 'bg-bla-lime/20 text-bla-lime'
+                  : 'text-white/40 hover:text-white/70'
+              }`}
+            >
+              <span className="flex items-center gap-1.5">
+                <FileText className="h-3 w-3" />
+                Planning
+              </span>
             </button>
           </div>
 
@@ -986,7 +1297,7 @@ export default function PrioritizeView({
           Ranked by project score · open to triage / score
         </p>
         <p className="font-mono text-[10px] text-white/30">
-          {rankedProjects.length} projects · {orphanIds.length} unclustered
+          {rankedProjects.length} projects
         </p>
       </div>
 
@@ -1004,7 +1315,7 @@ export default function PrioritizeView({
               expanded={expandedId === cluster.id}
               onToggle={() => setExpandedId((id) => (id === cluster.id ? null : cluster.id))}
               onUpdate={onUpdate}
-              onSetHorizon={(status) => setProjectHorizon(cluster.caseIds, status)}
+              onSetHorizon={(status) => setProjectHorizon(cluster.id, status)}
               mode={mode}
               allClusters={clusters}
               onMove={handleMove}
@@ -1025,66 +1336,20 @@ export default function PrioritizeView({
               scoreInputs={meta.projectScores?.[cluster.id]}
               onScoreChange={(patch) => setProjectScore(cluster.id, patch)}
               rank={index + 1}
+              projectPlan={loadProjectPlan(cluster.id, meta.projectPlans)}
+              onPlanChange={(plan) => setProjectPlan(cluster.id, plan)}
+              featurePhases={featurePhases}
+              onFeaturePhaseChange={setFeaturePhase}
+              recommendations={Object.values(loadedRecommendations).filter(
+                (r) => r.projectId === cluster.id
+              )}
+              onRecommendationAction={handleRecommendationAction}
+              onFeatureUpdate={handleFeatureUpdate}
+              onFeatureDelete={(caseId) => handleDeleteFeature(caseId, cluster.id)}
+              onAddFeature={(feature) => handleAddFeature(cluster.id, feature)}
             />
           );
         })}
-
-        {(orphanIds.length > 0 || mode === 'grouping') && (
-          <div
-            className={`overflow-hidden rounded-2xl border ${
-              expandedId === 'unclustered'
-                ? 'border-amber-400/25 bg-[#0d0f12]'
-                : 'border-white/10 bg-[#0d0f12]/80'
-            }`}
-          >
-            <button
-              type="button"
-              onClick={() =>
-                setExpandedId((id) => (id === 'unclustered' ? null : 'unclustered'))
-              }
-              className="flex w-full items-start gap-3 px-4 py-4 text-left md:px-5"
-            >
-              <span className="mt-1 text-white/40">
-                {expandedId === 'unclustered' ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronRight className="h-4 w-4" />
-                )}
-              </span>
-              <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-amber-400/80" />
-              <div className="min-w-0 flex-1">
-                <h3 className="font-host text-[17px] font-medium text-white md:text-lg">
-                  Unclustered
-                </h3>
-                <p className="mt-1 text-[13px] text-white/50">
-                  Cases without a project — assign in Grouping.
-                </p>
-                <p className="mt-2 font-mono text-[11px] text-white/35">
-                  {unclustered.length} shown · {orphanIds.length} total
-                </p>
-              </div>
-            </button>
-            {expandedId === 'unclustered' && (
-              <div className="space-y-2 border-t border-white/8 px-4 pb-4 pt-3 md:px-5">
-                {unclustered.length === 0 ? (
-                  <p className="text-[13px] text-white/35">All cases are in a project.</p>
-                ) : (
-                  unclustered.map((uc) => (
-                    <CaseRow
-                      key={uc.id}
-                      uc={uc}
-                      onUpdate={onUpdate}
-                      mode={mode}
-                      clusters={clusters}
-                      currentProjectId="unclustered"
-                      onMove={handleMove}
-                    />
-                  ))
-                )}
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
       <p className="mt-6 text-[12px] text-white/30">

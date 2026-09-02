@@ -1,4 +1,5 @@
 import { CLUSTERS_SEED_VERSION, PROJECT_CLUSTERS, type ProjectCluster } from './projectClusters';
+import { CLUSTER_MIGRATION_MAP, PROJECT_CLUSTERS_V2 } from './projectClustersEnhanced';
 
 /** Deep-ish clone of default proposal (code seed). */
 export function cloneDefaultClusters(): ProjectCluster[] {
@@ -7,6 +8,52 @@ export function cloneDefaultClusters(): ProjectCluster[] {
     caseIds: [...c.caseIds],
     primaryDelivery: c.primaryDelivery ? [...c.primaryDelivery] : undefined,
   }));
+}
+
+/**
+ * Expand legacy unsplit project IDs into V2 split projects (once per seed bump).
+ */
+function expandLegacySplits(draft: ProjectCluster[]): ProjectCluster[] {
+  const out: ProjectCluster[] = [];
+  const seen = new Set<string>();
+
+  for (const c of draft) {
+    const splitIds = CLUSTER_MIGRATION_MAP[c.id];
+    if (splitIds?.length) {
+      for (const id of splitIds) {
+        if (seen.has(id)) continue;
+        seen.add(id);
+        const seed = PROJECT_CLUSTERS_V2.find((s) => s.id === id);
+        if (!seed) continue;
+        out.push({
+          id: seed.id,
+          name: seed.name,
+          summary: seed.summary,
+          rationale: seed.rationale,
+          caseIds: seed.caseIds.filter((cid) => c.caseIds.includes(cid) || seed.caseIds.includes(cid)),
+          suggestedHorizon: seed.suggestedHorizon,
+          primaryDelivery: seed.primaryDelivery ? [...seed.primaryDelivery] : undefined,
+        });
+      }
+      continue;
+    }
+    if (seen.has(c.id)) continue;
+    seen.add(c.id);
+    out.push(c);
+  }
+
+  // Ensure all V2 seed projects exist after migration
+  for (const seed of PROJECT_CLUSTERS) {
+    if (seen.has(seed.id)) continue;
+    seen.add(seed.id);
+    out.push({
+      ...seed,
+      caseIds: [...seed.caseIds],
+      primaryDelivery: seed.primaryDelivery ? [...seed.primaryDelivery] : undefined,
+    });
+  }
+
+  return out;
 }
 
 /**
@@ -21,22 +68,28 @@ export function resolveClusters(
     return cloneDefaultClusters();
   }
   const refreshCopy = !seedVersion || seedVersion < CLUSTERS_SEED_VERSION;
-  return draft.map((c) => {
+  const expanded = refreshCopy ? expandLegacySplits(draft) : draft;
+  const removedIds = new Set(['pm-intake']);
+
+  return expanded
+    .filter((c) => !removedIds.has(c.id))
+    .map((c) => {
     const seed = PROJECT_CLUSTERS.find((s) => s.id === c.id);
     if (!seed || c.id.startsWith('custom-')) {
       return {
         ...c,
         caseIds: [...(c.caseIds || [])],
         primaryDelivery: c.primaryDelivery ? [...c.primaryDelivery] : undefined,
+        suggestedHorizon: c.suggestedHorizon,
       };
     }
     return {
       ...seed,
-      caseIds: [...(c.caseIds || [])],
-      // Keep user rename if they already customized after latest seed
+      caseIds: [...(c.caseIds || seed.caseIds)],
       name: refreshCopy ? seed.name : c.name || seed.name,
       summary: refreshCopy ? seed.summary : c.summary || seed.summary,
       rationale: refreshCopy ? seed.rationale : c.rationale || seed.rationale,
+      suggestedHorizon: c.suggestedHorizon ?? seed.suggestedHorizon,
       primaryDelivery: seed.primaryDelivery ? [...seed.primaryDelivery] : undefined,
     };
   });
@@ -66,35 +119,23 @@ export function moveCase(
   }));
   if (targetProjectId === 'unclustered') return next;
   return next.map((c) =>
-    c.id === targetProjectId && !c.caseIds.includes(caseId)
-      ? { ...c, caseIds: [...c.caseIds, caseId] }
-      : c
+    c.id === targetProjectId ? { ...c, caseIds: [...c.caseIds, caseId] } : c
   );
 }
 
-export function createProject(
-  clusters: ProjectCluster[],
-  name: string,
-  seedCaseIds: string[] = []
-): ProjectCluster[] {
-  const base = name.trim() || 'New project';
-  const id = `custom-${Date.now().toString(36)}`;
-  let next = clusters.map((c) => ({
-    ...c,
-    caseIds: c.caseIds.filter((cid) => !seedCaseIds.includes(cid)),
-  }));
-  next = [
-    ...next,
+export function createProject(clusters: ProjectCluster[], name: string): ProjectCluster[] {
+  const id = `custom-${slugId(name)}-${Date.now().toString(36).slice(-4)}`;
+  return [
+    ...clusters,
     {
       id,
-      name: base,
-      summary: 'Custom project — refine scope.',
-      rationale: 'Created in Prioritize grouping draft.',
-      caseIds: [...seedCaseIds],
+      name,
+      summary: '',
+      rationale: '',
+      caseIds: [],
       suggestedHorizon: 'later',
     },
   ];
-  return next;
 }
 
 export function mergeProjectInto(
@@ -102,10 +143,9 @@ export function mergeProjectInto(
   fromId: string,
   intoId: string
 ): ProjectCluster[] {
-  if (fromId === intoId) return clusters;
   const from = clusters.find((c) => c.id === fromId);
   const into = clusters.find((c) => c.id === intoId);
-  if (!from || !into) return clusters;
+  if (!from || !into || fromId === intoId) return clusters;
   const mergedIds = Array.from(new Set([...into.caseIds, ...from.caseIds]));
   return clusters
     .filter((c) => c.id !== fromId)
@@ -115,7 +155,7 @@ export function mergeProjectInto(
 export function updateProjectFields(
   clusters: ProjectCluster[],
   projectId: string,
-  patch: Partial<Pick<ProjectCluster, 'name' | 'summary' | 'rationale'>>
+  patch: Partial<Pick<ProjectCluster, 'name' | 'summary' | 'rationale' | 'suggestedHorizon'>>
 ): ProjectCluster[] {
   return clusters.map((c) => (c.id === projectId ? { ...c, ...patch } : c));
 }

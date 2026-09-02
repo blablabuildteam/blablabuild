@@ -27,7 +27,7 @@ import { resolveClusters } from './projectDraft';
 import { loadPrioritizeMeta, type PrioritizeMetaState } from './prioritizeMeta';
 import { scoreProject, type ProjectScoreInputs } from './projectScore';
 
-type HorizonFocus = 'now' | 'now-near' | 'all';
+type HorizonFocus = 'all' | Exclude<PriorityStatus, 'kill'>;
 
 interface ProjectRow {
   cluster: ProjectCluster;
@@ -47,7 +47,7 @@ interface Props {
 
 export default function RoadmapView({ useCases, sessionId, onBack, onGoPrioritize }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [focus, setFocus] = useState<HorizonFocus>('now-near');
+  const [focus, setFocus] = useState<HorizonFocus>('all');
   const [clusters, setClusters] = useState<ProjectCluster[]>(() => resolveClusters(null));
   const [projectScores, setProjectScores] = useState<
     Record<string, Partial<ProjectScoreInputs>>
@@ -67,9 +67,8 @@ export default function RoadmapView({ useCases, sessionId, onBack, onGoPrioritiz
   }, [sessionId]);
 
   const visibleHorizons = useMemo(() => {
-    if (focus === 'now') return ['now'] as const;
-    if (focus === 'now-near') return ['now', 'near'] as const;
-    return ROADMAP_STATUSES;
+    if (focus === 'all') return ROADMAP_STATUSES;
+    return [focus] as const;
   }, [focus]);
 
   const projects = useMemo((): ProjectRow[] => {
@@ -88,14 +87,6 @@ export default function RoadmapView({ useCases, sessionId, onBack, onGoPrioritiz
       })
       .filter((p) => p.members.length > 0);
   }, [useCases, clusters, projectScores]);
-
-  const counts = useMemo(() => {
-    const c: Record<string, number> = { now: 0, near: 0, next: 0, later: 0 };
-    projects.forEach((p) => {
-      c[p.horizon] = (c[p.horizon] || 0) + 1;
-    });
-    return c;
-  }, [projects]);
 
   const selected = selectedId ? projects.find((p) => p.cluster.id === selectedId) : null;
 
@@ -155,22 +146,18 @@ export default function RoadmapView({ useCases, sessionId, onBack, onGoPrioritiz
         <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/35">Show</span>
         {(
           [
-            { id: 'now' as const, label: `Now (${counts.now || 0} projects)` },
-            {
-              id: 'now-near' as const,
-              label: `Now + Near (${(counts.now || 0) + (counts.near || 0)})`,
-            },
-            {
-              id: 'all' as const,
-              label: `Full year (${projects.length})`,
-            },
+            { id: 'all' as const, label: 'ALL' },
+            { id: 'now' as const, label: 'NOW' },
+            { id: 'near' as const, label: 'NEAR' },
+            { id: 'next' as const, label: 'NEXT' },
+            { id: 'later' as const, label: 'LATER' },
           ]
         ).map((opt) => (
           <button
             key={opt.id}
             type="button"
             onClick={() => setFocus(opt.id)}
-            className={`rounded-full border px-3 py-1.5 text-[12px] transition-colors ${
+            className={`rounded-full border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
               focus === opt.id
                 ? 'border-bla-lime/35 bg-bla-lime/10 text-bla-lime'
                 : 'border-white/10 text-white/45 hover:text-white/75'

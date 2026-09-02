@@ -164,17 +164,17 @@ export const PRIORITY_STATUS_META: Record<
   near: {
     label: 'Near',
     short: 'Near',
-    color: 'text-cyan-300',
-    bg: 'bg-cyan-400/10',
-    border: 'border-cyan-400/30',
+    color: 'text-amber-300',
+    bg: 'bg-amber-400/10',
+    border: 'border-amber-400/30',
     hint: 'Right after Now',
   },
   next: {
     label: 'Next',
     short: 'Next',
-    color: 'text-sky-300',
-    bg: 'bg-sky-400/10',
-    border: 'border-sky-400/30',
+    color: 'text-violet-300',
+    bg: 'bg-violet-400/10',
+    border: 'border-violet-400/30',
     hint: 'Following wave',
   },
   later: {
