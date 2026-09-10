@@ -1,5 +1,5 @@
 import type { ProjectPlan, BlaBlaRecommendation } from './projectPlanTypes';
-import { getSolutionsText } from './projectPlanTypes';
+import { emptyProjectPlan, getSolutionsText } from './projectPlanTypes';
 import type {
   FeaturePhaseAssignment,
   FeaturePriority,
@@ -116,6 +116,14 @@ export function loadProjectPlan(
   const cluster = PROJECT_CLUSTERS_V2.find((c) => c.id === projectId);
   if (cluster) return cluster.plan;
   return legacySplitPlan(projectId);
+}
+
+/** Brief for a nested project (former feature). Empty until filled in Prioritize. */
+export function loadFeaturePlan(
+  caseId: string,
+  featurePlans?: Record<string, ProjectPlan>
+): ProjectPlan {
+  return featurePlans?.[caseId] || emptyProjectPlan();
 }
 
 /**

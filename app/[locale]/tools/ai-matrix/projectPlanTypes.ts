@@ -5,11 +5,19 @@ import type { FeaturePriority } from './prioritizeMeta';
  * High-level project plan structure for each workstream.
  * Provides strategic context beyond the tactical feature list.
  */
+export interface ProjectFunctionality {
+  id: string;
+  title: string;
+  description: string;
+}
+
 export interface ProjectPlan {
   problemStatement: string;
   opportunity: string;
   /** Single text describing the overall solution approach (legacy: was string[]) */
   solutions: string | string[];
+  /** Concrete features / functionalities this project ships */
+  functionalities?: ProjectFunctionality[];
   expectedImpact: string;
   targetAudience: string[];
   businessValue: string;
@@ -41,8 +49,8 @@ export interface FeatureRequest {
 }
 
 /**
- * blablabuild recommendation for additional features.
- * AI-suggested enhancements that can be approved or rejected.
+ * blablabuild recommendation for additional projects.
+ * Priority/effort indicate whether it will be picked up — no approve/reject.
  */
 export interface BlaBlaRecommendation {
   id: string;
@@ -132,6 +140,7 @@ export function emptyProjectPlan(): ProjectPlan {
     problemStatement: '',
     opportunity: '',
     solutions: '',
+    functionalities: [],
     expectedImpact: '',
     targetAudience: [],
     businessValue: '',
@@ -160,6 +169,7 @@ export function hasProjectPlanContent(plan?: ProjectPlan): boolean {
     plan.problemStatement ||
     plan.opportunity ||
     hasSolutions ||
+    (plan.functionalities?.length ?? 0) > 0 ||
     plan.expectedImpact ||
     plan.targetAudience.length > 0 ||
     plan.businessValue ||
@@ -179,6 +189,7 @@ export function projectPlanCompleteness(plan?: ProjectPlan): number {
     plan.problemStatement,
     plan.opportunity,
     hasSolutions,
+    (plan.functionalities?.length ?? 0) > 0,
     plan.expectedImpact,
     plan.targetAudience.length > 0,
     plan.businessValue,

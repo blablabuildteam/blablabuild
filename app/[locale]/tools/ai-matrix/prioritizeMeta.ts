@@ -101,8 +101,11 @@ export interface PrioritizeMetaState {
   // NEW: Enhanced project planning fields
   // ══════════════════════════════════════════════════════════════════════════
 
-  /** High-level project plans keyed by project ID */
+  /** Theme-level plans keyed by cluster ID (legacy — briefs now live on featurePlans) */
   projectPlans?: Record<string, ProjectPlan>;
+
+  /** Project briefs keyed by case/feature ID (high-priority items) */
+  featurePlans?: Record<string, ProjectPlan>;
 
   /** Feature priority assignments keyed by case ID */
   featurePhases?: Record<string, FeaturePhaseAssignment>;
@@ -160,6 +163,10 @@ export async function loadPrioritizeMeta(sessionId: string): Promise<PrioritizeM
       projectPlans: {
         ...(local?.projectPlans || {}),
         ...(remote?.projectPlans || {}),
+      },
+      featurePlans: {
+        ...(local?.featurePlans || {}),
+        ...(remote?.featurePlans || {}),
       },
       featurePhases: {
         ...(local?.featurePhases || {}),

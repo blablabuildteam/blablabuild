@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   AlertTriangle,
-  ChevronDown,
   ChevronRight,
   Edit2,
   Plus,
@@ -13,14 +13,15 @@ import {
   Users,
   Zap,
   X,
-  Check,
   Lightbulb,
+  List,
   Settings,
 } from 'lucide-react';
-import type { ProjectPlan, BlaBlaRecommendation } from './projectPlanTypes';
+import type { ProjectFunctionality, ProjectPlan, BlaBlaRecommendation } from './projectPlanTypes';
 import {
   emptyProjectPlan,
   getSolutionsText,
+  hasProjectPlanContent,
   RECOMMENDATION_CATEGORIES,
   EFFORT_WEEKS,
 } from './projectPlanTypes';
@@ -35,13 +36,13 @@ import { resolveFeatureCopy } from './projectPlanHelpers';
 interface ProjectPlanPanelProps {
   projectId: string;
   projectName: string;
-  plan?: ProjectPlan;
   members: UseCase[];
   featurePhases: Record<string, FeaturePhaseAssignment>;
+  featurePlans: Record<string, ProjectPlan>;
   recommendations: BlaBlaRecommendation[];
-  onPlanChange: (plan: ProjectPlan) => void;
+  onFeaturePlanChange: (caseId: string, plan: ProjectPlan) => void;
   onFeaturePhaseChange: (caseId: string, assignment: Partial<FeaturePhaseAssignment>) => void;
-  onRecommendationAction: (recId: string, action: 'approve' | 'reject', reason?: string) => void;
+  onRecommendationChange: (recId: string, patch: Partial<BlaBlaRecommendation>) => void;
   onFeatureUpdate?: (caseId: string, updates: { name?: string; description?: string }) => void;
   onFeatureDelete?: (caseId: string) => void;
   onAddFeature?: (feature: {
@@ -50,6 +51,41 @@ interface ProjectPlanPanelProps {
     priority: FeaturePriority;
     effort: 'xs' | 's' | 'm' | 'l' | 'xl';
   }) => void;
+  highlightCaseId?: string | null;
+}
+
+function prioritizeProjectRowId(caseId: string) {
+  return `prioritize-project-${caseId}`;
+}
+
+const COLLAPSE_EASE = [0.22, 1, 0.36, 1] as const;
+
+export function CollapseReveal({
+  open,
+  children,
+  className,
+}: {
+  open: boolean;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const reduce = useReducedMotion();
+
+  return (
+    <AnimatePresence initial={false}>
+      {open && (
+        <motion.div
+          initial={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+          animate={reduce ? { opacity: 1 } : { height: 'auto', opacity: 1 }}
+          exit={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+          transition={{ duration: reduce ? 0.12 : 0.22, ease: COLLAPSE_EASE }}
+          className="overflow-hidden"
+        >
+          <div className={className}>{children}</div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 }
 
 function PlanSection({
@@ -76,13 +112,17 @@ function PlanSection({
         <span className="flex-1 font-mono text-[11px] uppercase tracking-[0.14em] text-white/60">
           {title}
         </span>
-        {open ? (
-          <ChevronDown className="h-4 w-4 text-white/40" />
-        ) : (
+        <motion.span
+          animate={{ rotate: open ? 90 : 0 }}
+          transition={{ duration: 0.18, ease: COLLAPSE_EASE }}
+          className="inline-flex"
+        >
           <ChevronRight className="h-4 w-4 text-white/40" />
-        )}
+        </motion.span>
       </button>
-      {open && <div className="border-t border-white/8 px-4 py-3">{children}</div>}
+      <CollapseReveal open={open} className="border-t border-white/8 px-4 py-3">
+        {children}
+      </CollapseReveal>
     </div>
   );
 }
@@ -256,18 +296,324 @@ function EditableList({
   );
 }
 
+function FunctionalityList({
+  values,
+  onChange,
+}: {
+  values: ProjectFunctionality[];
+  onChange: (values: ProjectFunctionality[]) => void;
+}) {
+  const [adding, setAdding] = useState(false);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [draftTitle, setDraftTitle] = useState('');
+  const [draftDesc, setDraftDesc] = useState('');
+
+  const addItem = () => {
+    if (!title.trim()) return;
+    onChange([
+      ...values,
+      {
+        id: `fn-${Date.now().toString(36)}`,
+        title: title.trim(),
+        description: description.trim(),
+      },
+    ]);
+    setTitle('');
+    setDescription('');
+    setAdding(false);
+  };
+
+  const saveEdit = (id: string) => {
+    if (!draftTitle.trim()) return;
+    onChange(
+      values.map((item) =>
+        item.id === id
+          ? { ...item, title: draftTitle.trim(), description: draftDesc.trim() }
+          : item
+      )
+    );
+    setEditingId(null);
+  };
+
+  return (
+    <div className="space-y-2">
+      {values.length > 0 ? (
+        <ul className="space-y-1.5">
+          {values.map((item) => (
+            <li
+              key={item.id}
+              className="group rounded-lg border border-white/8 bg-white/[0.02] px-3 py-2"
+            >
+              {editingId === item.id ? (
+                <div className="space-y-2">
+                  <input
+                    value={draftTitle}
+                    onChange={(e) => setDraftTitle(e.target.value)}
+                    className="w-full rounded-lg border border-white/15 bg-[#0a0b0e] px-3 py-1.5 text-[13px] text-white/85"
+                    placeholder="Functionality title"
+                    autoFocus
+                  />
+                  <textarea
+                    value={draftDesc}
+                    onChange={(e) => setDraftDesc(e.target.value)}
+                    rows={2}
+                    className="w-full resize-none rounded-lg border border-white/15 bg-[#0a0b0e] px-3 py-1.5 text-[12px] text-white/80"
+                    placeholder="What it does (optional)"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => saveEdit(item.id)}
+                      className="rounded-lg border border-bla-lime/30 bg-bla-lime/10 px-3 py-1 text-[12px] text-bla-lime"
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingId(null)}
+                      className="rounded-lg border border-white/10 px-3 py-1 text-[12px] text-white/50"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-start gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingId(item.id);
+                      setDraftTitle(item.title);
+                      setDraftDesc(item.description);
+                    }}
+                    className="min-w-0 flex-1 text-left"
+                  >
+                    <p className="text-[13px] text-white/80">{item.title}</p>
+                    {item.description ? (
+                      <p className="mt-0.5 text-[12px] leading-relaxed text-white/45">
+                        {item.description}
+                      </p>
+                    ) : null}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onChange(values.filter((v) => v.id !== item.id))}
+                    className="shrink-0 text-white/20 opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100"
+                    title="Remove functionality"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-[13px] italic text-white/30">
+          No features or functionalities yet — add the concrete pieces this project ships.
+        </p>
+      )}
+      {adding ? (
+        <div className="space-y-2 rounded-lg border border-white/10 bg-black/20 p-3">
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && addItem()}
+            className="w-full rounded-lg border border-white/15 bg-[#0a0b0e] px-3 py-1.5 text-[13px] text-white/85"
+            placeholder="e.g. Daily send-quota dashboard"
+            autoFocus
+          />
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={2}
+            className="w-full resize-none rounded-lg border border-white/15 bg-[#0a0b0e] px-3 py-1.5 text-[12px] text-white/80"
+            placeholder="What it does (optional)"
+          />
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={addItem}
+              disabled={!title.trim()}
+              className="rounded-lg border border-bla-lime/30 bg-bla-lime/10 px-3 py-1.5 text-[12px] text-bla-lime disabled:opacity-40"
+            >
+              Add
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAdding(false);
+                setTitle('');
+                setDescription('');
+              }}
+              className="rounded-lg border border-white/10 px-3 py-1.5 text-[12px] text-white/50"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setAdding(true)}
+          className="flex items-center gap-1.5 text-[12px] text-white/40 hover:text-white/60"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          Add functionality
+        </button>
+      )}
+    </div>
+  );
+}
+
+function ProjectBriefFields({
+  plan,
+  onChange,
+}: {
+  plan: ProjectPlan;
+  onChange: (plan: ProjectPlan) => void;
+}) {
+  const update = (patch: Partial<ProjectPlan>) => {
+    onChange({ ...plan, ...patch, updatedAt: new Date().toISOString() });
+  };
+
+  return (
+    <div className="mt-3 space-y-2">
+      <PlanSection title="Problem & Opportunity" icon={Target}>
+        <div className="space-y-4">
+          <div>
+            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
+              Problem Statement
+            </p>
+            <EditableText
+              value={plan.problemStatement}
+              onChange={(v) => update({ problemStatement: v })}
+              placeholder="What pain or gap does this project solve?"
+              multiline
+            />
+          </div>
+          <div>
+            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
+              Opportunity
+            </p>
+            <EditableText
+              value={plan.opportunity}
+              onChange={(v) => update({ opportunity: v })}
+              placeholder="What becomes possible if we ship this?"
+              multiline
+            />
+          </div>
+        </div>
+      </PlanSection>
+
+      <PlanSection title="Solution" icon={Zap}>
+        <EditableText
+          value={getSolutionsText(plan)}
+          onChange={(v) => update({ solutions: v })}
+          placeholder="What we build — the concrete approach for this project"
+          multiline
+        />
+      </PlanSection>
+
+      <PlanSection title="Features & Functionalities" icon={List}>
+        <FunctionalityList
+          values={plan.functionalities || []}
+          onChange={(v) => update({ functionalities: v })}
+        />
+      </PlanSection>
+
+      <PlanSection title="Impact & Business Value" icon={Target}>
+        <div className="space-y-4">
+          <div>
+            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
+              Expected Impact
+            </p>
+            <EditableText
+              value={plan.expectedImpact}
+              onChange={(v) => update({ expectedImpact: v })}
+              placeholder="Measurable outcomes for this project"
+              multiline
+            />
+          </div>
+          <div>
+            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
+              Business Value
+            </p>
+            <EditableText
+              value={plan.businessValue}
+              onChange={(v) => update({ businessValue: v })}
+              placeholder="Revenue, cost, or efficiency impact"
+              multiline
+            />
+          </div>
+        </div>
+      </PlanSection>
+
+      <PlanSection title="Target Audience" icon={Users}>
+        <EditableList
+          values={plan.targetAudience}
+          onChange={(v) => update({ targetAudience: v })}
+          placeholder="Who benefits from this project?"
+        />
+      </PlanSection>
+
+      <PlanSection title="Technical Approach" icon={Settings}>
+        <EditableText
+          value={plan.technicalApproach}
+          onChange={(v) => update({ technicalApproach: v })}
+          placeholder="How we build this project"
+          multiline
+        />
+      </PlanSection>
+
+      <PlanSection title="Risks & Dependencies" icon={AlertTriangle}>
+        <div className="space-y-4">
+          <div>
+            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
+              Risks
+            </p>
+            <EditableList
+              values={plan.risks}
+              onChange={(v) => update({ risks: v })}
+              placeholder="What could go wrong?"
+            />
+          </div>
+          <div>
+            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
+              Dependencies
+            </p>
+            <EditableList
+              values={plan.dependencies}
+              onChange={(v) => update({ dependencies: v })}
+              placeholder="What does this project need to succeed?"
+            />
+          </div>
+        </div>
+      </PlanSection>
+    </div>
+  );
+}
+
 function FeatureCard({
   uc,
   assignment,
+  plan,
   onPhaseChange,
+  onPlanChange,
   onFeatureUpdate,
   onFeatureDelete,
+  highlighted,
 }: {
   uc: UseCase;
   assignment?: FeaturePhaseAssignment;
+  plan: ProjectPlan;
   onPhaseChange: (patch: Partial<FeaturePhaseAssignment>) => void;
+  onPlanChange: (plan: ProjectPlan) => void;
   onFeatureUpdate?: (updates: { name?: string; description?: string }) => void;
   onFeatureDelete?: () => void;
+  highlighted?: boolean;
 }) {
   const copy = resolveFeatureCopy(uc, assignment);
   const priority = normalizeFeaturePriority(assignment?.priority || assignment?.phase);
@@ -275,8 +621,10 @@ function FeatureCard({
   const priorityMeta = FEATURE_PRIORITY_META[priority];
   const effortMeta = EFFORT_WEEKS[effort];
   const [editing, setEditing] = useState(false);
+  const [briefOpen, setBriefOpen] = useState(false);
   const [draftName, setDraftName] = useState(copy.title);
   const [draftDesc, setDraftDesc] = useState(copy.description);
+  const briefFilled = hasProjectPlanContent(plan);
 
   const cyclePriority = () => {
     const priorities: FeaturePriority[] = ['high', 'medium', 'low', 'backlog'];
@@ -299,7 +647,14 @@ function FeatureCard({
   };
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+    <div
+      id={prioritizeProjectRowId(uc.id)}
+      className={`scroll-mt-24 rounded-xl border p-3 ${
+        priority === 'high'
+          ? 'border-bla-lime bg-bla-lime/[0.04]'
+          : 'border-white/10 bg-white/[0.02]'
+      } ${highlighted ? 'ring-2 ring-bla-lime/35' : ''}`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           {editing ? (
@@ -308,7 +663,7 @@ function FeatureCard({
                 value={draftName}
                 onChange={(e) => setDraftName(e.target.value)}
                 className="w-full rounded-lg border border-white/15 bg-[#0a0b0e] px-3 py-2 text-[14px] font-medium text-white"
-                placeholder="Feature name"
+                placeholder="Project name"
                 autoFocus
               />
               <textarea
@@ -316,7 +671,7 @@ function FeatureCard({
                 onChange={(e) => setDraftDesc(e.target.value)}
                 rows={3}
                 className="w-full resize-none rounded-lg border border-white/15 bg-[#0a0b0e] px-3 py-2 text-[12px] text-white/80"
-                placeholder="Feature description — what we build"
+                placeholder="Project description — what we build"
               />
               <div className="flex gap-2">
                 <button
@@ -353,7 +708,12 @@ function FeatureCard({
                   }}
                 >
                   <div className="flex items-center gap-2">
-                    <p className="text-[14px] font-medium text-white">{copy.title}</p>
+                    <p className="text-[14px] font-medium text-white">
+                      <span className="mr-2 font-mono text-[9px] uppercase tracking-[0.12em] text-white/40">
+                        Project
+                      </span>
+                      {copy.title}
+                    </p>
                     <Edit2 className="h-3 w-3 shrink-0 text-white/20 opacity-0 transition-opacity group-hover:opacity-100" />
                   </div>
                   {copy.description && (
@@ -364,12 +724,12 @@ function FeatureCard({
                   <button
                     type="button"
                     onClick={() => {
-                      if (window.confirm(`Delete feature “${copy.title}”?`)) {
+                      if (window.confirm(`Delete project “${copy.title}”?`)) {
                         onFeatureDelete();
                       }
                     }}
                     className="mt-0.5 shrink-0 rounded-md p-1 text-white/25 transition-colors hover:bg-red-400/10 hover:text-red-300"
-                    title="Delete feature"
+                    title="Delete project"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -439,6 +799,35 @@ function FeatureCard({
               );
             })}
           </div>
+
+          {priority === 'high' ? (
+            <ProjectBriefFields plan={plan} onChange={onPlanChange} />
+          ) : (
+            <div className="mt-3">
+              <button
+                type="button"
+                onClick={() => setBriefOpen((v) => !v)}
+                className="flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-left"
+              >
+                <motion.span
+                  animate={{ rotate: briefOpen ? 90 : 0 }}
+                  transition={{ duration: 0.18, ease: COLLAPSE_EASE }}
+                  className="inline-flex"
+                >
+                  <ChevronRight className="h-3.5 w-3.5 text-white/40" />
+                </motion.span>
+                <span className="flex-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/50">
+                  Project brief
+                </span>
+                <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-white/30">
+                  {briefFilled ? 'In progress' : 'Empty'}
+                </span>
+              </button>
+              <CollapseReveal open={briefOpen}>
+                <ProjectBriefFields plan={plan} onChange={onPlanChange} />
+              </CollapseReveal>
+            </div>
+          )}
         </>
       )}
     </div>
@@ -447,128 +836,136 @@ function FeatureCard({
 
 function RecommendationCard({
   rec,
-  onAction,
+  onChange,
 }: {
   rec: BlaBlaRecommendation;
-  onAction: (action: 'approve' | 'reject', reason?: string) => void;
+  onChange: (patch: Partial<BlaBlaRecommendation>) => void;
 }) {
-  const [showReject, setShowReject] = useState(false);
-  const [rejectReason, setRejectReason] = useState('');
   const catMeta = RECOMMENDATION_CATEGORIES[rec.category];
   const priority = normalizeFeaturePriority(rec.suggestedPriority || rec.suggestedPhase);
-  const phaseMeta = FEATURE_PRIORITY_META[priority];
-  const effortMeta = EFFORT_WEEKS[rec.effort];
+  const effort = rec.effort;
+  const priorityMeta = FEATURE_PRIORITY_META[priority];
+  const effortMeta = EFFORT_WEEKS[effort];
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
-  if (rec.status === 'approved') {
-    return (
-      <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.04] p-3">
-        <div className="flex items-center gap-2">
-          <Check className="h-4 w-4 text-amber-400" />
-          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-amber-400/70">
-            Approved · blablabuild
-          </span>
-        </div>
-        <p className="mt-2 text-[14px] font-medium text-white">{rec.title}</p>
-        <p className="mt-1 text-[12px] text-white/50">{rec.description}</p>
-      </div>
-    );
-  }
-
-  if (rec.status === 'rejected') {
-    return (
-      <div className="rounded-xl border border-white/8 bg-white/[0.01] p-3 opacity-50">
-        <div className="flex items-center gap-2">
-          <X className="h-4 w-4 text-white/40" />
-          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
-            Rejected
-          </span>
-        </div>
-        <p className="mt-2 text-[14px] font-medium text-white/60">{rec.title}</p>
-        {rec.rejectedReason && (
-          <p className="mt-1 text-[12px] italic text-white/40">Reason: {rec.rejectedReason}</p>
-        )}
-      </div>
-    );
-  }
+  const cyclePriority = () => {
+    const priorities: FeaturePriority[] = ['high', 'medium', 'low', 'backlog'];
+    const currentIndex = priorities.indexOf(priority);
+    const nextIndex = (currentIndex + 1) % priorities.length;
+    onChange({ suggestedPriority: priorities[nextIndex] });
+  };
 
   return (
-    <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.04] p-3">
+    <div
+      className={`rounded-xl border p-3 ${
+        priority === 'high'
+          ? 'border-bla-lime bg-bla-lime/[0.04]'
+          : 'border-amber-400/20 bg-amber-400/[0.04]'
+      }`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <Lightbulb className="h-4 w-4 text-amber-400" />
-            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-amber-400/70">
-              blablabuild Recommendation
+          <p className="text-[14px] font-medium text-white">
+            <span className="mr-2 font-mono text-[9px] uppercase tracking-[0.12em] text-amber-400/70">
+              Recommended
             </span>
-          </div>
-          <p className="mt-2 text-[14px] font-medium text-white">{rec.title}</p>
-          <p className="mt-1 text-[12px] text-white/60">{rec.description}</p>
-          <p className="mt-2 text-[12px] text-white/40">
-            <span className="text-white/60">Rationale:</span> {rec.rationale}
+            {rec.title}
           </p>
-          <p className="mt-1 text-[12px] text-white/40">
-            <span className="text-white/60">Expected value:</span> {rec.expectedValue}
-          </p>
+          {rec.description && (
+            <p className="mt-1 text-[12px] leading-relaxed text-white/50">{rec.description}</p>
+          )}
         </div>
         <div className="flex flex-col items-end gap-1.5">
-          <span className="font-mono text-[10px] text-white/40">
-            {catMeta.icon} {catMeta.label}
-          </span>
-          <span
-            className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] ${phaseMeta.border} ${phaseMeta.bg} ${phaseMeta.color}`}
+          <button
+            type="button"
+            onClick={cyclePriority}
+            className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] transition-colors hover:opacity-80 ${priorityMeta.border} ${priorityMeta.bg} ${priorityMeta.color}`}
+            title="Click to change priority"
           >
-            {phaseMeta.short}
-          </span>
+            {priorityMeta.short}
+          </button>
           <span className="font-mono text-[10px] text-white/40">{effortMeta.label.split(' ')[0]}</span>
         </div>
       </div>
 
-      {showReject ? (
-        <div className="mt-3 space-y-2 border-t border-white/8 pt-3">
-          <input
-            value={rejectReason}
-            onChange={(e) => setRejectReason(e.target.value)}
-            className="w-full rounded-lg border border-white/15 bg-[#0a0b0e] px-3 py-2 text-[13px] text-white/85"
-            placeholder="Reason for rejecting (optional)"
-          />
-          <div className="flex gap-2">
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-white/30">
+          Priority
+        </span>
+        {(['high', 'medium', 'low', 'backlog'] as const).map((p) => {
+          const m = FEATURE_PRIORITY_META[p];
+          const active = priority === p;
+          return (
             <button
+              key={p}
               type="button"
-              onClick={() => {
-                onAction('reject', rejectReason || undefined);
-                setShowReject(false);
-              }}
-              className="rounded-lg border border-red-400/30 bg-red-400/10 px-3 py-1 text-[12px] text-red-300"
+              onClick={() => onChange({ suggestedPriority: p })}
+              className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] ${
+                active
+                  ? `${m.border} ${m.bg} ${m.color}`
+                  : 'border-white/10 text-white/30 hover:text-white/50'
+              }`}
             >
-              Confirm Reject
+              {m.short}
             </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-white/30">Effort</span>
+        {(['xs', 's', 'm', 'l', 'xl'] as const).map((e) => {
+          const active = effort === e;
+          return (
             <button
+              key={e}
               type="button"
-              onClick={() => setShowReject(false)}
-              className="rounded-lg border border-white/10 px-3 py-1 text-[12px] text-white/50"
+              onClick={() => onChange({ effort: e })}
+              className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase ${
+                active
+                  ? 'border-white/30 bg-white/10 text-white/80'
+                  : 'border-white/10 text-white/30 hover:text-white/50'
+              }`}
             >
-              Cancel
+              {e.toUpperCase()}
             </button>
-          </div>
-        </div>
-      ) : (
-        <div className="mt-3 flex gap-2 border-t border-white/8 pt-3">
+          );
+        })}
+      </div>
+
+      {(rec.rationale || rec.expectedValue) && (
+        <div className="mt-3">
           <button
             type="button"
-            onClick={() => onAction('approve')}
-            className="flex items-center gap-1.5 rounded-lg border border-bla-lime/30 bg-bla-lime/10 px-3 py-1.5 text-[12px] text-bla-lime"
+            onClick={() => setDetailsOpen((v) => !v)}
+            className="flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-left"
           >
-            <Check className="h-3.5 w-3.5" />
-            Approve
+            <motion.span
+              animate={{ rotate: detailsOpen ? 90 : 0 }}
+              transition={{ duration: 0.18, ease: COLLAPSE_EASE }}
+              className="inline-flex"
+            >
+              <ChevronRight className="h-3.5 w-3.5 text-white/40" />
+            </motion.span>
+            <span className="flex-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/50">
+              Why we recommend this
+            </span>
+            <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-white/30">
+              {catMeta.icon} {catMeta.label}
+            </span>
           </button>
-          <button
-            type="button"
-            onClick={() => setShowReject(true)}
-            className="flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-[12px] text-white/50 hover:text-white/70"
-          >
-            <X className="h-3.5 w-3.5" />
-            Reject
-          </button>
+          <CollapseReveal open={detailsOpen} className="space-y-2 px-3 py-2.5">
+            {rec.rationale && (
+              <p className="text-[12px] text-white/50">
+                <span className="text-white/70">Rationale:</span> {rec.rationale}
+              </p>
+            )}
+            {rec.expectedValue && (
+              <p className="text-[12px] text-white/50">
+                <span className="text-white/70">Expected value:</span> {rec.expectedValue}
+              </p>
+            )}
+          </CollapseReveal>
         </div>
       )}
     </div>
@@ -576,35 +973,33 @@ function RecommendationCard({
 }
 
 export default function ProjectPlanPanel({
-  projectId,
-  projectName,
-  plan: initialPlan,
   members,
   featurePhases,
+  featurePlans,
   recommendations,
-  onPlanChange,
+  onFeaturePlanChange,
   onFeaturePhaseChange,
-  onRecommendationAction,
+  onRecommendationChange,
   onFeatureUpdate,
   onFeatureDelete,
   onAddFeature,
+  highlightCaseId,
 }: ProjectPlanPanelProps) {
-  const plan = initialPlan || emptyProjectPlan();
-  
-  const pendingRecs = recommendations.filter((r) => r.status === 'suggested');
-  const approvedRecs = recommendations.filter((r) => r.status === 'approved');
-  
-  const updatePlan = useCallback(
-    (patch: Partial<ProjectPlan>) => {
-      onPlanChange({ ...plan, ...patch, updatedAt: new Date().toISOString() });
-    },
-    [plan, onPlanChange]
+  const visibleRecs = recommendations.filter((r) => r.status !== 'rejected');
+
+  const highMembers = members.filter(
+    (uc) => normalizeFeaturePriority(featurePhases[uc.id]?.priority || featurePhases[uc.id]?.phase) === 'high'
+  );
+  const laterMembers = members.filter(
+    (uc) => normalizeFeaturePriority(featurePhases[uc.id]?.priority || featurePhases[uc.id]?.phase) !== 'high'
   );
 
+  const [laterOpen, setLaterOpen] = useState(false);
+  const [recsOpen, setRecsOpen] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
-  const [newPriority, setNewPriority] = useState<FeaturePriority>('medium');
+  const [newPriority, setNewPriority] = useState<FeaturePriority>('high');
   const [newEffort, setNewEffort] = useState<'xs' | 's' | 'm' | 'l' | 'xl'>('m');
 
   const submitNewFeature = () => {
@@ -617,110 +1012,119 @@ export default function ProjectPlanPanel({
     });
     setNewTitle('');
     setNewDesc('');
-    setNewPriority('medium');
+    setNewPriority('high');
     setNewEffort('m');
     setShowAddModal(false);
   };
 
+  const renderProjectCard = (uc: UseCase) => (
+    <FeatureCard
+      key={uc.id}
+      uc={uc}
+      assignment={featurePhases[uc.id]}
+      plan={featurePlans[uc.id] || emptyProjectPlan()}
+      onPhaseChange={(patch) => onFeaturePhaseChange(uc.id, patch)}
+      onPlanChange={(next) => onFeaturePlanChange(uc.id, next)}
+      onFeatureUpdate={onFeatureUpdate ? (updates) => onFeatureUpdate(uc.id, updates) : undefined}
+      onFeatureDelete={onFeatureDelete ? () => onFeatureDelete(uc.id) : undefined}
+      highlighted={highlightCaseId === uc.id}
+    />
+  );
+
   return (
     <div className="space-y-4">
-      {/* Problem & Opportunity */}
-      <PlanSection title="Problem & Opportunity" icon={Target} defaultOpen>
-        <div className="space-y-4">
-          <div>
-            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
-              Problem Statement
-            </p>
-            <EditableText
-              value={plan.problemStatement}
-              onChange={(v) => updatePlan({ problemStatement: v })}
-              placeholder="What pain or gap exists today?"
-              multiline
-            />
-          </div>
-          <div>
-            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
-              Opportunity
-            </p>
-            <EditableText
-              value={plan.opportunity}
-              onChange={(v) => updatePlan({ opportunity: v })}
-              placeholder="What becomes possible?"
-              multiline
-            />
-          </div>
-        </div>
-      </PlanSection>
-
-      {/* Solutions */}
-      <PlanSection title="Solutions" icon={Zap}>
-        <EditableText
-          value={getSolutionsText(plan)}
-          onChange={(v) => updatePlan({ solutions: v })}
-          placeholder="Describe the overall solution approach..."
-          multiline
-        />
-      </PlanSection>
-
-      {/* Impact & Value */}
-      <PlanSection title="Impact & Business Value" icon={Target}>
-        <div className="space-y-4">
-          <div>
-            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
-              Expected Impact
-            </p>
-            <EditableText
-              value={plan.expectedImpact}
-              onChange={(v) => updatePlan({ expectedImpact: v })}
-              placeholder="Measurable outcomes"
-              multiline
-            />
-          </div>
-          <div>
-            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
-              Business Value
-            </p>
-            <EditableText
-              value={plan.businessValue}
-              onChange={(v) => updatePlan({ businessValue: v })}
-              placeholder="Revenue, cost, or efficiency impact"
-              multiline
-            />
-          </div>
-        </div>
-      </PlanSection>
-
-      {/* Target Audience */}
-      <PlanSection title="Target Audience" icon={Users}>
-        <EditableList
-          values={plan.targetAudience}
-          onChange={(v) => updatePlan({ targetAudience: v })}
-          placeholder="Who benefits from this?"
-        />
-      </PlanSection>
-
-      {/* Features & Functionalities */}
       <div className="rounded-xl border border-white/10 bg-white/[0.02]">
-        <div className="flex items-center gap-3 px-4 py-3">
-          <Zap className="h-4 w-4 text-bla-lime/70" />
-          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-white/60">
-            Features & Functionalities
-          </span>
+        <div className="flex items-center justify-between gap-3 px-4 py-3">
+          <div className="flex items-center gap-3">
+            <Zap className="h-4 w-4 text-bla-lime/70" />
+            <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-white/60">
+              Projects
+            </span>
+          </div>
+          {highMembers.length > 0 && (
+            <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-bla-lime/70">
+              {highMembers.length} high
+            </span>
+          )}
         </div>
-        <div className="space-y-2 border-t border-white/8 px-4 py-3">
-          {members.length === 0 ? (
-            <p className="py-4 text-center text-[13px] text-white/40">No features in this project</p>
+        <div className="space-y-3 border-t border-white/8 px-4 py-3">
+          {members.length === 0 && visibleRecs.length === 0 ? (
+            <p className="py-4 text-center text-[13px] text-white/40">No projects in this theme</p>
           ) : (
-            members.map((uc) => (
-              <FeatureCard
-                key={uc.id}
-                uc={uc}
-                assignment={featurePhases[uc.id]}
-                onPhaseChange={(patch) => onFeaturePhaseChange(uc.id, patch)}
-                onFeatureUpdate={onFeatureUpdate ? (updates) => onFeatureUpdate(uc.id, updates) : undefined}
-                onFeatureDelete={onFeatureDelete ? () => onFeatureDelete(uc.id) : undefined}
-              />
-            ))
+            <>
+              {highMembers.length > 0 && (
+                <div className="space-y-2">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-bla-lime/60">
+                    Now · high priority
+                  </p>
+                  {highMembers.map(renderProjectCard)}
+                </div>
+              )}
+              {(laterMembers.length > 0 || visibleRecs.length > 0) && (
+                <div className="rounded-xl border border-white/10 bg-white/[0.02]">
+                  <button
+                    type="button"
+                    onClick={() => setLaterOpen((v) => !v)}
+                    aria-expanded={laterOpen}
+                    className="flex w-full items-center gap-2 px-3 py-2.5 text-left"
+                  >
+                    <motion.span
+                      animate={{ rotate: laterOpen ? 90 : 0 }}
+                      transition={{ duration: 0.18, ease: COLLAPSE_EASE }}
+                      className="inline-flex"
+                    >
+                      <ChevronRight className="h-3.5 w-3.5 text-white/40" />
+                    </motion.span>
+                    <span className="flex-1 font-mono text-[9px] uppercase tracking-[0.14em] text-white/35">
+                      Later in this theme
+                    </span>
+                    <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-white/30">
+                      {laterMembers.length + visibleRecs.length}
+                    </span>
+                  </button>
+                  <CollapseReveal open={laterOpen} className="space-y-2 border-t border-white/8 px-3 py-3">
+                    {laterMembers.map(renderProjectCard)}
+                    {visibleRecs.length > 0 && (
+                      <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.02]">
+                        <button
+                          type="button"
+                          onClick={() => setRecsOpen((v) => !v)}
+                          aria-expanded={recsOpen}
+                          className="flex w-full items-center gap-2 px-3 py-2.5 text-left"
+                        >
+                          <motion.span
+                            animate={{ rotate: recsOpen ? 90 : 0 }}
+                            transition={{ duration: 0.18, ease: COLLAPSE_EASE }}
+                            className="inline-flex"
+                          >
+                            <ChevronRight className="h-3.5 w-3.5 text-amber-400/50" />
+                          </motion.span>
+                          <Lightbulb className="h-3.5 w-3.5 text-amber-400/70" />
+                          <span className="flex-1 font-mono text-[9px] uppercase tracking-[0.14em] text-amber-400/60">
+                            Blablabuild recommended
+                          </span>
+                          <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-amber-400/40">
+                            {visibleRecs.length}
+                          </span>
+                        </button>
+                        <CollapseReveal
+                          open={recsOpen}
+                          className="space-y-2 border-t border-amber-400/10 px-3 py-3"
+                        >
+                          {visibleRecs.map((rec) => (
+                            <RecommendationCard
+                              key={rec.id}
+                              rec={rec}
+                              onChange={(patch) => onRecommendationChange(rec.id, patch)}
+                            />
+                          ))}
+                        </CollapseReveal>
+                      </div>
+                    )}
+                  </CollapseReveal>
+                </div>
+              )}
+            </>
           )}
           {onAddFeature && (
             <button
@@ -729,7 +1133,7 @@ export default function ProjectPlanPanel({
               className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 bg-white/[0.02] px-4 py-3 text-[13px] text-white/40 transition-colors hover:border-bla-lime/30 hover:bg-bla-lime/5 hover:text-bla-lime"
             >
               <Plus className="h-4 w-4" />
-              Add New Feature
+              Add project
             </button>
           )}
         </div>
@@ -739,7 +1143,7 @@ export default function ProjectPlanPanel({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="w-full max-w-lg rounded-2xl border border-white/15 bg-[#0d0f12] p-5 shadow-2xl">
             <div className="flex items-center justify-between">
-              <h4 className="font-host text-[17px] font-medium text-white">Add feature</h4>
+              <h4 className="font-host text-[17px] font-medium text-white">Add project</h4>
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
@@ -749,12 +1153,12 @@ export default function ProjectPlanPanel({
               </button>
             </div>
             <p className="mt-1 text-[12px] text-white/40">
-              Describe the solution feature — not the original pain point.
+              A concrete project under this theme — not the original workshop pain point.
             </p>
             <div className="mt-4 space-y-3">
               <label className="block">
                 <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
-                  Feature title
+                  Project title
                 </span>
                 <input
                   value={newTitle}
@@ -766,7 +1170,7 @@ export default function ProjectPlanPanel({
               </label>
               <label className="block">
                 <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
-                  Feature description
+                  Project description
                 </span>
                 <textarea
                   value={newDesc}
@@ -840,83 +1244,13 @@ export default function ProjectPlanPanel({
                 disabled={!newTitle.trim()}
                 className="rounded-lg border border-bla-lime/30 bg-bla-lime/10 px-3 py-1.5 text-[13px] text-bla-lime disabled:opacity-40"
               >
-                Add feature
+                Add project
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Technical Approach */}
-      <PlanSection title="Technical Approach" icon={Settings}>
-        <EditableText
-          value={plan.technicalApproach}
-          onChange={(v) => updatePlan({ technicalApproach: v })}
-          placeholder="High-level how"
-          multiline
-        />
-      </PlanSection>
-
-      {/* Risks & Dependencies */}
-      <PlanSection title="Risks & Dependencies" icon={AlertTriangle}>
-        <div className="space-y-4">
-          <div>
-            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
-              Risks
-            </p>
-            <EditableList
-              values={plan.risks}
-              onChange={(v) => updatePlan({ risks: v })}
-              placeholder="What could go wrong?"
-            />
-          </div>
-          <div>
-            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
-              Dependencies
-            </p>
-            <EditableList
-              values={plan.dependencies}
-              onChange={(v) => updatePlan({ dependencies: v })}
-              placeholder="What does this need to succeed?"
-            />
-          </div>
-        </div>
-      </PlanSection>
-
-      {/* blablabuild Recommendations */}
-      {(pendingRecs.length > 0 || approvedRecs.length > 0) && (
-        <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.02]">
-          <div className="flex items-center justify-between px-4 py-3">
-            <div className="flex items-center gap-3">
-              <Lightbulb className="h-4 w-4 text-amber-400/70" />
-              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-amber-400/60">
-                blablabuild Recommendations
-              </span>
-            </div>
-            {pendingRecs.length > 0 && (
-              <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 font-mono text-[9px] text-amber-300">
-                {pendingRecs.length} pending
-              </span>
-            )}
-          </div>
-          <div className="space-y-3 border-t border-amber-400/10 px-4 py-3">
-            {pendingRecs.map((rec) => (
-              <RecommendationCard
-                key={rec.id}
-                rec={rec}
-                onAction={(action, reason) => onRecommendationAction(rec.id, action, reason)}
-              />
-            ))}
-            {approvedRecs.map((rec) => (
-              <RecommendationCard
-                key={rec.id}
-                rec={rec}
-                onAction={(action, reason) => onRecommendationAction(rec.id, action, reason)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
