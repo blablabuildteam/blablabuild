@@ -254,6 +254,8 @@ export const DEPT_COLORS: Record<string, string> = {
   'Finance': '#34d399',
   'HR': '#fbbf24',
   'E-mail Marketing': '#f97316',
+  'Ad Operations': '#22d3ee',
+  'YP': '#818cf8',
   'General': '#6b7280',
 };
 

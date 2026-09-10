@@ -5,6 +5,7 @@ import type {
   FeatureRequest,
   BlaBlaRecommendation,
 } from './projectPlanTypes';
+import type { ClaudeLevel2State } from './claudeLevel2';
 
 export type ProjectDecisionKind = 'pending' | 'keep' | 'split' | 'park' | 'kill';
 
@@ -114,6 +115,9 @@ export interface PrioritizeMetaState {
 
   /** Whether the user has migrated to enhanced clusters */
   usesEnhancedClusters?: boolean;
+
+  /** Level 2 Claude case shells + questionnaire (keyed via drafts) */
+  claudeLevel2?: ClaudeLevel2State;
 }
 
 export function lsMetaKey(sessionId: string) {
@@ -169,6 +173,12 @@ export async function loadPrioritizeMeta(sessionId: string): Promise<PrioritizeM
         remote?.enhancedClustersVersion ?? local?.enhancedClustersVersion,
       usesEnhancedClusters:
         remote?.usesEnhancedClusters ?? local?.usesEnhancedClusters,
+      claudeLevel2: {
+        drafts: {
+          ...(local?.claudeLevel2?.drafts || {}),
+          ...(remote?.claudeLevel2?.drafts || {}),
+        },
+      },
     };
   } catch {
     return local || {};

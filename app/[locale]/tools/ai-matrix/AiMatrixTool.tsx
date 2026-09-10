@@ -1854,7 +1854,7 @@ export default function AiMatrixTool() {
             {view === 'workshop'  && WorkshopView}
             {view === 'results'   && ResultsView}
             {view === 'claude'    && (
-              <ClaudeCasesView useCases={useCases} onBack={() => setView('matrix')} onUpdate={updateUseCase} />
+              <ClaudeCasesView useCases={useCases} sessionId={sessionId} onBack={() => setView('matrix')} onUpdate={updateUseCase} />
             )}
             {view === 'prioritize' && (
               <PrioritizeView
