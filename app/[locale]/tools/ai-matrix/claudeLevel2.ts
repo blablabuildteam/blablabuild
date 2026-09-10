@@ -5,7 +5,7 @@ import { DEPT_COLORS } from './types';
 export type ClaudeLevel2Status = 'shell' | 'drafting' | 'ready';
 
 /** Bump when seed briefs change — refreshes shell/drafting copy, keeps ready cases. */
-export const LEVEL2_SEED_VERSION = 17;
+export const LEVEL2_SEED_VERSION = 18;
 
 export const CROSS_TEAM_OPTIONS = Object.keys(DEPT_COLORS).filter((d) => d !== 'General');
 
@@ -92,7 +92,7 @@ export const LEVEL2_SEEDS: Record<string, Seed> = {
       'Show that it is possible:\n\n1. A pack a media buyer would actually use — strategy, concept, and (if you already do this) assets — without rewriting the strategy.\n2. The winner-campaign artefacts you added, and one pack run after they went in.\n3. Localised versions of the same pack: at least one market, and two demographic segments inside it.\n4. A yes/no: would you brief creative or launch from these? If yes, the case is proven.\n\nOut of scope this sprint: live performance dashboards, visual recognition of winning ads, network MCP launch, becoming a creative studio. Those come after a successful proof.',
     crossTeams: [],
     prioritizeReuse: '',
-    status: 'drafting',
+    status: 'ready',
   },
   yluy9f0i: {
     level1CaseId: 'yluy9f0i',
@@ -137,7 +137,7 @@ export const LEVEL2_SEEDS: Record<string, Seed> = {
       'Show four things — one per step:\n\n1. The folder (SKILL.md, rules, examples) on screen.\n2. Who else in Ad Ops can open the same project and run it.\n3. The pack that went to Media Buying and/or Affiliate, plus one reaction from that team (they used it, or they said why not).\n4. The agree/override score on a real week, and at least three written “why we disagree with Voluum AI” lines.\n\nOut of scope: pushing changes back into Voluum, or giving another department the Voluum MCP.',
     crossTeams: ['Media Buying', 'Affiliate Management'],
     prioritizeReuse: '',
-    status: 'drafting',
+    status: 'ready',
   },
 };
 
