@@ -16,22 +16,22 @@ const nextConfig = {
     return [
       {
         source: '/tools/ai-matrix',
-        destination: 'https://tools-lake-three.vercel.app/tools/ai-matrix',
+        destination: 'https://tools.blablabuild.com/tools/ai-matrix',
         permanent: false,
       },
       {
         source: '/en/tools/ai-matrix',
-        destination: 'https://tools-lake-three.vercel.app/tools/ai-matrix',
+        destination: 'https://tools.blablabuild.com/tools/ai-matrix',
         permanent: false,
       },
       {
         source: '/tools/ai-matrix/:path*',
-        destination: 'https://tools-lake-three.vercel.app/tools/ai-matrix/:path*',
+        destination: 'https://tools.blablabuild.com/tools/ai-matrix/:path*',
         permanent: false,
       },
       {
         source: '/en/tools/ai-matrix/:path*',
-        destination: 'https://tools-lake-three.vercel.app/tools/ai-matrix/:path*',
+        destination: 'https://tools.blablabuild.com/tools/ai-matrix/:path*',
         permanent: false,
       },
     ];
