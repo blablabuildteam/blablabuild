@@ -13,7 +13,7 @@ export const FEATURE_TRANSFORMS: Record<string, FeatureTransform> = {
   '6wwxlvke': {
     title: 'Compliant message variant generator',
     description:
-      'Claude generates varied, brand-safe flirting-message variants with compliance guardrails so Email Marketing can scale outreach without grey-area copy or one-person style lock-in.',
+      'Productized copy desk: generate compliant variants, review, push into Ongage messages and campaigns, then train on send stats and human accept/reject — instead of copying out of Claude.',
   },
   zbvbw4s5: {
     title: 'Template-driven Ongage message builder',

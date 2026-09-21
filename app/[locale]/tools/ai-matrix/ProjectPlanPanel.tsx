@@ -60,6 +60,28 @@ function prioritizeProjectRowId(caseId: string) {
 
 const COLLAPSE_EASE = [0.22, 1, 0.36, 1] as const;
 
+/** Native `border-dashed` is tight; this uses a longer gap so undeveloped high items read as open. */
+export function GappyDashFrame({ rx }: { rx: number }) {
+  return (
+    <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full overflow-visible">
+      <rect
+        x="1"
+        y="1"
+        width="calc(100% - 2px)"
+        height="calc(100% - 2px)"
+        rx={rx}
+        ry={rx}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeDasharray="4 14"
+        strokeLinecap="round"
+        vectorEffect="non-scaling-stroke"
+      />
+    </svg>
+  );
+}
+
 export function CollapseReveal({
   open,
   children,
@@ -649,14 +671,15 @@ function FeatureCard({
   return (
     <div
       id={prioritizeProjectRowId(uc.id)}
-      className={`scroll-mt-24 rounded-xl border p-3 ${
+      className={`relative scroll-mt-24 rounded-xl border p-3 ${
         priority === 'high'
           ? briefFilled
             ? 'border-solid border-bla-lime bg-bla-lime/[0.04]'
-            : 'border-dashed border-bla-lime bg-bla-lime/[0.04]'
+            : 'border-solid border-transparent bg-bla-lime/[0.04] text-bla-lime'
           : 'border-solid border-white/10 bg-white/[0.02]'
       } ${highlighted ? 'ring-2 ring-bla-lime/35' : ''}`}
     >
+      {priority === 'high' && !briefFilled ? <GappyDashFrame rx={12} /> : null}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           {editing ? (

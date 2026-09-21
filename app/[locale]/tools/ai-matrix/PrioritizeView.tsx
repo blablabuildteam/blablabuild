@@ -43,7 +43,7 @@ import {
   scoreProject,
   type ProjectScoreInputs,
 } from './projectScore';
-import ProjectPlanPanel, { CollapseReveal } from './ProjectPlanPanel';
+import ProjectPlanPanel, { CollapseReveal, GappyDashFrame } from './ProjectPlanPanel';
 import { motion } from 'framer-motion';
 import { hasProjectPlanContent, type ProjectPlan, type BlaBlaRecommendation } from './projectPlanTypes';
 import {
@@ -474,12 +474,13 @@ function ProjectBlock({
           e.stopPropagation();
           onNavigateToProject(m.id);
         }}
-        className={`rounded-md border px-2 py-1 text-[12px] font-medium transition-all duration-150 ${
+        className={`relative rounded-md border px-2 py-1 text-[12px] font-medium transition-all duration-150 ${
           high
-            ? `${developed ? 'border-solid' : 'border-dashed'} border-bla-lime/70 bg-bla-lime/10 text-bla-lime/90 hover:border-bla-lime hover:bg-bla-lime/20 hover:text-bla-lime hover:shadow-[0_0_0_1px_rgba(206,255,0,0.25)]`
+            ? `${developed ? 'border-solid border-bla-lime/70' : 'border-solid border-transparent'} bg-bla-lime/10 text-bla-lime/90 hover:bg-bla-lime/20 hover:text-bla-lime ${developed ? 'hover:border-bla-lime hover:shadow-[0_0_0_1px_rgba(206,255,0,0.25)]' : ''}`
             : 'border-solid border-white/12 bg-white/[0.04] text-white/55 hover:border-white/35 hover:bg-white/[0.09] hover:text-white/90 hover:shadow-[0_0_0_1px_rgba(255,255,255,0.08)]'
         }`}
       >
+        {high && !developed ? <GappyDashFrame rx={6} /> : null}
         {copy.title}
       </button>
     );
