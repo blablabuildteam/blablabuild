@@ -1,4 +1,24 @@
-import type { ProjectPlan } from './projectPlanTypes';
+import type { FeatureRequest, ProjectPlan } from './projectPlanTypes';
+
+/**
+ * Relative effort for developed High projects (calendar weeks, see EFFORT_WEEKS).
+ * Ranked against each other — not against the rest of the backlog.
+ * Bump FEATURE_EFFORT_SEED_VERSION when these change so saved sessions refresh.
+ */
+export const FEATURE_EFFORT_SEED_VERSION = 1;
+
+export const FEATURE_EFFORT_SEEDS: Record<string, FeatureRequest['effort']> = {
+  /** Already proven Claude loop; remaining work is a connect + maybe sharing the laptop knowledge center. */
+  '5wq983os': 'xs',
+  /** Package a working chat into a skill + culture pack + one dry-run interview kit. No ATS. */
+  yluy9f0i: 's',
+  /** Same Looker-desk pattern as MB reporting, second surface (CPM grain). Stays M if sequenced after that stack. */
+  '52k9ejik': 'm',
+  /** First custom Looker desk: one warehouse, dashboard, daily + weekly packs, anomaly agent, Slack, label loop. */
+  ytfkqqwj: 'l',
+  /** Kill Sheets: ledger + permissions + mapping + first API batch + manual remainder + packs. 24 connectors is a programme. */
+  ldfa53nk: 'xl',
+};
 
 /** Default briefs for high Prioritize projects — session edits still win when filled. */
 export const FEATURE_PLAN_SEEDS: Record<string, ProjectPlan> = {

@@ -49,10 +49,12 @@ import { hasProjectPlanContent, type ProjectPlan, type BlaBlaRecommendation } fr
 import {
   loadRecommendationsForProject,
   initializeFeaturePhases,
+  applyFeatureEffortSeeds,
   resolveFeatureCopy,
   loadFeaturePlan,
 } from './projectPlanHelpers';
-import { FEATURE_PLAN_SEEDS } from './featurePlanSeeds';
+import { FEATURE_EFFORT_SEED_VERSION, FEATURE_PLAN_SEEDS } from './featurePlanSeeds';
+import { DROPPED_RECOMMENDATION_TITLES } from './projectClustersEnhanced';
 import {
   FEATURE_PRIORITY_META,
   normalizeFeaturePriority,
@@ -642,25 +644,21 @@ function ProjectBlock({
                   {highMembers.map((m) => projectChip(m, true))}
                 </div>
               )}
-              {otherMembers.length > 0 && (
+              {(otherMembers.length > 0 || visibleRecs.length > 0) && (
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
                   <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/30">
                     {highMembers.length > 0 ? 'Later' : 'Projects'}
                   </span>
                   {otherMembers.map((m) => projectChip(m, false))}
-                </div>
-              )}
-              {visibleRecs.length > 0 && (
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-amber-400/50">
-                    Blablabuild recommended
-                  </span>
                   {visibleRecs.map((r) => (
                     <span
                       key={r.id}
-                      className="rounded-md border border-amber-400/25 bg-amber-400/10 px-2 py-1 text-[12px] text-amber-200/80"
+                      className="inline-flex items-center gap-1.5 rounded-md border border-solid border-white/12 bg-white/[0.04] px-2 py-1 text-[12px] font-medium text-white/55"
                     >
                       {r.title}
+                      <span className="font-mono text-[8px] font-normal uppercase tracking-[0.1em] text-white/30">
+                        by us
+                      </span>
                     </span>
                   ))}
                 </div>
@@ -975,7 +973,10 @@ export default function PrioritizeView({
 
   // Load recommendations from enhanced clusters when meta is loaded
   const loadedRecommendations = useMemo(() => {
-    const result: Record<string, BlaBlaRecommendation> = { ...(meta.recommendations || {}) };
+    const result: Record<string, BlaBlaRecommendation> = {};
+    Object.entries(meta.recommendations || {}).forEach(([id, rec]) => {
+      if (!DROPPED_RECOMMENDATION_TITLES.has(rec.title)) result[id] = rec;
+    });
 
     clusters.forEach((cluster) => {
       const projectRecs = loadRecommendationsForProject(cluster.id, result);
@@ -1027,6 +1028,15 @@ export default function PrioritizeView({
       if (seededAny) {
         next = { ...next, featurePlans: seededPlans };
       }
+      const effortSeedStale =
+        (loaded.featureEffortSeedVersion ?? 0) < FEATURE_EFFORT_SEED_VERSION;
+      if (effortSeedStale) {
+        next = {
+          ...next,
+          featurePhases: applyFeatureEffortSeeds(next.featurePhases || {}),
+          featureEffortSeedVersion: FEATURE_EFFORT_SEED_VERSION,
+        };
+      }
       // Refresh seed titles into draft once when version bumps
       if (
         loaded.clusters?.length &&
@@ -1035,6 +1045,10 @@ export default function PrioritizeView({
         const refreshed = resolveClusters(loaded.clusters, loaded.clustersSeedVersion);
         const recs = { ...(loaded.recommendations || {}) };
         Object.keys(recs).forEach((id) => {
+          if (DROPPED_RECOMMENDATION_TITLES.has(recs[id].title)) {
+            delete recs[id];
+            return;
+          }
           if (
             recs[id].projectId === 'partner-activation' ||
             recs[id].projectId === 'crm-platform'
@@ -1063,6 +1077,7 @@ export default function PrioritizeView({
       }
       if (
         seededAny ||
+        effortSeedStale ||
         (loaded.clusters?.length &&
           (!loaded.clustersSeedVersion || loaded.clustersSeedVersion < CLUSTERS_SEED_VERSION))
       ) {

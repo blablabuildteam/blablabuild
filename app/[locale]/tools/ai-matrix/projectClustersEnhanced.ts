@@ -197,15 +197,6 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
     },
     initialRecommendations: [
       {
-        title: 'Campaign Launch Checklist Automation',
-        description: 'Interactive checklist that auto-validates campaign setup (targeting, budgets, tracking) before launch.',
-        rationale: 'Launch errors are costly. Systematic validation catches mistakes before they impact performance.',
-        expectedValue: 'Eliminate launch errors. Reduce QA time by 70%.',
-        suggestedPhase: 'now',
-        effort: 's',
-        category: 'quick-win',
-      },
-      {
         title: 'Creative Performance Predictor',
         description: 'AI analysis of creative elements (images, copy, CTAs) with predicted performance scores.',
         rationale: 'Currently creative decisions are intuition-based. Data-driven creative selection improves results.',
@@ -251,15 +242,6 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
       ],
     },
     initialRecommendations: [
-      {
-        title: 'Anomaly Detection for Campaign Performance',
-        description: 'ML-based detection of unusual performance patterns (sudden drops, conversion anomalies).',
-        rationale: 'Simple threshold alerts miss complex issues. Anomaly detection catches problems threshold-based monitoring misses.',
-        expectedValue: 'Catch performance issues 2 hours earlier on average.',
-        suggestedPhase: 'near',
-        effort: 'm',
-        category: 'automation',
-      },
       {
         title: 'Budget Pacing Alerts',
         description: 'Proactive alerts when campaigns are under/over-pacing against daily/weekly budgets.',
@@ -310,17 +292,7 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
         'Documentation platform for playbooks',
       ],
     },
-    initialRecommendations: [
-      {
-        title: 'Flow Health Score',
-        description: 'Automated scoring of flow quality based on conversion rates, load times, and error rates.',
-        rationale: 'Currently flow quality is assessed manually. Automated scoring surfaces issues and prioritizes fixes.',
-        expectedValue: 'Identify problematic flows 50% faster. Prioritize optimization efforts.',
-        suggestedPhase: 'near',
-        effort: 's',
-        category: 'analytics',
-      },
-    ],
+    initialRecommendations: [],
   },
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -360,26 +332,7 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
         'Everflow write access for payout automation',
       ],
     },
-    initialRecommendations: [
-      {
-        title: 'Margin Opportunity Finder',
-        description: 'Automated analysis to identify underpriced offers and margin improvement opportunities.',
-        rationale: 'Manual margin analysis misses opportunities. Systematic scanning surfaces quick wins.',
-        expectedValue: '5-10% margin improvement on identified opportunities.',
-        suggestedPhase: 'near',
-        effort: 'm',
-        category: 'analytics',
-      },
-      {
-        title: 'Payout Anomaly Detection',
-        description: 'Automated flagging of unusual payout patterns that may indicate errors or fraud.',
-        rationale: 'Manual review misses subtle patterns. Automated detection catches issues faster.',
-        expectedValue: 'Reduce payout errors by 50%. Faster fraud detection.',
-        suggestedPhase: 'now',
-        effort: 's',
-        category: 'automation',
-      },
-    ],
+    initialRecommendations: [],
   },
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -477,15 +430,6 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
         effort: 's',
         category: 'analytics',
       },
-      {
-        title: 'Onboarding Progress Tracker',
-        description: 'Automated tracking of new hire onboarding completion with manager notifications.',
-        rationale: 'Currently onboarding progress is tracked manually. Automated tracking ensures nothing falls through.',
-        expectedValue: '100% onboarding completion tracking. Faster time-to-productivity.',
-        suggestedPhase: 'now',
-        effort: 's',
-        category: 'quick-win',
-      },
     ],
   },
 
@@ -525,17 +469,7 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
         'Everflow access for offer management',
       ],
     },
-    initialRecommendations: [
-      {
-        title: 'API Integration Health Monitor',
-        description: 'Real-time monitoring of partner API integration health with proactive outreach on issues.',
-        rationale: 'Integration issues cause partner churn. Proactive monitoring improves retention.',
-        expectedValue: 'Reduce integration-related churn by 25%.',
-        suggestedPhase: 'next',
-        effort: 'm',
-        category: 'automation',
-      },
-    ],
+    initialRecommendations: [],
   },
 ];
 
@@ -547,6 +481,22 @@ export const CLUSTER_MIGRATION_MAP: Record<string, string[]> = {
   'partner-activation': ['partner-intelligence'],
   'media-buy-performance': ['mb-campaign-launch', 'mb-performance-ops'],
 };
+
+/** Seed recs that duplicate developed projects — prune from saved sessions on seed bump. */
+export const DROPPED_RECOMMENDATION_TITLES = new Set([
+  'Deliverability Health Score Dashboard',
+  'Partner Communication History Timeline',
+  'Partner Response Sentiment Tracking',
+  'Partner Health Score Dashboard',
+  'CRM data audit',
+  'Campaign Launch Checklist Automation',
+  'Anomaly Detection for Campaign Performance',
+  'Flow Health Score',
+  'Payout Anomaly Detection',
+  'Margin Opportunity Finder',
+  'API Integration Health Monitor',
+  'Onboarding Progress Tracker',
+]);
 
 /**
  * Get project by ID.

@@ -123,6 +123,9 @@ export interface PrioritizeMetaState {
 
   /** Level 2 Claude case shells + questionnaire (keyed via drafts) */
   claudeLevel2?: ClaudeLevel2State;
+
+  /** Last applied FEATURE_EFFORT_SEED_VERSION — refresh High project effort chips on bump */
+  featureEffortSeedVersion?: number;
 }
 
 export function lsMetaKey(sessionId: string) {
@@ -188,6 +191,8 @@ export async function loadPrioritizeMeta(sessionId: string): Promise<PrioritizeM
           ...(remote?.claudeLevel2?.drafts || {}),
         },
       },
+      featureEffortSeedVersion:
+        remote?.featureEffortSeedVersion ?? local?.featureEffortSeedVersion,
     };
   } catch {
     return local || {};

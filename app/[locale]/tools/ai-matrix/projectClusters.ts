@@ -20,7 +20,7 @@ export interface ProjectCluster {
 }
 
 /** Bump when seed titles/summaries/structure change — refreshes draft copy. */
-export const CLUSTERS_SEED_VERSION = 17;
+export const CLUSTERS_SEED_VERSION = 18;
 
 /** Active seed — mirrors enhanced V2 (names and theme folds). */
 export const PROJECT_CLUSTERS: ProjectCluster[] = PROJECT_CLUSTERS_V2.map((c) => ({
@@ -49,22 +49,22 @@ export function unclusteredCaseIds(allIds: string[]): string[] {
   return allIds.filter((id) => !CASE_TO_PROJECT.has(id));
 }
 
-/** Stable accent per project for cards / timeline bars */
+/** Stable accent per project for cards / timeline bars — one hue family each. */
 export const PROJECT_ACCENT: Record<string, string> = {
   'email-ongage': '#f97316',
-  'affiliate-partner-ops': '#f472b6',
-  'partner-activation': '#f472b6',
-  'partner-intelligence': '#fb7185',
-  'media-buy-performance': '#60a5fa',
-  'mb-campaign-launch': '#60a5fa',
-  'mb-performance-ops': '#38bdf8',
-  'adops-tracker': '#a3e635',
-  'bi-pricing-payouts': '#a78bfa',
-  'finance-intel': '#34d399',
-  'hr-enablement': '#fbbf24',
-  'api-growth': '#22d3ee',
+  'affiliate-partner-ops': '#d946ef',
+  'partner-activation': '#d946ef',
+  'partner-intelligence': '#d946ef',
+  'media-buy-performance': '#3b82f6',
+  'mb-campaign-launch': '#3b82f6',
+  'mb-performance-ops': '#ef4444',
+  'adops-tracker': '#84cc16',
+  'bi-pricing-payouts': '#8b5cf6',
+  'finance-intel': '#eab308',
+  'hr-enablement': '#fb7185',
+  'api-growth': '#2dd4bf',
   'crm-platform': '#94a3b8',
-  'meeting-productivity': '#fb7185',
+  'meeting-productivity': '#a8a29e',
 };
 
 export function projectAccent(projectId: string): string {

@@ -1,6 +1,6 @@
 import type { ProjectPlan, BlaBlaRecommendation } from './projectPlanTypes';
 import { emptyProjectPlan, getSolutionsText, hasProjectPlanContent } from './projectPlanTypes';
-import { FEATURE_PLAN_SEEDS } from './featurePlanSeeds';
+import { FEATURE_EFFORT_SEEDS, FEATURE_PLAN_SEEDS } from './featurePlanSeeds';
 import type {
   FeaturePhaseAssignment,
   FeaturePriority,
@@ -9,6 +9,7 @@ import type {
 import { normalizeFeaturePriority } from './prioritizeMeta';
 import {
   CLUSTER_MIGRATION_MAP,
+  DROPPED_RECOMMENDATION_TITLES,
   PROJECT_CLUSTERS_V2,
   type ProjectClusterV2,
 } from './projectClustersEnhanced';
@@ -62,7 +63,9 @@ export function loadRecommendationsForProject(
   const cluster = PROJECT_CLUSTERS_V2.find((c) => c.id === projectId);
   if (!cluster) return Object.values(existingRecs).filter((r) => r.projectId === projectId);
 
-  const existing = Object.values(existingRecs).filter((r) => r.projectId === projectId);
+  const existing = Object.values(existingRecs).filter(
+    (r) => r.projectId === projectId && !DROPPED_RECOMMENDATION_TITLES.has(r.title)
+  );
   const existingTitles = new Set(existing.map((r) => r.title));
 
   const newRecs: BlaBlaRecommendation[] = cluster.initialRecommendations
@@ -196,7 +199,7 @@ export function initializeFeaturePhases(
                 ? 'low'
                 : 'backlog'
         ),
-        effort: 'm',
+        effort: FEATURE_EFFORT_SEEDS[uc.id] || 'm',
         approved: false,
         transformedTitle: transform?.title,
         transformedDescription: transform?.description,
@@ -204,6 +207,24 @@ export function initializeFeaturePhases(
     }
   });
 
+  return result;
+}
+
+/** Overlay calibrated High-project effort from FEATURE_EFFORT_SEEDS (session refresh on version bump). */
+export function applyFeatureEffortSeeds(
+  existingPhases: Record<string, FeaturePhaseAssignment>
+): Record<string, FeaturePhaseAssignment> {
+  const result = { ...existingPhases };
+  for (const [caseId, effort] of Object.entries(FEATURE_EFFORT_SEEDS)) {
+    const prev = result[caseId];
+    result[caseId] = {
+      caseId,
+      priority: 'high',
+      approved: false,
+      ...prev,
+      effort,
+    };
+  }
   return result;
 }
 

@@ -13,7 +13,6 @@ import {
   Users,
   Zap,
   X,
-  Lightbulb,
   List,
   Settings,
 } from 'lucide-react';
@@ -935,19 +934,16 @@ function RecommendationCard({
   const [detailsOpen, setDetailsOpen] = useState(false);
 
   return (
-    <div
-      className={`rounded-xl border p-3 ${
-        priority === 'high'
-          ? 'border-bla-lime bg-bla-lime/[0.04]'
-          : 'border-amber-400/20 bg-amber-400/[0.04]'
-      }`}
-    >
+    <div className="rounded-xl border border-solid border-white/10 bg-white/[0.02] p-3">
       <div className="min-w-0">
         <p className="text-[14px] font-medium text-white">
-          <span className="mr-2 font-mono text-[9px] uppercase tracking-[0.12em] text-amber-400/70">
-            Recommended
+          <span className="mr-2 font-mono text-[9px] uppercase tracking-[0.12em] text-white/40">
+            Project
           </span>
           {rec.title}
+        </p>
+        <p className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-white/30">
+          Recommended by us
         </p>
         {rec.description && (
           <p className="mt-1 text-[12px] leading-relaxed text-white/50">{rec.description}</p>
@@ -1006,7 +1002,7 @@ function RecommendationCard({
               <ChevronRight className="h-3.5 w-3.5 text-white/40" />
             </motion.span>
             <span className="flex-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/50">
-              Why we recommend this
+              Details
             </span>
             <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-white/30">
               {catMeta.icon} {catMeta.label}
@@ -1056,13 +1052,11 @@ export default function ProjectPlanPanel({
   );
 
   const [laterOpen, setLaterOpen] = useState(false);
-  const [recsOpen, setRecsOpen] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
     if (!scrollToCaseId) return;
     setLaterOpen(false);
-    setRecsOpen(false);
   }, [scrollToCaseId]);
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
@@ -1152,43 +1146,13 @@ export default function ProjectPlanPanel({
                   </button>
                   <CollapseReveal open={laterOpen} className="space-y-2 border-t border-white/8 px-3 py-3">
                     {laterMembers.map(renderProjectCard)}
-                    {visibleRecs.length > 0 && (
-                      <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.02]">
-                        <button
-                          type="button"
-                          onClick={() => setRecsOpen((v) => !v)}
-                          aria-expanded={recsOpen}
-                          className="flex w-full items-center gap-2 px-3 py-2.5 text-left"
-                        >
-                          <motion.span
-                            animate={{ rotate: recsOpen ? 90 : 0 }}
-                            transition={{ duration: 0.18, ease: COLLAPSE_EASE }}
-                            className="inline-flex"
-                          >
-                            <ChevronRight className="h-3.5 w-3.5 text-amber-400/50" />
-                          </motion.span>
-                          <Lightbulb className="h-3.5 w-3.5 text-amber-400/70" />
-                          <span className="flex-1 font-mono text-[9px] uppercase tracking-[0.14em] text-amber-400/60">
-                            Blablabuild recommended
-                          </span>
-                          <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-amber-400/40">
-                            {visibleRecs.length}
-                          </span>
-                        </button>
-                        <CollapseReveal
-                          open={recsOpen}
-                          className="space-y-2 border-t border-amber-400/10 px-3 py-3"
-                        >
-                          {visibleRecs.map((rec) => (
-                            <RecommendationCard
-                              key={rec.id}
-                              rec={rec}
-                              onChange={(patch) => onRecommendationChange(rec.id, patch)}
-                            />
-                          ))}
-                        </CollapseReveal>
-                      </div>
-                    )}
+                    {visibleRecs.map((rec) => (
+                      <RecommendationCard
+                        key={rec.id}
+                        rec={rec}
+                        onChange={(patch) => onRecommendationChange(rec.id, patch)}
+                      />
+                    ))}
                   </CollapseReveal>
                 </div>
               )}
