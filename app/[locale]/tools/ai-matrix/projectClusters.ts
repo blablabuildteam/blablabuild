@@ -20,9 +20,9 @@ export interface ProjectCluster {
 }
 
 /** Bump when seed titles/summaries/structure change — refreshes draft copy. */
-export const CLUSTERS_SEED_VERSION = 6;
+export const CLUSTERS_SEED_VERSION = 8;
 
-/** Active seed — mirrors enhanced V2 (names, splits, meeting assistant). */
+/** Active seed — mirrors enhanced V2 (names and theme folds). */
 export const PROJECT_CLUSTERS: ProjectCluster[] = PROJECT_CLUSTERS_V2.map((c) => ({
   id: c.id,
   name: c.name,

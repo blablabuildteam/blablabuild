@@ -18,6 +18,13 @@ export function isAbsorbedCase(caseId: string): boolean {
   return Boolean(ABSORBED_CASE_IDS[caseId]);
 }
 
+/** Workshop cases whose Prioritize theme was removed — hide chips, do not uncluster. */
+export const DROPPED_CASE_IDS = new Set(['jtzx6rw7']);
+
+export function isHiddenPrioritizeCase(caseId: string): boolean {
+  return isAbsorbedCase(caseId) || DROPPED_CASE_IDS.has(caseId);
+}
+
 export const FEATURE_TRANSFORMS: Record<string, FeatureTransform> = {
   // ── Email Delivery & Content Engine ──────────────────────────────────────
   '6wwxlvke': {
@@ -46,7 +53,7 @@ export const FEATURE_TRANSFORMS: Record<string, FeatureTransform> = {
       'Change Ongage server distributions across hundreds of trigger events in one action instead of editing each event by hand.',
   },
 
-  // ── Partner Activation Hub ───────────────────────────────────────────────
+  // ── Partner Intelligence Hub ─────────────────────────────────────────────
   s01zg1dt: {
     title: 'Personalized partner activation pack',
     description:
@@ -262,9 +269,9 @@ export const FEATURE_TRANSFORMS: Record<string, FeatureTransform> = {
 
   // ── HR Assistant Hub ─────────────────────────────────────────────────────
   yluy9f0i: {
-    title: 'CV & cover letter screening agent',
+    title: 'CV, cover letter & interview prep',
     description:
-      'Score and compare applicants from CVs/cover letters against role criteria (with LinkedIn/TeamTailor context) to shortlist faster.',
+      'One HR skill: hard-skill fit vs the public role, plus Adsomnia culture and team context so interview kits zoom in on soft skills — the edge a candidate cannot prep from the job ad. Packaged in Claude — not a custom ATS.',
   },
   '0x7wpyj2': {
     title: 'Weekly HR goals tracker',

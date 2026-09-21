@@ -1,9 +1,39 @@
 import { CLUSTERS_SEED_VERSION, PROJECT_CLUSTERS, type ProjectCluster } from './projectClusters';
 import { CLUSTER_MIGRATION_MAP, PROJECT_CLUSTERS_V2 } from './projectClustersEnhanced';
-import { isAbsorbedCase } from './featureTransforms';
+import { isHiddenPrioritizeCase } from './featureTransforms';
 
 function withoutAbsorbed(ids: string[]): string[] {
-  return ids.filter((id) => !isAbsorbedCase(id));
+  return ids.filter((id) => !isHiddenPrioritizeCase(id));
+}
+
+/** Themes folded into another theme id (activation hub → intelligence hub). */
+export const ABSORBED_THEME_IDS: Record<string, string> = {
+  'partner-activation': 'partner-intelligence',
+};
+
+function foldAbsorbedThemes(clusters: ProjectCluster[]): ProjectCluster[] {
+  const extras: Record<string, string[]> = {};
+  for (const c of clusters) {
+    const into = ABSORBED_THEME_IDS[c.id];
+    if (into) extras[into] = [...(extras[into] || []), ...(c.caseIds || [])];
+  }
+  let next = clusters.filter((c) => !ABSORBED_THEME_IDS[c.id]);
+  next = next.map((c) => {
+    const add = extras[c.id];
+    if (!add?.length) return c;
+    return { ...c, caseIds: withoutAbsorbed(Array.from(new Set([...(c.caseIds || []), ...add]))) };
+  });
+  for (const into of Object.values(ABSORBED_THEME_IDS)) {
+    if (next.some((c) => c.id === into)) continue;
+    const seed = PROJECT_CLUSTERS.find((s) => s.id === into);
+    if (!seed) continue;
+    next.push({
+      ...seed,
+      caseIds: withoutAbsorbed(Array.from(new Set([...(seed.caseIds || []), ...(extras[into] || [])]))),
+      primaryDelivery: seed.primaryDelivery ? [...seed.primaryDelivery] : undefined,
+    });
+  }
+  return next;
 }
 
 /** Deep-ish clone of default proposal (code seed). */
@@ -76,9 +106,10 @@ export function resolveClusters(
   }
   const refreshCopy = !seedVersion || seedVersion < CLUSTERS_SEED_VERSION;
   const expanded = refreshCopy ? expandLegacySplits(draft) : draft;
-  const removedIds = new Set(['pm-intake']);
+  const folded = foldAbsorbedThemes(expanded);
+  const removedIds = new Set(['pm-intake', 'meeting-productivity', ...Object.keys(ABSORBED_THEME_IDS)]);
 
-  return expanded
+  return folded
     .filter((c) => !removedIds.has(c.id))
     .map((c) => {
     const seed = PROJECT_CLUSTERS.find((s) => s.id === c.id);
@@ -104,7 +135,7 @@ export function resolveClusters(
 
 export function unclusteredIds(clusters: ProjectCluster[], allCaseIds: string[]): string[] {
   const assigned = new Set(clusters.flatMap((c) => c.caseIds));
-  return allCaseIds.filter((id) => !assigned.has(id) && !isAbsorbedCase(id));
+  return allCaseIds.filter((id) => !assigned.has(id) && !isHiddenPrioritizeCase(id));
 }
 
 export function projectIdForCase(clusters: ProjectCluster[], caseId: string): string | null {

@@ -82,6 +82,8 @@ export interface FeaturePhaseAssignment {
   acceptanceCriteria?: string[];
   transformedTitle?: string;
   transformedDescription?: string;
+  /** Team runs this in Claude — no custom product required. */
+  handledInClaude?: boolean;
   approved?: boolean;
   updatedAt?: string;
 }

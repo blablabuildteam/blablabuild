@@ -68,10 +68,31 @@ async function getUseCases(key: string): Promise<UseCaseRecord[]> {
   return (await getSession(key)).useCases;
 }
 
+const MERGE_DICT_KEYS = [
+  'featurePlans',
+  'featurePhases',
+  'projectPlans',
+  'projectScores',
+  'recommendations',
+  'projectDecisions',
+  'checklist',
+] as const;
+
 async function saveMeta(key: string, meta: SessionMeta): Promise<SessionMeta> {
   const { meta: prev } = await getSession(key);
-  // Top-level merge so checklist/decisions don't wipe clusters (and vice versa)
+  // Top-level merge so checklist/decisions don't wipe clusters (and vice versa).
+  // Nested dicts merge by key so a stale client cannot drop a brief it has not loaded.
   const merged: SessionMeta = { ...(prev || {}), ...meta };
+  for (const field of MERGE_DICT_KEYS) {
+    const incoming = meta[field];
+    const existing = (prev || {})[field];
+    if (incoming && typeof incoming === 'object' && !Array.isArray(incoming)) {
+      merged[field] = {
+        ...((existing && typeof existing === 'object' ? existing : {}) as Record<string, unknown>),
+        ...(incoming as Record<string, unknown>),
+      };
+    }
+  }
   await redisCommand('HSET', key, META_FIELD, JSON.stringify(merged));
   await redisCommand('EXPIRE', key, String(TTL));
   return merged;

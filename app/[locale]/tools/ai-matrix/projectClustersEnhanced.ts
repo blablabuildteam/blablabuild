@@ -28,9 +28,9 @@ export const CLUSTERS_ENHANCED_VERSION = 1;
  * Recommended project structure with splits applied:
  * 
  * SPLITS APPLIED:
- * 1. affiliate-partner-ops (12 cases) → 
- *    - partner-activation (6 cases) - Partner communication & activation
- *    - partner-intelligence (6 cases) - Partner monitoring & knowledge
+ * 1. affiliate-partner-ops (12 cases) → Partner Intelligence Hub
+ *    (activation comms + knowledge/monitoring were split, then folded back —
+ *    onboarding is a project, not a second theme)
  * 
  * 2. media-buy-performance (11 cases) →
  *    - mb-campaign-launch (5 cases) - Campaign launch & creative
@@ -96,47 +96,67 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
   },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // AFFILIATE - SPLIT INTO TWO WORKSTREAMS
+  // AFFILIATE — one partner lifecycle desk
   // ══════════════════════════════════════════════════════════════════════════
   {
-    id: 'partner-activation',
-    name: 'Partner Activation Hub',
-    summary: 'Streamline partner onboarding, activation messaging, and routine communications with automated drafts and follow-ups.',
-    rationale: 'Core partner communication loop (activation → messaging → follow-up) shares the same workflow and tools. Distinct from monitoring/intelligence work.',
+    id: 'partner-intelligence',
+    name: 'Partner Intelligence Hub',
+    summary:
+      'One hub for the partner lifecycle: onboard (activation pack), then maintain, grow, and manage — digests, pauses, POs, knowledge, performance, leads.',
+    rationale:
+      'Activation comms and partner intelligence are the same AM job. Onboarding is a project on this desk; pause notices, digests, POs, CRM, briefs, and leads are maintenance and growth of the same relationships — not a second theme.',
     suggestedHorizon: 'near',
     primaryDelivery: ['adsomnia', 'blablabuild'],
-    caseIds: ['s01zg1dt', 'nq108m56', 'aiqyvin4', '24lddyfa', 'nuftl8dc', '0pk6tzpv'],
+    caseIds: [
+      's01zg1dt',
+      'nq108m56',
+      'aiqyvin4',
+      '24lddyfa',
+      'nuftl8dc',
+      '0pk6tzpv',
+      '7oexv73t',
+      'qa6wbwif',
+      '07g9fjmq',
+      'c2tybb1k',
+      '3z1pgtaa',
+      '6xgc2yoh',
+    ],
     plan: {
-      problemStatement: 'Partner activation and communication is manual and inconsistent. Follow-ups are missed, messaging lacks personalization, and there\'s no unified view of partner communication history.',
-      opportunity: 'Create a systematic partner communication engine that automates routine outreach while maintaining personalization, ensuring no partner falls through the cracks.',
+      problemStatement:
+        'Partner work is split across chats, exports, Everflow, and personal Claude skills. Onboarding is inconsistent; maintenance (pauses, digests, POs, follow-ups) is manual; knowledge lives in people’s heads. Treating “activation” and “intelligence” as two tools duplicates the affiliate desk.',
+      opportunity:
+        'One Partner Intelligence Hub. The activation pack is the onboarding project. Everything else is how AMs maintain, grow, and manage partners — with knowledge and performance in the same place as the messages.',
       solutions: [
-        'Claude-powered personalized activation message generator',
-        'Automated payout pause/change communication drafts',
-        'Weekly partner digest automation from CSV/exports',
-        'New offer follow-up reminder system with templates',
-        'PO setting request automation with approval workflow',
-        'Weekly sync digest aggregator for partner meetings',
+        'Personalized activation pack for net-new partners (onboarding)',
+        'Maintenance comms: pause notices, weekly offer digest, PO requests, HN sync',
+        'Morning performance brief and LP alerts',
+        'Telegram notetaker + partner knowledge CRM',
+        'Payment-cycle status and affiliate lead dossiers',
       ],
-      expectedImpact: '60% faster partner activation, 100% follow-up coverage, standardized communication quality.',
-      targetAudience: ['Affiliate Management Team', 'Partner Success', 'Account Managers'],
-      businessValue: 'Faster partner activation = faster revenue. Consistent communication = better partner retention. Reduced manual work = more time for relationship building.',
-      technicalApproach: 'Claude for message generation with partner context. Google Sheets/CSV integration for data. Slack/email for delivery. Reminder system on existing workflow tools.',
+      expectedImpact:
+        'No second partner theme. Onboarding and ongoing management share context. Faster first send, fewer dropped follow-ups, one knowledge layer.',
+      targetAudience: ['Affiliate Management', 'Partner Success', 'BI / Pricing', 'Finance (payment cycle)'],
+      businessValue:
+        'Faster activation and better retention from the same desk. AMs spend time on relationships, not assembling packs and hunting notes.',
+      technicalApproach:
+        'Activation pack already specified (Everflow + Telegram + BI). Remaining projects attach to the same hub: exports, Telegram, Everflow read, and review-then-send patterns.',
       risks: [
         'Over-automation may feel impersonal to high-value partners',
-        'PO automation blocked until Everflow write access confirmed',
-        'Partner data quality varies, affecting personalization',
+        'PO automation blocked until Everflow write access is confirmed',
+        'Telegram/Everflow access for LP alerts and chat capture',
       ],
       dependencies: [
-        'Partner data access (CRM, spreadsheets)',
-        'Email/messaging platform integration',
-        'Everflow write access for PO automation',
+        'Everflow partner records and (later) write access for POs',
+        'Telegram groups / bot',
+        'BI / Pricing for offer logic',
+        'Historic comms and chat as knowledge',
       ],
     },
     initialRecommendations: [
       {
         title: 'Partner Communication History Timeline',
         description: 'Unified view of all communications with each partner across channels (email, Telegram, meetings).',
-        rationale: 'Currently team members don\'t have visibility into each other\'s partner communications, leading to duplicate outreach or dropped balls.',
+        rationale: 'Team members do not see each other’s partner communications, which leads to duplicate outreach or dropped balls.',
         expectedValue: 'Single source of truth for partner relationships. Eliminates duplicate messages and improves handoffs.',
         suggestedPhase: 'near',
         effort: 'm',
@@ -151,43 +171,6 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
         effort: 's',
         category: 'analytics',
       },
-    ],
-  },
-  {
-    id: 'partner-intelligence',
-    name: 'Partner Intelligence Hub',
-    summary: 'Centralize partner knowledge, monitor traffic/performance signals, and generate leads — the intelligence layer for affiliate operations.',
-    rationale: 'Knowledge management, monitoring, and lead generation share an intelligence/data focus distinct from direct partner communication.',
-    suggestedHorizon: 'near',
-    primaryDelivery: ['adsomnia', 'blablabuild'],
-    caseIds: ['7oexv73t', 'qa6wbwif', '07g9fjmq', 'c2tybb1k', '3z1pgtaa', '6xgc2yoh'],
-    plan: {
-      problemStatement: 'Partner knowledge is scattered across chats, notes, and people\'s heads. No systematic way to track partner health signals or identify new partner opportunities.',
-      opportunity: 'Build a partner intelligence system that captures knowledge, monitors health signals, and surfaces growth opportunities.',
-      solutions: [
-        'Morning reports automation (export → AI brief)',
-        'Telegram chat notetaker for partner knowledge capture',
-        'Partner knowledge CRM from pasted chat histories',
-        'Landing page performance alerts via Telegram bot',
-        'Payment cycle update tracker',
-        'Affiliate lead generator with research dossiers',
-      ],
-      expectedImpact: 'Complete partner knowledge base, real-time performance visibility, 2x lead pipeline.',
-      targetAudience: ['Affiliate Management Team', 'Business Development', 'Finance'],
-      businessValue: 'Better partner decisions through data. Faster issue resolution through centralized knowledge. Growth through systematic lead generation.',
-      technicalApproach: 'Telegram bot for chat capture and alerts. Claude for knowledge extraction and lead research. Integration with existing data sources for monitoring.',
-      risks: [
-        'Telegram bot LP alerts requires scoped Everflow access',
-        'Knowledge extraction accuracy depends on chat quality',
-        'Lead dossiers need careful compliance review',
-      ],
-      dependencies: [
-        'Telegram API access',
-        'Everflow read access for performance data',
-        'Partner data sources for lead research',
-      ],
-    },
-    initialRecommendations: [
       {
         title: 'Partner Health Score Dashboard',
         description: 'Composite score combining traffic trends, payment history, communication frequency, and conversion rates.',
@@ -486,7 +469,7 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
   {
     id: 'hr-enablement',
     name: 'HR Assistant Hub',
-    summary: 'Handbook Q&A (merge dups), CV screening, weekly goals, onboarding plans — Claude-first HR kit.',
+    summary: 'Handbook Q&A (merge dups), CV/cover-letter screen + interview kit, weekly goals, onboarding plans — Claude-first HR kit.',
     rationale: 'Content/skills in Claude with HR as owner; handbook duplicates collapse into one agent.',
     suggestedHorizon: 'now',
     primaryDelivery: ['adsomnia', 'blablabuild'],
@@ -496,7 +479,7 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
       opportunity: 'Build a Claude-first HR toolkit that automates routine tasks while improving employee experience.',
       solutions: [
         'HR handbook Q&A agent (consolidating duplicates)',
-        'Recruitment scorecards with CV analysis',
+        'One Claude skill: CV + cover letter screen, then interview kit',
         'Weekly HR checks with priorities extraction',
         'Personalized onboarding plan generation',
         'HR workflow integration with Personio/Slack',
@@ -622,45 +605,14 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
       },
     ],
   },
-  {
-    id: 'meeting-productivity',
-    name: 'Meeting Assistant',
-    summary: 'Boost meeting effectiveness with notes/structure — confirm Gemini vs Claude before scaling.',
-    rationale: 'Standalone enablement slice; stack choice is the open question.',
-    suggestedHorizon: 'next',
-    primaryDelivery: ['adsomnia', 'blablabuild'],
-    caseIds: ['jtzx6rw7'],
-    plan: {
-      problemStatement: 'Meeting notes are inconsistent. Action items get lost. No structure for effective meetings.',
-      opportunity: 'AI-assisted meeting productivity with notes, action tracking, and structure.',
-      solutions:
-        'AI meeting assistant that captures notes, extracts action items, and supports follow-up so teams leave meetings with a clear, tracked plan.',
-      expectedImpact: '50% better meeting follow-through, consistent documentation.',
-      targetAudience: ['All Employees'],
-      businessValue: 'Better meetings = better execution. Action tracking = accountability.',
-      technicalApproach: 'Evaluate Gemini vs Claude for meeting assistance. Integration with calendar/notes tools.',
-      risks: ['Tool choice (Gemini vs Claude) not confirmed', 'Adoption depends on ease of use'],
-      dependencies: ['Tool decision', 'Calendar/notes integration'],
-    },
-    initialRecommendations: [
-      {
-        title: 'Meeting Effectiveness Metrics',
-        description: 'Track meeting outcomes, action completion rates, and time spent to identify improvement opportunities.',
-        rationale: "Can't improve what you don't measure.",
-        expectedValue: 'Identify meeting patterns that work/don\'t work. Reduce meeting time 20%.',
-        suggestedPhase: 'next',
-        effort: 's',
-        category: 'analytics',
-      },
-    ],
-  },
 ];
 
 /**
  * Map from original cluster IDs to new cluster IDs for migration.
  */
 export const CLUSTER_MIGRATION_MAP: Record<string, string[]> = {
-  'affiliate-partner-ops': ['partner-activation', 'partner-intelligence'],
+  'affiliate-partner-ops': ['partner-intelligence'],
+  'partner-activation': ['partner-intelligence'],
   'media-buy-performance': ['mb-campaign-launch', 'mb-performance-ops'],
 };
 

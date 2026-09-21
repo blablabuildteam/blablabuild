@@ -101,7 +101,7 @@ export const DELIVERY_SUGGESTIONS: Record<
   },
   yluy9f0i: {
     deliveryPartners: ['adsomnia', 'blablabuild'],
-    note: 'Recruitment scorecards — Claude on CVs; ATS later.',
+    note: 'CV, cover letter and interview kit — one Claude skill; not a custom ATS.',
   },
   '3qylko3t': {
     deliveryPartners: ['adsomnia', 'blablabuild'],
@@ -256,7 +256,8 @@ export const DELIVERY_SUGGESTIONS: Record<
   },
   jtzx6rw7: {
     deliveryPartners: ['adsomnia', 'blablabuild'],
-    note: 'Meeting booster — notes/Gemini workflow; confirm stack.',
+    priorityStatus: 'kill',
+    note: 'Meeting Assistant theme removed from Prioritize — not a delivery workstream.',
   },
   id1vevde: {
     deliveryPartners: ['adsomnia'],

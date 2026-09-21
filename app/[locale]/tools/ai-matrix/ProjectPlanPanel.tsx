@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import type { ProjectFunctionality, ProjectPlan, BlaBlaRecommendation } from './projectPlanTypes';
 import {
-  emptyProjectPlan,
   getSolutionsText,
   hasProjectPlanContent,
   RECOMMENDATION_CATEGORIES,
@@ -31,7 +30,8 @@ import {
   normalizeFeaturePriority,
 } from './prioritizeMeta';
 import type { UseCase } from './types';
-import { resolveFeatureCopy } from './projectPlanHelpers';
+import { resolveFeatureCopy, loadFeaturePlan } from './projectPlanHelpers';
+import { projectAccent } from './projectClusters';
 
 interface ProjectPlanPanelProps {
   projectId: string;
@@ -54,6 +54,45 @@ interface ProjectPlanPanelProps {
   highlightCaseId?: string | null;
 }
 
+const CLAUDE_MARK = '/logos/Claude_AI_symbol.svg.webp';
+const CUSTOM_MARK = '/logos/custom.png';
+function DeliveryModePicker({
+  claude,
+  onChange,
+}: {
+  claude: boolean | undefined;
+  onChange: (claude: boolean) => void;
+}) {
+  const option = (isClaude: boolean, src: string, label: string) => {
+    const active = claude === isClaude;
+    return (
+      <button
+        type="button"
+        onClick={() => onChange(isClaude)}
+        className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors ${
+          active ? 'bg-white/12 text-white' : 'text-white/40 hover:text-white/70'
+        }`}
+        aria-pressed={active}
+        title={isClaude ? 'Team handles this in Claude' : 'Custom product we build'}
+      >
+        <img src={src} alt="" className="h-4 w-4 shrink-0 object-contain" />
+        <span className="font-mono text-[9px] uppercase tracking-[0.1em]">{label}</span>
+      </button>
+    );
+  };
+
+  return (
+    <div
+      className="inline-flex rounded-lg border border-white/12 bg-white/[0.03] p-0.5"
+      role="group"
+      aria-label="Delivery mode"
+    >
+      {option(true, CLAUDE_MARK, 'Claude')}
+      {option(false, CUSTOM_MARK, 'Custom')}
+    </div>
+  );
+}
+
 function prioritizeProjectRowId(caseId: string) {
   return `prioritize-project-${caseId}`;
 }
@@ -61,7 +100,13 @@ function prioritizeProjectRowId(caseId: string) {
 const COLLAPSE_EASE = [0.22, 1, 0.36, 1] as const;
 
 /** Native `border-dashed` is tight; this uses a longer gap so undeveloped high items read as open. */
-export function GappyDashFrame({ rx }: { rx: number }) {
+export function GappyDashFrame({
+  rx,
+  strokeColor,
+}: {
+  rx: number;
+  strokeColor?: string;
+}) {
   return (
     <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full overflow-visible">
       <rect
@@ -72,7 +117,7 @@ export function GappyDashFrame({ rx }: { rx: number }) {
         rx={rx}
         ry={rx}
         fill="none"
-        stroke="currentColor"
+        stroke={strokeColor ?? 'currentColor'}
         strokeWidth="1.5"
         strokeDasharray="4 10"
         strokeLinecap="round"
@@ -503,7 +548,7 @@ function ProjectBriefFields({
 
   return (
     <div className="mt-3 space-y-2">
-      <PlanSection title="Problem & Opportunity" icon={Target}>
+      <PlanSection title="Problem & Opportunity" icon={Target} defaultOpen>
         <div className="space-y-4">
           <div>
             <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
@@ -530,7 +575,7 @@ function ProjectBriefFields({
         </div>
       </PlanSection>
 
-      <PlanSection title="Solution" icon={Zap}>
+      <PlanSection title="Solution" icon={Zap} defaultOpen>
         <EditableText
           value={getSolutionsText(plan)}
           onChange={(v) => update({ solutions: v })}
@@ -539,14 +584,14 @@ function ProjectBriefFields({
         />
       </PlanSection>
 
-      <PlanSection title="Features & Functionalities" icon={List}>
+      <PlanSection title="Features & Functionalities" icon={List} defaultOpen>
         <FunctionalityList
           values={plan.functionalities || []}
           onChange={(v) => update({ functionalities: v })}
         />
       </PlanSection>
 
-      <PlanSection title="Impact & Business Value" icon={Target}>
+      <PlanSection title="Impact & Business Value" icon={Target} defaultOpen>
         <div className="space-y-4">
           <div>
             <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
@@ -573,7 +618,7 @@ function ProjectBriefFields({
         </div>
       </PlanSection>
 
-      <PlanSection title="Target Audience" icon={Users}>
+      <PlanSection title="Target Audience" icon={Users} defaultOpen>
         <EditableList
           values={plan.targetAudience}
           onChange={(v) => update({ targetAudience: v })}
@@ -581,7 +626,7 @@ function ProjectBriefFields({
         />
       </PlanSection>
 
-      <PlanSection title="Technical Approach" icon={Settings}>
+      <PlanSection title="Technical Approach" icon={Settings} defaultOpen>
         <EditableText
           value={plan.technicalApproach}
           onChange={(v) => update({ technicalApproach: v })}
@@ -590,7 +635,7 @@ function ProjectBriefFields({
         />
       </PlanSection>
 
-      <PlanSection title="Risks & Dependencies" icon={AlertTriangle}>
+      <PlanSection title="Risks & Dependencies" icon={AlertTriangle} defaultOpen>
         <div className="space-y-4">
           <div>
             <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
@@ -622,6 +667,7 @@ function FeatureCard({
   uc,
   assignment,
   plan,
+  themeAccent,
   onPhaseChange,
   onPlanChange,
   onFeatureUpdate,
@@ -631,6 +677,7 @@ function FeatureCard({
   uc: UseCase;
   assignment?: FeaturePhaseAssignment;
   plan: ProjectPlan;
+  themeAccent: string;
   onPhaseChange: (patch: Partial<FeaturePhaseAssignment>) => void;
   onPlanChange: (plan: ProjectPlan) => void;
   onFeatureUpdate?: (updates: { name?: string; description?: string }) => void;
@@ -640,20 +687,11 @@ function FeatureCard({
   const copy = resolveFeatureCopy(uc, assignment);
   const priority = normalizeFeaturePriority(assignment?.priority || assignment?.phase);
   const effort = assignment?.effort || 'm';
-  const priorityMeta = FEATURE_PRIORITY_META[priority];
-  const effortMeta = EFFORT_WEEKS[effort];
   const [editing, setEditing] = useState(false);
   const [briefOpen, setBriefOpen] = useState(false);
   const [draftName, setDraftName] = useState(copy.title);
   const [draftDesc, setDraftDesc] = useState(copy.description);
   const briefFilled = hasProjectPlanContent(plan);
-
-  const cyclePriority = () => {
-    const priorities: FeaturePriority[] = ['high', 'medium', 'low', 'backlog'];
-    const currentIndex = priorities.indexOf(priority);
-    const nextIndex = (currentIndex + 1) % priorities.length;
-    onPhaseChange({ priority: priorities[nextIndex] });
-  };
 
   const saveEdit = () => {
     const title = draftName.trim() || copy.title;
@@ -668,19 +706,30 @@ function FeatureCard({
     setEditing(false);
   };
 
+  const highCardStyle =
+    priority === 'high'
+      ? {
+          borderColor: briefFilled ? themeAccent : 'transparent',
+          backgroundColor: `color-mix(in srgb, ${themeAccent} 4%, transparent)`,
+          color: briefFilled ? undefined : themeAccent,
+        }
+      : undefined;
+  const highlightStyle = highlighted
+    ? { boxShadow: `0 0 0 2px color-mix(in srgb, ${themeAccent} 38%, transparent)` }
+    : undefined;
+
   return (
     <div
       id={prioritizeProjectRowId(uc.id)}
-      className={`relative scroll-mt-24 rounded-xl border p-3 ${
-        priority === 'high'
-          ? briefFilled
-            ? 'border-solid border-bla-lime bg-bla-lime/[0.04]'
-            : 'border-solid border-transparent bg-bla-lime/[0.04] text-bla-lime'
-          : 'border-solid border-white/10 bg-white/[0.02]'
-      } ${highlighted ? 'ring-2 ring-bla-lime/35' : ''}`}
+      className={`group/card relative scroll-mt-24 rounded-xl border border-solid p-3 ${
+        priority === 'high' ? '' : 'border-white/10 bg-white/[0.02]'
+      }`}
+      style={{ ...highCardStyle, ...highlightStyle }}
     >
-      {priority === 'high' && !briefFilled ? <GappyDashFrame rx={12} /> : null}
-      <div className="flex items-start justify-between gap-3">
+      {priority === 'high' && !briefFilled ? (
+        <GappyDashFrame rx={12} strokeColor={themeAccent} />
+      ) : null}
+      <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
           {editing ? (
             <div className="space-y-2">
@@ -753,7 +802,7 @@ function FeatureCard({
                         onFeatureDelete();
                       }
                     }}
-                    className="mt-0.5 shrink-0 rounded-md p-1 text-white/25 transition-colors hover:bg-red-400/10 hover:text-red-300"
+                    className="mt-0.5 shrink-0 rounded-md p-1 text-white/25 opacity-0 transition-all hover:bg-red-400/10 hover:text-red-300 group-hover/card:opacity-100 focus-visible:opacity-100"
                     title="Delete project"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -763,19 +812,6 @@ function FeatureCard({
             </div>
           )}
         </div>
-        {!editing && (
-          <div className="flex flex-col items-end gap-1.5">
-            <button
-              type="button"
-              onClick={cyclePriority}
-              className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] transition-colors hover:opacity-80 ${priorityMeta.border} ${priorityMeta.bg} ${priorityMeta.color}`}
-              title="Click to change priority"
-            >
-              {priorityMeta.short}
-            </button>
-            <span className="font-mono text-[10px] text-white/40">{effortMeta.label.split(' ')[0]}</span>
-          </div>
-        )}
       </div>
 
       {!editing && (
@@ -804,25 +840,33 @@ function FeatureCard({
             })}
           </div>
 
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-white/30">Effort</span>
-            {(['xs', 's', 'm', 'l', 'xl'] as const).map((e) => {
-              const active = effort === e;
-              return (
-                <button
-                  key={e}
-                  type="button"
-                  onClick={() => onPhaseChange({ effort: e })}
-                  className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase ${
-                    active
-                      ? 'border-white/30 bg-white/10 text-white/80'
-                      : 'border-white/10 text-white/30 hover:text-white/50'
-                  }`}
-                >
-                  {e.toUpperCase()}
-                </button>
-              );
-            })}
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-white/30">
+                Effort
+              </span>
+              {(['xs', 's', 'm', 'l', 'xl'] as const).map((e) => {
+                const active = effort === e;
+                return (
+                  <button
+                    key={e}
+                    type="button"
+                    onClick={() => onPhaseChange({ effort: e })}
+                    className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase ${
+                      active
+                        ? 'border-white/30 bg-white/10 text-white/80'
+                        : 'border-white/10 text-white/30 hover:text-white/50'
+                    }`}
+                  >
+                    {e.toUpperCase()}
+                  </button>
+                );
+              })}
+            </div>
+            <DeliveryModePicker
+              claude={assignment?.handledInClaude}
+              onChange={(next) => onPhaseChange({ handledInClaude: next })}
+            />
           </div>
 
           {priority === 'high' ? (
@@ -869,16 +913,7 @@ function RecommendationCard({
   const catMeta = RECOMMENDATION_CATEGORIES[rec.category];
   const priority = normalizeFeaturePriority(rec.suggestedPriority || rec.suggestedPhase);
   const effort = rec.effort;
-  const priorityMeta = FEATURE_PRIORITY_META[priority];
-  const effortMeta = EFFORT_WEEKS[effort];
   const [detailsOpen, setDetailsOpen] = useState(false);
-
-  const cyclePriority = () => {
-    const priorities: FeaturePriority[] = ['high', 'medium', 'low', 'backlog'];
-    const currentIndex = priorities.indexOf(priority);
-    const nextIndex = (currentIndex + 1) % priorities.length;
-    onChange({ suggestedPriority: priorities[nextIndex] });
-  };
 
   return (
     <div
@@ -888,29 +923,16 @@ function RecommendationCard({
           : 'border-amber-400/20 bg-amber-400/[0.04]'
       }`}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <p className="text-[14px] font-medium text-white">
-            <span className="mr-2 font-mono text-[9px] uppercase tracking-[0.12em] text-amber-400/70">
-              Recommended
-            </span>
-            {rec.title}
-          </p>
-          {rec.description && (
-            <p className="mt-1 text-[12px] leading-relaxed text-white/50">{rec.description}</p>
-          )}
-        </div>
-        <div className="flex flex-col items-end gap-1.5">
-          <button
-            type="button"
-            onClick={cyclePriority}
-            className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] transition-colors hover:opacity-80 ${priorityMeta.border} ${priorityMeta.bg} ${priorityMeta.color}`}
-            title="Click to change priority"
-          >
-            {priorityMeta.short}
-          </button>
-          <span className="font-mono text-[10px] text-white/40">{effortMeta.label.split(' ')[0]}</span>
-        </div>
+      <div className="min-w-0">
+        <p className="text-[14px] font-medium text-white">
+          <span className="mr-2 font-mono text-[9px] uppercase tracking-[0.12em] text-amber-400/70">
+            Recommended
+          </span>
+          {rec.title}
+        </p>
+        {rec.description && (
+          <p className="mt-1 text-[12px] leading-relaxed text-white/50">{rec.description}</p>
+        )}
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -998,6 +1020,7 @@ function RecommendationCard({
 }
 
 export default function ProjectPlanPanel({
+  projectId,
   members,
   featurePhases,
   featurePlans,
@@ -1010,6 +1033,7 @@ export default function ProjectPlanPanel({
   onAddFeature,
   highlightCaseId,
 }: ProjectPlanPanelProps) {
+  const themeAccent = projectAccent(projectId);
   const visibleRecs = recommendations.filter((r) => r.status !== 'rejected');
 
   const highMembers = members.filter(
@@ -1046,8 +1070,9 @@ export default function ProjectPlanPanel({
     <FeatureCard
       key={uc.id}
       uc={uc}
+      themeAccent={themeAccent}
       assignment={featurePhases[uc.id]}
-      plan={featurePlans[uc.id] || emptyProjectPlan()}
+      plan={loadFeaturePlan(uc.id, featurePlans)}
       onPhaseChange={(patch) => onFeaturePhaseChange(uc.id, patch)}
       onPlanChange={(next) => onFeaturePlanChange(uc.id, next)}
       onFeatureUpdate={onFeatureUpdate ? (updates) => onFeatureUpdate(uc.id, updates) : undefined}

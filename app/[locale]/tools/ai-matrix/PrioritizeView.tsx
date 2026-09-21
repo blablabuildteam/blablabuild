@@ -50,7 +50,9 @@ import {
   loadRecommendationsForProject,
   initializeFeaturePhases,
   resolveFeatureCopy,
+  loadFeaturePlan,
 } from './projectPlanHelpers';
+import { FEATURE_PLAN_SEEDS } from './featurePlanSeeds';
 import {
   FEATURE_PRIORITY_META,
   normalizeFeaturePriority,
@@ -465,7 +467,7 @@ function ProjectBlock({
 
   const projectChip = (m: UseCase, high: boolean) => {
     const copy = resolveFeatureCopy(m, featurePhases[m.id]);
-    const developed = high && hasProjectPlanContent(featurePlans[m.id]);
+    const developed = high && hasProjectPlanContent(loadFeaturePlan(m.id, featurePlans));
     return (
       <button
         key={m.id}
@@ -483,14 +485,29 @@ function ProjectBlock({
           high
             ? {
                 color: accent,
-                backgroundColor: `color-mix(in srgb, ${accent} 14%, transparent)`,
+                backgroundColor: `color-mix(in srgb, ${accent} 4%, transparent)`,
                 borderColor: developed ? accent : 'transparent',
               }
             : undefined
         }
       >
-        {high && !developed ? <GappyDashFrame rx={6} /> : null}
-        {copy.title}
+        {high && !developed ? <GappyDashFrame rx={6} strokeColor={accent} /> : null}
+        <span className="inline-flex items-center gap-1.5">
+          {featurePhases[m.id]?.handledInClaude === true ? (
+            <img
+              src="/logos/Claude_AI_symbol.svg.webp"
+              alt=""
+              className="h-3 w-3 shrink-0 object-contain opacity-90"
+            />
+          ) : featurePhases[m.id]?.handledInClaude === false ? (
+            <img
+              src="/logos/custom.png"
+              alt=""
+              className="h-3 w-3 shrink-0 object-contain opacity-90"
+            />
+          ) : null}
+          {copy.title}
+        </span>
       </button>
     );
   };
@@ -937,7 +954,8 @@ export default function PrioritizeView({
 
   const setFeaturePhase = useCallback(
     (caseId: string, assignment: Partial<FeaturePhaseAssignment>) => {
-      const prev = meta.featurePhases?.[caseId] || {
+      const hydrated = initializeFeaturePhases(useCases, meta.featurePhases || {});
+      const prev = hydrated[caseId] || {
         caseId,
         priority: 'backlog' as const,
         effort: 'm' as const,
@@ -951,7 +969,7 @@ export default function PrioritizeView({
         },
       });
     },
-    [meta, persistMeta]
+    [meta, persistMeta, useCases]
   );
 
   // Load recommendations from enhanced clusters when meta is loaded
@@ -997,18 +1015,51 @@ export default function PrioritizeView({
       const loaded = await loadPrioritizeMeta(sessionId);
       if (cancelled) return;
       let next = loaded;
+      const seededPlans = { ...(loaded.featurePlans || {}) };
+      let seededAny = false;
+      for (const [caseId, seed] of Object.entries(FEATURE_PLAN_SEEDS)) {
+        if (!hasProjectPlanContent(seededPlans[caseId])) {
+          seededPlans[caseId] = { ...seed, updatedAt: new Date().toISOString() };
+          seededAny = true;
+        }
+      }
+      if (seededAny) {
+        next = { ...next, featurePlans: seededPlans };
+      }
       // Refresh seed titles into draft once when version bumps
       if (
         loaded.clusters?.length &&
         (!loaded.clustersSeedVersion || loaded.clustersSeedVersion < CLUSTERS_SEED_VERSION)
       ) {
         const refreshed = resolveClusters(loaded.clusters, loaded.clustersSeedVersion);
+        const recs = { ...(loaded.recommendations || {}) };
+        Object.keys(recs).forEach((id) => {
+          if (recs[id].projectId === 'partner-activation') {
+            recs[id] = { ...recs[id], projectId: 'partner-intelligence' };
+          }
+        });
+        const scores = { ...(loaded.projectScores || {}) };
+        if (scores['partner-activation']) {
+          scores['partner-intelligence'] = {
+            ...scores['partner-activation'],
+            ...scores['partner-intelligence'],
+          };
+          delete scores['partner-activation'];
+        }
         next = {
-          ...loaded,
+          ...next,
           clusters: refreshed,
+          recommendations: recs,
+          projectScores: scores,
           clustersSeedVersion: CLUSTERS_SEED_VERSION,
           clustersUpdatedAt: new Date().toISOString(),
         };
+      }
+      if (
+        seededAny ||
+        (loaded.clusters?.length &&
+          (!loaded.clustersSeedVersion || loaded.clustersSeedVersion < CLUSTERS_SEED_VERSION))
+      ) {
         void savePrioritizeMeta(sessionId, next);
       }
       setMeta(next);

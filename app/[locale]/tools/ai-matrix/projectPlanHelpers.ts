@@ -1,5 +1,6 @@
 import type { ProjectPlan, BlaBlaRecommendation } from './projectPlanTypes';
-import { emptyProjectPlan, getSolutionsText } from './projectPlanTypes';
+import { emptyProjectPlan, getSolutionsText, hasProjectPlanContent } from './projectPlanTypes';
+import { FEATURE_PLAN_SEEDS } from './featurePlanSeeds';
 import type {
   FeaturePhaseAssignment,
   FeaturePriority,
@@ -118,12 +119,14 @@ export function loadProjectPlan(
   return legacySplitPlan(projectId);
 }
 
-/** Brief for a nested project (former feature). Empty until filled in Prioritize. */
+/** Brief for a nested project (former feature). Session edits win when filled; else seed. */
 export function loadFeaturePlan(
   caseId: string,
   featurePlans?: Record<string, ProjectPlan>
 ): ProjectPlan {
-  return featurePlans?.[caseId] || emptyProjectPlan();
+  const stored = featurePlans?.[caseId];
+  if (hasProjectPlanContent(stored)) return stored!;
+  return FEATURE_PLAN_SEEDS[caseId] || emptyProjectPlan();
 }
 
 /**
@@ -158,6 +161,8 @@ export function initializeFeaturePhases(
     'Template-driven Ongage message builder',
     'Ongage message production',
     'Centralised Email Dashboard',
+    'CV & cover letter screening agent',
+    'CV screening & interview prep',
   ]);
 
   Object.entries(existingPhases).forEach(([id, prev]) => {
