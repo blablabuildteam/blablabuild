@@ -42,8 +42,9 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
   // ══════════════════════════════════════════════════════════════════════════
   {
     id: 'email-ongage',
-    name: 'Email Delivery & Content Engine',
-    summary: 'Reliable ESP operations (quota, servers, alerts) plus compliant message/HTML craft in one Ongage stack.',
+    name: 'Email Content and Delivery Engine',
+    summary:
+      'First, speed up email content production so it can run at scale and on brand — copy, templates, and write-back into Ongage as one loop. Once that is shipping, look at the rest of the desk: send health, quotas, server distribution, and alerts that actually matter.',
     rationale: 'Shared Ongage/ESP surface — delivery reliability and message craft land as one initiative.',
     suggestedHorizon: 'now',
     primaryDelivery: ['adsomnia', 'bending-the-rules', 'blablabuild'],
@@ -83,15 +84,6 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
         effort: 's',
         category: 'analytics',
       },
-      {
-        title: 'Deliverability Health Score Dashboard',
-        description: 'Single-pane view of sender reputation, blacklist status, and domain health across all sending IPs.',
-        rationale: 'Currently monitoring is reactive. Proactive health monitoring prevents issues before they impact campaigns.',
-        expectedValue: 'Early warning system reduces deliverability incidents by 40%.',
-        suggestedPhase: 'now',
-        effort: 'm',
-        category: 'analytics',
-      },
     ],
   },
 
@@ -102,7 +94,7 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
     id: 'partner-intelligence',
     name: 'Partner Intelligence Hub',
     summary:
-      'One hub for the partner lifecycle: onboard (activation pack), then maintain, grow, and manage — digests, pauses, POs, knowledge, performance, leads.',
+      'First, one partner desk AMs will actually use: knowledge in one place, and outreach that stays personal at scale — activation packs, digests, and pause notices. Once that is trusted, automate the rest of the cycle — POs, payment status, LP alerts, lead dossiers, and a unified partner CRM.',
     rationale:
       'Activation comms and partner intelligence are the same AM job. Onboarding is a project on this desk; pause notices, digests, POs, CRM, briefs, and leads are maintenance and growth of the same relationships — not a second theme.',
     suggestedHorizon: 'near',
@@ -120,6 +112,7 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
       'c2tybb1k',
       '3z1pgtaa',
       '6xgc2yoh',
+      '9qpxrbua',
     ],
     plan: {
       problemStatement:
@@ -131,6 +124,7 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
         'Maintenance comms: pause notices, weekly offer digest, PO requests, HN sync',
         'Morning performance brief and LP alerts',
         'Telegram notetaker + partner knowledge CRM',
+        'Unified client/partner CRM across notes, Everflow, and briefs (later scale of the knowledge layer)',
         'Payment-cycle status and affiliate lead dossiers',
       ],
       expectedImpact:
@@ -153,33 +147,6 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
       ],
     },
     initialRecommendations: [
-      {
-        title: 'Partner Communication History Timeline',
-        description: 'Unified view of all communications with each partner across channels (email, Telegram, meetings).',
-        rationale: 'Team members do not see each other’s partner communications, which leads to duplicate outreach or dropped balls.',
-        expectedValue: 'Single source of truth for partner relationships. Eliminates duplicate messages and improves handoffs.',
-        suggestedPhase: 'near',
-        effort: 'm',
-        category: 'integration',
-      },
-      {
-        title: 'Partner Response Sentiment Tracking',
-        description: 'Automatically tag partner responses as positive/neutral/negative to surface at-risk relationships.',
-        rationale: 'Early warning on partner satisfaction enables proactive relationship management.',
-        expectedValue: 'Identify at-risk partners before they churn. Prioritize account manager attention.',
-        suggestedPhase: 'next',
-        effort: 's',
-        category: 'analytics',
-      },
-      {
-        title: 'Partner Health Score Dashboard',
-        description: 'Composite score combining traffic trends, payment history, communication frequency, and conversion rates.',
-        rationale: 'Currently partner health is assessed ad-hoc. Systematic scoring enables proactive management.',
-        expectedValue: 'Predict partner churn 30 days in advance. Prioritize team focus on high-risk/high-value partners.',
-        suggestedPhase: 'near',
-        effort: 'm',
-        category: 'analytics',
-      },
       {
         title: 'Competitive Intelligence Tracker',
         description: 'Monitor competitor offers, payout changes, and market movements relevant to your partner base.',
@@ -252,26 +219,25 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
   {
     id: 'mb-performance-ops',
     name: 'Performance Monitoring Hub',
-    summary: 'Real-time performance visibility, automated reporting, and proactive alerting for media buying operations.',
+    summary:
+      'First, one trusted performance picture: centralize the data and only surface insights and anomalies that actually matter. Once that desk is believed, start automating the actions that follow — YieldPro routing, pacing, and the reporting packs that still get rebuilt by hand.',
     rationale: 'Ongoing performance monitoring and reporting share a data/alerting focus distinct from campaign launch.',
     suggestedHorizon: 'now',
     primaryDelivery: ['adsomnia', 'blablabuild'],
-    caseIds: ['ytfkqqwj', '1y16z6b7', 'ldfa53nk', 'mg6vhvhm', 'id1vevde', '2e5qnofn'],
+    caseIds: ['ytfkqqwj', 'ldfa53nk', 'id1vevde', '2e5qnofn'],
     plan: {
       problemStatement: 'Performance monitoring is manual and reactive. Buyers spend hours on reporting instead of optimization. Issues are discovered too late.',
       opportunity: 'Build a performance operations center with automated reporting, real-time alerts, and optimization recommendations.',
       solutions: [
-        'MB performance reporting automation (ScaleWizard/exports)',
-        'Performance alarming with threshold-based alerts',
-        'Financial MB reporting automation',
-        'Daily stats autofill from tracker exports',
+        'MB performance reporting — custom dashboard on the Looker Studio feed, anomaly agent, daily/weekly packs, Slack alerts',
+        'Financial MB reporting — kill Sheets; API + manual template entry; what-matters packs and Slack',
         'YP auto-optimization integration',
         'YP alert system for tech/performance metrics',
       ],
       expectedImpact: '80% reduction in reporting time, 15-minute issue detection, data-driven optimization.',
       targetAudience: ['Media Buying Team', 'Finance', 'Operations'],
       businessValue: 'Faster issue response = reduced wasted spend. Automated reporting = more optimization time. Better visibility = better decisions.',
-      technicalApproach: 'Tracker API integration for data. Alerting system with Slack/email. Dashboard on existing BI stack. YP API for optimization.',
+      technicalApproach: 'Looker Studio feed for performance packs. Separate financial ledger (API + manual entry, no Sheets). YP is another project.',
       risks: [
         'Tracker API rate limits may constrain real-time monitoring',
         'Alert fatigue if thresholds not tuned properly',
@@ -312,7 +278,8 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
   {
     id: 'adops-tracker',
     name: 'Tracker Operations Center',
-    summary: 'Keep Voluum/ExAds flows clean: playbooks, CPM/TSD signals, uploads — Ad Ops control plane.',
+    summary:
+      'First, one trusted tracker picture: centralize CPM, flow, and drop data and only alert on what Ad Ops should act on. Once that is believed, automate the actions — offer uploads, TSD share, banner cuts, and the flow moves the playbook already encodes.',
     rationale: 'Tracker hygiene + flow decisions share systems; fold low-leverage tasks into alerting rather than side quests.',
     suggestedHorizon: 'near',
     primaryDelivery: ['adsomnia', 'blablabuild'],
@@ -322,7 +289,7 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
       opportunity: 'Create a tracker control plane with standardized flows, automated monitoring, and systematic optimization.',
       solutions: [
         'Flow optimization playbooks with best practices',
-        'CPM drop alerting with automated investigation',
+        'CPM reporting & drop alerts — Looker Studio feed, daily pack, Slack (absorbs automated CPM reporting)',
         'TSD optimization guidelines and automation',
         'Offer upload automation to Voluum',
         'ExAds banner optimization workflow',
@@ -362,16 +329,16 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
   {
     id: 'bi-pricing-payouts',
     name: 'Pricing Intelligence Hub',
-    summary: 'Data-quality triage, payout defaults/moves, and pricing experiments on Looker/DB truth.',
+    summary: 'Claude-first data-quality triage (knowledge center), payout defaults/moves, and pricing experiments. Live Looker is later.',
     rationale: 'BI/Pricing owns commercial rules + data truth — one initiative for payout/pricing decisions.',
     suggestedHorizon: 'near',
     primaryDelivery: ['adsomnia', 'blablabuild'],
-    caseIds: ['bidqcl01', 'pnsh385v', '5wq983os', 'l32k9os0', 'ge20ac29', 'yr4x9ymq', 'd49ghn33'],
+    caseIds: ['5wq983os', 'pnsh385v', 'l32k9os0', 'ge20ac29', 'yr4x9ymq', 'd49ghn33'],
     plan: {
       problemStatement: 'Pricing decisions are slow and risky due to manual analysis. Data quality issues cause incorrect payouts. No systematic experimentation framework.',
       opportunity: 'Build a pricing intelligence platform with automated analysis, data quality monitoring, and experimentation capabilities.',
       solutions: [
-        'Data quality triage system with automated checks',
+        'DB / Looker data-quality triage — Claude + knowledge center; productize the center only after the connect',
         'Text-to-SQL investigative queries on BI schema',
         'Automated payout defaults management',
         'Payout increase/decrease analysis automation',
@@ -567,41 +534,6 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
         suggestedPhase: 'next',
         effort: 'm',
         category: 'automation',
-      },
-    ],
-  },
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // SMALLER PROJECTS - Unchanged
-  // ══════════════════════════════════════════════════════════════════════════
-  {
-    id: 'crm-platform',
-    name: 'Client CRM Platform',
-    summary: 'Central client database across systems — treat as a multi-phase program, not a sprint.',
-    rationale: 'Big-rock integration; keep Later until phased slices and owner are clear.',
-    suggestedHorizon: 'later',
-    primaryDelivery: ['tbd', 'adsomnia', 'blablabuild'],
-    caseIds: ['9qpxrbua'],
-    plan: {
-      problemStatement: 'Client data is fragmented across multiple systems with no single source of truth.',
-      opportunity: 'Create unified client view to improve operations and decision-making.',
-      solutions: ['Central CRM integration connecting all systems'],
-      expectedImpact: 'Single source of truth for client data, improved operational efficiency.',
-      targetAudience: ['All Teams'],
-      businessValue: 'Better client management = improved retention and growth.',
-      technicalApproach: 'Multi-system integration program with phased delivery.',
-      risks: ['Large scope, complex integration', 'Unclear ownership', 'Multi-system dependencies'],
-      dependencies: ['System access across organization', 'Clear owner assignment', 'Phased roadmap'],
-    },
-    initialRecommendations: [
-      {
-        title: 'CRM Data Audit',
-        description: 'Comprehensive audit of client data across all systems to understand integration scope.',
-        rationale: 'Before building, need to understand the data landscape.',
-        expectedValue: 'Clear scope and phasing for CRM program.',
-        suggestedPhase: 'later',
-        effort: 'm',
-        category: 'analytics',
       },
     ],
   },

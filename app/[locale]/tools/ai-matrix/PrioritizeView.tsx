@@ -568,45 +568,6 @@ function ProjectBlock({
             </h3>
           </button>
 
-          {(highMembers.length > 0 || otherMembers.length > 0 || visibleRecs.length > 0) && (
-            <div className="mt-2 space-y-1.5">
-              {highMembers.length > 0 && (
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-                  <span
-                    className="font-mono text-[10px] uppercase tracking-[0.12em]"
-                    style={{ color: accent, opacity: 0.7 }}
-                  >
-                    Projects · High
-                  </span>
-                  {highMembers.map((m) => projectChip(m, true))}
-                </div>
-              )}
-              {otherMembers.length > 0 && (
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/30">
-                    {highMembers.length > 0 ? 'Later' : 'Projects'}
-                  </span>
-                  {otherMembers.map((m) => projectChip(m, false))}
-                </div>
-              )}
-              {visibleRecs.length > 0 && (
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-amber-400/50">
-                    Blablabuild recommended
-                  </span>
-                  {visibleRecs.map((r) => (
-                    <span
-                      key={r.id}
-                      className="rounded-md border border-amber-400/25 bg-amber-400/10 px-2 py-1 text-[12px] text-amber-200/80"
-                    >
-                      {r.title}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
           <div className="mt-2">
             {editingAmbition ? (
               <div className="space-y-2">
@@ -667,6 +628,45 @@ function ProjectBlock({
               </button>
             )}
           </div>
+
+          {(highMembers.length > 0 || otherMembers.length > 0 || visibleRecs.length > 0) && (
+            <div className="mt-2 space-y-1.5">
+              {highMembers.length > 0 && (
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                  <span
+                    className="font-mono text-[10px] uppercase tracking-[0.12em]"
+                    style={{ color: accent, opacity: 0.7 }}
+                  >
+                    Projects · High
+                  </span>
+                  {highMembers.map((m) => projectChip(m, true))}
+                </div>
+              )}
+              {otherMembers.length > 0 && (
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/30">
+                    {highMembers.length > 0 ? 'Later' : 'Projects'}
+                  </span>
+                  {otherMembers.map((m) => projectChip(m, false))}
+                </div>
+              )}
+              {visibleRecs.length > 0 && (
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-amber-400/50">
+                    Blablabuild recommended
+                  </span>
+                  {visibleRecs.map((r) => (
+                    <span
+                      key={r.id}
+                      className="rounded-md border border-amber-400/25 bg-amber-400/10 px-2 py-1 text-[12px] text-amber-200/80"
+                    >
+                      {r.title}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -685,6 +685,7 @@ function ProjectBlock({
             onFeatureDelete={onFeatureDelete}
             onAddFeature={onAddFeature}
             highlightCaseId={highlightCaseId}
+            scrollToCaseId={scrollToCaseId}
           />
 
           {mode !== 'planning' && (
@@ -1034,17 +1035,22 @@ export default function PrioritizeView({
         const refreshed = resolveClusters(loaded.clusters, loaded.clustersSeedVersion);
         const recs = { ...(loaded.recommendations || {}) };
         Object.keys(recs).forEach((id) => {
-          if (recs[id].projectId === 'partner-activation') {
+          if (
+            recs[id].projectId === 'partner-activation' ||
+            recs[id].projectId === 'crm-platform'
+          ) {
             recs[id] = { ...recs[id], projectId: 'partner-intelligence' };
           }
         });
         const scores = { ...(loaded.projectScores || {}) };
-        if (scores['partner-activation']) {
+        if (scores['partner-activation'] || scores['crm-platform']) {
           scores['partner-intelligence'] = {
             ...scores['partner-activation'],
+            ...scores['crm-platform'],
             ...scores['partner-intelligence'],
           };
           delete scores['partner-activation'];
+          delete scores['crm-platform'];
         }
         next = {
           ...next,

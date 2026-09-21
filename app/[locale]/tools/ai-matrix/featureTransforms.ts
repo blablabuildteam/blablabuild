@@ -12,6 +12,10 @@ export interface FeatureTransform {
 export const ABSORBED_CASE_IDS: Record<string, string> = {
   zbvbw4s5: '6wwxlvke',
   'new-mtk0xglc': '6wwxlvke',
+  '1y16z6b7': 'ytfkqqwj',
+  'new-mtk287dw': '52k9ejik',
+  bidqcl01: '5wq983os',
+  mg6vhvhm: 'ldfa53nk',
 };
 
 export function isAbsorbedCase(caseId: string): boolean {
@@ -26,7 +30,7 @@ export function isHiddenPrioritizeCase(caseId: string): boolean {
 }
 
 export const FEATURE_TRANSFORMS: Record<string, FeatureTransform> = {
-  // ── Email Delivery & Content Engine ──────────────────────────────────────
+  // ── Email Content and Delivery Engine ────────────────────────────────────
   '6wwxlvke': {
     title: 'Email production loop',
     description:
@@ -148,7 +152,7 @@ export const FEATURE_TRANSFORMS: Record<string, FeatureTransform> = {
   ytfkqqwj: {
     title: 'MB performance reporting automation',
     description:
-      'Combine ScaleWizard/exports with Claude to produce faster performance insights and analysis packs for media buying.',
+      'Custom dashboard on Adsomnia’s Looker Studio feed only: a trained agent spots anomalies, writes daily packs for media buying and weekly packs for leadership, and pushes Slack alerts. Not a Claude paste of ScaleWizard — Studio already has that data.',
   },
   '1y16z6b7': {
     title: 'Performance drop alarming',
@@ -158,7 +162,7 @@ export const FEATURE_TRANSFORMS: Record<string, FeatureTransform> = {
   ldfa53nk: {
     title: 'Financial MB reporting automation',
     description:
-      'Automate financial media-buying reporting so Finance/MB stop rebuilding the same manual packs each cycle.',
+      'Replace the Google Sheet P&L: API-pull the platforms we can, template-entry the rest, normalize into one ledger, then report what matters and Slack anomalies. Multiple operators with permissions. Not Looker performance packs, not company Finance P&L.',
   },
   mg6vhvhm: {
     title: 'Daily stats autofill',
@@ -183,9 +187,9 @@ export const FEATURE_TRANSFORMS: Record<string, FeatureTransform> = {
       'Decision playbook for weekly Voluum flow optimization by geo × zone — encode operator judgment where built-in AI disagrees.',
   },
   '52k9ejik': {
-    title: 'CPM drop daily alert report',
+    title: 'CPM reporting & drop alerts',
     description:
-      'Daily report of significant CPM drops per geo/zone/buyer so Ad Ops reacts before margin erodes.',
+      'Custom Ad Ops desk on the Looker Studio CPM feed: daily “what matters” reporting plus Slack when CPMs drop per geo/zone/buyer. Same integration pattern as MB performance reporting — not a Claude paste, not a second Studio click-path.',
   },
   fr8ri4kx: {
     title: 'TSD traffic-share optimizer',
@@ -222,7 +226,7 @@ export const FEATURE_TRANSFORMS: Record<string, FeatureTransform> = {
   '5wq983os': {
     title: 'DB / Looker data-quality triage',
     description:
-      'Structured workflow to investigate suspicious values and dashboard drift across DB and Looker with repeatable checks.',
+      'BI already triages “this Looker number looks wrong” in Claude plus a knowledge center they built themselves. No custom triage product. Next: the center lives on one laptop — connect with the builder to see if we help productize that, not replace the skill.',
   },
   l32k9os0: {
     title: 'Default payout request automation',
@@ -331,11 +335,11 @@ export const FEATURE_TRANSFORMS: Record<string, FeatureTransform> = {
       'Semi-automate Everflow offer creation with validation guards so speed goes up without silent error risk.',
   },
 
-  // ── Client CRM Platform ──────────────────────────────────────────────────
+  // ── Partner Intelligence Hub ─────────────────────────────────────────────
   '9qpxrbua': {
-    title: 'Unified client CRM program',
+    title: 'Unified partner CRM',
     description:
-      'Phased program for one client database spanning knowledge base, meeting notes, Everflow, and CRM — retrieve updates and generate briefs from a single source.',
+      'Later scale of the knowledge layer: one partner record across notes, Everflow, and briefs — retrieve updates and generate outreach from a single source, not a separate CRM program.',
   },
 
   // ── Idea Intake Desk ─────────────────────────────────────────────────────

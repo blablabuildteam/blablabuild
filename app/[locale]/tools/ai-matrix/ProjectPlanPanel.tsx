@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   AlertTriangle,
@@ -52,10 +52,20 @@ interface ProjectPlanPanelProps {
     effort: 'xs' | 's' | 'm' | 'l' | 'xl';
   }) => void;
   highlightCaseId?: string | null;
+  scrollToCaseId?: string | null;
 }
 
 const CLAUDE_MARK = '/logos/Claude_AI_symbol.svg.webp';
 const CUSTOM_MARK = '/logos/custom.png';
+
+const CHIP_BASE =
+  'rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] transition-colors';
+const CHIP_ACTIVE = `${CHIP_BASE} bg-white/20 text-white`;
+const CHIP_IDLE = `${CHIP_BASE} text-white/40 hover:bg-white/[0.06] hover:text-white/70`;
+const CHIP_BASE_MD =
+  'rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] transition-colors';
+const CHIP_ACTIVE_MD = `${CHIP_BASE_MD} bg-white/20 text-white`;
+const CHIP_IDLE_MD = `${CHIP_BASE_MD} text-white/40 hover:bg-white/[0.06] hover:text-white/70`;
 function DeliveryModePicker({
   claude,
   onChange,
@@ -70,7 +80,9 @@ function DeliveryModePicker({
         type="button"
         onClick={() => onChange(isClaude)}
         className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors ${
-          active ? 'bg-white/12 text-white' : 'text-white/40 hover:text-white/70'
+          active
+            ? 'bg-white/20 text-white'
+            : 'text-white/40 hover:bg-white/[0.06] hover:text-white/70'
         }`}
         aria-pressed={active}
         title={isClaude ? 'Team handles this in Claude' : 'Custom product we build'}
@@ -83,7 +95,7 @@ function DeliveryModePicker({
 
   return (
     <div
-      className="inline-flex rounded-lg border border-white/12 bg-white/[0.03] p-0.5"
+      className="inline-flex gap-0.5 p-0.5"
       role="group"
       aria-label="Delivery mode"
     >
@@ -548,7 +560,7 @@ function ProjectBriefFields({
 
   return (
     <div className="mt-3 space-y-2">
-      <PlanSection title="Problem & Opportunity" icon={Target} defaultOpen>
+      <PlanSection title="Problem & Opportunity" icon={Target}>
         <div className="space-y-4">
           <div>
             <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
@@ -575,7 +587,7 @@ function ProjectBriefFields({
         </div>
       </PlanSection>
 
-      <PlanSection title="Solution" icon={Zap} defaultOpen>
+      <PlanSection title="Solution" icon={Zap}>
         <EditableText
           value={getSolutionsText(plan)}
           onChange={(v) => update({ solutions: v })}
@@ -584,14 +596,14 @@ function ProjectBriefFields({
         />
       </PlanSection>
 
-      <PlanSection title="Features & Functionalities" icon={List} defaultOpen>
+      <PlanSection title="Features & Functionalities" icon={List}>
         <FunctionalityList
           values={plan.functionalities || []}
           onChange={(v) => update({ functionalities: v })}
         />
       </PlanSection>
 
-      <PlanSection title="Impact & Business Value" icon={Target} defaultOpen>
+      <PlanSection title="Impact & Business Value" icon={Target}>
         <div className="space-y-4">
           <div>
             <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
@@ -618,7 +630,7 @@ function ProjectBriefFields({
         </div>
       </PlanSection>
 
-      <PlanSection title="Target Audience" icon={Users} defaultOpen>
+      <PlanSection title="Target Audience" icon={Users}>
         <EditableList
           values={plan.targetAudience}
           onChange={(v) => update({ targetAudience: v })}
@@ -626,7 +638,7 @@ function ProjectBriefFields({
         />
       </PlanSection>
 
-      <PlanSection title="Technical Approach" icon={Settings} defaultOpen>
+      <PlanSection title="Technical Approach" icon={Settings}>
         <EditableText
           value={plan.technicalApproach}
           onChange={(v) => update({ technicalApproach: v })}
@@ -635,7 +647,7 @@ function ProjectBriefFields({
         />
       </PlanSection>
 
-      <PlanSection title="Risks & Dependencies" icon={AlertTriangle} defaultOpen>
+      <PlanSection title="Risks & Dependencies" icon={AlertTriangle}>
         <div className="space-y-4">
           <div>
             <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
@@ -689,9 +701,16 @@ function FeatureCard({
   const effort = assignment?.effort || 'm';
   const [editing, setEditing] = useState(false);
   const [briefOpen, setBriefOpen] = useState(false);
+  const [briefFieldsKey, setBriefFieldsKey] = useState(0);
   const [draftName, setDraftName] = useState(copy.title);
   const [draftDesc, setDraftDesc] = useState(copy.description);
   const briefFilled = hasProjectPlanContent(plan);
+
+  useEffect(() => {
+    if (!highlighted) return;
+    setBriefOpen(false);
+    setBriefFieldsKey((k) => k + 1);
+  }, [highlighted]);
 
   const saveEdit = () => {
     const title = draftName.trim() || copy.title;
@@ -828,11 +847,7 @@ function FeatureCard({
                   key={p}
                   type="button"
                   onClick={() => onPhaseChange({ priority: p })}
-                  className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] ${
-                    active
-                      ? `${m.border} ${m.bg} ${m.color}`
-                      : 'border-white/10 text-white/30 hover:text-white/50'
-                  }`}
+                  className={active ? CHIP_ACTIVE : CHIP_IDLE}
                 >
                   {m.short}
                 </button>
@@ -852,11 +867,7 @@ function FeatureCard({
                     key={e}
                     type="button"
                     onClick={() => onPhaseChange({ effort: e })}
-                    className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase ${
-                      active
-                        ? 'border-white/30 bg-white/10 text-white/80'
-                        : 'border-white/10 text-white/30 hover:text-white/50'
-                    }`}
+                    className={active ? CHIP_ACTIVE : CHIP_IDLE}
                   >
                     {e.toUpperCase()}
                   </button>
@@ -870,7 +881,11 @@ function FeatureCard({
           </div>
 
           {priority === 'high' ? (
-            <ProjectBriefFields plan={plan} onChange={onPlanChange} />
+            <ProjectBriefFields
+              key={briefFieldsKey}
+              plan={plan}
+              onChange={onPlanChange}
+            />
           ) : (
             <div className="mt-3">
               <button
@@ -893,7 +908,11 @@ function FeatureCard({
                 </span>
               </button>
               <CollapseReveal open={briefOpen}>
-                <ProjectBriefFields plan={plan} onChange={onPlanChange} />
+                <ProjectBriefFields
+                  key={briefFieldsKey}
+                  plan={plan}
+                  onChange={onPlanChange}
+                />
               </CollapseReveal>
             </div>
           )}
@@ -947,11 +966,7 @@ function RecommendationCard({
               key={p}
               type="button"
               onClick={() => onChange({ suggestedPriority: p })}
-              className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] ${
-                active
-                  ? `${m.border} ${m.bg} ${m.color}`
-                  : 'border-white/10 text-white/30 hover:text-white/50'
-              }`}
+              className={active ? CHIP_ACTIVE : CHIP_IDLE}
             >
               {m.short}
             </button>
@@ -968,11 +983,7 @@ function RecommendationCard({
               key={e}
               type="button"
               onClick={() => onChange({ effort: e })}
-              className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase ${
-                active
-                  ? 'border-white/30 bg-white/10 text-white/80'
-                  : 'border-white/10 text-white/30 hover:text-white/50'
-              }`}
+              className={active ? CHIP_ACTIVE : CHIP_IDLE}
             >
               {e.toUpperCase()}
             </button>
@@ -1032,6 +1043,7 @@ export default function ProjectPlanPanel({
   onFeatureDelete,
   onAddFeature,
   highlightCaseId,
+  scrollToCaseId,
 }: ProjectPlanPanelProps) {
   const themeAccent = projectAccent(projectId);
   const visibleRecs = recommendations.filter((r) => r.status !== 'rejected');
@@ -1046,6 +1058,12 @@ export default function ProjectPlanPanel({
   const [laterOpen, setLaterOpen] = useState(false);
   const [recsOpen, setRecsOpen] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+
+  useEffect(() => {
+    if (!scrollToCaseId) return;
+    setLaterOpen(false);
+    setRecsOpen(false);
+  }, [scrollToCaseId]);
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
   const [newPriority, setNewPriority] = useState<FeaturePriority>('high');
@@ -1243,11 +1261,7 @@ export default function ProjectPlanPanel({
                         key={p}
                         type="button"
                         onClick={() => setNewPriority(p)}
-                        className={`rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] ${
-                          active
-                            ? `${m.border} ${m.bg} ${m.color}`
-                            : 'border-white/10 text-white/35 hover:text-white/60'
-                        }`}
+                        className={active ? CHIP_ACTIVE_MD : CHIP_IDLE_MD}
                       >
                         {m.short}
                       </button>
@@ -1267,11 +1281,7 @@ export default function ProjectPlanPanel({
                         key={e}
                         type="button"
                         onClick={() => setNewEffort(e)}
-                        className={`rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase ${
-                          active
-                            ? 'border-white/30 bg-white/10 text-white/80'
-                            : 'border-white/10 text-white/35 hover:text-white/60'
-                        }`}
+                        className={active ? CHIP_ACTIVE_MD : CHIP_IDLE_MD}
                       >
                         {e.toUpperCase()}
                       </button>

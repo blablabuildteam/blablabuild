@@ -111,7 +111,7 @@ export const DELIVERY_SUGGESTIONS: Record<
   // ── Platform / tracker heavy → Adsomnia (+ bla for agents) ────────────────
   '52k9ejik': {
     deliveryPartners: ['adsomnia', 'blablabuild'],
-    note: 'CPM drop alerting — Ad Ops data + alert agent.',
+    note: 'Ad Ops CPM desk — Looker Studio feed, daily reporting + drop Slack. Custom, not Claude.',
   },
   zvnakelf: {
     deliveryPartners: ['adsomnia', 'blablabuild'],
@@ -192,7 +192,12 @@ export const DELIVERY_SUGGESTIONS: Record<
   // ── BI / Pricing ──────────────────────────────────────────────────────────
   '5wq983os': {
     deliveryPartners: ['adsomnia', 'blablabuild'],
-    note: 'Data quality triage — live DB later; offline scope first.',
+    note: 'Data-quality triage — Claude + knowledge center; no custom app until we know if the center should leave the laptop.',
+  },
+  bidqcl01: {
+    deliveryPartners: ['adsomnia', 'blablabuild'],
+    priorityStatus: 'kill',
+    note: 'Absorbed into DB / Looker data-quality triage (5wq983os) — same L1/L2 Claude case.',
   },
   l32k9os0: {
     deliveryPartners: ['adsomnia'],
@@ -214,15 +219,22 @@ export const DELIVERY_SUGGESTIONS: Record<
   // ── Media Buying ──────────────────────────────────────────────────────────
   '1y16z6b7': {
     deliveryPartners: ['adsomnia', 'blablabuild'],
-    note: 'MB performance alarming — monitoring + alerts.',
+    priorityStatus: 'kill',
+    note: 'Absorbed into MB performance reporting (ytfkqqwj) — Slack anomaly alerts are a purpose of that desk.',
   },
   mg6vhvhm: {
     deliveryPartners: ['adsomnia', 'blablabuild'],
-    note: 'Autofill daily MB stats — tracker export assist.',
+    priorityStatus: 'kill',
+    note: 'Absorbed into Financial MB reporting (ldfa53nk) — daily P&L fill is that ledger’s entry path.',
   },
   ytfkqqwj: {
     deliveryPartners: ['adsomnia', 'blablabuild'],
-    note: 'MB performance reporting — ScaleWizard/export briefs.',
+    note: 'Custom Looker-fed performance desk — daily MB, weekly leadership, Slack alerts. Not Claude.',
+  },
+  'new-mtk287dw': {
+    deliveryPartners: ['adsomnia', 'blablabuild'],
+    priorityStatus: 'kill',
+    note: 'Absorbed into CPM reporting & drop alerts (52k9ejik) — Ad Ops daily pack + drop Slack, not the MB desk.',
   },
   jj12rux9: {
     deliveryPartners: ['adsomnia'],
@@ -230,7 +242,7 @@ export const DELIVERY_SUGGESTIONS: Record<
   },
   ldfa53nk: {
     deliveryPartners: ['adsomnia', 'blablabuild'],
-    note: 'Financial MB reporting — automation on exports.',
+    note: 'Custom MB financial ledger — API + manual template, kill Sheets, permissions, what-matters + Slack.',
   },
 
   // ── Finance / HR / General / YP / API / PM ────────────────────────────────
@@ -252,7 +264,7 @@ export const DELIVERY_SUGGESTIONS: Record<
   },
   '9qpxrbua': {
     deliveryPartners: ['tbd', 'adsomnia', 'blablabuild'],
-    note: 'Central CRM on steroids — large multi-system; confirm scope first.',
+    note: 'Unified partner CRM — later scale of Partner Intelligence knowledge layer, not a separate theme.',
   },
   jtzx6rw7: {
     deliveryPartners: ['adsomnia', 'blablabuild'],

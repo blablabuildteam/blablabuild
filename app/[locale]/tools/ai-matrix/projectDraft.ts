@@ -9,6 +9,7 @@ function withoutAbsorbed(ids: string[]): string[] {
 /** Themes folded into another theme id (activation hub → intelligence hub). */
 export const ABSORBED_THEME_IDS: Record<string, string> = {
   'partner-activation': 'partner-intelligence',
+  'crm-platform': 'partner-intelligence',
 };
 
 function foldAbsorbedThemes(clusters: ProjectCluster[]): ProjectCluster[] {

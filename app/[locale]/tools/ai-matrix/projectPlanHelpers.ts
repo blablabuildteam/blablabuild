@@ -163,6 +163,10 @@ export function initializeFeaturePhases(
     'Centralised Email Dashboard',
     'CV & cover letter screening agent',
     'CV screening & interview prep',
+    'MB performance reporting automation',
+    'CPM drop daily alert report',
+    'DB / Looker data-quality triage',
+    'Financial MB reporting automation',
   ]);
 
   Object.entries(existingPhases).forEach(([id, prev]) => {
