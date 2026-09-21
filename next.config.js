@@ -13,6 +13,10 @@ const nextConfig = {
   },
   transpilePackages: ['@react-three/fiber', '@react-three/drei'],
   async redirects() {
+    // Live site sends the matrix to the tools host. Keep it on localhost in `next dev`.
+    if (process.env.NODE_ENV !== 'production') {
+      return [];
+    }
     return [
       {
         source: '/tools/ai-matrix',

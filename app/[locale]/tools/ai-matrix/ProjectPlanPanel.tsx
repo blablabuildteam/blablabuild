@@ -651,8 +651,10 @@ function FeatureCard({
       id={prioritizeProjectRowId(uc.id)}
       className={`scroll-mt-24 rounded-xl border p-3 ${
         priority === 'high'
-          ? 'border-bla-lime bg-bla-lime/[0.04]'
-          : 'border-white/10 bg-white/[0.02]'
+          ? briefFilled
+            ? 'border-solid border-bla-lime bg-bla-lime/[0.04]'
+            : 'border-dashed border-bla-lime bg-bla-lime/[0.04]'
+          : 'border-solid border-white/10 bg-white/[0.02]'
       } ${highlighted ? 'ring-2 ring-bla-lime/35' : ''}`}
     >
       <div className="flex items-start justify-between gap-3">
