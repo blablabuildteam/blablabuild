@@ -8,17 +8,22 @@ export interface FeatureTransform {
   description: string;
 }
 
+/** Workshop cases folded into another Prioritize project — not shown as their own chip. */
+export const ABSORBED_CASE_IDS: Record<string, string> = {
+  zbvbw4s5: '6wwxlvke',
+  'new-mtk0xglc': '6wwxlvke',
+};
+
+export function isAbsorbedCase(caseId: string): boolean {
+  return Boolean(ABSORBED_CASE_IDS[caseId]);
+}
+
 export const FEATURE_TRANSFORMS: Record<string, FeatureTransform> = {
   // ── Email Delivery & Content Engine ──────────────────────────────────────
   '6wwxlvke': {
-    title: 'Compliant message variant generator',
+    title: 'Email production loop',
     description:
-      'Productized copy desk: generate compliant variants, review, push into Ongage messages and campaigns, then train on send stats and human accept/reject — instead of copying out of Claude.',
-  },
-  zbvbw4s5: {
-    title: 'Template-driven Ongage message builder',
-    description:
-      'Auto-create Ongage email messages from the existing template library by filling GEO × placement variables — one brief produces the full message set instead of manual cloning.',
+      'Closed loop for several email purposes: insights and performance, copy and template production, Ongage write-back and delivery. Review packs, send through Ongage, and feed results back so the next brief is better — not a separate dashboard, Claude paste step, and template cloner.',
   },
   '0zzpakqt': {
     title: 'Figma-to-HTML email builder',

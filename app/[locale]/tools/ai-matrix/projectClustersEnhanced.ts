@@ -47,12 +47,12 @@ export const PROJECT_CLUSTERS_V2: ProjectClusterV2[] = [
     rationale: 'Shared Ongage/ESP surface — delivery reliability and message craft land as one initiative.',
     suggestedHorizon: 'now',
     primaryDelivery: ['adsomnia', 'bending-the-rules', 'blablabuild'],
-    caseIds: ['6wwxlvke', 'zbvbw4s5', '0zzpakqt', 'hss1gydb', 'yax6ipd9', 'q8t5rvsh'],
+    caseIds: ['6wwxlvke', '0zzpakqt', 'hss1gydb', 'yax6ipd9', 'q8t5rvsh'],
     plan: {
       problemStatement: 'Email team spends significant time on manual message creation, compliance checking, and monitoring delivery health across servers. No unified view of send capacity and server distribution.',
       opportunity: 'Automate compliant message generation, centralize delivery monitoring, and optimize server distribution to increase email throughput while reducing manual effort and compliance risk.',
       solutions: [
-        'Claude-powered compliant message variant generator with legal guardrails',
+        'Email production loop — copy, template fills, Ongage write-back, and performance back into the next pack',
         'Automated HTML email template builder with brand consistency',
         'Real-time Slack alerts for delivery issues (bounces, complaints, blacklists)',
         'Daily send quota dashboard with predictive capacity planning',

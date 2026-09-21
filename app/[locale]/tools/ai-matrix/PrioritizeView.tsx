@@ -476,9 +476,18 @@ function ProjectBlock({
         }}
         className={`relative rounded-md border px-2 py-1 text-[12px] font-medium transition-all duration-150 ${
           high
-            ? `${developed ? 'border-solid border-bla-lime/70' : 'border-solid border-transparent'} bg-bla-lime/10 text-bla-lime/90 hover:bg-bla-lime/20 hover:text-bla-lime ${developed ? 'hover:border-bla-lime hover:shadow-[0_0_0_1px_rgba(206,255,0,0.25)]' : ''}`
+            ? 'border-solid hover:brightness-125'
             : 'border-solid border-white/12 bg-white/[0.04] text-white/55 hover:border-white/35 hover:bg-white/[0.09] hover:text-white/90 hover:shadow-[0_0_0_1px_rgba(255,255,255,0.08)]'
         }`}
+        style={
+          high
+            ? {
+                color: accent,
+                backgroundColor: `color-mix(in srgb, ${accent} 14%, transparent)`,
+                borderColor: developed ? accent : 'transparent',
+              }
+            : undefined
+        }
       >
         {high && !developed ? <GappyDashFrame rx={6} /> : null}
         {copy.title}
@@ -546,7 +555,10 @@ function ProjectBlock({
             <div className="mt-2 space-y-1.5">
               {highMembers.length > 0 && (
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-bla-lime/60">
+                  <span
+                    className="font-mono text-[10px] uppercase tracking-[0.12em]"
+                    style={{ color: accent, opacity: 0.7 }}
+                  >
                     Projects · High
                   </span>
                   {highMembers.map((m) => projectChip(m, true))}

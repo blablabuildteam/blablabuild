@@ -35,8 +35,9 @@ export const DELIVERY_SUGGESTIONS: Record<
 
   // ── Email / Ongage → often BtR + Adsomnia ─────────────────────────────────
   zbvbw4s5: {
-    deliveryPartners: ['adsomnia', 'bending-the-rules'],
-    note: 'Ongage message creation — Email + BtR ESP craft.',
+    deliveryPartners: ['adsomnia', 'bending-the-rules', 'blablabuild'],
+    priorityStatus: 'kill',
+    note: 'Absorbed into Email production loop (6wwxlvke) — template fill is a purpose of that desk, not a separate project.',
   },
   '0zzpakqt': {
     deliveryPartners: ['adsomnia', 'bending-the-rules', 'blablabuild'],
@@ -44,7 +45,7 @@ export const DELIVERY_SUGGESTIONS: Record<
   },
   '6wwxlvke': {
     deliveryPartners: ['adsomnia', 'bending-the-rules', 'blablabuild'],
-    note: 'Compliant flirting variants — Claude skill, Email owns.',
+    note: 'Email production loop — copy, templates, Ongage write-back, performance. Email + BtR ESP.',
   },
   hss1gydb: {
     deliveryPartners: ['adsomnia', 'bending-the-rules'],

@@ -153,13 +153,23 @@ export function initializeFeaturePhases(
 ): Record<string, FeaturePhaseAssignment> {
   const result: Record<string, FeaturePhaseAssignment> = {};
 
+  const retiredTitles = new Set([
+    'Compliant message variant generator',
+    'Template-driven Ongage message builder',
+    'Ongage message production',
+    'Centralised Email Dashboard',
+  ]);
+
   Object.entries(existingPhases).forEach(([id, prev]) => {
     const transform = FEATURE_TRANSFORMS[id];
+    const refreshCopy = Boolean(transform && (!prev.transformedTitle || retiredTitles.has(prev.transformedTitle)));
     result[id] = {
       ...prev,
       priority: normalizeFeaturePriority(prev.priority || prev.phase),
-      transformedTitle: prev.transformedTitle || transform?.title,
-      transformedDescription: prev.transformedDescription || transform?.description,
+      transformedTitle: refreshCopy ? transform!.title : prev.transformedTitle || transform?.title,
+      transformedDescription: refreshCopy
+        ? transform!.description
+        : prev.transformedDescription || transform?.description,
     };
   });
 

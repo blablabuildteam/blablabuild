@@ -1,5 +1,10 @@
 import { CLUSTERS_SEED_VERSION, PROJECT_CLUSTERS, type ProjectCluster } from './projectClusters';
 import { CLUSTER_MIGRATION_MAP, PROJECT_CLUSTERS_V2 } from './projectClustersEnhanced';
+import { isAbsorbedCase } from './featureTransforms';
+
+function withoutAbsorbed(ids: string[]): string[] {
+  return ids.filter((id) => !isAbsorbedCase(id));
+}
 
 /** Deep-ish clone of default proposal (code seed). */
 export function cloneDefaultClusters(): ProjectCluster[] {
@@ -30,7 +35,9 @@ function expandLegacySplits(draft: ProjectCluster[]): ProjectCluster[] {
           name: seed.name,
           summary: seed.summary,
           rationale: seed.rationale,
-          caseIds: seed.caseIds.filter((cid) => c.caseIds.includes(cid) || seed.caseIds.includes(cid)),
+          caseIds: withoutAbsorbed(
+            seed.caseIds.filter((cid) => c.caseIds.includes(cid) || seed.caseIds.includes(cid))
+          ),
           suggestedHorizon: seed.suggestedHorizon,
           primaryDelivery: seed.primaryDelivery ? [...seed.primaryDelivery] : undefined,
         });
@@ -78,14 +85,14 @@ export function resolveClusters(
     if (!seed || c.id.startsWith('custom-')) {
       return {
         ...c,
-        caseIds: [...(c.caseIds || [])],
+        caseIds: withoutAbsorbed(c.caseIds || []),
         primaryDelivery: c.primaryDelivery ? [...c.primaryDelivery] : undefined,
         suggestedHorizon: c.suggestedHorizon,
       };
     }
     return {
       ...seed,
-      caseIds: [...(c.caseIds || seed.caseIds)],
+      caseIds: withoutAbsorbed(c.caseIds || seed.caseIds),
       name: refreshCopy ? seed.name : c.name || seed.name,
       summary: refreshCopy ? seed.summary : c.summary || seed.summary,
       rationale: refreshCopy ? seed.rationale : c.rationale || seed.rationale,
@@ -97,7 +104,7 @@ export function resolveClusters(
 
 export function unclusteredIds(clusters: ProjectCluster[], allCaseIds: string[]): string[] {
   const assigned = new Set(clusters.flatMap((c) => c.caseIds));
-  return allCaseIds.filter((id) => !assigned.has(id));
+  return allCaseIds.filter((id) => !assigned.has(id) && !isAbsorbedCase(id));
 }
 
 export function projectIdForCase(clusters: ProjectCluster[], caseId: string): string | null {

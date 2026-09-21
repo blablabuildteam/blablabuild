@@ -74,7 +74,7 @@ export function GappyDashFrame({ rx }: { rx: number }) {
         fill="none"
         stroke="currentColor"
         strokeWidth="1.5"
-        strokeDasharray="4 14"
+        strokeDasharray="4 10"
         strokeLinecap="round"
         vectorEffect="non-scaling-stroke"
       />
