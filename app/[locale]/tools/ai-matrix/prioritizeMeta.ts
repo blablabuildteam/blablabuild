@@ -129,6 +129,28 @@ export interface PrioritizeMetaState {
 
   /** Last applied FEATURE_PLAN_SEED_VERSION — refresh High project briefs on bump */
   featurePlanSeedVersion?: number;
+
+  /** Roadmap wave assignments for phased project delivery */
+  roadmapWaves?: RoadmapWave[];
+  roadmapWavesSeedVersion?: number;
+}
+
+/** A wave in the phased roadmap */
+export interface RoadmapWave {
+  id: string;
+  title: string;
+  monthStart: number;
+  monthEnd: number;
+  rationale: string;
+  items: RoadmapWaveItem[];
+}
+
+/** A project phase within a roadmap wave */
+export interface RoadmapWaveItem {
+  caseId: string;
+  phaseId: string;
+  /** Override title if needed */
+  title?: string;
 }
 
 export function lsMetaKey(sessionId: string) {
@@ -198,6 +220,14 @@ export async function loadPrioritizeMeta(sessionId: string): Promise<PrioritizeM
         remote?.featureEffortSeedVersion ?? local?.featureEffortSeedVersion,
       featurePlanSeedVersion:
         remote?.featurePlanSeedVersion ?? local?.featurePlanSeedVersion,
+      roadmapWaves:
+        remote?.roadmapWaves && remote.roadmapWaves.length > 0
+          ? remote.roadmapWaves
+          : local?.roadmapWaves && local.roadmapWaves.length > 0
+            ? local.roadmapWaves
+            : undefined,
+      roadmapWavesSeedVersion:
+        remote?.roadmapWavesSeedVersion ?? local?.roadmapWavesSeedVersion,
     };
   } catch {
     return local || {};
