@@ -218,10 +218,10 @@ export function applyFeatureEffortSeeds(
   for (const [caseId, effort] of Object.entries(FEATURE_EFFORT_SEEDS)) {
     const prev = result[caseId];
     result[caseId] = {
+      ...prev,
       caseId,
       priority: 'high',
       approved: false,
-      ...prev,
       effort,
     };
   }
