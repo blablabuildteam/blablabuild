@@ -7,6 +7,9 @@ import type { FeatureRequest, ProjectPlan } from './projectPlanTypes';
  */
 export const FEATURE_EFFORT_SEED_VERSION = 2;
 
+/** Bump to overwrite saved Prioritize briefs from FEATURE_PLAN_SEEDS. */
+export const FEATURE_PLAN_SEED_VERSION = 1;
+
 export const FEATURE_EFFORT_SEEDS: Record<string, FeatureRequest['effort']> = {
   /** Already proven Claude loop; remaining work is a connect + maybe sharing the laptop knowledge center. */
   '5wq983os': 'xs',
@@ -115,7 +118,7 @@ export const FEATURE_PLAN_SEEDS: Record<string, ProjectPlan> = {
     problemStatement:
       'Leadership opened a Looker Studio and still walk it by hand to find what moved. Media buying does the same hunt for daily performance. Anomalies get missed because a person cannot see every geo, buyer, and campaign every morning. Workshop chips split this into a reporting pack (ScaleWizard + Claude) and a separate performance-drop alarm. ScaleWizard is only one feeder into Studio. Pasting exports into Claude cannot watch the feed, cannot hold two cadences, and cannot learn from “this did / did not matter.” Ad Ops CPM reporting is a sibling desk, not this product.',
     opportunity:
-      'One custom product on the dataset that already feeds Looker Studio — Adsomnia owns it; that is the only integration. A trained agent consumes that feed, spots the anomalies that matter, and writes thorough analysis. Media buying gets a daily pack; leadership gets a weekly pack. Slack fires when something needs a human now. Performance drop alarming lives here, not as a second app. Financial MB reporting is a sibling High (Sheets → our ledger), not this product.',
+      'One custom product on the dataset that already feeds Looker Studio — Adsomnia owns it; that is the only integration. A trained agent consumes that feed, spots the anomalies that matter, and writes thorough analysis. Media buying gets a daily pack; leadership gets a weekly pack. Slack fires when something needs a human now. Performance drop alarming lives here, not as a second app. Financial MB reporting is a sibling High (Sheets → a custom ledger), not this product.',
     solutions:
       'Build a custom app, not a Claude skill. Claude cannot sit on a live feed, cannot schedule two audience cadences, cannot push Slack, and cannot keep a durable feedback loop of what leadership and buyers marked as noise vs signal. Custom is required because the job is operational: always-on read of their warehouse, a dashboard they actually open, an agent that compounds on labelled anomalies, and alerts without opening a chat. Connect once to the Looker Studio underlying dataset. Do not reconnect ScaleWizard, Voluum, or ad networks — those already land in Studio. Start with a one-off with MB and leadership to write “what matters”; then every pack and alert can be marked useful or not so the agent trains.',
     functionalities: [
@@ -123,7 +126,7 @@ export const FEATURE_PLAN_SEEDS: Record<string, ProjectPlan> = {
         id: 'fn-looker-feed',
         title: 'One integration: the Studio feed',
         description:
-          'Read the Adsomnia-owned dataset that powers Looker Studio. No second pipes to ScaleWizard, trackers, or networks. Studio stays the BI they already trust; we consume what it already sees.',
+          'Read the Adsomnia-owned dataset that powers Looker Studio. No second pipes to ScaleWizard, trackers, or networks. Studio stays the BI they already trust; the desk reads what it already sees.',
       },
       {
         id: 'fn-custom-dashboard',
@@ -180,7 +183,7 @@ export const FEATURE_PLAN_SEEDS: Record<string, ProjectPlan> = {
       'Not Finance — financial MB reporting is a later project',
     ],
     risks: [
-      'Studio’s UI is not the API — we need stable access to the underlying dataset they own, with an owner for schema changes.',
+      'Studio’s UI is not the API — the desk needs stable access to the underlying dataset they own, with an owner for schema changes.',
       'Without the definition workshop, the agent will cry wolf or stay silent. Do not skip it.',
       'Alert fatigue if Slack fires before “what matters” is labelled.',
       'Reconnecting ScaleWizard or trackers would duplicate BI and break the one-integration rule.',
@@ -282,9 +285,9 @@ export const FEATURE_PLAN_SEEDS: Record<string, ProjectPlan> = {
     problemStatement:
       'Other teams ping BI every other day: this Looker number looks wrong. That used to be manual SQL/LookML. The team already proved L1: Claude triages from pasted exports and schema docs (hypotheses, draft SQL, next checks — human runs queries). L2 is growing a knowledge center so each incident makes the next one faster. They built that center themselves, including outside Claude. It currently lives locally on one laptop. A custom triage product would rebuild what already works. Live DB/Looker was always the later platform track, not the proof.',
     opportunity:
-      'Keep this as a Claude-run skill plus their knowledge center — not a custom app. The only product-shaped gap is that the center is not yet a team asset. In two days we sit with the person who built it. That conversation decides whether we help productize the knowledge center (shareable, not a laptop folder) or leave it as their own stack. Text-to-SQL for ad-hoc pulls (pnsh385v) stays a sibling. Do not connect BigQuery/Looker in this project.',
+      'Keep this as a Claude-run skill plus their knowledge center — not a custom app. The only product-shaped gap is that the center is not yet a team asset. A session with the person who built it decides whether to productize the knowledge center (shareable, not a laptop folder) or leave it as their own stack. Text-to-SQL for ad-hoc pulls (pnsh385v) stays a sibling. Do not connect BigQuery/Looker in this project.',
     solutions:
-      'No custom solution now. Document and keep the loop they already run: ticket in → Claude + knowledge center → draft investigation → human executes → write one thing back into the center. Fold data-team incident-handling notes in as L2 already asked. After the connect: if the laptop is the risk, the help is packaging and sharing the knowledge center (Team project, Drive, git — whatever they already use besides Claude), not a new UI. If they do not want help, this stays an Adsomnia-owned Claude/ops practice and we do not invent a product.',
+      'No custom solution now. Document and keep the loop they already run: ticket in → Claude + knowledge center → draft investigation → human executes → write one thing back into the center. Fold data-team incident-handling notes in as L2 already asked. After the connect: if the laptop is the risk, package and share the knowledge center (Team project, Drive, git — whatever they already use besides Claude), not a new UI. If they do not want that, this stays an Adsomnia-owned Claude/ops practice — no new product.',
     functionalities: [
       {
         id: 'fn-claude-triage',
@@ -296,7 +299,7 @@ export const FEATURE_PLAN_SEEDS: Record<string, ProjectPlan> = {
         id: 'fn-knowledge-center',
         title: 'Knowledge center they already built',
         description:
-          'Enriched by each incident and by data-team business context. Exists in Claude and outside it. That is the product they have — not a dashboard we should clone.',
+          'Enriched by each incident and by data-team business context. Exists in Claude and outside it. That is the product they have — not a dashboard to clone.',
       },
       {
         id: 'fn-write-back',
@@ -308,7 +311,7 @@ export const FEATURE_PLAN_SEEDS: Record<string, ProjectPlan> = {
         id: 'fn-no-custom',
         title: 'Not a custom triage app',
         description:
-          'They already run this. Building a custom investigation UI would compete with a working skill and a knowledge center we have not fully seen.',
+          'They already run this. Building a custom investigation UI would compete with a working skill and a knowledge center that has not been fully seen yet.',
       },
       {
         id: 'fn-laptop-risk',
@@ -320,13 +323,13 @@ export const FEATURE_PLAN_SEEDS: Record<string, ProjectPlan> = {
         id: 'fn-connect',
         title: 'Connect, then decide productization',
         description:
-          'Workshop with the builder in two days: what the stack actually is, what is Claude vs local, whether we help share/productize the knowledge center. No build until that call. Live warehouse connection stays later.',
+          'Workshop with the builder in two days: what the stack actually is, what is Claude vs local, whether to share/productize the knowledge center. No custom build until that call. Live warehouse connection stays later.',
       },
     ],
     expectedImpact:
       'Faster, more consistent “data looks wrong” handling without a new product. After the connect, either a shared knowledge center or a clear “they own it.” Avoids building a custom desk that duplicates Fernanda’s loop.',
     businessValue:
-      'BI time stays on judgment, not first-pass hunting. Other teams get a repeatable triage path. We do not spend a custom build before we know if they even want the center off the laptop.',
+      'BI time stays on judgment, not first-pass hunting. Other teams get a repeatable triage path. A custom build is not the next step until it is clear they even want the center off the laptop.',
     technicalApproach:
       'Claude Project / skill + existing knowledge-center files (owner: Fernanda / BI). Inputs: pasted ticket, schema docs, CSV/export or screenshot. Outputs: hypotheses, draft SQL, next checks, write-back. No Looker API, no BigQuery, no custom app in this pack. Productization options after the connect only: shared Claude Team project, Drive/git copy of the center, backup off laptop. pnsh385v remains separate (ad-hoc SQL from NL, not incident triage).',
     targetAudience: [
@@ -339,7 +342,7 @@ export const FEATURE_PLAN_SEEDS: Record<string, ProjectPlan> = {
       'Building a custom product before the call would duplicate their stack and waste the meeting.',
       'Live Looker/DB sneaking in as “the real solution” — out of scope until they ask.',
       'Merging Text-to-SQL (ad-hoc pulls) into this chip would blur incident triage vs one-off reporting.',
-      'If they already productized outside Claude and do not want help, we should recuse rather than invent work.',
+      'If they already productized outside Claude and do not want help, leave it rather than invent work.',
     ],
     dependencies: [
       'Existing L1 Claude case and L2 knowledge-center practice.',
@@ -354,15 +357,15 @@ export const FEATURE_PLAN_SEEDS: Record<string, ProjectPlan> = {
     problemStatement:
       'Every cycle someone walks ~24 ad platforms, copies numbers into a fixed Google Sheet, then MB/Finance rebuild a repetitive financial pack. One buyer already fills a P&L doc per media buyer every day (the daily-stats chip). Sheets break, mappings drift, and the report dumps everything instead of what matters. Claude-on-export cannot be the ledger, cannot permission several operators, and cannot replace the Sheet as system of record.',
     opportunity:
-      'Kill Sheets. One custom ledger with the same template they already use. Pull via API where we can (map/normalize each source into our schema); leave the rest as the same manual fill they do today, but in our UI. Then the Looker-desk pattern: define what matters, automated packs, Slack when something is off. Daily stats autofill is this product’s entry path, not a second project. Campaign Looker reporting and Roy’s company P&L stay siblings.',
+      'Kill Sheets. One custom ledger with the same template they already use. Pull via API where possible (map/normalize each source into one schema); leave the rest as the same manual fill they do today, but in the ledger UI. Then the Looker-desk pattern: define what matters, automated packs, Slack when something is off. Daily stats autofill is this product’s entry path, not a second project. Campaign Looker reporting and Roy’s company P&L stay siblings.',
     solutions:
       'Custom app: permissions for multiple operators; template entry UI; per-platform API connectors with explicit field mapping into one normalized ledger; manual rows for sources without API (TrafficBar, TwinRed, Taboola/Outbrain/MGID, etc. until connected). Existing Harlem Next BQ / ScaleWizard inventory is a starting list of what already has an API, not the product. Reporting agent + Slack on the ledger. No Google Sheet write-back. No live Looker Studio pipe in this project — that is MB performance reporting.',
     functionalities: [
       {
         id: 'fn-kill-sheets',
-        title: 'Sheets die; our template is the ledger',
+        title: 'Sheets die; the template is the ledger',
         description:
-          'The current fixed Google Sheet is the schema we implement. Operators never paste into Sheets again. Optional export later if someone insists on a file; the system of record is us.',
+          'The current fixed Google Sheet is the schema the ledger implements. Operators never paste into Sheets again. Optional export later if someone insists on a file; the ledger is the system of record.',
       },
       {
         id: 'fn-template-ui',
@@ -380,13 +383,13 @@ export const FEATURE_PLAN_SEEDS: Record<string, ProjectPlan> = {
         id: 'fn-api-map',
         title: 'API pull + per-source mapping',
         description:
-          '~24 platforms today. Connect where an API exists (workshop already listed Exo, TJ, Adnium, TrafficStars, … into HN BQ; Meta via ScaleWizard soon). Each connector has a mapping into our template. Unmapped fields stay visible, not silently dropped.',
+          '~24 platforms today. Connect where an API exists (workshop already listed Exo, TJ, Adnium, TrafficStars, … into HN BQ; Meta via ScaleWizard soon). Each connector has a mapping into the ledger template. Unmapped fields stay visible, not silently dropped.',
       },
       {
         id: 'fn-manual-remainder',
         title: 'Manual fill for no-API sources',
         description:
-          'CrakRevenue-style CPC maths, Taboola/Outbrain/MGID, TrafficBar, TwinRed, etc. stay human-entered in the same UI until an API exists. That is how Sheets work today — we do not block v1 on 24 connectors.',
+          'CrakRevenue-style CPC maths, Taboola/Outbrain/MGID, TrafficBar, TwinRed, etc. stay human-entered in the same UI until an API exists. That is how Sheets work today — v1 does not wait for 24 connectors.',
       },
       {
         id: 'fn-fin-agent',
@@ -421,7 +424,7 @@ export const FEATURE_PLAN_SEEDS: Record<string, ProjectPlan> = {
     risks: [
       '24 APIs is a programme. If v1 waits for all of them, Sheets never die. Ship template + manual + first API batch.',
       'Bad mappings silently wrong the ledger — mappings must be reviewable and versioned.',
-      'HN BQ / ScaleWizard as a hidden second system of record. They are sources; we are the ledger.',
+      'HN BQ / ScaleWizard as a hidden second system of record. They are sources; the custom ledger is the system of record.',
       'Permissions too coarse → buyers see each other’s P&L; too fine → nobody can operate.',
       'Merging this into Looker performance reporting would mix campaign anomalies with financial entry.',
       'Finance company P&L (mu3ctc3n) sneaking in chart-of-accounts / ERP.',
@@ -442,7 +445,7 @@ export const FEATURE_PLAN_SEEDS: Record<string, ProjectPlan> = {
     opportunity:
       "One Email production loop. Several purposes (compliant variants, GEO × placement template fills, other copy types) go through the same desk: brief → pack → review → write into Ongage and schedule on existing segments → performance back in as insights for the next brief. The dashboard is not a separate product; it is the insights and performance ends of this loop. Lists, ISP routing, and client-safe wrappers stay in Ongage.",
     solutions:
-      "A BlaBlaBuild product that owns creative production and the performance view, and uses Ongage as the ESP. Purpose is a pack type, not a new Prioritize project. Template-library fill and compliant variants are paths on the same desk. The centralised dashboard (insights → … → performance) is the same surface: strategy/creative/production in the tool, delivery in Ongage, performance queried back. Figma-to-HTML stays a sibling for rendering. v1 is review-then-push; auto-push later.",
+      "A custom production desk that owns creative production and the performance view, and uses Ongage as the ESP. Purpose is a pack type, not a new Prioritize project. Template-library fill and compliant variants are paths on the same desk. The centralised dashboard (insights → … → performance) is the same surface: strategy/creative/production in the tool, delivery in Ongage, performance queried back. Figma-to-HTML stays a sibling for rendering. v1 is review-then-push; auto-push later.",
     functionalities: [
       {
         id: "fn-loop-surface",
@@ -498,7 +501,7 @@ export const FEATURE_PLAN_SEEDS: Record<string, ProjectPlan> = {
     businessValue:
       "Stops overlapping Email tools. Insights, production, and performance share a system of record. Faster time-to-campaign; compliance in the product; copy improves with sends.",
     technicalApproach:
-      "BlaBlaBuild app: purpose-routed generation + performance view from Ongage reports. REST: templates and POST/PUT /api/emails; POST /api/mailings; POST /api/reports/query grouped by email_message_id (optional country/segment/platform). API entitlement required. v1 never overwrites a live send. Figma-to-HTML remains rendering-only.",
+      "Custom app: purpose-routed generation + performance view from Ongage reports. REST: templates and POST/PUT /api/emails; POST /api/mailings; POST /api/reports/query grouped by email_message_id (optional country/segment/platform). API entitlement required. v1 never overwrites a live send. Figma-to-HTML remains rendering-only.",
     targetAudience: [
       "Email Marketing — operators and reviewers",
       "Bending the Rules — ESP / template craft",

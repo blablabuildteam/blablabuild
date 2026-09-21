@@ -56,7 +56,7 @@ import {
   recommendationPriority,
   recommendationAssignment,
 } from './projectPlanHelpers';
-import { FEATURE_EFFORT_SEED_VERSION, FEATURE_PLAN_SEEDS } from './featurePlanSeeds';
+import { FEATURE_EFFORT_SEED_VERSION, FEATURE_PLAN_SEED_VERSION, FEATURE_PLAN_SEEDS } from './featurePlanSeeds';
 import { DROPPED_RECOMMENDATION_TITLES } from './projectClustersEnhanced';
 import {
   FEATURE_PRIORITY_META,
@@ -1027,14 +1027,20 @@ export default function PrioritizeView({
       let next = loaded;
       const seededPlans = { ...(loaded.featurePlans || {}) };
       let seededAny = false;
+      const planSeedStale =
+        (loaded.featurePlanSeedVersion ?? 0) < FEATURE_PLAN_SEED_VERSION;
       for (const [caseId, seed] of Object.entries(FEATURE_PLAN_SEEDS)) {
-        if (!hasProjectPlanContent(seededPlans[caseId])) {
+        if (planSeedStale || !hasProjectPlanContent(seededPlans[caseId])) {
           seededPlans[caseId] = { ...seed, updatedAt: new Date().toISOString() };
           seededAny = true;
         }
       }
       if (seededAny) {
-        next = { ...next, featurePlans: seededPlans };
+        next = {
+          ...next,
+          featurePlans: seededPlans,
+          featurePlanSeedVersion: FEATURE_PLAN_SEED_VERSION,
+        };
       }
       const effortSeedStale =
         (loaded.featureEffortSeedVersion ?? 0) < FEATURE_EFFORT_SEED_VERSION;

@@ -1,6 +1,6 @@
 /**
  * Workshop submissions → feature solution copy.
- * Titles and descriptions describe what we build, not the pain the client typed.
+ * Titles and descriptions describe the solution, not the pain the client typed.
  */
 
 export interface FeatureTransform {
@@ -226,7 +226,7 @@ export const FEATURE_TRANSFORMS: Record<string, FeatureTransform> = {
   '5wq983os': {
     title: 'DB / Looker data-quality triage',
     description:
-      'BI already triages “this Looker number looks wrong” in Claude plus a knowledge center they built themselves. No custom triage product. Next: the center lives on one laptop — connect with the builder to see if we help productize that, not replace the skill.',
+      'BI already triages “this Looker number looks wrong” in Claude plus a knowledge center they built themselves. No custom triage product. Next: the center lives on one laptop — connect with the builder to see whether to productize that, not replace the skill.',
   },
   l32k9os0: {
     title: 'Default payout request automation',

@@ -84,7 +84,7 @@ function DeliveryModePicker({
             : 'text-white/40 hover:bg-white/[0.06] hover:text-white/70'
         }`}
         aria-pressed={active}
-        title={isClaude ? 'Team handles this in Claude' : 'Custom product we build'}
+        title={isClaude ? 'Team handles this in Claude' : 'Custom product'}
       >
         <img src={src} alt="" className="h-4 w-4 shrink-0 object-contain" />
         <span className="font-mono text-[9px] uppercase tracking-[0.1em]">{label}</span>
@@ -751,7 +751,7 @@ function ProjectBriefFields({
             <EditableText
               value={plan.opportunity}
               onChange={(v) => update({ opportunity: v })}
-              placeholder="What becomes possible if we ship this?"
+              placeholder="What becomes possible if this ships?"
               multiline
             />
           </div>
@@ -762,7 +762,7 @@ function ProjectBriefFields({
         <EditableText
           value={getSolutionsText(plan)}
           onChange={(v) => update({ solutions: v })}
-          placeholder="What we build — the concrete approach for this project"
+          placeholder="The concrete approach for this project"
           multiline
         />
       </PlanSection>
@@ -820,7 +820,7 @@ function ProjectBriefFields({
         <EditableText
           value={plan.technicalApproach}
           onChange={(v) => update({ technicalApproach: v })}
-          placeholder="How we build this project"
+          placeholder="How this project is delivered"
           multiline
         />
       </PlanSection>
@@ -944,7 +944,7 @@ function FeatureCard({
                 onChange={(e) => setDraftDesc(e.target.value)}
                 rows={3}
                 className="w-full resize-none rounded-lg border border-white/15 bg-[#0a0b0e] px-3 py-2 text-[12px] text-white/80"
-                placeholder="Project description — what we build"
+                placeholder="Project description — the solution and the outcome it delivers"
               />
               <div className="flex gap-2">
                 <button
@@ -1327,7 +1327,7 @@ export default function ProjectPlanPanel({
                   onChange={(e) => setNewDesc(e.target.value)}
                   rows={3}
                   className="mt-1.5 w-full resize-none rounded-lg border border-white/15 bg-[#0a0b0e] px-3 py-2 text-[13px] text-white/85"
-                  placeholder="What we build and the outcome it delivers"
+                  placeholder="The solution and the outcome it delivers"
                 />
               </label>
               <div>

@@ -192,7 +192,7 @@ export const DELIVERY_SUGGESTIONS: Record<
   // ── BI / Pricing ──────────────────────────────────────────────────────────
   '5wq983os': {
     deliveryPartners: ['adsomnia', 'blablabuild'],
-    note: 'Data-quality triage — Claude + knowledge center; no custom app until we know if the center should leave the laptop.',
+    note: 'Data-quality triage — Claude + knowledge center; no custom app until it is clear the center should leave the laptop.',
   },
   bidqcl01: {
     deliveryPartners: ['adsomnia', 'blablabuild'],

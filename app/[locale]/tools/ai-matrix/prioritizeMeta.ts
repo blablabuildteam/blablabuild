@@ -126,6 +126,9 @@ export interface PrioritizeMetaState {
 
   /** Last applied FEATURE_EFFORT_SEED_VERSION — refresh High project effort chips on bump */
   featureEffortSeedVersion?: number;
+
+  /** Last applied FEATURE_PLAN_SEED_VERSION — refresh High project briefs on bump */
+  featurePlanSeedVersion?: number;
 }
 
 export function lsMetaKey(sessionId: string) {
@@ -193,6 +196,8 @@ export async function loadPrioritizeMeta(sessionId: string): Promise<PrioritizeM
       },
       featureEffortSeedVersion:
         remote?.featureEffortSeedVersion ?? local?.featureEffortSeedVersion,
+      featurePlanSeedVersion:
+        remote?.featurePlanSeedVersion ?? local?.featurePlanSeedVersion,
     };
   } catch {
     return local || {};
