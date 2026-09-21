@@ -52,6 +52,9 @@ import {
   applyFeatureEffortSeeds,
   resolveFeatureCopy,
   loadFeaturePlan,
+  recommendationAsUseCase,
+  recommendationPriority,
+  recommendationAssignment,
 } from './projectPlanHelpers';
 import { FEATURE_EFFORT_SEED_VERSION, FEATURE_PLAN_SEEDS } from './featurePlanSeeds';
 import { DROPPED_RECOMMENDATION_TITLES } from './projectClustersEnhanced';
@@ -439,6 +442,8 @@ function ProjectBlock({
   const [draftSummary, setDraftSummary] = useState(cluster.summary);
   const [editingAmbition, setEditingAmbition] = useState(false);
   const visibleRecs = recommendations.filter((r) => r.status === 'suggested' || r.status === 'approved');
+  const highRecs = visibleRecs.filter((r) => recommendationPriority(r, featurePhases) === 'high');
+  const laterRecs = visibleRecs.filter((r) => recommendationPriority(r, featurePhases) !== 'high');
   const highMembers = members.filter(
     (m) =>
       normalizeFeaturePriority(featurePhases[m.id]?.priority || featurePhases[m.id]?.phase) ===
@@ -456,7 +461,13 @@ function ProjectBlock({
   }, [cluster.name, cluster.summary]);
 
   useEffect(() => {
-    if (!expanded || !scrollToCaseId || !members.some((m) => m.id === scrollToCaseId)) return;
+    if (
+      !expanded ||
+      !scrollToCaseId ||
+      (!members.some((m) => m.id === scrollToCaseId) &&
+        !visibleRecs.some((r) => r.id === scrollToCaseId))
+    )
+      return;
     const timer = window.setTimeout(() => {
       document.getElementById(prioritizeProjectRowId(scrollToCaseId))?.scrollIntoView({
         behavior: 'smooth',
@@ -465,10 +476,11 @@ function ProjectBlock({
       onScrollHandled();
     }, 120);
     return () => window.clearTimeout(timer);
-  }, [expanded, scrollToCaseId, members, onScrollHandled]);
+  }, [expanded, scrollToCaseId, members, visibleRecs, onScrollHandled]);
 
-  const projectChip = (m: UseCase, high: boolean) => {
-    const copy = resolveFeatureCopy(m, featurePhases[m.id]);
+  const projectChip = (m: UseCase, high: boolean, rec?: BlaBlaRecommendation) => {
+    const assignment = rec ? recommendationAssignment(rec, featurePhases) : featurePhases[m.id];
+    const copy = resolveFeatureCopy(m, assignment);
     const developed = high && hasProjectPlanContent(loadFeaturePlan(m.id, featurePlans));
     return (
       <button
@@ -495,13 +507,13 @@ function ProjectBlock({
       >
         {high && !developed ? <GappyDashFrame rx={6} strokeColor={accent} /> : null}
         <span className="inline-flex items-center gap-1.5">
-          {featurePhases[m.id]?.handledInClaude === true ? (
+          {assignment?.handledInClaude === true ? (
             <img
               src="/logos/Claude_AI_symbol.svg.webp"
               alt=""
               className="h-3 w-3 shrink-0 object-contain opacity-90"
             />
-          ) : featurePhases[m.id]?.handledInClaude === false ? (
+          ) : assignment?.handledInClaude === false ? (
             <img
               src="/logos/custom.png"
               alt=""
@@ -633,7 +645,7 @@ function ProjectBlock({
 
           {(highMembers.length > 0 || otherMembers.length > 0 || visibleRecs.length > 0) && (
             <div className="mt-2 space-y-1.5">
-              {highMembers.length > 0 && (
+              {(highMembers.length > 0 || highRecs.length > 0) && (
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
                   <span
                     className="font-mono text-[10px] uppercase tracking-[0.12em]"
@@ -642,25 +654,16 @@ function ProjectBlock({
                     Projects · High
                   </span>
                   {highMembers.map((m) => projectChip(m, true))}
+                  {highRecs.map((r) => projectChip(recommendationAsUseCase(r), true, r))}
                 </div>
               )}
-              {(otherMembers.length > 0 || visibleRecs.length > 0) && (
+              {(otherMembers.length > 0 || laterRecs.length > 0) && (
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
                   <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/30">
-                    {highMembers.length > 0 ? 'Later' : 'Projects'}
+                    {highMembers.length > 0 || highRecs.length > 0 ? 'Later' : 'Projects'}
                   </span>
                   {otherMembers.map((m) => projectChip(m, false))}
-                  {visibleRecs.map((r) => (
-                    <span
-                      key={r.id}
-                      className="inline-flex items-center gap-1.5 rounded-md border border-solid border-white/12 bg-white/[0.04] px-2 py-1 text-[12px] font-medium text-white/55"
-                    >
-                      {r.title}
-                      <span className="font-mono text-[8px] font-normal uppercase tracking-[0.1em] text-white/30">
-                        by us
-                      </span>
-                    </span>
-                  ))}
+                  {laterRecs.map((r) => projectChip(recommendationAsUseCase(r), false, r))}
                 </div>
               )}
             </div>
@@ -951,26 +954,6 @@ export default function PrioritizeView({
     [meta, persistMeta]
   );
 
-  const setFeaturePhase = useCallback(
-    (caseId: string, assignment: Partial<FeaturePhaseAssignment>) => {
-      const hydrated = initializeFeaturePhases(useCases, meta.featurePhases || {});
-      const prev = hydrated[caseId] || {
-        caseId,
-        priority: 'backlog' as const,
-        effort: 'm' as const,
-        approved: false,
-      };
-      void persistMeta({
-        ...meta,
-        featurePhases: {
-          ...(meta.featurePhases || {}),
-          [caseId]: { ...prev, ...assignment, updatedAt: new Date().toISOString() },
-        },
-      });
-    },
-    [meta, persistMeta, useCases]
-  );
-
   // Load recommendations from enhanced clusters when meta is loaded
   const loadedRecommendations = useMemo(() => {
     const result: Record<string, BlaBlaRecommendation> = {};
@@ -989,6 +972,31 @@ export default function PrioritizeView({
 
     return result;
   }, [clusters, meta.recommendations]);
+
+  const setFeaturePhase = useCallback(
+    (caseId: string, assignment: Partial<FeaturePhaseAssignment>) => {
+      const hydrated = initializeFeaturePhases(useCases, meta.featurePhases || {});
+      const rec = loadedRecommendations[caseId];
+      const prev =
+        hydrated[caseId] ||
+        (rec
+          ? recommendationAssignment(rec, meta.featurePhases || {})
+          : {
+              caseId,
+              priority: 'backlog' as const,
+              effort: 'm' as const,
+              approved: false,
+            });
+      void persistMeta({
+        ...meta,
+        featurePhases: {
+          ...(meta.featurePhases || {}),
+          [caseId]: { ...prev, ...assignment, updatedAt: new Date().toISOString() },
+        },
+      });
+    },
+    [meta, persistMeta, useCases, loadedRecommendations]
+  );
 
   const handleRecommendationChange = useCallback(
     (recId: string, patch: Partial<BlaBlaRecommendation>) => {
@@ -1172,6 +1180,14 @@ export default function PrioritizeView({
   };
 
   const handleFeatureUpdate = (caseId: string, updates: { name?: string; description?: string }) => {
+    const rec = loadedRecommendations[caseId];
+    if (rec) {
+      handleRecommendationChange(caseId, {
+        title: updates.name ?? rec.title,
+        description: updates.description ?? rec.description,
+      });
+      return;
+    }
     const uc = useCases.find((u) => u.id === caseId);
     if (!uc) return;
     onUpdate({
@@ -1244,6 +1260,23 @@ export default function PrioritizeView({
   };
 
   const handleDeleteFeature = (caseId: string, clusterId: string) => {
+    const rec = loadedRecommendations[caseId];
+    if (rec) {
+      const nextPhases = { ...(meta.featurePhases || {}) };
+      delete nextPhases[caseId];
+      const nextPlans = { ...(meta.featurePlans || {}) };
+      delete nextPlans[caseId];
+      void persistMeta({
+        ...meta,
+        featurePhases: nextPhases,
+        featurePlans: nextPlans,
+        recommendations: {
+          ...(meta.recommendations || {}),
+          [caseId]: { ...rec, status: 'rejected' },
+        },
+      });
+      return;
+    }
     const nextClusters = clusters.map((c) =>
       c.id === clusterId
         ? { ...c, caseIds: c.caseIds.filter((id) => id !== caseId) }

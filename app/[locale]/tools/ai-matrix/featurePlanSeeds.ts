@@ -5,7 +5,7 @@ import type { FeatureRequest, ProjectPlan } from './projectPlanTypes';
  * Ranked against each other — not against the rest of the backlog.
  * Bump FEATURE_EFFORT_SEED_VERSION when these change so saved sessions refresh.
  */
-export const FEATURE_EFFORT_SEED_VERSION = 1;
+export const FEATURE_EFFORT_SEED_VERSION = 2;
 
 export const FEATURE_EFFORT_SEEDS: Record<string, FeatureRequest['effort']> = {
   /** Already proven Claude loop; remaining work is a connect + maybe sharing the laptop knowledge center. */
@@ -14,10 +14,16 @@ export const FEATURE_EFFORT_SEEDS: Record<string, FeatureRequest['effort']> = {
   yluy9f0i: 's',
   /** Same Looker-desk pattern as MB reporting, second surface (CPM grain). Stays M if sequenced after that stack. */
   '52k9ejik': 'm',
+  /** Welcome desk: Everflow + Telegram + review-then-send. One message type; no auto-send, no reactivation. */
+  s01zg1dt: 'm',
   /** First custom Looker desk: one warehouse, dashboard, daily + weekly packs, anomaly agent, Slack, label loop. */
   ytfkqqwj: 'l',
+  /** Ongage write-back loop: purpose packs, archive engine, review-then-push, performance into the next brief. One ESP. */
+  '6wwxlvke': 'l',
   /** Kill Sheets: ledger + permissions + mapping + first API batch + manual remainder + packs. 24 connectors is a programme. */
   ldfa53nk: 'xl',
+  /** Closed creative cycle: live dashboard + visual recognition of winning ads + Banana/MJ in-flow. Longest R&D pole. */
+  bcutgw41: 'xl',
 };
 
 /** Default briefs for high Prioritize projects — session edits still win when filled. */
@@ -428,6 +434,235 @@ export const FEATURE_PLAN_SEEDS: Record<string, ProjectPlan> = {
       'Named operators and permission model (who enters whose rows).',
       'Definition workshop with MB and Finance: what matters, Slack channel.',
       'Decision to kill Sheets on cutover (no dual-run).',
+    ],
+  },
+"6wwxlvke": {
+    problemStatement:
+      "Email still splits the same job across tools: Claude for copy, Ongage for cloning and send, and a wish for a central dashboard (insights → strategy → creative → production → delivery → performance). Those were listed as separate projects. They share one loop. Building them apart would mean three UIs and no closed learning path.",
+    opportunity:
+      "One Email production loop. Several purposes (compliant variants, GEO × placement template fills, other copy types) go through the same desk: brief → pack → review → write into Ongage and schedule on existing segments → performance back in as insights for the next brief. The dashboard is not a separate product; it is the insights and performance ends of this loop. Lists, ISP routing, and client-safe wrappers stay in Ongage.",
+    solutions:
+      "A BlaBlaBuild product that owns creative production and the performance view, and uses Ongage as the ESP. Purpose is a pack type, not a new Prioritize project. Template-library fill and compliant variants are paths on the same desk. The centralised dashboard (insights → … → performance) is the same surface: strategy/creative/production in the tool, delivery in Ongage, performance queried back. Figma-to-HTML stays a sibling for rendering. v1 is review-then-push; auto-push later.",
+    functionalities: [
+      {
+        id: "fn-loop-surface",
+        title: "Insights → performance on one surface",
+        description:
+          "The centralised email dashboard is this product: see what ran, brief the next pack, produce it, hand off delivery, then read results. Not a second app beside the copy desk.",
+      },
+      {
+        id: "fn-purpose-packs",
+        title: "Purpose-aware brief → pack",
+        description:
+          "Operator picks the email purpose (compliant variants, GEO × placement template fill, trigger/lifecycle, other) and briefs constraints. Same desk, different pack shape and guardrails.",
+      },
+      {
+        id: "fn-template-fill",
+        title: "Template library fill (GEO × placement)",
+        description:
+          "One brief produces the full message set from the existing Ongage template library by filling GEO × placement variables. Replaces the standalone template-driven builder.",
+      },
+      {
+        id: "fn-compliant-variants",
+        title: "Compliant variant generation",
+        description:
+          "For flirting and other grey-area copy: subjects, HTML body, plain text, named variations. Compliance must-nots stay hard-coded; tone/vocabulary come from the historic send archive.",
+      },
+      {
+        id: "fn-archive-engine",
+        title: "Historic archive in the generation engine",
+        description:
+          "Load sent-mail at scale so every purpose can see what good looks like. Thin written tone rules; keep legal/compliance guardrails.",
+      },
+      {
+        id: "fn-review-push",
+        title: "Review, then write to Ongage (auto-push later)",
+        description:
+          "Reviewer accepts/edits/rejects. Accepted copy is written as Ongage messages and as mailings onto existing segments + ESP distribution. No silent writes in v1.",
+      },
+      {
+        id: "fn-campaign-handoff",
+        title: "Delivery stays in Ongage",
+        description:
+          "Create/schedule campaigns on segments they already maintain. Audience, demographic slicing, ISP/domain routing, throttling stay in Ongage. Header/footer templates keep the client-safe wrapper.",
+      },
+      {
+        id: "fn-perf-loop",
+        title: "Performance back into the next brief",
+        description:
+          "Pull mailing stats per message (and country/segment/platform as context). Join to human accept/reject. That is the dashboard’s performance step and the training signal Claude paste cannot close.",
+      }
+    ],
+    expectedImpact:
+      "One product instead of a dashboard project, a Claude skill, and a template cloner. Operators stay on the loop. Quality compounds. Email still uses Ongage for send and list ops.",
+    businessValue:
+      "Stops overlapping Email tools. Insights, production, and performance share a system of record. Faster time-to-campaign; compliance in the product; copy improves with sends.",
+    technicalApproach:
+      "BlaBlaBuild app: purpose-routed generation + performance view from Ongage reports. REST: templates and POST/PUT /api/emails; POST /api/mailings; POST /api/reports/query grouped by email_message_id (optional country/segment/platform). API entitlement required. v1 never overwrites a live send. Figma-to-HTML remains rendering-only.",
+    targetAudience: [
+      "Email Marketing — operators and reviewers",
+      "Bending the Rules — ESP / template craft",
+      "BI / Pricing — historic send archive pattern",
+      "Legal / compliance — must-not list for grey-area purposes",
+    ],
+    risks: [
+      "Account without API access returns HTTP 403.",
+      "Rate limits if GEO × placement sets are bulk-created too fast.",
+      "v1 never overwrites a live send (copy-on-write unless overwrite=true).",
+      "Scheduling needs real segment IDs and ESP distribution; review gate is the control.",
+      "HTML rendering across clients is not this project — templates / Figma-to-HTML.",
+      "New email types should be pack types here, not new Prioritize projects.",
+    ],
+    dependencies: [
+      "Ongage API credentials and confirmed API entitlement",
+      "List, segment, ESP connection, and template IDs already in use",
+      "Historic send archive (L2) as seed corpus",
+      "Compliance must-not list for grey-area purposes",
+      "Sibling: Figma-to-HTML email builder",
+    ],
+  },
+
+  "s01zg1dt": {
+    problemStatement:
+      "There is no consistent onboarding for new affiliates. Some partners get a strong first impression; others get little or nothing. Activation lives in personal Claude skills and manual Telegram sends. Offer selection is not systematic. The first message is often offer-only, with no proper introduction to Adsomnia as a company.",
+    opportunity:
+      "One welcome desk. A new partner enters via Affiliate or via Everflow. The tool resolves their Telegram group, asks BI/Pricing + Everflow for the right welcome offers, drafts a specific Telegram message, always attaches the generic Adsomnia pitch deck, and waits for AM review before send. Later, when the pack is trusted, send can go automatic. Dormant-partner reactivation is the scale-up of the same desk — not v1.",
+    solutions:
+      "Partner Activation Pack for Affiliate Management (Sietse), with BI/Pricing in the offer loop. Dual intake: AM submits a partner, and Everflow new-affiliate events land in the same queue. Everflow API reads partner records, filters/aggregates/ranks welcome offers, and supplies tracking links. Copy engine is the existing Claude skill. Destination is the per-partner Telegram group. v1 is review-then-send; auto-send is a later switch. Every send includes the generic pitch deck (company intro) plus a Telegram message that stays specific (offers, fit, CTA). Weekly digest stays a separate project. Reactivation of dormant partners is listed as scale-up, not a v1 path.",
+    functionalities: [
+      {
+        id: "fn-dual-intake",
+        title: "Dual intake (AM + Everflow)",
+        description:
+          "New partners enter two ways into one queue: an AM adds them, or Everflow fires a new-affiliate event. Same onboarding from there — no parallel processes.",
+      },
+      {
+        id: "fn-partner-record",
+        title: "Everflow partner record",
+        description:
+          "Read the partner from Everflow (profile, geos, verticals) so the welcome is not typed from memory. Missing Telegram group or incomplete record blocks send and flags the AM.",
+      },
+      {
+        id: "fn-telegram-group",
+        title: "Per-partner Telegram group",
+        description:
+          "Resolve the existing Telegram group for that partner. Groups, not DMs. No group on file → no send.",
+      },
+      {
+        id: "fn-offers-bi-everflow",
+        title: "Welcome offers (Everflow + BI/Pricing)",
+        description:
+          "Everflow API filter/aggregate/rank plus BI/Pricing in the loop for the business logic of ‘best welcome offers’ and tracking links. Affiliate does not guess a generic top-10.",
+      },
+      {
+        id: "fn-welcome-pack",
+        title: "Specific Telegram welcome + generic pitch deck",
+        description:
+          "Always two pieces: (1) a partner-specific Telegram message (offers, why them, CTA) from the proven Claude skill; (2) the generic Adsomnia pitch deck / intro doc, always attached. Message is relevant; deck is the company.",
+      },
+      {
+        id: "fn-review-send",
+        title: "Review-then-send (auto-send later)",
+        description:
+          "AM reviews the pack, then the tool sends into the partner Telegram group. Auto-send only after the team trusts quality. Reactivation of dormant partners uses this same desk later — out of scope for v1.",
+      }
+    ],
+    expectedImpact:
+      "Every net-new partner gets the same first impression: specific offers in their Telegram group, generic Adsomnia intro attached, human-approved. Time-to-first-activation drops. No partner is skipped. When quality is proven, the same flow can auto-send — and later wake dormant partners.",
+    businessValue:
+      "First impression is consistent and impressive. Faster activation = faster traffic. BI/Pricing + Everflow stop wrong offers on day one. AMs review exceptions instead of assembling packs. Pitch deck makes Adsomnia look like a company, not a Telegram blast of links.",
+    technicalApproach:
+      "Productise the Affiliate Claude activation skill as copy. Dual intake: UI for AMs + Everflow new-affiliate webhook into one queue. Everflow API for partner records, offer rank, tracking links. BI/Pricing owns/validates the welcome-offer rules (the ‘right slice’ that was never going to live in an Affiliate BigQuery MCP). Telegram Bot API posts to the stored per-partner group after approval. Pitch deck is a single stored asset, always attached — not generated per partner. Auto-send is a flag, not a v1 path. Dormant reactivation reuses intake + pack + group send once v1 is trusted. Keep Iryna’s weekly digest separate.",
+    targetAudience: [
+      "Affiliate Management (Sietse + AMs) — operators and reviewers",
+      "BI / Pricing — welcome-offer logic",
+      "New partners — recipients in their Telegram group",
+    ],
+    risks: [
+      "Wrong offers on day one — BI/Pricing rules must be explicit and reviewable in the AM queue.",
+      "Missing or wrong Telegram group sends to the wrong partner.",
+      "Everflow webhook + AM duplicate creates double welcomes unless the queue de-dupes on partner id.",
+      "Auto-send turned on too early.",
+      "Pitch deck ignored if Telegram clients bury attachments — message should still stand alone.",
+    ],
+    dependencies: [
+      "Everflow API: partner records, offers, tracking links, new-affiliate webhook",
+      "BI/Pricing welcome-offer rules (what ‘best’ means for a first message)",
+      "Telegram bot + per-partner group chat IDs",
+      "Existing Claude skill (examples, tone, must/must-nots)",
+      "Canonical Adsomnia pitch deck / intro doc",
+      "AM review queue before send",
+    ],
+  },
+
+  "bcutgw41": {
+    problemStatement:
+      "Media Buying can already produce a strategy → angles → hooks → testing plan in Claude, and they have run that from historical campaign performance. In practice the loop is still broken across tools: paste an offer into Claude, pull performance from elsewhere, then jump to Banana or Midjourney to make the assets. Buyers stitch the workflow themselves. What won last week does not automatically shape next week’s strategy. Campaigns stay ad-hoc per buyer instead of a closed playbook per market and demographic.",
+    opportunity:
+      "One bespoke surface for the Media Buying team. A buyer opens an offer, sees live what is winning, gets a trusted strategy pack, localises it, and generates the creatives (Banana / Midjourney) in the same place. After launch, the live dashboard feeds results back into the next pack. Closed cycle: performance → strategy → assets → live → performance.",
+    solutions:
+      "A Creative Strategy Brief Pack built for Media Buying as the operator — not a handoff to a studio. The Claude case stays the proof that a pack can be trusted. This project scales that into a product: live performance dashboard as the source of truth, strategy generation grounded in those winners, localisation to market and demographic cuts, and in-flow asset creation via Banana and Midjourney. The dashboard is not a reporting extra; it is the input to the next campaign.",
+    functionalities: [
+      {
+        id: "fn-offer-intake",
+        title: "Offer + constraints intake",
+        description:
+          "Buyer enters offer, geo, network, audience, brand/compliance limits. The same intake pulls current performance context from the live dashboard so the run is never a blank Claude chat.",
+      },
+      {
+        id: "fn-live-dashboard",
+        title: "Live creative performance dashboard",
+        description:
+          "Always-on view of what is working — including visual recognition of winning ads (the leftover from the Claude debrief). This is the memory of the cycle, not a weekly export.",
+      },
+      {
+        id: "fn-strategy-pack",
+        title: "Performance-grounded strategy pack",
+        description:
+          "Generate strategy, angles, hooks, variant directions, and a testing plan from a locked template, using live winners plus the team’s trusted example packs. A buyer should brief or generate from this without rewriting the strategy.",
+      },
+      {
+        id: "fn-localise",
+        title: "Market & demographic localisation",
+        description:
+          "Cut one generic pack for a market and for demographic segments inside that market. Same offer, multiple audience versions the buyer would run as-is.",
+      },
+      {
+        id: "fn-asset-gen",
+        title: "In-flow asset creation (Banana + Midjourney)",
+        description:
+          "Media buyers generate the creatives themselves from the pack — assume Banana and Midjourney as the generation stack. No separate tool-hop, no studio handoff as the default path.",
+      },
+      {
+        id: "fn-closed-loop",
+        title: "Closed-loop write-back",
+        description:
+          "Once creatives are live, results land back on the dashboard and feed the next strategy run. Overrides and ‘we would launch this’ calls are written into the playbook so quality compounds.",
+      }
+    ],
+    expectedImpact:
+      "Media Buying runs offer → live winners → strategy → localised cuts → Banana/Midjourney assets → live → next pack without leaving the product. Faster time to a testable campaign per market. Higher hit rate because strategy is continuously fed by what actually performed. The Claude skill is no longer the operating system; it is the proven core inside a closed cycle.",
+    businessValue:
+      "One workflow instead of three tools. Buyers spend time deciding and launching, not stitching Claude, dashboards, and image gens. Creative strategy stays current because live performance writes the next brief. More campaigns per buyer, more consistent quality per market, less dependence on one person’s Claude project.",
+    technicalApproach:
+      "Productise the existing Media Buying Claude project (context docs, skill instructions, example packs) as the strategy engine. Wrap it with: (1) a live performance dashboard that can visually surface winning creatives and feed structured winner signals into the next pack; (2) Banana + Midjourney as the asset-generation layer driven by that pack; (3) localisation as a first-class cut of the same pack. Start from the artefacts they already trust; connect live performance so the cycle does not depend on a manual export. Network MCP launch and becoming an external creative studio stay out of scope — this is an MB-operated system.",
+    targetAudience: [
+      "Media Buying team (Alexander + buyers) — primary users",
+      "Campaign managers (same team, launch/test decisions)",
+    ],
+    risks: [
+      "Dashboard + visual recognition is the hard leftover from the Claude debrief — connecting live creative performance is the longest pole.",
+      "Banana / Midjourney quality and brand/compliance still need buyer review before spend.",
+      "If the strategy pack is not trusted, buyers will still rewrite it and the closed loop never starts.",
+      "Live data access (which tracker / network / ScaleWizard) is not locked yet — integration path may slip.",
+      "Generation costs and rate limits if every buyer runs assets from the same surface.",
+    ],
+    dependencies: [
+      "Existing Claude project / skill (template, trusted example packs, must/must-not rules)",
+      "Live performance source(s) that can feed the dashboard and winner signals",
+      "Banana and Midjourney access for the Media Buying team",
+      "Alexander (or another MB) to validate: would we launch from this pack + these assets?",
+      "Agreement on which networks/trackers the live dashboard reads first",
     ],
   },
 };

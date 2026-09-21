@@ -228,6 +228,60 @@ export function applyFeatureEffortSeeds(
   return result;
 }
 
+export function recommendationAsUseCase(rec: BlaBlaRecommendation): UseCase {
+  return {
+    id: rec.id,
+    name: rec.title,
+    description: rec.description,
+    knockout: { recurring: null, costly: null, dataAvailable: null, standardized: null },
+    scores: {
+      businessImpact: 3,
+      frequency: 3,
+      aiSuitability: 3,
+      implementation: 3,
+      risk: 3,
+      adoption: 3,
+    },
+    label: 'General',
+  };
+}
+
+export function recommendationPriority(
+  rec: BlaBlaRecommendation,
+  featurePhases: Record<string, FeaturePhaseAssignment>
+): FeaturePriority {
+  return normalizeFeaturePriority(
+    featurePhases[rec.id]?.priority ||
+      featurePhases[rec.id]?.phase ||
+      rec.suggestedPriority ||
+      rec.suggestedPhase
+  );
+}
+
+export function recommendationAssignment(
+  rec: BlaBlaRecommendation,
+  featurePhases: Record<string, FeaturePhaseAssignment>
+): FeaturePhaseAssignment {
+  const prev = featurePhases[rec.id];
+  if (prev) {
+    return {
+      ...prev,
+      priority: normalizeFeaturePriority(prev.priority || prev.phase || rec.suggestedPriority),
+      effort: prev.effort || rec.effort || 'm',
+      transformedTitle: prev.transformedTitle || rec.title,
+      transformedDescription: prev.transformedDescription || rec.description,
+    };
+  }
+  return {
+    caseId: rec.id,
+    priority: normalizeFeaturePriority(rec.suggestedPriority || rec.suggestedPhase),
+    effort: rec.effort || 'm',
+    transformedTitle: rec.title,
+    transformedDescription: rec.description,
+    approved: false,
+  };
+}
+
 /**
  * Display title/description for a feature (transformed solution copy preferred).
  */

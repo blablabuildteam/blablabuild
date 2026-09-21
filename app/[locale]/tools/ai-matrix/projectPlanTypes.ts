@@ -11,6 +11,13 @@ export interface ProjectFunctionality {
   description: string;
 }
 
+/** A delivery phase for breaking up large projects */
+export interface DeliveryPhase {
+  id: string;
+  title: string;
+  description: string;
+}
+
 export interface ProjectPlan {
   problemStatement: string;
   opportunity: string;
@@ -18,6 +25,8 @@ export interface ProjectPlan {
   solutions: string | string[];
   /** Concrete features / functionalities this project ships */
   functionalities?: ProjectFunctionality[];
+  /** Phased delivery breakdown for large projects */
+  phasedDelivery?: DeliveryPhase[];
   expectedImpact: string;
   targetAudience: string[];
   businessValue: string;

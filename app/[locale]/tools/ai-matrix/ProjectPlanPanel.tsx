@@ -6,6 +6,7 @@ import {
   AlertTriangle,
   ChevronRight,
   Edit2,
+  Layers,
   Plus,
   Save,
   Target,
@@ -16,12 +17,11 @@ import {
   List,
   Settings,
 } from 'lucide-react';
-import type { ProjectFunctionality, ProjectPlan, BlaBlaRecommendation } from './projectPlanTypes';
+import type { ProjectFunctionality, ProjectPlan, BlaBlaRecommendation, DeliveryPhase } from './projectPlanTypes';
 import {
   getSolutionsText,
   hasProjectPlanContent,
-  RECOMMENDATION_CATEGORIES,
-  EFFORT_WEEKS,
+  emptyProjectPlan,
 } from './projectPlanTypes';
 import type { FeaturePhaseAssignment, FeaturePriority } from './prioritizeMeta';
 import {
@@ -29,7 +29,7 @@ import {
   normalizeFeaturePriority,
 } from './prioritizeMeta';
 import type { UseCase } from './types';
-import { resolveFeatureCopy, loadFeaturePlan } from './projectPlanHelpers';
+import { resolveFeatureCopy, loadFeaturePlan, recommendationAsUseCase, recommendationPriority, recommendationAssignment } from './projectPlanHelpers';
 import { projectAccent } from './projectClusters';
 
 interface ProjectPlanPanelProps {
@@ -546,6 +546,178 @@ function FunctionalityList({
   );
 }
 
+function PhaseList({
+  values,
+  onChange,
+}: {
+  values: DeliveryPhase[];
+  onChange: (values: DeliveryPhase[]) => void;
+}) {
+  const [adding, setAdding] = useState(false);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [draftTitle, setDraftTitle] = useState('');
+  const [draftDesc, setDraftDesc] = useState('');
+
+  const addItem = () => {
+    if (!title.trim()) return;
+    onChange([
+      ...values,
+      {
+        id: `phase-${Date.now().toString(36)}`,
+        title: title.trim(),
+        description: description.trim(),
+      },
+    ]);
+    setAdding(false);
+    setTitle('');
+    setDescription('');
+  };
+
+  const saveEdit = (id: string) => {
+    onChange(
+      values.map((v) =>
+        v.id === id ? { ...v, title: draftTitle.trim() || v.title, description: draftDesc.trim() } : v
+      )
+    );
+    setEditingId(null);
+  };
+
+  const startEdit = (item: DeliveryPhase) => {
+    setEditingId(item.id);
+    setDraftTitle(item.title);
+    setDraftDesc(item.description);
+  };
+
+  return (
+    <div className="space-y-2">
+      {values.length > 0 ? (
+        <ul className="space-y-2">
+          {values.map((item, idx) => (
+            <li
+              key={item.id}
+              className="group relative rounded-lg border border-white/10 bg-white/[0.02] p-3"
+            >
+              {editingId === item.id ? (
+                <div className="space-y-2">
+                  <input
+                    value={draftTitle}
+                    onChange={(e) => setDraftTitle(e.target.value)}
+                    className="w-full rounded-lg border border-white/15 bg-[#0a0b0e] px-3 py-1.5 text-[13px] text-white/85"
+                    autoFocus
+                  />
+                  <textarea
+                    value={draftDesc}
+                    onChange={(e) => setDraftDesc(e.target.value)}
+                    rows={2}
+                    className="w-full resize-none rounded-lg border border-white/15 bg-[#0a0b0e] px-3 py-1.5 text-[12px] text-white/80"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => saveEdit(item.id)}
+                      className="rounded-lg border border-bla-lime/30 bg-bla-lime/10 px-3 py-1.5 text-[12px] text-bla-lime"
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingId(null)}
+                      className="rounded-lg border border-white/10 px-3 py-1.5 text-[12px] text-white/50"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-start gap-2">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-[10px] font-medium text-white/60">
+                    {idx + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => startEdit(item)}
+                    className="flex-1 text-left"
+                  >
+                    <p className="text-[13px] text-white/80">{item.title}</p>
+                    {item.description ? (
+                      <p className="mt-0.5 text-[12px] leading-relaxed text-white/45">
+                        {item.description}
+                      </p>
+                    ) : null}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onChange(values.filter((v) => v.id !== item.id))}
+                    className="shrink-0 text-white/20 opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100"
+                    title="Remove phase"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-[13px] italic text-white/30">
+          No phased delivery defined — add phases to break this project into smaller milestones.
+        </p>
+      )}
+      {adding ? (
+        <div className="space-y-2 rounded-lg border border-white/10 bg-black/20 p-3">
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && addItem()}
+            className="w-full rounded-lg border border-white/15 bg-[#0a0b0e] px-3 py-1.5 text-[13px] text-white/85"
+            placeholder="e.g. Phase 1: Trusted pack from manual exports"
+            autoFocus
+          />
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={2}
+            className="w-full resize-none rounded-lg border border-white/15 bg-[#0a0b0e] px-3 py-1.5 text-[12px] text-white/80"
+            placeholder="What ships in this phase and why it's a milestone"
+          />
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={addItem}
+              disabled={!title.trim()}
+              className="rounded-lg border border-bla-lime/30 bg-bla-lime/10 px-3 py-1.5 text-[12px] text-bla-lime disabled:opacity-40"
+            >
+              Add
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAdding(false);
+                setTitle('');
+                setDescription('');
+              }}
+              className="rounded-lg border border-white/10 px-3 py-1.5 text-[12px] text-white/50"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setAdding(true)}
+          className="flex items-center gap-1.5 text-[12px] text-white/40 hover:text-white/60"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          Add phase
+        </button>
+      )}
+    </div>
+  );
+}
+
 function ProjectBriefFields({
   plan,
   onChange,
@@ -599,6 +771,13 @@ function ProjectBriefFields({
         <FunctionalityList
           values={plan.functionalities || []}
           onChange={(v) => update({ functionalities: v })}
+        />
+      </PlanSection>
+
+      <PlanSection title="Phased Delivery" icon={Layers}>
+        <PhaseList
+          values={plan.phasedDelivery || []}
+          onChange={(v) => update({ phasedDelivery: v })}
         />
       </PlanSection>
 
@@ -684,6 +863,7 @@ function FeatureCard({
   onFeatureUpdate,
   onFeatureDelete,
   highlighted,
+  recommendedBy,
 }: {
   uc: UseCase;
   assignment?: FeaturePhaseAssignment;
@@ -694,6 +874,7 @@ function FeatureCard({
   onFeatureUpdate?: (updates: { name?: string; description?: string }) => void;
   onFeatureDelete?: () => void;
   highlighted?: boolean;
+  recommendedBy?: string;
 }) {
   const copy = resolveFeatureCopy(uc, assignment);
   const priority = normalizeFeaturePriority(assignment?.priority || assignment?.phase);
@@ -808,6 +989,11 @@ function FeatureCard({
                     </p>
                     <Edit2 className="h-3 w-3 shrink-0 text-white/20 opacity-0 transition-opacity group-hover:opacity-100" />
                   </div>
+                  {recommendedBy ? (
+                    <p className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-bla-lime">
+                      {recommendedBy}
+                    </p>
+                  ) : null}
                   {copy.description && (
                     <p className="mt-1 text-[12px] leading-relaxed text-white/50">{copy.description}</p>
                   )}
@@ -921,111 +1107,6 @@ function FeatureCard({
   );
 }
 
-function RecommendationCard({
-  rec,
-  onChange,
-}: {
-  rec: BlaBlaRecommendation;
-  onChange: (patch: Partial<BlaBlaRecommendation>) => void;
-}) {
-  const catMeta = RECOMMENDATION_CATEGORIES[rec.category];
-  const priority = normalizeFeaturePriority(rec.suggestedPriority || rec.suggestedPhase);
-  const effort = rec.effort;
-  const [detailsOpen, setDetailsOpen] = useState(false);
-
-  return (
-    <div className="rounded-xl border border-solid border-white/10 bg-white/[0.02] p-3">
-      <div className="min-w-0">
-        <p className="text-[14px] font-medium text-white">
-          <span className="mr-2 font-mono text-[9px] uppercase tracking-[0.12em] text-white/40">
-            Project
-          </span>
-          {rec.title}
-        </p>
-        <p className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-white/30">
-          Recommended by us
-        </p>
-        {rec.description && (
-          <p className="mt-1 text-[12px] leading-relaxed text-white/50">{rec.description}</p>
-        )}
-      </div>
-
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-white/30">
-          Priority
-        </span>
-        {(['high', 'medium', 'low', 'backlog'] as const).map((p) => {
-          const m = FEATURE_PRIORITY_META[p];
-          const active = priority === p;
-          return (
-            <button
-              key={p}
-              type="button"
-              onClick={() => onChange({ suggestedPriority: p })}
-              className={active ? CHIP_ACTIVE : CHIP_IDLE}
-            >
-              {m.short}
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="mt-2 flex flex-wrap items-center gap-2">
-        <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-white/30">Effort</span>
-        {(['xs', 's', 'm', 'l', 'xl'] as const).map((e) => {
-          const active = effort === e;
-          return (
-            <button
-              key={e}
-              type="button"
-              onClick={() => onChange({ effort: e })}
-              className={active ? CHIP_ACTIVE : CHIP_IDLE}
-            >
-              {e.toUpperCase()}
-            </button>
-          );
-        })}
-      </div>
-
-      {(rec.rationale || rec.expectedValue) && (
-        <div className="mt-3">
-          <button
-            type="button"
-            onClick={() => setDetailsOpen((v) => !v)}
-            className="flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-left"
-          >
-            <motion.span
-              animate={{ rotate: detailsOpen ? 90 : 0 }}
-              transition={{ duration: 0.18, ease: COLLAPSE_EASE }}
-              className="inline-flex"
-            >
-              <ChevronRight className="h-3.5 w-3.5 text-white/40" />
-            </motion.span>
-            <span className="flex-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/50">
-              Details
-            </span>
-            <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-white/30">
-              {catMeta.icon} {catMeta.label}
-            </span>
-          </button>
-          <CollapseReveal open={detailsOpen} className="space-y-2 px-3 py-2.5">
-            {rec.rationale && (
-              <p className="text-[12px] text-white/50">
-                <span className="text-white/70">Rationale:</span> {rec.rationale}
-              </p>
-            )}
-            {rec.expectedValue && (
-              <p className="text-[12px] text-white/50">
-                <span className="text-white/70">Expected value:</span> {rec.expectedValue}
-              </p>
-            )}
-          </CollapseReveal>
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function ProjectPlanPanel({
   projectId,
   members,
@@ -1043,6 +1124,8 @@ export default function ProjectPlanPanel({
 }: ProjectPlanPanelProps) {
   const themeAccent = projectAccent(projectId);
   const visibleRecs = recommendations.filter((r) => r.status !== 'rejected');
+  const highRecs = visibleRecs.filter((r) => recommendationPriority(r, featurePhases) === 'high');
+  const laterRecs = visibleRecs.filter((r) => recommendationPriority(r, featurePhases) !== 'high');
 
   const highMembers = members.filter(
     (uc) => normalizeFeaturePriority(featurePhases[uc.id]?.priority || featurePhases[uc.id]?.phase) === 'high'
@@ -1056,7 +1139,12 @@ export default function ProjectPlanPanel({
 
   useEffect(() => {
     if (!scrollToCaseId) return;
-    setLaterOpen(false);
+    const inLater =
+      laterMembers.some((m) => m.id === scrollToCaseId) ||
+      laterRecs.some((r) => r.id === scrollToCaseId);
+    setLaterOpen(inLater);
+    // Split is derived from current members/recs at navigation time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollToCaseId]);
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
@@ -1093,6 +1181,41 @@ export default function ProjectPlanPanel({
     />
   );
 
+  const renderRecCard = (rec: BlaBlaRecommendation) => {
+    const uc = recommendationAsUseCase(rec);
+    const stored = loadFeaturePlan(rec.id, featurePlans);
+    const plan = hasProjectPlanContent(stored)
+      ? stored
+      : {
+          ...emptyProjectPlan(),
+          opportunity: rec.rationale || '',
+          expectedImpact: rec.expectedValue || '',
+        };
+    return (
+      <FeatureCard
+        key={rec.id}
+        uc={uc}
+        themeAccent={themeAccent}
+        assignment={recommendationAssignment(rec, featurePhases)}
+        plan={plan}
+        recommendedBy="Recommended by blablabuild"
+        onPhaseChange={(patch) => {
+          onFeaturePhaseChange(rec.id, patch);
+          const recPatch: Partial<BlaBlaRecommendation> = {};
+          if (patch.priority) recPatch.suggestedPriority = patch.priority;
+          if (patch.effort) recPatch.effort = patch.effort;
+          if (patch.transformedTitle) recPatch.title = patch.transformedTitle;
+          if (patch.transformedDescription) recPatch.description = patch.transformedDescription;
+          if (Object.keys(recPatch).length) onRecommendationChange(rec.id, recPatch);
+        }}
+        onPlanChange={(next) => onFeaturePlanChange(rec.id, next)}
+        onFeatureUpdate={onFeatureUpdate ? (updates) => onFeatureUpdate(rec.id, updates) : undefined}
+        onFeatureDelete={onFeatureDelete ? () => onFeatureDelete(rec.id) : undefined}
+        highlighted={highlightCaseId === rec.id}
+      />
+    );
+  };
+
   return (
     <div className="space-y-4">
       <div className="rounded-xl border border-white/10 bg-white/[0.02]">
@@ -1103,9 +1226,9 @@ export default function ProjectPlanPanel({
               Projects
             </span>
           </div>
-          {highMembers.length > 0 && (
+          {(highMembers.length > 0 || highRecs.length > 0) && (
             <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-bla-lime/70">
-              {highMembers.length} high
+              {highMembers.length + highRecs.length} high
             </span>
           )}
         </div>
@@ -1114,15 +1237,16 @@ export default function ProjectPlanPanel({
             <p className="py-4 text-center text-[13px] text-white/40">No projects in this theme</p>
           ) : (
             <>
-              {highMembers.length > 0 && (
+              {(highMembers.length > 0 || highRecs.length > 0) && (
                 <div className="space-y-2">
                   <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-bla-lime/60">
                     Now · high priority
                   </p>
                   {highMembers.map(renderProjectCard)}
+                  {highRecs.map(renderRecCard)}
                 </div>
               )}
-              {(laterMembers.length > 0 || visibleRecs.length > 0) && (
+              {(laterMembers.length > 0 || laterRecs.length > 0) && (
                 <div className="rounded-xl border border-white/10 bg-white/[0.02]">
                   <button
                     type="button"
@@ -1141,18 +1265,12 @@ export default function ProjectPlanPanel({
                       Later in this theme
                     </span>
                     <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-white/30">
-                      {laterMembers.length + visibleRecs.length}
+                      {laterMembers.length + laterRecs.length}
                     </span>
                   </button>
                   <CollapseReveal open={laterOpen} className="space-y-2 border-t border-white/8 px-3 py-3">
                     {laterMembers.map(renderProjectCard)}
-                    {visibleRecs.map((rec) => (
-                      <RecommendationCard
-                        key={rec.id}
-                        rec={rec}
-                        onChange={(patch) => onRecommendationChange(rec.id, patch)}
-                      />
-                    ))}
+                    {laterRecs.map(renderRecCard)}
                   </CollapseReveal>
                 </div>
               )}
