@@ -12,6 +12,26 @@ const nextConfig = {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   },
   transpilePackages: ['@react-three/fiber', '@react-three/drei'],
+  async headers() {
+    return [
+      {
+        source: '/insights',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }],
+      },
+      {
+        source: '/insights/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }],
+      },
+      {
+        source: '/api/insights/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }],
+      },
+      {
+        source: '/api/team-display',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }],
+      },
+    ];
+  },
   async redirects() {
     // Live site sends the matrix to the tools host. Keep it on localhost in `next dev`.
     if (process.env.NODE_ENV !== 'production') {

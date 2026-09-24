@@ -5,7 +5,6 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n/request';
 import "../globals.css";
-import PasswordGate from "@/components/PasswordGate";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import SiteInsightsTracker from "@/components/SiteInsightsTracker";
 import CookieBanner from "@/components/CookieBanner";

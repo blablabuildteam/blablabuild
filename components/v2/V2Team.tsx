@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
 import { LinkedinIcon } from '@/components/ui/icons/il-linkedin';
+import TeamMemberName from '@/components/TeamMemberName';
 
 interface Friend {
   id: string;
@@ -157,7 +158,7 @@ export default function V2Team() {
                 <div className="relative aspect-[4/5] w-24 shrink-0 overflow-hidden rounded-xl bg-[#14181d]/8 md:w-28">
                   <Image
                     src={f.image}
-                    alt={f.name}
+                    alt={f.id === 'kevin' ? 'Kevin' : f.name}
                     fill
                     className="object-cover object-top"
                     sizes="(max-width: 768px) 96px, 112px"
@@ -168,9 +169,18 @@ export default function V2Team() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                        <h3 className="font-host text-base font-medium text-[#14181d] md:text-lg">
-                          {f.name}
-                        </h3>
+                        {f.id === 'kevin' ? (
+                          <TeamMemberName
+                            memberId="kevin"
+                            publicName={f.name}
+                            as="h3"
+                            className="font-host text-base font-medium text-[#14181d] md:text-lg"
+                          />
+                        ) : (
+                          <h3 className="font-host text-base font-medium text-[#14181d] md:text-lg">
+                            {f.name}
+                          </h3>
+                        )}
                         <span className="font-host text-[13px] text-[#14181d]/45">
                           {f.role}
                         </span>

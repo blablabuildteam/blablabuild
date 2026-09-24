@@ -4,7 +4,7 @@ A strategic AI consultancy operating under the principle of "less talk, more bui
 Team Structure
 Three senior specialists combine 50+ years of digital experience:
 Daniel de Vos - Data, Tech & AI implementation specialist focused on rapid prototyping and operational efficiency
-Kevin Roos van Raadshoven - Growth & Consumer Experience specialist specializing in e-commerce and conversion optimization
+Kevin - Growth & Consumer Experience specialist specializing in e-commerce and conversion optimization
 Xennith Oosterveer - Business Automation & Process specialist translating complexity into concrete opportunities
 Engagement Approach
 The methodology follows a structured 4-phase framework:

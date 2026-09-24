@@ -80,7 +80,7 @@
   - Match when: Data centralization, tech implementation, AI workflows
   - Questions: "Data integration", "Technical maturity", "AI opportunities"
   
-- **Kevin Roos van Raadshoven** (Growth & Consumer Experience)
+- **Kevin** (Growth & Consumer Experience)
   - Match when: SEO, paid ads, e-commerce, conversion optimization
   - Questions: "Traffic growth", "Conversion rates", "E-commerce performance"
   

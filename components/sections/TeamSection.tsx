@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { LinkedinIcon } from '@/components/ui/icons/il-linkedin';
+import TeamMemberName from '@/components/TeamMemberName';
 
 // Fisher-Yates shuffle algorithm
 function shuffleArray<T>(array: T[]): T[] {
@@ -143,7 +144,7 @@ export default function TeamSection() {
                   <div className="flex-shrink-0 w-[35%] md:w-full aspect-square rounded-xl overflow-hidden md:mb-4 bg-white relative">
                     <Image
                       src={founder.image}
-                      alt={founder.name}
+                      alt={founder.id === 'kevin' ? 'Kevin' : founder.name}
                       fill
                       className="object-cover object-top scale-[1.2]"
                       sizes="(max-width: 768px) 35vw, 33vw"
@@ -153,9 +154,18 @@ export default function TeamSection() {
                   {/* Info - Right on mobile, below on desktop */}
                   <div className="w-[65%] md:w-full md:mt-6 min-w-0 flex flex-col">
                     <div className="flex items-start md:items-center gap-2 mb-2">
-                      <h3 className="font-host font-bold text-base md:text-lg lg:text-xl text-text-primary">
-                        {founder.name}
-                      </h3>
+                      {founder.id === 'kevin' ? (
+                        <TeamMemberName
+                          memberId="kevin"
+                          publicName={founder.name}
+                          as="h3"
+                          className="font-host font-bold text-base md:text-lg lg:text-xl text-text-primary"
+                        />
+                      ) : (
+                        <h3 className="font-host font-bold text-base md:text-lg lg:text-xl text-text-primary">
+                          {founder.name}
+                        </h3>
+                      )}
                       {founder.linkedin && (
                         <a
                           href={founder.linkedin}
