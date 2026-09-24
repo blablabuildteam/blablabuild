@@ -7,6 +7,7 @@ import { locales } from '@/i18n/request';
 import "../globals.css";
 import PasswordGate from "@/components/PasswordGate";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import SiteInsightsTracker from "@/components/SiteInsightsTracker";
 import CookieBanner from "@/components/CookieBanner";
 import LocaleScrollRestore from "@/components/LocaleScrollRestore";
 
@@ -88,6 +89,9 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages} locale={locale}>
           <Suspense fallback={null}>
             <GoogleAnalytics />
+          </Suspense>
+          <Suspense fallback={null}>
+            <SiteInsightsTracker />
           </Suspense>
           {children}
           <LocaleScrollRestore />

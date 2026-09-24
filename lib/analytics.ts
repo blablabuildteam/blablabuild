@@ -1,6 +1,28 @@
 import posthog from 'posthog-js';
 import { hasConsent, trackGAEvent } from './consent';
 
+function forwardToSiteInsights(eventName: string, properties?: Record<string, any>) {
+  if (typeof window === 'undefined') return;
+  // Dynamic import avoids circular deps with the tracker module
+  void import('@/components/SiteInsightsTracker').then(({ trackSiteInsight }) => {
+    const type =
+      eventName.includes('lead')
+        ? 'lead'
+        : eventName.includes('chat') || eventName.includes('widget')
+          ? 'chat'
+          : eventName.includes('cta')
+            ? 'cta'
+            : 'custom';
+    trackSiteInsight(type, eventName, {
+      ...(properties?.label != null ? { label: String(properties.label) } : {}),
+      ...(properties?.session_id != null ? { session_id: String(properties.session_id) } : {}),
+      ...(properties?.email != null ? { email: String(properties.email) } : {}),
+      ...(properties?.company_name != null ? { company: String(properties.company_name) } : {}),
+      ...(properties?.name != null ? { name: String(properties.name) } : {}),
+    });
+  });
+}
+
 export const initAnalytics = () => {
   if (typeof window === 'undefined') return;
   
@@ -69,6 +91,13 @@ export const trackEvent = (eventName: string, properties?: Record<string, any>) 
     if (process.env.NODE_ENV === 'development') {
       console.warn('[Analytics] Failed to track event in GA:', eventName, error);
     }
+  }
+
+  // First-party insights dashboard
+  try {
+    forwardToSiteInsights(eventName, properties);
+  } catch {
+    // never block UX
   }
 };
 

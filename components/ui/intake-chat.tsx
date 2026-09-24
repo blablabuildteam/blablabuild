@@ -194,6 +194,10 @@ export function IntakeChat({ initialMessage, locale, onComplete, onReset }: Inta
           sessionId,
           source: 'intake',
           messages,
+          visitorId:
+            typeof window !== 'undefined'
+              ? localStorage.getItem('bla_visitor_id') || undefined
+              : undefined,
         }),
       });
       const data = await res.json().catch(() => ({}));

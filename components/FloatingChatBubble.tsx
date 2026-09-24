@@ -407,6 +407,10 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
           sessionId,
           email: leadForm.email.trim(),
           companyName: leadForm.companyName,
+          visitorId:
+            typeof window !== 'undefined'
+              ? localStorage.getItem('bla_visitor_id') || undefined
+              : undefined,
         }),
       });
       
@@ -891,6 +895,10 @@ export default function FloatingChatBubble({ variant = 'floating' }: FloatingCha
                                         sessionId,
                                         name: leadForm.name,
                                         email: leadForm.email,
+                                        visitorId:
+                                          typeof window !== 'undefined'
+                                            ? localStorage.getItem('bla_visitor_id') || undefined
+                                            : undefined,
                                       }),
                                     });
 

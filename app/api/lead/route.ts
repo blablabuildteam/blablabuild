@@ -3,6 +3,7 @@ import { Resend } from 'resend';
 import { sessionStore, eventStore, slotStore, messageStore } from '@/lib/storage';
 import { trackWidgetEvent } from '@/lib/analytics';
 import { generateConversationSummary } from '@/lib/gemini';
+import { linkVisitorIdentity, recordSiteEvents } from '@/lib/site-insights';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -18,7 +19,7 @@ const getResendClient = () => {
 
 export async function POST(req: NextRequest) {
   try {
-    const { sessionId, email, name, companyName, phone, role, notes, messages: requestMessages } = await req.json();
+    const { sessionId, email, name, companyName, phone, role, notes, messages: requestMessages, visitorId } = await req.json();
 
     if (!sessionId || !email) {
       return NextResponse.json(
@@ -80,6 +81,36 @@ export async function POST(req: NextRequest) {
       has_company: !!companyName,
       has_phone: !!phone,
     });
+
+    // First-party insights (durable) — link person to anonymous visitor when possible
+    try {
+      const vid = typeof visitorId === 'string' && visitorId ? visitorId : `lead_${sessionId}`;
+      await recordSiteEvents([
+        {
+          id: `lead_${sessionId}_${Date.now()}`,
+          ts: new Date().toISOString(),
+          type: 'lead',
+          name: 'lead_created',
+          path: '/lead',
+          visitorId: vid,
+          sessionId: String(sessionId),
+          meta: {
+            email,
+            name: name || null,
+            company: companyName || null,
+          },
+        },
+      ]);
+      await linkVisitorIdentity({
+        visitorId: vid,
+        email,
+        name: name || undefined,
+        company: companyName || undefined,
+        linkedAt: new Date().toISOString(),
+      });
+    } catch (insightsErr) {
+      console.warn('[lead] insights write skipped', insightsErr);
+    }
 
     // Send email notification directly (don't rely on async HTTP call)
     try {
