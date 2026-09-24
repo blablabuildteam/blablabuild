@@ -271,7 +271,10 @@ function InsightsDashboard() {
 
 export default function InsightsPage() {
   return (
-    <PasswordGate>
+    <PasswordGate
+      title="Site insights"
+      description="Intern overzicht van verkeer, bronnen en acties op blablabuild.com."
+    >
       <InsightsDashboard />
     </PasswordGate>
   );
