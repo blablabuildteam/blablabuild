@@ -1,7 +1,13 @@
 /**
  * Inline logo (lime vierkant + twee chat-bubbles). Altijd zichtbaar, geen /icon.svg nodig.
  */
-export function BlablaLogo({ className }: { className?: string }) {
+export function BlablaLogo({
+  className,
+  inverted = false,
+}: {
+  className?: string;
+  inverted?: boolean;
+}) {
   return (
     <svg
       width="32"
@@ -12,11 +18,11 @@ export function BlablaLogo({ className }: { className?: string }) {
       className={className}
       aria-hidden
     >
-      <rect width="32" height="32" rx="6" fill="#CEFF00" />
+      <rect width="32" height="32" rx="6" fill={inverted ? '#14181d' : '#CEFF00'} />
       <g transform="translate(4, 4) scale(1)">
         <path
           d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"
-          stroke="#0a0a0a"
+          stroke={inverted ? '#CEFF00' : '#0a0a0a'}
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -24,7 +30,7 @@ export function BlablaLogo({ className }: { className?: string }) {
         />
         <path
           d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"
-          stroke="#0a0a0a"
+          stroke={inverted ? '#CEFF00' : '#0a0a0a'}
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"

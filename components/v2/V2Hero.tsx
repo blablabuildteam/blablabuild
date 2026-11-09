@@ -254,8 +254,8 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
       <NoiseLayer opacity={0.18} />
 
       <div className="relative mx-auto flex w-full max-w-[1320px] flex-1 flex-col justify-center px-5 sm:px-8 md:px-10">
-        <div className="relative grid grid-cols-12 gap-x-4 gap-y-10 pb-12 pt-10 md:gap-y-14 md:pb-14 md:pt-16">
-          <div className="col-span-12 lg:col-span-8">
+        <div className="relative grid grid-cols-12 gap-x-4 gap-y-10 pb-12 pt-10 md:gap-y-14 md:pb-14 md:pt-16 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)] lg:gap-x-8">
+          <div className="col-span-12 lg:col-auto">
             <HeroHeadline variant={variant} locale={locale} />
             <HeroSubcopy variant={variant} locale={locale} t={t} />
 
@@ -309,7 +309,7 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.55 }}
-            className="col-span-12 hidden lg:col-span-4 lg:block lg:pl-6"
+            className="col-span-12 hidden lg:col-auto lg:block"
           >
             <div className="relative flex h-full min-h-[480px] flex-col rounded-2xl border border-white/10 bg-[#0a0b0e]/82 p-5 backdrop-blur-md md:min-h-[520px] md:bg-[#0a0b0e]/45 md:p-6 md:backdrop-blur-[6px]">
               <div className="flex flex-1 flex-col gap-3">

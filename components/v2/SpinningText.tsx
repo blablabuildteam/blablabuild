@@ -41,6 +41,8 @@ type SpinningTextProps = {
   radius?: number;
   duration?: string;
   className?: string;
+  /** Dark mark, for the lime footer. */
+  inverted?: boolean;
 };
 
 export default function SpinningText({
@@ -49,6 +51,7 @@ export default function SpinningText({
   radius = 78,
   duration = '28s',
   className = '',
+  inverted = false,
 }: SpinningTextProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
@@ -125,7 +128,7 @@ export default function SpinningText({
           aria-hidden
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
         >
-          <BlablaLogo className="h-11 w-11" />
+          <BlablaLogo className="h-11 w-11" inverted={inverted} />
         </div>
       ) : (
         <button
@@ -135,7 +138,7 @@ export default function SpinningText({
           onClick={() => setPaused((value) => !value)}
           className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/30"
         >
-          <BlablaLogo className="h-11 w-11" />
+          <BlablaLogo className="h-11 w-11" inverted={inverted} />
         </button>
       )}
     </div>

@@ -1,0 +1,187 @@
+/* Part of StrategyScope.tsx — MIT License, Copyright (c) 2026 Subframe */
+
+.slot {
+  width: 248px;
+  max-width: none;
+  transform: translate3d(0, var(--scope-shift, 0px), 0);
+}
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: none;
+}
+
+.root {
+  position: relative;
+  width: 232px;
+  height: 232px;
+  flex: none;
+  max-width: none;
+  color: rgba(20, 24, 29, 0.72);
+}
+
+.root * {
+  box-sizing: border-box;
+}
+
+.dial {
+  position: relative;
+  width: 232px;
+  height: 232px;
+  max-width: none;
+  border-radius: 50%;
+}
+
+.ring {
+  position: absolute;
+  inset: 36px;
+  border: 1px solid rgba(20, 24, 29, 0.16);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+
+.root[data-open='true'] .ring {
+  opacity: 1;
+}
+
+.tool {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 56px;
+  height: 50px;
+  margin: -25px 0 0 -28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  max-width: none;
+  background: transparent;
+  color: rgba(20, 24, 29, 0.55);
+  cursor: pointer;
+  transition:
+    transform 200ms cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 140ms ease,
+    color 120ms ease,
+    background-color 120ms ease;
+}
+
+.tool svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.tool span {
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.tool[aria-checked='true'] {
+  color: #14181d;
+}
+
+.trigger {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: 78px;
+  height: 78px;
+  margin: -39px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(20, 24, 29, 0.14);
+  border-radius: 50%;
+  max-width: none;
+  background:
+    radial-gradient(circle at 50% 32%, rgba(255, 255, 255, 0.92), rgba(241, 237, 228, 0.35) 58%, rgba(20, 24, 29, 0.07));
+  color: rgba(20, 24, 29, 0.62);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  letter-spacing: 0.16em;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+  transition:
+    border-color 120ms ease,
+    color 120ms ease,
+    box-shadow 120ms ease,
+    transform 100ms ease;
+}
+
+.trigger svg {
+  width: 22px;
+  height: 22px;
+}
+
+.note {
+  margin: 0;
+  max-width: 220px;
+  min-height: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+  color: rgba(20, 24, 29, 0.55);
+}
+
+.note:empty {
+  display: none;
+}
+
+.root button:focus-visible {
+  outline: 2px solid #14181d;
+  outline-offset: 3px;
+}
+
+.root[data-instant='true'] *,
+.root[data-reduce='true'] * {
+  transition: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tool:hover {
+    background: rgba(20, 24, 29, 0.05);
+    color: #14181d;
+  }
+
+  .trigger:hover {
+    border-color: rgba(20, 24, 29, 0.32);
+    color: #14181d;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.8),
+      0 0 0 6px rgba(20, 24, 29, 0.04);
+  }
+}
+
+.trigger:active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot {
+    transform: none;
+  }
+
+  .root * {
+    transition: none !important;
+  }
+
+  .trigger:active {
+    transform: none;
+  }
+}

@@ -44,12 +44,12 @@
     "routes": {
       "a": {
         "question": "Weet je niet waar te beginnen?",
-        "title": "Strategie",
-        "description": "Een stappenplan tot een roadmap. Vanuit daar volgt vaak Maatwerk Software."
+        "title": "AI strategie",
+        "description": "Een stappenplan tot een roadmap. Vanuit daar volgt vaak maatwerk software."
       },
       "b": {
         "question": "Zie je al een kans?",
-        "title": "Maatwerk Software",
+        "title": "AI Software",
         "description": "Agents, orchestratie, maatwerk en integraties. Je kunt hier ook direct starten."
       }
     },
@@ -77,7 +77,7 @@
     "pillarsSection": {
       "headline": "AI-transformatie",
       "headlineAccent": "",
-      "intro": "Weet je nog niet waar te beginnen? Dan starten we met strategie. Zie je al een kans? Dan bouwen we direct Maatwerk Software. Je kunt beide kanten op.",
+      "intro": "Weet je nog niet waar te beginnen? Dan starten we met strategie. Zie je al een kans? Dan bouwen we direct maatwerk software. Je kunt beide kanten op.",
       "scope": "Staat je vraag er niet tussen? Alles is bespreekbaar.",
       "hint": "Hover voor een snelle preview — klik voor meer uitleg.",
       "hintMobile": "Tik op een onderwerp voor meer uitleg.",
@@ -97,11 +97,43 @@
             "businessCase": "Business cases & ROI",
             "roadmap": "AI Transformatie Roadmap"
           },
-          "principles": "In elke stap: cultuur, data, proces, training."
+          "scope": {
+            "center": "SCOPE",
+            "menu": "Wat we in elke stap meenemen",
+            "open": "Open wat we in elke stap meenemen",
+            "close": "Sluit de aandachtspunten",
+            "hint": "In elke stap.",
+            "items": {
+              "culture": {
+                "label": "Cultuur",
+                "detail": "Mensen moeten het willen dragen."
+              },
+              "process": {
+                "label": "Proces",
+                "detail": "Eerst het werk, dan de tool."
+              },
+              "data": {
+                "label": "Data",
+                "detail": "Alleen wat klopt en bereikbaar is."
+              },
+              "training": {
+                "label": "Training",
+                "detail": "Het team leert het zelf doen."
+              },
+              "tech": {
+                "label": "Tech",
+                "detail": "De stack moet het aankunnen."
+              },
+              "security": {
+                "label": "Security",
+                "detail": "Toegang en toezicht horen erbij."
+              }
+            }
+          }
         },
         "solutions": {
           "for": "Voor wie al een kans ziet. Je kunt hier ook direct starten.",
-          "title": "Maatwerk Software",
+          "title": "Software",
           "items": {
             "agents": "AI-agents & automatisering",
             "orchestration": "AI-orchestratie & multi-agent",
@@ -109,7 +141,7 @@
             "integration": "Systeemintegraties"
           }
         },
-        "phasesTitle": "Waar een transformatie naartoe kan",
+        "phasesTitle": "Waar een AI transformatie naartoe kan",
         "phasesHint": "Klik een fase om hem af te spelen."
       }
     },

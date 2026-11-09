@@ -6,7 +6,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { ArrowUpRight } from 'lucide-react';
 import V2AIHorizons from './V2AIHorizons';
 import BorderBeam from './BorderBeam';
-import SpinningText from './SpinningText';
+import StrategyScope from './StrategyScope';
 import {
   CapabilityPreviewModal,
   CapabilityPreviewPopover,
@@ -118,13 +118,13 @@ export default function V2Pillars() {
               </motion.p>
             </div>
             <motion.div {...revealProps(0.12, 12)} className="mx-auto shrink-0 md:mx-0">
-              <SpinningText />
+              <StrategyScope />
             </motion.div>
           </div>
 
           <div className="relative rounded-[20px] border border-white/10 bg-[#1c1915] p-6 text-[#f1ede4] shadow-[0_40px_80px_-36px_rgba(28,25,21,0.65)] md:p-10">
             <BorderBeam radius={20} />
-            <div className="relative grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:grid-rows-[auto_auto_repeat(4,auto)_auto] md:gap-x-6">
+            <div className="relative grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:grid-rows-[auto_auto_repeat(4,auto)] md:gap-x-6">
             <motion.p
               {...revealProps(0.14, 8)}
               className="mb-2 hidden items-center gap-1.5 self-center justify-self-center whitespace-nowrap rounded-full bg-bla-lime px-3 py-1 font-host text-[12px] font-medium text-[#1c1915] md:col-start-2 md:row-start-2 md:mb-6 md:inline-flex"
@@ -163,14 +163,9 @@ export default function V2Pillars() {
                 </span>
               </motion.div>
             ))}
-            <motion.div {...revealProps(0.32)} className="md:col-start-1 md:row-start-7">
-              <p className="mt-4 font-host text-sm leading-relaxed text-[#f1ede4]/60">
-                {t('pillarsSection.offer.strategy.principles')}
-              </p>
-              <p className="mt-3 font-host text-sm text-[#f1ede4]/55 md:hidden">
-                {t('pillarsSection.offer.bridge')} →
-              </p>
-            </motion.div>
+            <p className="mt-3 font-host text-sm text-[#f1ede4]/55 md:hidden">
+              {t('pillarsSection.offer.bridge')} →
+            </p>
 
             <motion.p
               {...revealProps(0.04)}

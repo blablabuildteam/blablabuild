@@ -44,12 +44,12 @@
     "routes": {
       "a": {
         "question": "Don't know where to start?",
-        "title": "Strategy",
+        "title": "AI strategy",
         "description": "A step-by-step path to a roadmap. Custom software often follows from there."
       },
       "b": {
         "question": "Already see an opportunity?",
-        "title": "Custom software",
+        "title": "AI software",
         "description": "Agents, orchestration, bespoke systems and integrations. You can start here directly."
       }
     },
@@ -97,11 +97,43 @@
             "businessCase": "Business cases & ROI",
             "roadmap": "AI transformation roadmap"
           },
-          "principles": "In every step: culture, data, process, training."
+          "scope": {
+            "center": "SCOPE",
+            "menu": "What we carry into every step",
+            "open": "Open what we carry into every step",
+            "close": "Close the lenses",
+            "hint": "In every step.",
+            "items": {
+              "culture": {
+                "label": "Culture",
+                "detail": "People have to be willing to carry it."
+              },
+              "process": {
+                "label": "Process",
+                "detail": "The work first, then the tool."
+              },
+              "data": {
+                "label": "Data",
+                "detail": "Only what is right and reachable."
+              },
+              "training": {
+                "label": "Training",
+                "detail": "The team learns to run it themselves."
+              },
+              "tech": {
+                "label": "Tech",
+                "detail": "The stack has to be able to hold it."
+              },
+              "security": {
+                "label": "Security",
+                "detail": "Access and oversight belong in the design."
+              }
+            }
+          }
         },
         "solutions": {
           "for": "For teams that already see an opportunity. You can start here directly.",
-          "title": "Custom software",
+          "title": "Software",
           "items": {
             "agents": "AI agents & automation",
             "orchestration": "AI orchestration & multi-agent",
@@ -109,7 +141,7 @@
             "integration": "System integrations"
           }
         },
-        "phasesTitle": "Where a transformation can go",
+        "phasesTitle": "Where an AI transformation can go",
         "phasesHint": "Click a phase to play it."
       }
     },
