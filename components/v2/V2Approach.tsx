@@ -37,7 +37,11 @@ function ApproachStep({
     ['0 0 0px rgba(206,255,0,0)', '0 0 28px rgba(206,255,0,0.28)'],
   );
   const bodyColor = useTransform(lit, [0, 1], ['rgba(255,255,255,0.14)', 'rgba(255,255,255,0.82)']);
-  const dotScale = useTransform(lit, [0, 1], [0, 1]);
+  // Same 0–1 fraction as the rail width. The dot stays empty until the
+  // line reaches it, then fills as the line crosses the dot.
+  const rail = useTransform(progress, [RAIL_START, RAIL_END], [0, 1]);
+  const dotFill = useTransform(rail, [dotAt, Math.min(1, dotAt + 0.018)], [0, 1]);
+  const dotScale = useTransform(dotFill, [0, 1], [0, 1]);
 
   return (
     <div className="relative pt-10">

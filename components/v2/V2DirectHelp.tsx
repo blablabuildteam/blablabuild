@@ -22,7 +22,7 @@ interface V2DirectHelpProps {
   source?: string;
   showMail?: boolean;
   hideAi?: boolean;
-  /** Primary button links straight to Calendly ("Plan een koffie"); other options sit behind a toggle. */
+  /** Primary button links straight to Calendly ("Plan een gesprek"); other options sit behind a toggle. */
   direct?: boolean;
 }
 

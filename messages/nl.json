@@ -26,8 +26,8 @@
     "privacy": "Privacy",
     "aiTransformation": "AI-transformatie",
     "freeAIAdvice": "Gratis AI Advies",
-    "scheduleMeeting": "Plan een koffie",
-    "planCoffee": "Plan een koffie",
+    "scheduleMeeting": "Plan een gesprek",
+    "planCoffee": "Plan een gesprek",
     "planCoffeeSub": "30 minuten met twee ervaren consultants.",
     "otherOptions": "Liever anders?",
     "moreOptions": "Meer contactopties"
@@ -83,7 +83,7 @@
       "hintMobile": "Tik op een onderwerp voor meer uitleg.",
       "secondary": {
         "eyebrow": "",
-        "title": "Het bureauwerk doen we er niet los naast.",
+        "title": "Het bureauwerk blijft bestaan.",
         "description": "Merk, site, content, campagnes en vindbaarheid lopen via hetzelfde team en dezelfde systemen."
       },
       "offer": {

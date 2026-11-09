@@ -21,8 +21,8 @@ const NAV_SECTIONS = [
   { id: 'oplossingen', key: 'solutions' },
   { id: 'aanpak', key: 'approach' },
   { id: 'ai-transformatie', key: 'aiTransformation' },
-  { id: 'cases', key: 'cases' },
   { id: 'over-ons', key: 'team' },
+  { id: 'cases', key: 'cases' },
   { id: 'waarde', key: 'value' },
 ] as const;
 

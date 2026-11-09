@@ -11,7 +11,7 @@ import V2Value from '@/components/v2/V2Value';
 import V2Footer from '@/components/v2/V2Footer';
 import V2ChatWidget from '@/components/v2/V2ChatWidget';
 
-const SECTION_IDS = ['oplossingen', 'cases', 'aanpak', 'over-ons', 'waarde'] as const;
+const SECTION_IDS = ['oplossingen', 'aanpak', 'over-ons', 'cases', 'waarde'] as const;
 
 export default function V2Page() {
   const [activeSection, setActiveSection] = useState<string>('');
@@ -66,8 +66,8 @@ export default function V2Page() {
       <V2Hero variant="punchy" />
       <V2Pillars />
       <V2Approach />
-      <V2Cases />
       <V2Team />
+      <V2Cases />
       <V2Value />
       <V2Footer />
       <V2ChatWidget />

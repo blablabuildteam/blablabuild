@@ -26,8 +26,8 @@
     "privacy": "Privacy",
     "aiTransformation": "AI transformation",
     "freeAIAdvice": "Free AI Advice",
-    "scheduleMeeting": "Plan a coffee",
-    "planCoffee": "Plan a coffee",
+    "scheduleMeeting": "Book a call",
+    "planCoffee": "Book a call",
     "planCoffeeSub": "30 minutes with two experienced consultants.",
     "otherOptions": "Prefer something else?",
     "moreOptions": "More contact options"
@@ -83,7 +83,7 @@
       "hintMobile": "Tap a topic for more detail.",
       "secondary": {
         "eyebrow": "",
-        "title": "We don't keep the agency work off to the side.",
+        "title": "The agency work remains.",
         "description": "Brand, site, content, campaigns and discoverability run through the same team and the same systems."
       },
       "offer": {

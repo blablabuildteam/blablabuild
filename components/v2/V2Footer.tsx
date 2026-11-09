@@ -72,10 +72,10 @@ export default function V2Footer() {
           <nav className="flex flex-wrap items-center gap-x-5 gap-y-3">
             {[
               { href: '#oplossingen', label: t('solutions') },
-              { href: '#cases', label: t('cases') },
               { href: '#aanpak', label: t('approach') },
               { href: '#ai-transformatie', label: t('aiTransformation') },
               { href: '#over-ons', label: t('team') },
+              { href: '#cases', label: t('cases') },
               { href: '#waarde', label: t('value') },
               { href: `/${locale}/privacy`, label: t('privacy') },
             ].map((l) => (

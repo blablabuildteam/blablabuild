@@ -134,6 +134,50 @@ function createPauseClock(
   return { wait, typeOut };
 }
 
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReduced(query.matches);
+    update();
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+
+  return reduced;
+}
+
+/**
+ * Determinate startup line for a phase click.
+ * A spinner would only flash: the preview is on screen in under a second,
+ * so the line stands for that wait and then fades. Reduced motion skips it;
+ * the selected card already shows which phase is playing.
+ */
+function BootProgress({ bootId, edge = 'top' }: { bootId: number; edge?: 'top' | 'bottom' }) {
+  const reduced = usePrefersReducedMotion();
+  if (bootId < 1 || reduced !== false) return null;
+
+  return (
+    <motion.span
+      aria-hidden
+      className={`pointer-events-none absolute z-20 overflow-hidden ${
+        edge === 'top' ? 'inset-x-0 top-0 h-0.5' : 'bottom-1 left-5 right-5 h-0.5'
+      }`}
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 0 }}
+      transition={{ duration: 0.2, delay: 0.64, ease: 'linear' }}
+    >
+      <motion.span
+        className="block h-full w-full origin-left bg-bla-lime"
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ duration: 0.64, ease: 'linear' }}
+      />
+    </motion.span>
+  );
+}
+
 export default function V2AIHorizons({
   lang,
   embedded = false,
@@ -144,6 +188,7 @@ export default function V2AIHorizons({
   const [paused, setPaused] = useState(false);
   const [replayKey, setReplayKey] = useState(0);
   const [open, setOpen] = useState(!embedded);
+  const [bootId, setBootId] = useState(0);
   const stages = lang === 'en' ? STAGES_EN : STAGES_NL;
   const activeStageData = stages[activeStage];
 
@@ -157,6 +202,7 @@ export default function V2AIHorizons({
     setActiveStage(index);
     setPaused(false);
     setOpen(true);
+    setBootId((id) => id + 1);
   };
 
   return (
@@ -217,7 +263,7 @@ export default function V2AIHorizons({
                     event.preventDefault();
                     selectStage(i);
                   }}
-                  className={`group flex w-full min-h-0 cursor-pointer items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-[border-color,background-color,box-shadow,color] duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/20 md:flex-1 md:px-5 ${
+                  className={`group relative flex w-full min-h-0 cursor-pointer items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-[border-color,background-color,box-shadow,color] duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/20 md:flex-1 md:px-5 ${
                     strip ? 'h-full' : ''
                   } ${
                     isActive
@@ -308,6 +354,7 @@ export default function V2AIHorizons({
                       <Play className="h-2.5 w-2.5 fill-current" />
                     </span>
                   )}
+                  {isActive && <BootProgress key={bootId} bootId={bootId} edge="bottom" />}
                 </div>
             );
 
@@ -328,6 +375,7 @@ export default function V2AIHorizons({
                         lang={lang}
                         paused={paused}
                         replayKey={replayKey}
+                        bootId={bootId}
                         fill={!embedded}
                       />
                     </div>
@@ -344,6 +392,7 @@ export default function V2AIHorizons({
             lang={lang}
             paused={paused}
             replayKey={replayKey}
+            bootId={bootId}
             fill={false}
           />
         )}
@@ -361,7 +410,7 @@ export default function V2AIHorizons({
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 className="h-full"
               >
-                <HorizonVisual stage={activeStage} lang={lang} paused={paused} replayKey={replayKey} />
+                <HorizonVisual stage={activeStage} lang={lang} paused={paused} replayKey={replayKey} bootId={bootId} />
               </motion.div>
             </AnimatePresence>
           </div>
@@ -377,12 +426,14 @@ function HorizonVisual({
   lang,
   paused,
   replayKey = 0,
+  bootId = 0,
   fill = true,
 }: {
   stage: number;
   lang: 'en' | 'nl';
   paused: boolean;
   replayKey?: number;
+  bootId?: number;
   fill?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -396,10 +447,11 @@ function HorizonVisual({
   return (
     <div
       ref={containerRef}
-      className={`flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-[#14181d]/20 bg-[#14181d] ${
+      className={`relative flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-[#14181d]/20 bg-[#14181d] ${
         fill ? 'md:h-full md:min-h-0' : ''
       }`}
     >
+      <BootProgress key={bootId} bootId={bootId} edge="top" />
       <AnimatePresence mode="wait">
         <motion.div
           key={`${stage}-${playKey}`}
