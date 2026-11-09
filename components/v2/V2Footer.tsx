@@ -54,7 +54,7 @@ export default function V2Footer() {
                   : '30 minuten, geen slides, geen poespas. Wel een duidelijke volgende stap.'}
               </p>
               <div className="flex flex-wrap gap-3">
-                <V2DirectHelp source="v2-footer" align="left" tone="light" direct />
+                <V2DirectHelp source="v2-footer" align="left" tone="light" openUpOnDesktop />
                 <a
                   href={`mailto:${tCommon('email')}`}
                   className="inline-flex h-12 items-center gap-2 rounded-[3px] border border-[#14181d]/25 px-5 text-sm font-medium text-[#14181d] transition-colors hover:border-[#14181d]/40 hover:bg-[#14181d]/5 md:h-[52px] md:px-6 md:text-[15px]"

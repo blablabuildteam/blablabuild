@@ -56,8 +56,6 @@ export default function V2AITransformation() {
                 tone="light"
                 source="v2-pillars-discovery"
                 openUpOnDesktop
-                showMail
-                hideAi
               />
             </div>
           </div>

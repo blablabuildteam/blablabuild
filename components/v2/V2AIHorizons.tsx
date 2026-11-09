@@ -76,7 +76,7 @@ function LoadingDots({ size = 'md', paused = false }: { size?: 'sm' | 'md' | 'lg
       {[0, 1, 2].map((i) => (
         <motion.span
           key={i}
-          className={`${dot} rounded-full bg-bla-lime/80`}
+          className={`${dot} bg-bla-lime/80`}
           animate={paused ? { opacity: 0.7, scale: 1 } : { opacity: [0.25, 1, 0.25], scale: [0.85, 1.15, 0.85] }}
           transition={paused ? { duration: 0.2 } : { duration: 0.9, repeat: Infinity, delay: i * 0.18 }}
         />
@@ -295,7 +295,7 @@ export default function V2AIHorizons({
                     event.preventDefault();
                     selectStage(i);
                   }}
-                  className={`group relative flex w-full min-h-0 cursor-pointer items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-[border-color,background-color,box-shadow,color] duration-300 focus:outline-none focus-visible:ring-2 md:flex-1 md:px-5 ${
+                  className={`group relative flex w-full min-h-0 cursor-pointer items-start gap-3 rounded-[4px] border px-4 py-4 text-left transition-[border-color,background-color,box-shadow,color] duration-300 focus:outline-none focus-visible:ring-2 md:flex-1 md:px-5 ${
                     strip ? 'h-full focus-visible:ring-bla-lime/50' : 'focus-visible:ring-[#14181d]/20'
                   } ${tileSurface}`}
                 >
@@ -328,7 +328,7 @@ export default function V2AIHorizons({
                           ? lang === 'en' ? 'Play animation' : 'Animatie afspelen'
                           : lang === 'en' ? 'Pause animation' : 'Animatie pauzeren'
                       }
-                      className={`relative mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center overflow-visible rounded-full border transition-transform duration-200 hover:scale-105 focus:outline-none focus-visible:ring-2 ${
+                      className={`relative mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center overflow-visible rounded-[2px] border transition-transform duration-200 hover:scale-105 focus:outline-none focus-visible:ring-2 ${
                         strip
                           ? 'border-bla-lime bg-bla-lime text-[#1c1915] focus-visible:ring-bla-lime/40'
                           : 'border-[#14181d] bg-[#14181d] text-bla-lime focus-visible:ring-[#14181d]/25'
@@ -372,7 +372,7 @@ export default function V2AIHorizons({
                     </button>
                   ) : (
                     <span
-                      className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border opacity-100 transition-all duration-200 ${
+                      className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-[2px] border opacity-100 transition-all duration-200 ${
                         strip
                           ? 'border-white/15 bg-white/5 text-[#f1ede4]/45 group-hover:border-bla-lime group-hover:bg-bla-lime group-hover:text-[#1c1915] group-focus-visible:border-bla-lime group-focus-visible:bg-bla-lime group-focus-visible:text-[#1c1915]'
                           : 'border-[#14181d]/15 bg-[#14181d]/5 text-[#14181d]/35 group-hover:border-[#14181d] group-hover:bg-[#14181d] group-hover:text-bla-lime group-focus-visible:border-[#14181d] group-focus-visible:bg-[#14181d] group-focus-visible:text-bla-lime'
@@ -490,7 +490,7 @@ function HorizonVisual({
   return (
     <div
       ref={containerRef}
-      className={`relative flex min-h-[420px] flex-col overflow-hidden rounded-2xl border ${
+      className={`relative flex min-h-[420px] flex-col overflow-hidden rounded-[4px] border ${
         tone === 'ink' ? 'border-white/10 bg-[#12100e]' : 'border-[#14181d]/20 bg-[#14181d]'
       } ${fill ? 'md:h-full md:min-h-0' : ''}`}
     >
@@ -616,7 +616,7 @@ function CopilotVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean })
     <div className="relative flex h-full w-full flex-col overflow-hidden">
       <div className="flex shrink-0 items-center justify-between border-b border-white/8 px-5 py-3">
         <div className="flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rounded-full bg-bla-lime/80" />
+          <span className="h-1.5 w-1.5 bg-bla-lime/80" />
           <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/45">
             {lang === 'en' ? 'New chat' : 'Nieuwe chat'}
           </span>
@@ -636,7 +636,7 @@ function CopilotVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean })
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              className="ml-auto max-w-[85%] shrink-0 rounded-2xl rounded-br-md border border-white/15 bg-white/[0.08] px-4 py-3"
+              className="ml-auto max-w-[85%] shrink-0 rounded-[4px] rounded-br-none border border-white/15 bg-white/[0.08] px-4 py-3"
             >
               <div className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.18em] text-white/40">
                 {lang === 'en' ? 'You' : 'Jij'}
@@ -656,7 +656,7 @@ function CopilotVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean })
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.25 }}
-                className="inline-flex items-center gap-2.5 rounded-2xl rounded-bl-md border border-bla-lime/25 bg-bla-lime/[0.06] px-4 py-3"
+                className="inline-flex items-center gap-2.5 rounded-[4px] rounded-bl-none border border-bla-lime/25 bg-bla-lime/[0.06] px-4 py-3"
               >
                 <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-bla-lime/70">
                   AI
@@ -671,7 +671,7 @@ function CopilotVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean })
                 layout
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-2xl rounded-bl-md border border-bla-lime/30 bg-bla-lime/[0.07] px-4 py-3"
+                className="rounded-[4px] rounded-bl-none border border-bla-lime/30 bg-bla-lime/[0.07] px-4 py-3"
               >
                 <div className="mb-2 font-mono text-[9px] uppercase tracking-[0.18em] text-bla-lime/70">
                   AI
@@ -704,7 +704,7 @@ function CopilotVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean })
 
       <div className="shrink-0 border-t border-white/8 px-4 py-3 md:px-5 md:py-3.5">
         <div
-          className={`flex items-end gap-2.5 rounded-2xl border px-3.5 py-2.5 transition-colors duration-300 ${
+          className={`flex items-end gap-2.5 rounded-[4px] border px-3.5 py-2.5 transition-colors duration-300 ${
             phase === 'typing' || sending
               ? 'border-white/20 bg-white/[0.06]'
               : 'border-white/10 bg-white/[0.03]'
@@ -727,7 +727,7 @@ function CopilotVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean })
             )}
           </div>
           <motion.div
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[3px]"
             animate={{
               backgroundColor: sending
                 ? 'rgba(206,255,0,0.95)'
@@ -933,7 +933,7 @@ function useSpecialistLoop(lang: 'en' | 'nl', paused: boolean) {
 function SkillBadge({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' }) {
   return (
     <span
-      className={`inline-flex max-w-full shrink-0 items-center gap-1.5 rounded-full border border-bla-lime/50 bg-bla-lime/20 ${
+      className={`inline-flex max-w-full shrink-0 items-center gap-1.5 rounded-[2px] border border-bla-lime/50 bg-bla-lime/20 ${
         size === 'md' ? 'px-3 py-1.5' : 'px-2.5 py-1'
       }`}
     >
@@ -962,7 +962,7 @@ function SpecialistVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean
           {[0, 1, 2].map((s) => (
             <span
               key={s}
-              className={`h-1 rounded-full transition-all duration-500 ${
+              className={`h-1 transition-all duration-500 ${
                 s === scene ? 'w-4 bg-bla-lime/70' : 'w-1 bg-white/20'
               }`}
             />
@@ -987,7 +987,7 @@ function SpecialistVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean
               </div>
 
               {/* Skill name field */}
-              <div className="mb-4 rounded-xl border border-white/12 bg-white/[0.03] px-4 py-3">
+              <div className="mb-4 rounded-[4px] border border-white/12 bg-white/[0.03] px-4 py-3">
                 <div className="mb-1.5 font-mono text-[8px] uppercase tracking-[0.16em] text-white/30">
                   {lang === 'en' ? 'Skill name' : 'Skill-naam'}
                 </div>
@@ -998,7 +998,7 @@ function SpecialistVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean
               </div>
 
               {/* Upload zone */}
-              <div className="rounded-xl border border-dashed border-white/15 bg-white/[0.02] p-4">
+              <div className="rounded-[4px] border border-dashed border-white/15 bg-white/[0.02] p-4">
                 <div className="mb-3 flex items-center gap-2">
                   <Upload className="h-3.5 w-3.5 text-bla-lime" strokeWidth={2} />
                   <span className="font-host text-xs text-white/50">
@@ -1020,10 +1020,10 @@ function SpecialistVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean
                         backgroundColor: uploaded ? 'rgba(255,255,255,0.04)' : 'transparent',
                       }}
                       transition={{ duration: 0.35 }}
-                      className="flex h-10 items-center justify-between rounded-lg border px-3"
+                      className="flex h-10 items-center justify-between rounded-[3px] border px-3"
                     >
                       <div className="flex min-w-0 items-center gap-2.5">
-                        <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${uploaded ? 'bg-bla-lime/20' : 'bg-white/5'}`}>
+                        <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-[2px] ${uploaded ? 'bg-bla-lime/20' : 'bg-white/5'}`}>
                           <DocIcon className={`h-3.5 w-3.5 ${uploaded ? 'text-bla-lime' : 'text-white/30'}`} strokeWidth={2} />
                         </span>
                         <span className={`truncate font-host text-[11px] ${uploaded ? 'text-white/70' : 'text-white/25'}`}>
@@ -1059,7 +1059,7 @@ function SpecialistVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean
                     animate={{ opacity: 1 }}
                     className="flex items-center gap-2"
                   >
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-400/80" />
+                    <span className="h-1.5 w-1.5 bg-green-400/80" />
                     <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-green-400/70">
                       {lang === 'en' ? 'Knowledge base ready' : 'Kennisbank gereed'}
                     </span>
@@ -1088,7 +1088,7 @@ function SpecialistVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean
               </div>
 
               {/* Instruction editor panel */}
-              <div className="rounded-xl border border-white/12 bg-white/[0.03]">
+              <div className="rounded-[4px] border border-white/12 bg-white/[0.03]">
                 {/* Editor header */}
                 <div className="flex items-center gap-2 border-b border-white/8 px-4 py-2.5">
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="text-bla-lime/50">
@@ -1148,7 +1148,7 @@ function SpecialistVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean
                   transition={{ delay: 0.3 }}
                   className="mt-3 flex items-center gap-2"
                 >
-                  <span className="h-1.5 w-1.5 rounded-full bg-green-400/80" />
+                  <span className="h-1.5 w-1.5 bg-green-400/80" />
                   <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-green-400/70">
                     {lang === 'en' ? 'Instructions saved' : 'Instructies opgeslagen'}
                   </span>
@@ -1184,7 +1184,7 @@ function SpecialistVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean
                       initial={{ opacity: 0, y: 10, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ duration: 0.28 }}
-                      className="ml-auto max-w-[85%] shrink-0 rounded-2xl rounded-br-md border border-white/12 bg-white/[0.07] px-4 py-2.5"
+                      className="ml-auto max-w-[85%] shrink-0 rounded-[4px] rounded-br-none border border-white/12 bg-white/[0.07] px-4 py-2.5"
                     >
                       <p className="font-host text-[12px] leading-relaxed text-white/80">{chatPrompt}</p>
                     </motion.div>
@@ -1198,7 +1198,7 @@ function SpecialistVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean
                     animate={{ opacity: 1 }}
                     className="flex items-center gap-2 self-start"
                   >
-                    <div className="flex items-center rounded-2xl rounded-bl-md border border-bla-lime/20 bg-bla-lime/[0.05] px-3 py-2">
+                    <div className="flex items-center rounded-[4px] rounded-bl-none border border-bla-lime/20 bg-bla-lime/[0.05] px-3 py-2">
                       <LoadingDots size="md" paused={paused} />
                     </div>
                   </motion.div>
@@ -1213,7 +1213,7 @@ function SpecialistVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean
                       animate={{ opacity: 1, y: 0 }}
                       className="max-w-[92%] self-start"
                     >
-                      <div className="rounded-2xl rounded-bl-md border border-bla-lime/25 bg-bla-lime/[0.06] px-4 py-3">
+                      <div className="rounded-[4px] rounded-bl-none border border-bla-lime/25 bg-bla-lime/[0.06] px-4 py-3">
                         <div className="mb-2">
                           <SkillBadge name={skillName} size="sm" />
                         </div>
@@ -1241,7 +1241,7 @@ function SpecialistVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean
               {/* Composer with skill tag */}
               <div className="shrink-0 border-t border-white/8 px-4 py-3 md:px-5">
                 <div
-                  className={`flex items-end gap-2.5 rounded-2xl border px-3.5 py-2.5 transition-colors duration-300 ${
+                  className={`flex items-end gap-2.5 rounded-[4px] border px-3.5 py-2.5 transition-colors duration-300 ${
                     chatPhase === 'typing'
                       ? 'border-white/20 bg-white/[0.06]'
                       : 'border-white/10 bg-white/[0.03]'
@@ -1264,7 +1264,7 @@ function SpecialistVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: boolean
                     )}
                   </div>
                   <motion.div
-                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[3px]"
                     animate={{
                       backgroundColor: chatPhase === 'typing' && typedChat.length > 5
                         ? 'rgba(206,255,0,0.85)'
@@ -1435,7 +1435,7 @@ function AgentWorkflowVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: bool
         {nodes.map((node, i) => (
           <div key={node.label} className="flex min-w-0 items-stretch lg:flex-1">
             <motion.div
-              className="relative flex min-h-0 flex-1 flex-col rounded-2xl border p-2.5 sm:p-3.5"
+              className="relative flex min-h-0 flex-1 flex-col rounded-[4px] border p-2.5 sm:p-3.5"
               animate={{
                 borderColor: node.isDone
                   ? 'rgba(34,197,94,0.55)'
@@ -1547,7 +1547,7 @@ function AgentWorkflowVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: bool
                   </div>
                 </div>
                 {node.isDone ? (
-                  <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-green-400/70 bg-green-400">
+                  <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-[2px] border border-green-400/70 bg-green-400">
                     <svg width="8" height="8" viewBox="0 0 8 8" className="text-[#14181d]">
                       <path d="M1.5 4.2l1.8 1.8 3.2-3.6" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
@@ -1557,7 +1557,7 @@ function AgentWorkflowVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: bool
                     <LoadingDots size="sm" paused={paused} />
                   </span>
                 ) : (
-                  <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-white/15" />
+                  <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-[2px] border border-white/15" />
                 )}
               </div>
 
@@ -1568,7 +1568,7 @@ function AgentWorkflowVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: bool
                   return (
                     <motion.div
                       key={task}
-                      className="flex items-center gap-1.5 rounded-lg border px-1.5 py-1 sm:gap-2 sm:px-2 sm:py-1.5"
+                      className="flex items-center gap-1.5 rounded-[3px] border px-1.5 py-1 sm:gap-2 sm:px-2 sm:py-1.5"
                       animate={{
                         borderColor: done
                           ? 'rgba(34,197,94,0.35)'
@@ -1584,7 +1584,7 @@ function AgentWorkflowVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: bool
                       transition={{ duration: 0.2 }}
                     >
                       {done ? (
-                        <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border border-green-400/80 bg-green-400">
+                        <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[2px] border border-green-400/80 bg-green-400">
                           <svg width="7" height="7" viewBox="0 0 8 8" className="text-[#14181d]">
                             <path d="M1.5 4.2l1.8 1.8 3.2-3.6" stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
@@ -1594,7 +1594,7 @@ function AgentWorkflowVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: bool
                           <LoadingDots size="sm" paused={paused} />
                         </span>
                       ) : (
-                        <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border border-white/15" />
+                        <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[2px] border border-white/15" />
                       )}
                       <span
                         className={`font-host text-[10px] leading-snug sm:text-[11px] ${
@@ -1612,7 +1612,7 @@ function AgentWorkflowVisual({ lang, paused }: { lang: 'en' | 'nl'; paused: bool
             {i < nodes.length - 1 && (
               <div className="hidden w-4 shrink-0 items-center self-center lg:flex">
                 <motion.div
-                  className="h-[2px] w-full rounded-full"
+                  className="h-[2px] w-full"
                   animate={{
                     backgroundColor: node.isDone ? 'rgba(34,197,94,0.85)' : 'rgba(255,255,255,0.18)',
                     boxShadow: node.isDone
@@ -1911,7 +1911,7 @@ function EcosystemVisual({ lang = 'en', paused = false }: { lang?: 'en' | 'nl'; 
       <div className="flex shrink-0 items-center justify-between border-b border-white/8 px-5 py-3">
         <div className="flex items-center gap-2">
           <motion.span
-            className="h-1.5 w-1.5 rounded-full bg-bla-lime"
+            className="h-1.5 w-1.5 bg-bla-lime"
             animate={{ scale: [1, 1.4, 1], opacity: [0.8, 1, 0.8] }}
             transition={{ duration: 2, repeat: Infinity }}
           />
@@ -2211,7 +2211,7 @@ function EcosystemVisual({ lang = 'en', paused = false }: { lang?: 'en' | 'nl'; 
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 exit={{ opacity: 0, x: 8, scale: 0.98 }}
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                className="w-full overflow-hidden rounded-xl border border-bla-lime/25 bg-[#14181d]/90 backdrop-blur-md"
+                className="w-full overflow-hidden rounded-[4px] border border-bla-lime/25 bg-[#14181d]/90 backdrop-blur-md"
               >
                 <div className="px-3 py-3 md:px-5 md:py-5">
                   <div className="mb-2 md:mb-3">
@@ -2264,7 +2264,7 @@ function EcosystemVisual({ lang = 'en', paused = false }: { lang?: 'en' | 'nl'; 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="w-full rounded-xl border border-white/8 bg-white/[0.03] px-4 py-4 md:px-5"
+                className="w-full rounded-[4px] border border-white/8 bg-white/[0.03] px-4 py-4 md:px-5"
               >
                 <div className="flex items-center gap-2.5">
                   <LoadingDots size="md" paused={paused} />

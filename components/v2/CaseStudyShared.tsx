@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { MarqueeStrip } from './V2Atoms';
+import { CornerMarks, Mono } from './Instrument';
 import {
   CASE_STUDIES,
   CLIENT_LOGOS,
@@ -87,8 +88,9 @@ export function CaseStudyCard({
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-40px' }}
         transition={{ duration: 0.55, delay: (index % 3) * 0.06, ease: [0.22, 1, 0.36, 1] }}
-        className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-6 text-left transition-all hover:border-white/20 hover:bg-white/[0.05] md:p-8"
+        className="group relative flex h-full flex-col rounded-[4px] border border-white/10 bg-white/[0.03] p-6 text-left transition-all hover:border-white/20 hover:bg-white/[0.05] md:p-8"
       >
+        <CornerMarks accent size={12} className="opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100" />
         <div className="flex items-start justify-between gap-4">
           <div className="relative h-9 w-32 md:h-10 md:w-36">
             <Image
@@ -99,7 +101,9 @@ export function CaseStudyCard({
               sizes="160px"
             />
           </div>
-          <span className="font-host text-sm tabular-nums text-white/30">/ {String(index + 1).padStart(2, '0')}</span>
+          <Mono className="shrink-0 whitespace-nowrap pt-1 tabular-nums text-white/35">
+            {String(index + 1).padStart(2, '0')} / {String(CASE_STUDIES.length).padStart(2, '0')}
+          </Mono>
         </div>
 
         <div className="mt-8 flex-1">
@@ -117,7 +121,7 @@ export function CaseStudyCard({
             {caseStudy.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-white/10 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-white/55"
+                className="rounded-[2px] border border-white/10 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.18em] text-white/55"
               >
                 {TAG_LABEL[tag][lang]}
               </span>
@@ -136,7 +140,7 @@ export function CaseStudyCard({
     <button
       type="button"
       onClick={onClick}
-      className="group relative flex aspect-[5/4] w-full flex-col overflow-hidden rounded-2xl border border-white/8 bg-white/[0.02] text-left transition-all hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.04]"
+      className="group relative flex aspect-[5/4] w-full flex-col overflow-hidden rounded-[4px] border border-white/8 bg-white/[0.02] text-left transition-all hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.04]"
       aria-label={`${caseStudy.client} — ${lang === 'en' ? 'view case' : 'bekijk case'}`}
     >
       <div
@@ -150,7 +154,7 @@ export function CaseStudyCard({
         / {String(index + 1).padStart(2, '0')}
       </div>
       <div className="absolute right-5 top-5">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-white/40 transition-all group-hover:border-bla-lime/60 group-hover:bg-bla-lime group-hover:text-bla-dark">
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-[3px] border border-white/10 text-white/40 transition-all group-hover:border-bla-lime/60 group-hover:bg-bla-lime group-hover:text-bla-dark">
           <ArrowUpRight className="h-3.5 w-3.5" />
         </span>
       </div>
@@ -174,7 +178,7 @@ export function CaseStudyCard({
           {caseStudy.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full border border-white/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-white/55"
+              className="rounded-[2px] border border-white/10 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.18em] text-white/55"
             >
               {TAG_LABEL[tag][lang]}
             </span>
@@ -249,7 +253,7 @@ export function CasesCarousel({
             onClick={() => scrollByCard(-1)}
             disabled={!canPrev}
             aria-label={lang === 'en' ? 'Previous cases' : 'Vorige cases'}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/12 text-white/70 transition-colors hover:border-white/30 hover:text-white disabled:pointer-events-none disabled:opacity-30"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-[3px] border border-white/12 text-white/70 transition-colors hover:border-white/30 hover:text-white disabled:pointer-events-none disabled:opacity-30"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -258,7 +262,7 @@ export function CasesCarousel({
             onClick={() => scrollByCard(1)}
             disabled={!canNext}
             aria-label={lang === 'en' ? 'Next cases' : 'Volgende cases'}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/12 text-white/70 transition-colors hover:border-white/30 hover:text-white disabled:pointer-events-none disabled:opacity-30"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-[3px] border border-white/12 text-white/70 transition-colors hover:border-white/30 hover:text-white disabled:pointer-events-none disabled:opacity-30"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -314,7 +318,7 @@ export function CaseStudyModal({
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0d0f12] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)]"
+              className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-[4px] border border-white/12 bg-[#0d1015] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)]"
             >
               <div className="relative flex-shrink-0 overflow-hidden px-6 pb-6 pt-6 md:px-8 md:pb-7 md:pt-7">
                 <div
@@ -343,7 +347,7 @@ export function CaseStudyModal({
                       {active.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="rounded-full border border-bla-lime/30 bg-bla-lime/10 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-bla-lime/90"
+                          className="rounded-[2px] border border-bla-lime/30 bg-bla-lime/10 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.18em] text-bla-lime/90"
                         >
                           {TAG_LABEL[tag][lang]}
                         </span>
@@ -353,7 +357,7 @@ export function CaseStudyModal({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="mt-0.5 grid h-9 w-9 flex-shrink-0 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-white transition-colors hover:bg-white/[0.10]"
+                    className="mt-0.5 grid h-9 w-9 flex-shrink-0 place-items-center rounded-[3px] border border-white/10 bg-white/[0.04] text-white transition-colors hover:bg-white/[0.10]"
                     aria-label="Close"
                   >
                     <X className="h-4 w-4" />
@@ -366,7 +370,7 @@ export function CaseStudyModal({
               <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6 md:px-8 md:py-7">
                 <div className="grid grid-cols-3 gap-2.5 md:gap-3">
                   {active.metrics.map((m) => (
-                    <div key={m.value} className="rounded-xl border border-white/8 bg-white/[0.025] p-3 md:p-4">
+                    <div key={m.value} className="relative rounded-[3px] border border-white/8 bg-white/[0.025] p-3 md:p-4">
                       <div className="font-host text-xl font-medium text-bla-lime md:text-2xl">{m.value}</div>
                       <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.22em] text-white/45 md:text-[10px]">
                         {m.label[lang]}
@@ -383,7 +387,7 @@ export function CaseStudyModal({
 
                 {active.detailImage && (
                   <figure className="mt-8">
-                    <div className="relative aspect-video overflow-hidden rounded-2xl">
+                    <div className="relative aspect-video overflow-hidden rounded-[3px]">
                       <Image
                         src={active.detailImage}
                         alt={active.detailCaption?.[lang] ?? `${active.client} detail`}
@@ -410,7 +414,7 @@ export function CaseStudyModal({
 function Field({ label, body }: { label: string; body: string }) {
   return (
     <div>
-      <div className="mb-2 font-host text-[15px] text-bla-lime/85">{label}</div>
+      <Mono className="mb-3 block text-bla-lime/85">{label}</Mono>
       <p className="font-host text-base leading-relaxed text-white/80 md:text-[17px]">{body}</p>
     </div>
   );

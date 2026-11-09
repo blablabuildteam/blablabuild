@@ -30,7 +30,15 @@
     "planCoffee": "Plan een gesprek",
     "planCoffeeSub": "30 minuten met twee ervaren consultants.",
     "otherOptions": "Liever anders?",
-    "moreOptions": "Meer contactopties"
+    "moreOptions": "Meer contactopties",
+    "contactCta": "Neem contact op",
+    "contactMenu": "Kies hoe je ons spreekt",
+    "chatAi": "Chat met onze AI",
+    "chatAiSub": "Een eerste plan op maat, binnen een paar minuten.",
+    "mailUs": "Mail ons",
+    "metaCall": "30 min",
+    "metaChat": "Direct",
+    "metaMail": "Mail"
   },
   "hero": {
     "tagline": "Talk less. Build more.",

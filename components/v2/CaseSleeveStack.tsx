@@ -33,6 +33,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { TAG_LABEL, type CaseStudy } from '@/lib/v2-case-studies';
+import { CornerMarks, Mono } from './Instrument';
 import styles from './case-sleeve-stack.module.css';
 
 const LATEST_CASE_ID = 'thuishaven';
@@ -118,8 +119,9 @@ export default function CaseSleeveStack({
               }}
             >
               <span
-                className={`${styles.cover} flex flex-col overflow-hidden rounded-3xl border border-white/10 p-5 shadow-[0_18px_40px_rgba(0,0,0,0.45)] md:p-6`}
+                className={`${styles.cover} relative flex flex-col rounded-[4px] border border-white/10 p-5 shadow-[0_18px_40px_rgba(0,0,0,0.45)] md:p-6`}
               >
+                {place.slot === 'center' && <CornerMarks accent size={12} />}
                 <span className="flex items-start justify-between gap-3">
                   <span className="relative h-8 w-28 md:h-9 md:w-32">
                     <Image
@@ -130,9 +132,9 @@ export default function CaseSleeveStack({
                       sizes="140px"
                     />
                   </span>
-                  <span className="font-host text-sm tabular-nums text-white/30">
-                    / {String(index + 1).padStart(2, '0')}
-                  </span>
+                  <Mono className="shrink-0 whitespace-nowrap pt-1 tabular-nums text-white/35">
+                    {String(index + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
+                  </Mono>
                 </span>
 
                 <span className="mt-6 flex flex-1 flex-col">
@@ -148,7 +150,7 @@ export default function CaseSleeveStack({
                   {caseStudy.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-full border border-white/10 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-white/55"
+                      className="rounded-[2px] border border-white/10 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.18em] text-white/55"
                     >
                       {TAG_LABEL[tag][lang]}
                     </span>
@@ -187,7 +189,7 @@ export default function CaseSleeveStack({
             type="button"
             aria-label={lang === 'en' ? 'Previous case' : 'Vorige case'}
             onClick={(event) => choose(selected - 1, event.detail === 0)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/80 transition-colors hover:border-white/40 hover:text-white"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-[3px] border border-white/15 text-white/80 transition-colors hover:border-white/40 hover:text-white"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -195,7 +197,7 @@ export default function CaseSleeveStack({
             type="button"
             aria-label={lang === 'en' ? 'Next case' : 'Volgende case'}
             onClick={(event) => choose(selected + 1, event.detail === 0)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/80 transition-colors hover:border-white/40 hover:text-white"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-[3px] border border-white/15 text-white/80 transition-colors hover:border-white/40 hover:text-white"
           >
             <ChevronRight className="h-4 w-4" />
           </button>

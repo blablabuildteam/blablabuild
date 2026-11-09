@@ -164,10 +164,10 @@ export default function V2ChatWidget() {
               aria-modal="true"
               aria-labelledby="v2chat-title"
               className="pointer-events-auto relative flex w-full flex-col overflow-hidden
-                rounded-t-3xl border-t border-white/10 bg-[#0a0b0e] text-white
+                rounded-t-[4px] border-t border-white/10 bg-[#0a0b0e] text-white
                 shadow-[0_-16px_60px_-10px_rgba(0,0,0,0.6)]
                 h-[88dvh]
-                md:h-[640px] md:max-w-[600px] md:rounded-3xl md:border
+                md:h-[640px] md:max-w-[600px] md:rounded-[4px] md:border
                 md:shadow-[0_40px_120px_-30px_rgba(0,0,0,0.85)]"
             >
               <NoiseLayer opacity={0.14} />
@@ -175,7 +175,7 @@ export default function V2ChatWidget() {
               {/* ── Header ── */}
               <header className="relative flex shrink-0 items-center justify-between border-b border-white/8 px-5 py-4 md:px-6">
                 <div className="flex min-w-0 items-center gap-3">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-bla-lime/30 bg-bla-lime/10 text-bla-lime">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[3px] border border-bla-lime/30 bg-bla-lime/10 text-bla-lime">
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden>
                       <path d="M12 3l1.7 4.6L18 9l-4.3 1.4L12 15l-1.7-4.6L6 9l4.3-1.4L12 3zM18 15l.9 2.4L21 18l-2.1.6L18 21l-.9-2.4L15 18l2.1-.6.9-2.4z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
@@ -183,7 +183,7 @@ export default function V2ChatWidget() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.28em] text-white/45">
                       <span>{t.eyebrow}</span>
-                      <span aria-hidden className="h-1 w-1 rounded-full bg-bla-lime/60" />
+                      <span aria-hidden className="h-1 w-1 bg-bla-lime/60" />
                       <span>{t.duration}</span>
                     </div>
                     <div id="v2chat-title" className="font-host text-[15px] font-medium text-white">
@@ -195,7 +195,7 @@ export default function V2ChatWidget() {
                   type="button"
                   onClick={() => setOpen(false)}
                   aria-label={t.closeAria}
-                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/10 text-white/60 transition-colors hover:border-white/30 hover:text-white"
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-[3px] border border-white/10 text-white/60 transition-colors hover:border-white/30 hover:text-white"
                 >
                   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none">
                     <path d="M5 12h14" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
@@ -210,7 +210,7 @@ export default function V2ChatWidget() {
                     <span>{t.progress}</span>
                     <span>{Math.round(progress)}%</span>
                   </div>
-                  <div className="mt-1.5 h-[3px] w-full overflow-hidden rounded-full bg-white/8">
+                  <div className="mt-1.5 h-[3px] w-full overflow-hidden bg-white/8">
                     <motion.div
                       className="h-full bg-bla-lime"
                       initial={{ width: 0 }}
@@ -242,7 +242,7 @@ export default function V2ChatWidget() {
                     {messages.map((m, i) => (
                       <li key={i} className={`flex w-full ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div className={[
-                          'max-w-[85%] rounded-2xl px-3.5 py-2.5 font-host text-[14px] leading-relaxed',
+                          'max-w-[85%] rounded-[4px] px-3.5 py-2.5 font-host text-[14px] leading-relaxed',
                           m.role === 'user'
                             ? 'bg-bla-lime text-bla-dark'
                             : 'border border-white/10 bg-white/[0.04] text-white/90',
@@ -255,10 +255,10 @@ export default function V2ChatWidget() {
                     ))}
                     {busy && (
                       <li className="flex justify-start">
-                        <div className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-white/55">
+                        <div className="inline-flex items-center gap-2 rounded-[4px] border border-white/10 bg-white/[0.04] px-3.5 py-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-white/55">
                           <span className="relative flex h-1.5 w-1.5">
-                            <span className="absolute inset-0 animate-ping rounded-full bg-bla-lime/60" />
-                            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-bla-lime" />
+                            <span className="absolute inset-0 animate-ping bg-bla-lime/60" />
+                            <span className="relative inline-flex h-1.5 w-1.5 bg-bla-lime" />
                           </span>
                           {t.thinking}…
                         </div>
@@ -266,7 +266,7 @@ export default function V2ChatWidget() {
                     )}
                   </ul>
                   {error && (
-                    <div className="mt-4 rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 font-host text-[13px] text-red-200">
+                    <div className="mt-4 rounded-[4px] border border-red-400/30 bg-red-500/10 px-3 py-2 font-host text-[13px] text-red-200">
                       {error}
                     </div>
                   )}
@@ -283,7 +283,7 @@ export default function V2ChatWidget() {
                         type="button"
                         onClick={() => sendMessage(s)}
                         disabled={busy}
-                        className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 font-host text-[12px] text-white/75 transition-colors hover:border-white/30 hover:text-white disabled:opacity-50"
+                        className="rounded-[3px] border border-white/10 bg-white/[0.04] px-3 py-1.5 font-host text-[12px] text-white/75 transition-colors hover:border-white/30 hover:text-white disabled:opacity-50"
                       >
                         {s}
                       </button>
@@ -308,14 +308,14 @@ export default function V2ChatWidget() {
                       rows={2}
                       placeholder={t.placeholder}
                       disabled={busy}
-                      className="w-full resize-none rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 font-host text-[14px] leading-relaxed text-white placeholder-white/35 outline-none transition-colors focus:border-bla-lime/40 disabled:opacity-60"
+                      className="w-full resize-none rounded-[4px] border border-white/10 bg-white/[0.04] px-4 py-3 font-host text-[14px] leading-relaxed text-white placeholder-white/35 outline-none transition-colors focus:border-bla-lime/40 disabled:opacity-60"
                     />
                   </div>
                   <button
                     type="submit"
                     disabled={busy || !input.trim()}
                     aria-label={t.sendAria}
-                    className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-bla-lime text-bla-dark transition-all hover:bg-bla-lime/90 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="grid h-12 w-12 shrink-0 place-items-center rounded-[3px] bg-bla-lime text-bla-dark transition-all hover:bg-bla-lime/90 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden>
                       <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
@@ -332,7 +332,7 @@ export default function V2ChatWidget() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => { try { trackEvent('v2_chat_calendly_clicked'); } catch (_) {} }}
-                    className="inline-flex h-9 shrink-0 items-center gap-2 rounded-full border border-bla-lime/40 bg-bla-lime/10 px-4 font-host text-[12.5px] font-medium text-bla-lime transition-colors hover:bg-bla-lime/20"
+                    className="inline-flex h-9 shrink-0 items-center gap-2 rounded-[3px] border border-bla-lime/40 bg-bla-lime/10 px-4 font-host text-[12.5px] font-medium text-bla-lime transition-colors hover:bg-bla-lime/20"
                   >
                     <span className="whitespace-nowrap">{t.cta}</span>
                     <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -358,11 +358,11 @@ export default function V2ChatWidget() {
             type="button"
             onClick={() => setOpen(true)}
             aria-label={t.resumeAria}
-            className="fixed bottom-6 right-6 z-[89] flex items-center gap-2.5 rounded-full border border-bla-lime/25 bg-[#0d0f12]/95 px-4 py-3 text-white shadow-[0_8px_32px_-8px_rgba(0,0,0,0.7)] backdrop-blur-md transition-all hover:border-bla-lime/50 hover:shadow-[0_8px_32px_-8px_rgba(206,255,0,0.15)]"
+            className="fixed bottom-6 right-6 z-[89] flex items-center gap-2.5 rounded-[3px] border border-bla-lime/25 bg-[#0d0f12]/95 px-4 py-3 text-white shadow-[0_8px_32px_-8px_rgba(0,0,0,0.7)] backdrop-blur-md transition-all hover:border-bla-lime/50 hover:shadow-[0_8px_32px_-8px_rgba(206,255,0,0.15)]"
           >
             <span className="relative flex h-2 w-2 shrink-0">
-              <span className="absolute inset-0 animate-ping rounded-full bg-bla-lime/50" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-bla-lime" />
+              <span className="absolute inset-0 animate-ping bg-bla-lime/50" />
+              <span className="relative inline-flex h-2 w-2 bg-bla-lime" />
             </span>
             <span className="font-host text-[13px] font-medium">{t.resumeLabel}</span>
             <svg className="h-3.5 w-3.5 text-bla-lime" viewBox="0 0 24 24" fill="none" aria-hidden>

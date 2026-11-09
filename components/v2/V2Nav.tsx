@@ -161,7 +161,7 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
                 {otherLocale}
               </a>
               <div className="hidden md:inline-flex">
-                <V2DirectHelp size="sm" align="right" source="v2-nav" showMail direct />
+                <V2DirectHelp size="sm" align="right" source="v2-nav" />
               </div>
 
               <button
@@ -225,7 +225,7 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
                   {otherLocale}
                 </a>
                 <div className="flex-1">
-                  <V2DirectHelp size="sm" align="right" fullWidth source="v2-nav-mobile" showMail direct />
+                  <V2DirectHelp size="sm" align="right" fullWidth source="v2-nav-mobile" />
                 </div>
               </div>
             </div>

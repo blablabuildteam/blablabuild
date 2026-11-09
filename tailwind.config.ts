@@ -9,6 +9,14 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+  		// Hairline steps used across the site (border-white/8, /12 …). Without these,
+  		// Tailwind 3 skips the class and borders fall back to the default light gray.
+  		opacity: {
+  			'8': '0.08',
+  			'12': '0.12',
+  			'28': '0.28',
+  			'72': '0.72'
+  		},
   		fontFamily: {
   			'loopy-sans': [
   				'Meldina',

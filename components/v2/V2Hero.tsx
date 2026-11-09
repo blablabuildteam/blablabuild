@@ -360,7 +360,7 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
               transition={{ duration: 0.9, delay: 1.35, ease: [0.22, 1, 0.36, 1] }}
               className="mt-9 flex flex-wrap items-center gap-3"
             >
-              <V2DirectHelp source="v2-hero" align="left" openUpOnDesktop direct />
+              <V2DirectHelp source="v2-hero" align="left" openUpOnDesktop />
               <a
                 href="#oplossingen"
                 onClick={(e) => {

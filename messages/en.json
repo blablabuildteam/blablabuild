@@ -30,7 +30,15 @@
     "planCoffee": "Book a call",
     "planCoffeeSub": "30 minutes with two experienced consultants.",
     "otherOptions": "Prefer something else?",
-    "moreOptions": "More contact options"
+    "moreOptions": "More contact options",
+    "contactCta": "Get in touch",
+    "contactMenu": "Choose how to reach us",
+    "chatAi": "Chat with our AI",
+    "chatAiSub": "A first tailored plan, within a few minutes.",
+    "mailUs": "Email us",
+    "metaCall": "30 min",
+    "metaChat": "Instant",
+    "metaMail": "Email"
   },
   "hero": {
     "tagline": "Talk less. Build more.",
