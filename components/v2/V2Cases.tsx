@@ -30,11 +30,6 @@ export default function V2Cases() {
             </h2>
           </div>
           <div className="flex flex-col items-start gap-4 md:items-end">
-            <p className="max-w-md font-host text-base leading-relaxed text-white/60 md:text-right md:text-[17px]">
-              {lang === 'en'
-                ? 'All the work, with the latest up front.'
-                : 'Al het werk, met de laatste vooraan.'}
-            </p>
             <CasesPageLink lang={lang} />
           </div>
         </div>
