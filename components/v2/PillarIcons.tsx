@@ -3,10 +3,10 @@
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
-export type PillarIconName = 'marketing' | 'tooling' | 'data' | 'transformation';
+export type PillarIconName = 'web' | 'tooling' | 'data' | 'transformation';
 
 const ICON_SRC: Record<PillarIconName, string> = {
-  marketing: '/icons/loud-speaker.png',
+  web: '/icons/loud-speaker.png',
   tooling: '/icons/ai-brain.png',
   data: '/icons/data-analysis.png',
   transformation: '/icons/ai-transformation.png',

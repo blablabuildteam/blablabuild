@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
@@ -75,34 +75,32 @@ function HeroTicker({ words }: { words: string[] }) {
   );
 }
 
-const PILLAR_KEYS = ['marketing', 'tooling', 'data'] as const;
-type PillarKey = (typeof PILLAR_KEYS)[number];
-
-const PILLAR_LABELS: Record<PillarKey, { nl: string; en: string }> = {
-  marketing: { nl: 'Marketing', en: 'Marketing' },
-  tooling: { nl: 'AI Producten', en: 'AI Products' },
-  data: { nl: 'Data', en: 'Data' },
-};
+const ROUTES = [
+  { key: 'a', letter: 'A', target: 'ai-transformatie' },
+  { key: 'b', letter: 'B', target: 'oplossingen' },
+] as const;
 
 const TICKER_NL = [
+  'AI-agents',
+  'orchestratie',
+  'procesautomatisering',
+  'maatwerk tools',
   'AI workflows',
-  'data centralisatie',
-  'merkontwikkeling',
-  'shopify headless',
-  'praat met je data',
-  'process automation',
-  'SEO + AEO',
-  'enterprise prototyping',
+  'data basis',
+  'systeemintegratie',
+  'rapid prototyping',
+  'legacy vervangen',
 ];
 const TICKER_EN = [
-  'AI workflows',
-  'data centralization',
-  'brand development',
-  'shopify headless',
-  'talk-to-data',
+  'AI agents',
+  'orchestration',
   'process automation',
-  'SEO + AEO',
-  'enterprise prototyping',
+  'custom tools',
+  'AI workflows',
+  'data foundations',
+  'system integration',
+  'rapid prototyping',
+  'legacy replacement',
 ];
 
 export type V2HeroVariant = 'punchy' | 'editorial' | 'editorial-b';
@@ -139,16 +137,6 @@ function HeroHeadline({
             Build more.
           </motion.span>
         </span>
-        <span className="block overflow-hidden">
-          <motion.span
-            initial={{ y: '110%', opacity: 0 }}
-            animate={{ y: '0%', opacity: 1 }}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.32 }}
-            className="inline-block text-white/85"
-          >
-            Ship what works.
-          </motion.span>
-        </span>
       </h1>
     );
   }
@@ -156,11 +144,11 @@ function HeroHeadline({
   const lines =
     variant === 'editorial-b'
       ? isEn
-        ? ['Less noise.', 'More results.', 'Brand, AI and data your team actually uses.']
-        : ['Minder ruis.', 'Meer resultaat.', 'Merk, AI en data die je team écht gebruikt.']
+        ? ['Less noise.', 'More results.', 'AI and software your team actually uses.']
+        : ['Minder ruis.', 'Meer resultaat.', 'AI en software die je team écht gebruikt.']
       : isEn
-        ? ['We help growing teams', 'with brand, AI and data', 'they actually use.']
-        : ['We helpen teams groeien', 'met merk, AI en data', 'die écht gebruikt worden.'];
+        ? ['Talk first,', 'then a clear plan,', 'then we build it.']
+        : ['Eerst praten,', 'dan een helder plan,', 'dan bouwen we het.'];
 
   return (
     <h1 className="font-host font-light tracking-[-0.035em] text-white text-[clamp(2.2rem,5.8vw,5.2rem)] leading-[1.02]">
@@ -212,11 +200,11 @@ function HeroSubcopy({
   const copy =
     variant === 'editorial-b'
       ? isEn
-        ? 'From brand to AI to data — we design, build and deliver what sticks.'
-        : 'Van merk tot AI tot data — we ontwerpen, bouwen en leveren wat beklijft.'
+        ? 'AI transformation or custom software — built on your data, taking work off your plate.'
+        : 'AI-transformatie of maatwerk software — gebouwd op jouw data, om werk uit handen te nemen.'
       : isEn
-        ? 'From brand to AI to data — concrete, usable, and built to move your business forward.'
-        : 'Van merk tot AI tot data — concreet, bruikbaar, en gebouwd om je bedrijf vooruit te helpen.';
+        ? 'AI and software that take work off your plate.'
+        : 'AI en software die werk uit handen nemen.';
 
   return (
     <motion.p
@@ -233,31 +221,13 @@ function HeroSubcopy({
 export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant }) {
   const locale = useLocale();
   const t = useTranslations('intro');
+  const tHero = useTranslations('hero');
   const containerRef = useRef<HTMLElement>(null);
-  const [activePillar, setActivePillar] = useState<PillarKey>('marketing');
-  const [pillarAutoCycle, setPillarAutoCycle] = useState(true);
-
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'],
   });
   const yBg = useTransform(scrollYProgress, [0, 1], [0, 140]);
-
-  useEffect(() => {
-    if (!pillarAutoCycle) return;
-    const id = setInterval(() => {
-      setActivePillar((prev) => {
-        const i = PILLAR_KEYS.indexOf(prev);
-        return PILLAR_KEYS[(i + 1) % PILLAR_KEYS.length];
-      });
-    }, 2800);
-    return () => clearInterval(id);
-  }, [pillarAutoCycle]);
-
-  const handlePillarSelect = (key: PillarKey) => {
-    setPillarAutoCycle(false);
-    setActivePillar(key);
-  };
 
   const tickerWords = locale === 'en' ? TICKER_EN : TICKER_NL;
   const isEn = locale === 'en';
@@ -295,7 +265,7 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
               transition={{ duration: 0.9, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
               className="mt-8 flex flex-wrap items-center gap-3"
             >
-              <V2DirectHelp source="v2-hero" align="left" openUpOnDesktop />
+              <V2DirectHelp source="v2-hero" align="left" openUpOnDesktop direct />
               <a
                 href="#oplossingen"
                 onClick={(e) => {
@@ -307,6 +277,33 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
                 {isEn ? 'See what we do' : 'Bekijk wat we doen'}
               </a>
             </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-8 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:hidden"
+            >
+              {ROUTES.map((r) => (
+                <a
+                  key={r.key}
+                  href={`#${r.target}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    smoothScrollToId(r.target);
+                  }}
+                  className="flex flex-col rounded-xl border border-white/10 bg-[#0a0b0e]/80 px-4 py-3 backdrop-blur-md transition-colors hover:border-bla-lime/40"
+                >
+                  <span className="font-host text-[12px] text-white/50">
+                    <span className="mr-2 tabular-nums text-bla-lime/80">{r.letter}</span>
+                    {tHero(`routes.${r.key}.question`)}
+                  </span>
+                  <span className="mt-1 font-host text-base font-light text-white">
+                    {tHero(`routes.${r.key}.title`)}
+                  </span>
+                </a>
+              ))}
+            </motion.div>
           </div>
 
           <motion.div
@@ -316,45 +313,44 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
             className="col-span-12 hidden lg:col-span-4 lg:block lg:pl-6"
           >
             <div className="relative flex h-full min-h-[480px] flex-col rounded-2xl border border-white/10 bg-[#0a0b0e]/82 p-5 backdrop-blur-md md:min-h-[520px] md:bg-[#0a0b0e]/45 md:p-6 md:backdrop-blur-[6px]">
-              <p className="font-host text-[15px] text-white/50">
-                {isEn ? 'What we build' : 'Wat we bouwen'}
-              </p>
+              <p className="font-host text-[15px] text-white/50">{tHero('routesLabel')}</p>
 
-              <div className="mt-4 space-y-0.5">
-                {PILLAR_KEYS.map((k, i) => {
-                  const isActive = activePillar === k;
-                  const label = PILLAR_LABELS[k][isEn ? 'en' : 'nl'];
-                  return (
-                    <button
-                      key={k}
-                      type="button"
-                      onClick={() => handlePillarSelect(k)}
-                      className="group/item flex w-full items-baseline gap-3 py-1 text-left transition-opacity"
-                    >
-                      <span className="font-host text-[13px] tabular-nums text-white/30">
-                        {String(i + 1).padStart(2, '0')}
+              <div className="mt-4 flex flex-1 flex-col gap-3">
+                {ROUTES.map((r) => (
+                  <a
+                    key={r.key}
+                    href={`#${r.target}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      smoothScrollToId(r.target);
+                    }}
+                    className="group/route flex flex-1 flex-col rounded-xl border border-white/10 bg-white/[0.02] p-4 transition-colors hover:border-bla-lime/40 hover:bg-white/[0.04]"
+                  >
+                    <div className="flex items-baseline gap-3">
+                      <span className="font-host text-[13px] tabular-nums text-bla-lime/80">{r.letter}</span>
+                      <span className="font-host text-[13px] text-white/50">
+                        {tHero(`routes.${r.key}.question`)}
                       </span>
-                      <span
-                        className={`font-host text-xl font-light leading-none transition-colors md:text-2xl ${
-                          isActive ? 'text-bla-lime' : 'text-white/40 group-hover/item:text-white/70'
-                        }`}
+                    </div>
+                    <div className="mt-2 flex items-center justify-between gap-3">
+                      <span className="font-host text-xl font-light leading-tight text-white transition-colors group-hover/route:text-bla-lime md:text-[1.4rem]">
+                        {tHero(`routes.${r.key}.title`)}
+                      </span>
+                      <svg
+                        className="h-4 w-4 shrink-0 text-white/35 transition-all group-hover/route:translate-y-0.5 group-hover/route:text-bla-lime"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden
                       >
-                        {label}
-                      </span>
-                    </button>
-                  );
-                })}
+                        <path d="M12 5v14M6 13l6 6 6-6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                    <p className="mt-2 font-host text-[13px] leading-relaxed text-white/60 text-pretty md:text-[14px] md:leading-[1.55]">
+                      {tHero(`routes.${r.key}.description`)}
+                    </p>
+                  </a>
+                ))}
               </div>
-
-              <motion.p
-                key={activePillar}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}
-                className="mt-5 flex-1 font-host text-[13px] leading-relaxed text-white/75 text-pretty md:text-[14px] md:leading-[1.55]"
-              >
-                {t(`pillars.${activePillar}.focus`)}
-              </motion.p>
 
               <div className="mt-6 pt-5 border-t border-white/8">
                 <p className="mb-4 font-host text-[15px] text-white/50">Founders</p>

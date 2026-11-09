@@ -24,17 +24,35 @@
     "value": "Value",
     "aboutUs": "About us",
     "privacy": "Privacy",
+    "aiTransformation": "AI transformation",
     "freeAIAdvice": "Free AI Advice",
-    "scheduleMeeting": "Schedule a meeting"
+    "scheduleMeeting": "Plan a coffee",
+    "planCoffee": "Plan a coffee",
+    "planCoffeeSub": "30 minutes with two experienced consultants.",
+    "otherOptions": "Prefer something else?",
+    "moreOptions": "More contact options"
   },
   "hero": {
-    "tagline": "Talk less, build more",
-    "headingPrefix": "Three areas.",
-    "headingHighlight": "{ai}-driven.",
-    "headingRest": "We know them inside out.",
+    "tagline": "Talk less. Build more.",
+    "headingPrefix": "Two routes.",
+    "headingHighlight": "{ai} that works.",
+    "headingRest": "Talk first, then build.",
     "ai": "AI",
-    "description": "We transform complex challenges into scalable solutions across three core domains: Marketing, Tooling, and Data. With more than ten years of experience at the world's largest organizations, we deliver the solutions needed to win today.",
-    "descriptionShort": "We transform complex challenges into scalable solutions through Marketing, Tooling, and Data.",
+    "description": "First a real conversation, then a clear plan, then we build it: AI and software that take work off your plate.",
+    "descriptionShort": "First a real conversation, then a clear plan, then we build it: AI and software that take work off your plate.",
+    "routesLabel": "Where do you stand?",
+    "routes": {
+      "a": {
+        "question": "Don't know where to start?",
+        "title": "AI transformation",
+        "description": "We chart the course: from first adoption to an organisation where AI really pulls its weight."
+      },
+      "b": {
+        "question": "Already see an opportunity?",
+        "title": "Custom software & AI tools",
+        "description": "You know what could work better. We build it, connected to your existing systems."
+      }
+    },
     "yourChance": "Your opportunity",
     "marketing": {
       "title": "Marketing",
@@ -57,22 +75,55 @@
     "description": "",
     "disclaimer": "We do more than this. If we'd written everything down, this would be your scroll workout for the day. Everything is on the table.",
     "pillarsSection": {
-      "headline": "AI is the default.",
-      "headlineAccent": "We make it pay off.",
-      "intro": "Three practices that reinforce each other. A picture of what we do — not an exhaustive list.",
-      "scope": "Start where the leverage is highest. Don't see your question here? Everything's on the table.",
+      "headline": "Two routes.",
+      "headlineAccent": "One goal: taking work off your plate.",
+      "intro": "Not sure where to start with AI yet? Then we start with transformation. Already see a concrete opportunity? Then we build it. Either way, it starts with coffee.",
+      "scope": "Don't see your question here? Everything's on the table.",
       "hint": "Hover for a quick preview — click for details.",
       "hintMobile": "Tap a topic for more detail.",
-      "transformationTeaser": {
-        "eyebrow": "For teams ready to go further",
-        "title": "AI Transformation",
-        "description": "From first adoption to a connected organisation. Four stages — from assistant to ecosystem — with a route that fits your business.",
-        "cta": "See the four stages"
+      "dataPoint": {
+        "label": "For both routes",
+        "text": "We build on your data: first get the foundations right, then AI that can actually do something with it."
+      },
+      "secondary": {
+        "eyebrow": "What we also do",
+        "title": "Web & growth",
+        "description": "Websites, apps and discoverability — built on the same data and systems as everything else."
+      }
+    },
+    "routes": {
+      "a": {
+        "label": "Route A",
+        "question": "Don't know where to start?",
+        "title": "AI transformation",
+        "focus": "We chart the course — from first adoption to a fully connected, agentic organisation — and enable your teams to drive it forward themselves.",
+        "cta": "See the four stages",
+        "items": {
+          "startingPoint": {
+            "title": "Where do you stand today?"
+          },
+          "roadmap": {
+            "title": "A phased route that fits your business"
+          },
+          "orchestration": {
+            "title": "From standalone assistants to agents & orchestration"
+          },
+          "enablement": {
+            "title": "Teams that carry it forward themselves"
+          }
+        }
+      },
+      "b": {
+        "label": "Route B",
+        "question": "Already see an opportunity?",
+        "title": "Custom software & AI tools",
+        "focus": "AI tools, agents and bespoke systems — from prototype to production, built to take work off your plate.",
+        "cta": "Discuss your opportunity"
       }
     },
     "heroSub": {
-      "line1": "Enough talk about AI.",
-      "line2": "Let's put it to work to grow your business — and unburden you."
+      "line1": "First a real conversation, then a clear plan, then we build it:",
+      "line2": "AI and software that take work off your plate."
     },
     "pillars": {
       "marketing": {
@@ -203,15 +254,30 @@
   "approach": {
     "heading": "No agency {bullshit}, simply results",
     "bullshit": "bullsh*t",
-    "subheading": "A simple approach that ensures we can make an impact quickly",
+    "subheading": "Talk first, then plan, then build. Route A or B: the same approach, no detours.",
+    "headline": "No noise, just results.",
+    "stepLabel": "Step {n}",
+    "followUpLabel": "After",
     "steps": {
+      "bla1": {
+        "title": "bla 1",
+        "description": "Coffee with two experienced consultants. We hear where things get stuck and decide together which route fits: AI transformation or custom software & AI tools."
+      },
+      "bla2": {
+        "title": "bla 2",
+        "description": "A plan of approach: what we build, in what order and why. Clear enough to decide on."
+      },
+      "run": {
+        "title": "run",
+        "description": "It's live? Then we can stay on as your partner for maintenance, further development and the next step."
+      },
       "blabla": {
         "title": "blabla",
         "description": "One short conversation to sharpen the plan. No intake marathon — just a fast start."
       },
       "build": {
         "title": "build",
-        "description": "We get to work immediately. Measurable results within weeks — no long trajectories."
+        "description": "We execute route A or B. Straight to work, with working results within weeks — no long trajectories."
       },
       "scale": {
         "title": "scale",
@@ -277,20 +343,20 @@
     "founders": {
       "daniel": {
         "name": "Daniel de Vos",
-        "role": "Strategic Data & AI Overview",
-        "description": "Brings the knowledge of large companies to SMEs. He makes unclear data and smart technology directly workable for your organization. He specializes in quickly testing solutions and eliminating internal red tape. The result: you save time and have a future-proof strategy.",
+        "role": "Data & AI",
+        "description": "Brings the knowledge of large companies to SMEs. He makes unclear data and smart technology directly workable for your organization — the foundation under both AI transformation and custom software. He specializes in quickly testing solutions and eliminating internal red tape.",
         "linkedinLabel": "Daniel de Vos LinkedIn profile"
       },
       "xennith": {
         "name": "Xennith Oosterveer",
-        "role": "Structure & Operational Time Savings",
-        "description": "This specialist is the bridge between technology and your daily practice. With more than a decade of strategic experience, he translates complex challenges into a clear, step-by-step plan. The result: immediate 'quick wins' (time savings) and an efficient internal way of working, so you can grow without the overhead of a large agency.",
+        "role": "AI transformation & custom software",
+        "description": "Senior generalist and the bridge between technology and your daily practice. With more than a decade of strategic experience, he translates complex challenges into a clear, step-by-step plan — whether that's an AI transformation or a custom tool. His background in web and commerce is why he knows the data and systems layer underneath so well. The result: immediate time savings and an efficient way of working, so you can grow without the overhead of a large agency.",
         "linkedinLabel": "Xennith Oosterveer LinkedIn profile"
       },
       "kevin": {
         "name": "Kevin",
-        "role": "Measurable Growth & Online Profit",
-        "description": "An entrepreneur who thinks along and participates. This specialist builds profitable online brands by focusing on the customer and what really sells on your website. He combines data, psychology and marketing to build a strong brand that ensures sustainable, measurable revenue growth.",
+        "role": "Customer, data & systems",
+        "description": "An entrepreneur and senior generalist who thinks along and gets stuck in. From building online brands he knows how customers, data and systems connect — and he puts that knowledge to work in AI transformation and custom tools. He combines data, psychology and technology, with the customer as the starting point and sustainable, measurable growth as the goal.",
         "linkedinLabel": "Kevin LinkedIn profile"
       }
     }
@@ -385,9 +451,9 @@
     "viewCase": "View case"
   },
   "metadata": {
-    "title": "blablabuild | AI Innovations for Fast Growth",
-    "description": "We transform complexity into flow. AI-driven solutions for modern businesses.",
-    "keywords": "AI, automation, business transformation, data, tech"
+    "title": "blablabuild | AI transformation & custom AI software",
+    "description": "First a real conversation, then a clear plan, then we build it. AI transformation and custom AI software that take work off your plate, built on your data.",
+    "keywords": "AI transformation, custom software, AI software, AI agents, process automation, system integration, AI tools, data"
   },
   "intake": {
     "backToHome": "Back to home",
@@ -466,4 +532,3 @@
     }
   }
 }
-

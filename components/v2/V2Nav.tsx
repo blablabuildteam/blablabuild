@@ -20,6 +20,7 @@ interface V2NavProps {
 const NAV_SECTIONS = [
   { id: 'oplossingen', key: 'solutions' },
   { id: 'aanpak', key: 'approach' },
+  { id: 'ai-transformatie', key: 'aiTransformation' },
   { id: 'cases', key: 'cases' },
   { id: 'over-ons', key: 'team' },
   { id: 'waarde', key: 'value' },
@@ -145,7 +146,7 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
               {otherLocale}
             </a>
             <div className="hidden md:inline-flex">
-              <V2DirectHelp size="sm" align="right" source="v2-nav" showMail />
+              <V2DirectHelp size="sm" align="right" source="v2-nav" showMail direct />
             </div>
 
             <button
@@ -202,7 +203,7 @@ export default function V2Nav({ activeSection = '' }: V2NavProps) {
                   {otherLocale}
                 </a>
                 <div className="flex-1">
-                  <V2DirectHelp size="sm" align="right" fullWidth source="v2-nav-mobile" showMail />
+                  <V2DirectHelp size="sm" align="right" fullWidth source="v2-nav-mobile" showMail direct />
                 </div>
               </div>
             </div>

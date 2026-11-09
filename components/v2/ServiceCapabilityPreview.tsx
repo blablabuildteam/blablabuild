@@ -174,32 +174,29 @@ export const CAPABILITY_CONFIG: Record<CapabilityPreviewId, CapabilityConfig> = 
 };
 
 export const TICKER_PREVIEW_MAP: Record<string, CapabilityPreviewId> = {
-  'AI workflows': 'agents',
-  'data centralisatie': 'data',
-  'data centralization': 'data',
-  'merkontwikkeling': 'brand',
-  'brand development': 'brand',
-  'shopify headless': 'commerce',
-  'praat met je data': 'talkData',
-  'talk-to-data': 'talkData',
+  'AI-agents': 'agents',
+  'AI agents': 'agents',
+  'procesautomatisering': 'automation',
   'process automation': 'automation',
-  'SEO + AEO': 'seo',
-  'enterprise prototyping': 'prototype',
+  'maatwerk tools': 'bespoke',
+  'custom tools': 'bespoke',
+  'AI workflows': 'agents',
+  'data basis': 'data',
+  'data foundations': 'data',
+  'rapid prototyping': 'prototype',
+  'legacy vervangen': 'legacy',
+  'legacy replacement': 'legacy',
 };
 
+// Keys match intro.pillars.<group>.items.* — route B (tooling) and the secondary web strip.
+// Preview content for retired featured items (brand, ads, maturity, dashboard, talkData) stays in CAPABILITY_CONFIG.
 export const PILLAR_ITEM_PREVIEW_MAP: Record<string, CapabilityPreviewId> = {
-  brandDevelopment: 'brand',
   websitesApps: 'commerce',
-  adCampaigns: 'ads',
   seoAeo: 'seo',
   aiAgents: 'agents',
   bespokeSystems: 'bespoke',
   legacyReplacement: 'legacy',
   rapidPrototyping: 'prototype',
-  maturityAssessment: 'maturity',
-  dataCentralization: 'data',
-  dashboardingInsight: 'dashboard',
-  talkToData: 'talkData',
 };
 
 const PreviewSizeContext = createContext<'sm' | 'md' | 'lg'>('md');

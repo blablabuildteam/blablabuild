@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { trackEvent } from '@/lib/analytics';
 
 type Variant = 'primary' | 'outline';
@@ -22,6 +22,8 @@ interface V2DirectHelpProps {
   source?: string;
   showMail?: boolean;
   hideAi?: boolean;
+  /** Primary button links straight to Calendly ("Plan een koffie"); other options sit behind a toggle. */
+  direct?: boolean;
 }
 
 const CALENDLY_URL = 'https://calendly.com/team-blablabuild/30min';
@@ -40,8 +42,10 @@ export default function V2DirectHelp({
   source = 'v2',
   showMail = false,
   hideAi = false,
+  direct = false,
 }: V2DirectHelpProps) {
   const locale = useLocale();
+  const t = useTranslations('nav');
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -83,7 +87,10 @@ export default function V2DirectHelp({
 
   const arrowColor = variant === 'primary' ? '' : tone === 'dark' ? 'text-white' : 'text-[#14181d]';
 
-  const triggerLabel = label || (locale === 'en' ? 'Get help now' : 'Direct hulp');
+  const triggerLabel = label || (direct ? t('planCoffee') : locale === 'en' ? 'Get help now' : 'Direct hulp');
+  const variantClass = variantClasses[`${variant}-${tone}`];
+  const dividerClass = tone === 'dark' ? 'border-bla-dark/15' : 'border-white/15';
+  const toggleSize = size === 'sm' ? 'h-10 w-9' : 'h-12 w-11 md:h-[52px] md:w-12';
 
   const handleAiAdvice = () => {
     setOpen(false);
@@ -101,7 +108,7 @@ export default function V2DirectHelp({
   };
 
   const handleMeeting = () => {
-    trackEvent('v2_help_meeting_clicked', { source });
+    trackEvent('v2_help_meeting_clicked', { source, direct });
     setOpen(false);
   };
 
@@ -112,30 +119,73 @@ export default function V2DirectHelp({
 
   return (
     <div ref={wrapRef} className={`relative inline-flex ${fullWidth ? 'w-full' : ''} ${className}`}>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        className={`${baseBtn} ${sizeClasses} ${widthClasses} ${variantClasses[`${variant}-${tone}`]}`}
-      >
-        <span>{triggerLabel}</span>
-        <svg
-          className={`h-3.5 w-3.5 transition-transform ${arrowColor} ${
-            open ? 'translate-x-0.5 rotate-90' : 'group-hover:translate-x-0.5'
-          }`}
-          viewBox="0 0 24 24"
-          fill="none"
+      {direct ? (
+        <div className={`inline-flex ${widthClasses}`}>
+          <a
+            href={CALENDLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={handleMeeting}
+            className={`${baseBtn} ${sizeClasses} ${fullWidth ? 'flex-1' : ''} rounded-r-none ${variantClass}`}
+          >
+            <span>{triggerLabel}</span>
+            <svg
+              className={`h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 ${arrowColor}`}
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M5 12h14M13 6l6 6-6 6"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-haspopup="menu"
+            aria-expanded={open}
+            aria-label={t('moreOptions')}
+            className={`${baseBtn} ${toggleSize} shrink-0 rounded-l-none border-l ${dividerClass} ${variantClass}`}
+          >
+            <svg
+              className={`h-3.5 w-3.5 transition-transform ${arrowColor} ${open ? 'rotate-180' : ''}`}
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-haspopup="menu"
+          aria-expanded={open}
+          className={`${baseBtn} ${sizeClasses} ${widthClasses} ${variantClass}`}
         >
-          <path
-            d="M5 12h14M13 6l6 6-6 6"
-            stroke="currentColor"
-            strokeWidth="1.75"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
+          <span>{triggerLabel}</span>
+          <svg
+            className={`h-3.5 w-3.5 transition-transform ${arrowColor} ${
+              open ? 'translate-x-0.5 rotate-90' : 'group-hover:translate-x-0.5'
+            }`}
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <path
+              d="M5 12h14M13 6l6 6-6 6"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      )}
 
       <AnimatePresence>
         {open && (
@@ -173,10 +223,10 @@ export default function V2DirectHelp({
               ].join(' ')}
             >
               <div className="mb-1 hidden md:block px-3 pt-2 pb-1 font-mono text-[10px] uppercase tracking-[0.28em] text-white/40">
-                {locale === 'en' ? '§ pick your path' : '§ kies je pad'}
+                {direct ? t('otherOptions') : locale === 'en' ? '§ pick your path' : '§ kies je pad'}
               </div>
 
-              <a
+              {!direct && <a
                 href={CALENDLY_URL}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -197,10 +247,10 @@ export default function V2DirectHelp({
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block whitespace-nowrap font-host text-[15px] font-medium text-white">
-                    {locale === 'en' ? 'Book a meeting' : 'Plan een meeting'}
+                    {t('planCoffee')}
                   </span>
                   <span className="mt-0.5 block font-host text-[12.5px] leading-snug text-white/55">
-                    {locale === 'en' ? '30 minutes with a founder.' : '30 minuten met een founder.'}
+                    {t('planCoffeeSub')}
                   </span>
                 </span>
                 <svg
@@ -216,7 +266,7 @@ export default function V2DirectHelp({
                     strokeLinejoin="round"
                   />
                 </svg>
-              </a>
+              </a>}
 
               {!hideAi && <button
                 type="button"

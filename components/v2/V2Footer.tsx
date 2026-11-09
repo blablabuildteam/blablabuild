@@ -32,7 +32,7 @@ export default function V2Footer() {
                   : '30 minuten, geen slides, geen poespas. Wel een duidelijke volgende stap.'}
               </p>
               <div className="flex flex-wrap gap-3">
-                <V2DirectHelp source="v2-footer" align="left" tone="light" />
+                <V2DirectHelp source="v2-footer" align="left" tone="light" direct />
                 <a
                   href={`mailto:${tCommon('email')}`}
                   className="inline-flex h-12 items-center gap-2 rounded-full border border-[#14181d]/15 px-5 text-sm font-medium text-[#14181d] transition-colors hover:border-[#14181d]/40 hover:bg-[#14181d]/5 md:h-[52px] md:px-6 md:text-[15px]"
@@ -74,6 +74,7 @@ export default function V2Footer() {
               { href: '#oplossingen', label: t('solutions') },
               { href: '#cases', label: t('cases') },
               { href: '#aanpak', label: t('approach') },
+              { href: '#ai-transformatie', label: t('aiTransformation') },
               { href: '#over-ons', label: t('team') },
               { href: '#waarde', label: t('value') },
               { href: `/${locale}/privacy`, label: t('privacy') },

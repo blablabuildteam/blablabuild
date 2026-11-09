@@ -48,8 +48,8 @@ const VALUE_CARDS: ValueCard[] = [
     id: 'tangible-roi',
     title: { en: 'Tangible ROI Over Hype', nl: 'Meetbare ROI boven hype' },
     description: {
-      en: "We don't sell AI as a marketing gimmick or a trendy buzzword. Our focus is entirely on measurable impact—whether that means slashing development effort by 500% or cutting maintenance time by 75%.",
-      nl: 'We verkopen AI niet als marketinggimmick of trendy buzzword. Onze focus ligt volledig op meetbare impact—of dat nu betekent dat we development-inspanning met 500% verlagen of onderhoudstijd met 75% terugbrengen.',
+      en: "We don't sell AI as a marketing gimmick or a trendy buzzword. Our focus is entirely on measurable impact—less manual work, shorter lead times, less maintenance.",
+      nl: 'We verkopen AI niet als marketinggimmick of trendy buzzword. Onze focus ligt volledig op meetbare impact—minder handwerk, kortere doorlooptijden, minder onderhoud.',
     },
   },
 ];

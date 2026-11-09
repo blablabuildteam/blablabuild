@@ -5,7 +5,8 @@ import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion
 import { useTranslations, useLocale } from 'next-intl';
 import { NoiseLayer } from './V2Atoms';
 
-const STEPS = ['blabla', 'build', 'scale'] as const;
+// bla 1 (coffee) → bla 2 (plan) → build (route A or B) → run (optional follow-up)
+const STEPS = ['bla1', 'bla2', 'build', 'run'] as const;
 const RAIL_START = 0.18;
 const RAIL_END = 0.9;
 
@@ -14,15 +15,15 @@ function ApproachStep({
   title,
   description,
   progress,
-  lang,
+  label,
 }: {
   index: number;
   title: string;
   description: string;
   progress: MotionValue<number>;
-  lang: 'en' | 'nl';
+  label: string;
 }) {
-  // Dots sit at the left of each equal column: 0%, ~33%, ~67%.
+  // Dots sit at the left of each equal column: 0%, 25%, 50%, 75%.
   const dotAt = index / STEPS.length;
   const lightStart = RAIL_START + Math.max(0, dotAt - 0.04) * (RAIL_END - RAIL_START);
   const lightEnd = RAIL_START + Math.min(1, dotAt + 0.12) * (RAIL_END - RAIL_START);
@@ -51,7 +52,7 @@ function ApproachStep({
         style={{ color: labelColor }}
         className="font-host text-sm text-white/45"
       >
-        {lang === 'en' ? `Step ${index + 1}` : `Stap ${index + 1}`}
+        {label}
       </motion.div>
       <motion.h3
         style={{ color: titleColor, textShadow: titleShadow }}
@@ -102,14 +103,12 @@ export default function V2Approach() {
               {lang === 'en' ? 'No agency ' : 'Geen agency '}
               <span className="font-medium text-bla-lime">{lang === 'en' ? 'bullsh*t.' : 'bullsh*t.'}</span>
               <br />
-              <span className="text-white/85">{lang === 'en' ? 'No noise, just results.' : 'Resultaat zonder ruis.'}</span>
+              <span className="text-white/85">{t('headline')}</span>
             </h2>
           </div>
           <div className="col-span-12 md:col-span-5 md:pt-12">
             <p className="max-w-md font-host text-base leading-relaxed text-white/75 md:text-lg">
-              {lang === 'en'
-                ? 'Every practice above follows the same three steps. Simple, direct, done.'
-                : 'Elk focusgebied hierboven doorloopt dezelfde drie stappen. Simpel, direct, klaar.'}
+              {t('subheading')}
             </p>
           </div>
         </div>
@@ -123,7 +122,7 @@ export default function V2Approach() {
             className="pointer-events-none absolute left-0 top-4 hidden h-px bg-bla-lime md:block"
           />
 
-          <div className="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-8">
+          <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-4 md:gap-8">
             {STEPS.map((step, i) => (
               <ApproachStep
                 key={step}
@@ -131,7 +130,7 @@ export default function V2Approach() {
                 title={t(`steps.${step}.title`)}
                 description={t(`steps.${step}.description`)}
                 progress={scrollYProgress}
-                lang={lang}
+                label={step === 'run' ? t('followUpLabel') : t('stepLabel', { n: i + 1 })}
               />
             ))}
           </div>

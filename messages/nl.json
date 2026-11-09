@@ -24,17 +24,35 @@
     "value": "Waarde",
     "aboutUs": "Over ons",
     "privacy": "Privacy",
+    "aiTransformation": "AI-transformatie",
     "freeAIAdvice": "Gratis AI Advies",
-    "scheduleMeeting": "Plan een meeting"
+    "scheduleMeeting": "Plan een koffie",
+    "planCoffee": "Plan een koffie",
+    "planCoffeeSub": "30 minuten met twee ervaren consultants.",
+    "otherOptions": "Liever anders?",
+    "moreOptions": "Meer contactopties"
   },
   "hero": {
-    "tagline": "Talk less, build more",
-    "headingPrefix": "Drie gebieden.",
-    "headingHighlight": "{ai}-gedreven.",
-    "headingRest": "Wij kennen ze blindelings.",
+    "tagline": "Talk less. Build more.",
+    "headingPrefix": "Twee routes.",
+    "headingHighlight": "{ai} die werkt.",
+    "headingRest": "Eerst praten, dan bouwen.",
     "ai": "AI",
-    "description": "Wij transformeren complexe uitdagingen in schaalbare oplossingen via drie kerngebieden: Marketing, Tooling en Data. Met meer dan tien jaar ervaring bij de grootste organisaties ter wereld, bieden wij de oplossingen die nodig zijn om vandaag te winnen.",
-    "descriptionShort": "Wij transformeren complexe uitdagingen in schaalbare oplossingen via Marketing, Tooling en Data.",
+    "description": "Eerst een goed gesprek, dan een helder plan, dan bouwen we het: AI en software die werk uit handen nemen.",
+    "descriptionShort": "Eerst een goed gesprek, dan een helder plan, dan bouwen we het: AI en software die werk uit handen nemen.",
+    "routesLabel": "Waar sta je?",
+    "routes": {
+      "a": {
+        "question": "Weet je niet waar te beginnen?",
+        "title": "AI-transformatie",
+        "description": "We zetten de koers uit: van eerste adoptie tot een organisatie waarin AI echt meedraait."
+      },
+      "b": {
+        "question": "Zie je al een kans?",
+        "title": "Maatwerk software & AI-tools",
+        "description": "Je weet wat beter kan. Wij bouwen het, gekoppeld aan je bestaande systemen."
+      }
+    },
     "yourChance": "Jouw kans",
     "marketing": {
       "title": "Marketing",
@@ -57,22 +75,55 @@
     "description": "",
     "disclaimer": "We doen meer dan dit. Als we alles hadden opschreven, was dit je scroll-workout voor vandaag. Alles is bespreekbaar.",
     "pillarsSection": {
-      "headline": "AI is standaard.",
-      "headlineAccent": "Wij laten het voor je werken.",
-      "intro": "Drie focusgebieden die elkaar versterken. Een beeld van wat we doen — geen complete lijst.",
-      "scope": "Begin waar de hefboom het grootst is. Staat je vraag er niet tussen? Alles is bespreekbaar.",
+      "headline": "Twee routes.",
+      "headlineAccent": "Eén doel: werk uit handen nemen.",
+      "intro": "Weet je nog niet waar je met AI moet beginnen? Dan starten we met transformatie. Zie je al een concrete kans? Dan bouwen we die. In beide gevallen begint het met koffie.",
+      "scope": "Staat je vraag er niet tussen? Alles is bespreekbaar.",
       "hint": "Hover voor een snelle preview — klik voor meer uitleg.",
       "hintMobile": "Tik op een onderwerp voor meer uitleg.",
-      "transformationTeaser": {
-        "eyebrow": "Voor teams die verder willen",
-        "title": "AI Transformatie",
-        "description": "Van eerste adoptie tot een verbonden organisatie. Vier fases — van assistent tot ecosystem — met een route die bij je bedrijf past.",
-        "cta": "Bekijk de vier fases"
+      "dataPoint": {
+        "label": "Voor beide routes",
+        "text": "Wij bouwen op jouw data: eerst de basis op orde, dan AI die er echt iets mee kan."
+      },
+      "secondary": {
+        "eyebrow": "Wat we ook doen",
+        "title": "Web & groei",
+        "description": "Websites, apps en vindbaarheid — gebouwd op dezelfde data en systemen als de rest."
+      }
+    },
+    "routes": {
+      "a": {
+        "label": "Route A",
+        "question": "Weet je niet waar te beginnen?",
+        "title": "AI-transformatie",
+        "focus": "Wij zetten de koers uit — van eerste adoptie tot een verbonden, agentic organisatie — en zorgen dat je teams het zelf verder brengen.",
+        "cta": "Bekijk de vier fases",
+        "items": {
+          "startingPoint": {
+            "title": "Waar sta je nu?"
+          },
+          "roadmap": {
+            "title": "Een route in fases die bij je bedrijf past"
+          },
+          "orchestration": {
+            "title": "Van losse assistenten naar agents & orchestratie"
+          },
+          "enablement": {
+            "title": "Teams die het zelf verder brengen"
+          }
+        }
+      },
+      "b": {
+        "label": "Route B",
+        "question": "Zie je al een kans?",
+        "title": "Maatwerk software & AI-tools",
+        "focus": "AI-tools, agents en maatwerk — van prototype tot productie, gebouwd om werk uit handen te nemen.",
+        "cta": "Bespreek je kans"
       }
     },
     "heroSub": {
-      "line1": "Genoeg gepraat over AI.",
-      "line2": "Laten we het inzetten om je business te laten groeien én je te ontzorgen."
+      "line1": "Eerst een goed gesprek, dan een helder plan, dan bouwen we het:",
+      "line2": "AI en software die werk uit handen nemen."
     },
     "pillars": {
       "marketing": {
@@ -203,15 +254,30 @@
   "approach": {
     "heading": "Geen agency {bullshit}, simpelweg resultaat",
     "bullshit": "bullsh*t",
-    "subheading": "Een simpele aanpak dat ervoor zorgt dat we snel impact kunnen maken",
+    "subheading": "Eerst praten, dan plannen, dan bouwen. Route A of B: dezelfde aanpak, zonder omwegen.",
+    "headline": "Resultaat zonder ruis.",
+    "stepLabel": "Stap {n}",
+    "followUpLabel": "Daarna",
     "steps": {
+      "bla1": {
+        "title": "bla 1",
+        "description": "Koffie met twee ervaren consultants. We horen waar het knelt en bepalen samen welke route past: AI-transformatie of maatwerk software & AI-tools."
+      },
+      "bla2": {
+        "title": "bla 2",
+        "description": "Een plan van aanpak: wat we bouwen, in welke volgorde en waarom. Helder genoeg om op te beslissen."
+      },
+      "run": {
+        "title": "beheer",
+        "description": "Draait het? Dan blijven we desgewenst aan als partner voor beheer, doorontwikkeling en de volgende stap."
+      },
       "blabla": {
         "title": "blabla",
         "description": "Een kort gesprek om de eerste concrete oplossing scherp te krijgen. Geen gedoe — gewoon snel starten."
       },
       "build": {
         "title": "build",
-        "description": "We gaan direct aan de slag. Binnen enkele weken meetbare resultaten en impact — geen lange trajecten."
+        "description": "We voeren route A of B uit. Direct aan de slag, met werkende resultaten binnen weken — geen lange trajecten."
       },
       "scale": {
         "title": "scale",
@@ -277,20 +343,20 @@
     "founders": {
       "daniel": {
         "name": "Daniel de Vos",
-        "role": "Strategisch Data & AI Overzicht",
-        "description": "Brengt de kennis van grote bedrijven naar het MKB. Hij maakt onduidelijke data en slimme technologie direct werkend voor jouw organisatie. Hij is gespecialiseerd in het snel testen van oplossingen en het elimineren van interne rompslomp. Het resultaat: je wint tijd en hebt een toekomstbestendige strategie.",
+        "role": "Data & AI",
+        "description": "Brengt de kennis van grote bedrijven naar het MKB. Hij maakt onduidelijke data en slimme technologie direct werkend voor jouw organisatie — de basis onder zowel AI-transformatie als maatwerk. Hij is gespecialiseerd in het snel testen van oplossingen en het elimineren van interne rompslomp.",
         "linkedinLabel": "Daniel de Vos LinkedIn profiel"
       },
       "xennith": {
         "name": "Xennith Oosterveer",
-        "role": "Structuur & Operationele Tijdwinst",
-        "description": "Deze specialist is de brug tussen technologie en je dagelijkse praktijk. Met meer dan een decennium aan strategische ervaring, vertaalt hij complexe uitdagingen naar een duidelijk, stapsgewijs plan. Het resultaat: directe 'quick wins' (tijdwinst) en een efficiënte interne werkwijze, zodat je kunt groeien zonder de overhead van een groot bureau.",
+        "role": "AI-transformatie & maatwerk",
+        "description": "Senior generalist en de brug tussen technologie en je dagelijkse praktijk. Met meer dan een decennium aan strategische ervaring vertaalt hij complexe uitdagingen naar een duidelijk, stapsgewijs plan — of dat nu een AI-transformatie is of een maatwerk tool. Zijn achtergrond in web en commerce is waarom hij de data- en systeemlaag eronder zo goed kent. Het resultaat: directe tijdwinst en een efficiënte werkwijze, zodat je kunt groeien zonder de overhead van een groot bureau.",
         "linkedinLabel": "Xennith Oosterveer LinkedIn profiel"
       },
       "kevin": {
         "name": "Kevin",
-        "role": "Meetbare Groei & Online Winst",
-        "description": "Een ondernemer die meedenkt en meedoet. Deze specialist bouwt winstgevende online merken door te focussen op de klant en wat écht verkoopt op jouw website. Hij combineert data, psychologie en marketing om een sterk merk neer te zetten dat zorgt voor duurzame, meetbare omzetgroei.",
+        "role": "Klant, data & systemen",
+        "description": "Een ondernemer en senior generalist die meedenkt en meedoet. Uit het bouwen van online merken weet hij hoe klant, data en systemen samenhangen — en die kennis zet hij in voor AI-transformatie en maatwerk tools. Hij combineert data, psychologie en techniek, met de klant als vertrekpunt en duurzame, meetbare groei als doel.",
         "linkedinLabel": "Kevin LinkedIn profiel"
       }
     }
@@ -385,9 +451,9 @@
     "viewCase": "Bekijk case"
   },
   "metadata": {
-    "title": "blablabuild | AI Innovaties voor Snelle Groei",
-    "description": "We transformeren complexiteit naar flow. AI-gedreven oplossingen voor moderne bedrijven.",
-    "keywords": "AI, automatisering, business transformation, data, tech"
+    "title": "blablabuild | AI-transformatie & maatwerk AI-software",
+    "description": "Eerst een goed gesprek, dan een helder plan, dan bouwen we het. AI-transformatie en maatwerk AI-software die werk uit handen nemen, gebouwd op jouw data.",
+    "keywords": "AI-transformatie, maatwerk software, AI-software, AI-agents, procesautomatisering, systeemintegratie, AI-tools, data"
   },
   "intake": {
     "backToHome": "Terug naar home",
@@ -466,4 +532,3 @@
     }
   }
 }
-

@@ -127,16 +127,16 @@ export default function V2Team() {
             <p className="max-w-md font-host text-base leading-relaxed text-[#14181d]/75 md:text-lg">
               {lang === 'en' ? (
                 <>
-                  With us you don&apos;t hire a job title — you hire a foundation.{' '}
+                  Senior generalists for both routes: AI transformation and custom software &amp; AI tools.{' '}
                   <span className="text-[#14181d]">
-                    Founder, consultant, manager and builder in one. Plus a network of specialists when the project demands it.
+                    Our background in web and commerce is why we know the data and systems layer underneath. Plus a network of specialists when the project demands it.
                   </span>
                 </>
               ) : (
                 <>
-                  Je huurt bij ons geen functieprofiel, maar een fundament.{' '}
+                  Senior generalisten voor beide routes: AI-transformatie en maatwerk software &amp; AI-tools.{' '}
                   <span className="text-[#14181d]">
-                    Ondernemer, consultant, manager en bouwer in één. Plus een netwerk van specialisten als het project erom vraagt.
+                    Onze achtergrond in web en commerce is waarom we de data- en systeemlaag eronder kennen. Plus een netwerk van specialisten als het project erom vraagt.
                   </span>
                 </>
               )}
