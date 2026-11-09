@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n/request';
-import "../globals.css";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import SiteInsightsTracker from "@/components/SiteInsightsTracker";
 import CookieBanner from "@/components/CookieBanner";
@@ -83,21 +82,17 @@ export default async function LocaleLayout({
   }
 
   return (
-    <html lang={locale}>
-      <body>
-        <NextIntlClientProvider messages={messages} locale={locale}>
-          <Suspense fallback={null}>
-            <GoogleAnalytics />
-          </Suspense>
-          <Suspense fallback={null}>
-            <SiteInsightsTracker />
-          </Suspense>
-          {children}
-          <LocaleScrollRestore />
-          <CookieBanner />
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider messages={messages} locale={locale}>
+      <Suspense fallback={null}>
+        <GoogleAnalytics />
+      </Suspense>
+      <Suspense fallback={null}>
+        <SiteInsightsTracker />
+      </Suspense>
+      {children}
+      <LocaleScrollRestore />
+      <CookieBanner />
+    </NextIntlClientProvider>
   );
 }
 

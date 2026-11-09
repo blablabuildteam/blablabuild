@@ -1,10 +1,16 @@
-// Root layout - minimal wrapper
-// The actual layout with metadata is in app/[locale]/layout.tsx
-// Middleware handles routing to locale-specific routes
-export default function RootLayout({
+import { getLocale } from 'next-intl/server';
+import './globals.css';
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  const locale = await getLocale();
+
+  return (
+    <html lang={locale}>
+      <body>{children}</body>
+    </html>
+  );
 }

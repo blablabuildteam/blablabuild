@@ -66,6 +66,38 @@ export const CASE_STUDIES: CaseStudy[] = [
     },
   },
   {
+    id: 'thuishaven',
+    client: 'Thuishaven',
+    logo: '/logos/thuishaven.png',
+    tags: ['ai-tools'],
+    metric: { value: 'Live', label: { nl: 'tools voor het team', en: 'tools for the team' } },
+    title: {
+      nl: 'Verkoop, verhuur en de crew in eigen tools.',
+      en: 'Sales, hire and the crew in their own tools.',
+    },
+    intro: {
+      nl: 'Een hub voor kaartverkoop en marketing, outreach naar bedrijven in hun eigen stem, en een aparte digitale dienstregistratie voor de crew.',
+      en: 'A hub for ticket sales and marketing, outreach to companies in their own voice, and a separate digital shift registration for the crew.',
+    },
+    context: {
+      nl: 'Thuishaven programmeert edities, verhuurt het terrein aan bedrijven en draait avonden met een grote flexibele crew. Cijfers, leads en personeelsformulieren zaten verspreid over systemen en papier.',
+      en: 'Thuishaven programmes editions, hires the site out to companies and runs nights with a large flexible crew. Numbers, leads and staff forms were spread across systems and paper.',
+    },
+    problem: {
+      nl: 'Ticketverkoop, advertenties en mail vormden geen enkel beeld. Bedrijfsmails werden met de hand geschreven. HR typte elk papieren formulier over voor de loonadministratie.',
+      en: 'Ticket sales, ads and mail were not one picture. Corporate mail was written by hand. HR retyped every paper form for payroll.',
+    },
+    result: {
+      nl: 'We bouwden een hub met twee tools. Het dashboard legt kaartverkoop, paid en e-mail naast elkaar, en het team stelt er vragen over de eigen cijfers in gewone taal. Outreach zoekt bedrijven, schrijft de mail in de stem van Thuishaven en houdt reacties bij. Los daarvan staat de dienstregistratie: de crew vult op de telefoon in, tekent digitaal, en HR krijgt een PDF plus een seintje wanneer iemand aan een contract toe is.',
+      en: 'We built a hub with two tools. The dashboard puts ticket sales, paid and email side by side, and the team asks questions about their own numbers in plain language. Outreach finds companies, writes the mail in Thuishaven’s voice and keeps track of replies. Shift registration sits apart from that: the crew fills it in on a phone, signs digitally, and HR gets a PDF plus a signal when someone is due a contract.',
+    },
+    metrics: [
+      { value: '2', label: { nl: 'tools in één hub', en: 'tools in one hub' } },
+      { value: 'Chat', label: { nl: 'op live cijfers', en: 'on live numbers' } },
+      { value: 'Crew', label: { nl: 'van papier naar telefoon', en: 'from paper to phone' } },
+    ],
+  },
+  {
     id: 'spol',
     client: 'SPØL',
     logo: '/logos/spol-compact.svg',
