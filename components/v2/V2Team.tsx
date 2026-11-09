@@ -148,11 +148,12 @@ export default function V2Team() {
           {founders.map((f, i) => (
             <motion.article
               key={f.id}
+              id={`founder-${f.id}`}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.65, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="flex h-full flex-col rounded-2xl border border-[#14181d]/10 bg-white p-5 transition-colors hover:border-[#14181d]/20 md:p-6"
+              className="flex h-full scroll-mt-28 flex-col rounded-2xl border border-[#14181d]/10 bg-white p-5 transition-colors hover:border-[#14181d]/20 md:p-6"
             >
               <div className="flex gap-4">
                 <div className="relative aspect-[4/5] w-24 shrink-0 overflow-hidden rounded-xl bg-[#14181d]/8 md:w-28">

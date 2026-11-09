@@ -351,21 +351,44 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
                 <div className="flex items-center gap-4">
                   <div className="flex shrink-0 -space-x-2.5">
                     {[
-                      { src: '/img/xennith-profile-v2.png', name: 'Xennith' },
-                      { src: '/img/kevin-profile.png', name: 'Kevin' },
+                      { id: 'xennith', src: '/img/xennith-profile-v2.png', name: 'Xennith' },
+                      { id: 'kevin', src: '/img/kevin-profile.png', name: 'Kevin' },
                     ].map((f) => (
-                      <span
-                        key={f.name}
-                        className="relative inline-block h-12 w-12 overflow-hidden rounded-full border-2 border-[#0a0b0e] ring-1 ring-white/10"
+                      <a
+                        key={f.id}
+                        href={`#founder-${f.id}`}
+                        aria-label={f.name}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          smoothScrollToId(`founder-${f.id}`);
+                        }}
+                        className="group/avatar relative inline-block h-12 w-12 overflow-hidden rounded-full border-2 border-[#0a0b0e] ring-1 ring-white/15 transition-transform duration-200 hover:z-10 hover:scale-110 hover:ring-2 hover:ring-bla-lime focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bla-lime"
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={f.src} alt={f.name} className="h-full w-full object-cover object-top" />
-                      </span>
+                        <img src={f.src} alt="" className="h-full w-full object-cover object-top transition-transform duration-300 group-hover/avatar:scale-105" />
+                      </a>
                     ))}
                   </div>
                   <div className="min-w-0 leading-tight">
                     <div className="truncate font-host text-[14px] text-white/90 md:text-[15px]">
-                      Xennith · Kevin
+                      {[
+                        { id: 'xennith', name: 'Xennith' },
+                        { id: 'kevin', name: 'Kevin' },
+                      ].map((f, i) => (
+                        <span key={f.id}>
+                          {i > 0 && <span className="text-white/35"> · </span>}
+                          <a
+                            href={`#founder-${f.id}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              smoothScrollToId(`founder-${f.id}`);
+                            }}
+                            className="rounded-sm transition-colors hover:text-bla-lime focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bla-lime"
+                          >
+                            {f.name}
+                          </a>
+                        </span>
+                      ))}
                     </div>
                     <div className="mt-0.5 font-host text-[13px] text-bla-lime/85">
                       {isEn ? '25+ years experience' : '25+ jaar ervaring'}
