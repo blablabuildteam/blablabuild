@@ -516,3 +516,34 @@ body::-webkit-scrollbar {
     100% { transform: translate3d(-50%, 0, 0); }
   }
 }
+/* ===== Instrument design layer ===== */
+
+/* Mono labels must win over the global Matter rule */
+.font-mono,
+.font-mono * {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-ligatures: none;
+}
+
+/* Terminal caret */
+@keyframes caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.caret-blink {
+  animation: caret-blink 1.05s steps(1, end) infinite;
+}
+
+/* Tick ruler: minor ticks every 12px, major every 96px */
+.ruler-minor {
+  background-image: repeating-linear-gradient(to right, currentColor 0 1px, transparent 1px 12px);
+}
+.ruler-major {
+  background-image: repeating-linear-gradient(to right, currentColor 0 1px, transparent 1px 96px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret-blink {
+    animation: none;
+  }
+}

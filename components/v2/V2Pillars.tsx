@@ -5,7 +5,7 @@ import { AnimatePresence, motion, useInView } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import { ArrowUpRight } from 'lucide-react';
 import V2AIHorizons from './V2AIHorizons';
-import BorderBeam from './BorderBeam';
+import { Aperture, ColumnGuides, CornerMarks, Mono, SectionHead } from './Instrument';
 import StrategyScope from './StrategyScope';
 import {
   CapabilityPreviewModal,
@@ -53,6 +53,7 @@ type ItemHandlers = Pick<
 
 export default function V2Pillars() {
   const t = useTranslations('intro');
+  const tNav = useTranslations('nav');
   const locale = useLocale();
   const lang = locale === 'en' ? 'en' : 'nl';
   const preview = useCapabilityPreview();
@@ -91,13 +92,20 @@ export default function V2Pillars() {
       id="oplossingen"
       className="relative w-full overflow-hidden bg-[#f1ede4] text-[#14181d]"
     >
-      <div className="relative mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-24">
+      <ColumnGuides tone="light" />
+      <div className="relative mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-28">
+        <SectionHead
+          index="01"
+          label={tNav('solutions')}
+          meta={lang === 'en' ? 'Strategy → Software' : 'Strategie → Software'}
+          tone="light"
+        />
         <div id="ai-transformatie" className="scroll-mt-28">
           <div className="mb-10 flex flex-col gap-6 md:mb-14 md:flex-row md:items-center md:justify-between md:gap-10">
             <div className="max-w-3xl">
               <h2
                 ref={headlineRef}
-                className="font-host text-3xl font-light leading-tight tracking-tight text-[#14181d] md:text-[3.5rem]"
+                className="font-host text-[2.4rem] font-light leading-[0.95] tracking-[-0.035em] text-[#14181d] md:text-[4.5rem]"
               >
                 <span className="block overflow-hidden">
                   <motion.span
@@ -122,19 +130,24 @@ export default function V2Pillars() {
             </motion.div>
           </div>
 
-          <div className="relative rounded-[20px] border border-white/10 bg-[#1c1915] p-6 text-[#f1ede4] shadow-[0_40px_80px_-36px_rgba(28,25,21,0.65)] md:p-10">
-            <BorderBeam radius={20} />
+          <Aperture>
+          <div className="relative rounded-[4px] bg-[#1c1915] p-6 text-[#f1ede4] md:p-10">
+            <CornerMarks accent size={14} />
+            <div className="pointer-events-none absolute inset-x-6 top-0 flex justify-between md:inset-x-10" aria-hidden>
+              <Mono className="-translate-y-1/2 bg-[#1c1915] px-2 text-[10px] text-[#f1ede4]/40">S/01</Mono>
+              <Mono className="-translate-y-1/2 bg-[#1c1915] px-2 text-[10px] text-[#f1ede4]/40">B/02</Mono>
+            </div>
             <div className="relative grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:grid-rows-[auto_auto_repeat(4,auto)] md:gap-x-6">
             <motion.p
               {...revealProps(0.14, 8)}
-              className="mb-2 hidden items-center gap-1.5 self-center justify-self-center whitespace-nowrap rounded-full bg-bla-lime px-3 py-1 font-host text-[12px] font-medium text-[#1c1915] md:col-start-2 md:row-start-2 md:mb-6 md:inline-flex"
+              className="mb-2 hidden items-center gap-2 self-center justify-self-center whitespace-nowrap rounded-[2px] bg-bla-lime px-2.5 py-1.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-[#14181d] md:col-start-2 md:row-start-2 md:mb-6 md:inline-flex"
             >
               {t('pillarsSection.offer.bridge')}
               <span aria-hidden>→</span>
             </motion.p>
             <div
               aria-hidden
-              className="hidden w-px self-stretch justify-self-center bg-white/10 md:col-start-2 md:row-span-4 md:row-start-3 md:block"
+              className="hidden w-px self-stretch justify-self-center bg-[repeating-linear-gradient(to_bottom,rgba(255,255,255,0.18)_0_4px,transparent_4px_8px)] md:col-start-2 md:row-span-4 md:row-start-3 md:block"
             />
             <motion.p
               {...revealProps(0)}
@@ -145,7 +158,7 @@ export default function V2Pillars() {
             </motion.p>
             <motion.h3
               {...revealProps(0.05)}
-              className="mt-1 pb-6 font-host text-[1.7rem] font-semibold leading-tight text-[#f1ede4] md:col-start-1 md:row-start-2 md:mt-0 md:text-[2rem]"
+              className="mt-1 pb-6 font-host text-[2rem] font-light leading-tight tracking-[-0.02em] text-[#f1ede4] md:col-start-1 md:row-start-2 md:mt-0 md:text-[2.75rem]"
             >
               {t('pillarsSection.offer.strategy.title')}
             </motion.h3>
@@ -155,7 +168,7 @@ export default function V2Pillars() {
                 {...revealProps(0.1 + index * 0.05)}
                 className={`flex items-center gap-3 border-b border-white/10 py-3.5 md:col-start-1 ${ROW_START[index]}`}
               >
-                <span className="font-host text-[13px] tabular-nums text-[#f1ede4]/55">
+                <span className="font-mono text-[11px] tabular-nums tracking-[0.08em] text-[#f1ede4]/45">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 <span className="font-host text-[15px] leading-snug text-[#f1ede4]/80 md:text-base">
@@ -176,7 +189,7 @@ export default function V2Pillars() {
             </motion.p>
             <motion.h3
               {...revealProps(0.08)}
-              className="mt-1 pb-6 font-host text-[1.7rem] font-semibold leading-tight text-[#f1ede4] md:col-start-3 md:row-start-2 md:mt-0 md:text-[2rem]"
+              className="mt-1 pb-6 font-host text-[2rem] font-light leading-tight tracking-[-0.02em] text-[#f1ede4] md:col-start-3 md:row-start-2 md:mt-0 md:text-[2.75rem]"
             >
               {t('pillarsSection.offer.solutions.title')}
             </motion.h3>
@@ -189,11 +202,11 @@ export default function V2Pillars() {
                   type="button"
                   {...revealProps(0.1 + index * 0.05)}
                   {...bindPreview(previewId)}
-                  className={`flex items-center gap-3 border-b border-white/10 py-3.5 text-left transition-colors hover:bg-white/[0.06] focus-visible:bg-white/[0.06] focus-visible:outline-none md:col-start-3 ${ROW_START[index]} ${
-                    isHovered ? 'bg-white/[0.06]' : ''
+                  className={`group/sol relative flex items-center gap-3 border-b border-white/10 py-3.5 pl-0 text-left transition-[background-color,padding] duration-300 hover:bg-white/[0.05] hover:pl-3 focus-visible:bg-white/[0.05] focus-visible:pl-3 focus-visible:outline-none md:col-start-3 ${ROW_START[index]} ${
+                    isHovered ? 'bg-white/[0.05] pl-3' : ''
                   }`}
                 >
-                  <span className="font-host text-[13px] tabular-nums text-[#f1ede4]/55">
+                  <span className="font-mono text-[11px] tabular-nums tracking-[0.08em] text-[#f1ede4]/45">
                     {String(index + 1).padStart(2, '0')}
                   </span>
                   <span
@@ -227,10 +240,12 @@ export default function V2Pillars() {
               <V2AIHorizons lang={lang} embedded strip />
             </div>
           </div>
+          </Aperture>
         </div>
 
         {/* Still the work every digital agency does */}
-        <div className="mt-20 rounded-2xl border border-[#14181d]/10 bg-white/50 p-6 md:mt-28 md:p-8">
+        <div className="relative mt-20 border border-[#14181d]/12 bg-[#f8f6f0] p-6 md:mt-28 md:p-8">
+          <CornerMarks tone="light" />
           <motion.h3
             {...revealProps(0)}
             className="max-w-3xl font-host text-lg font-semibold leading-snug text-[#14181d] md:text-xl"
@@ -254,14 +269,14 @@ export default function V2Pillars() {
                   <button
                     type="button"
                     {...(previewId ? bindPreview(previewId) : {})}
-                    className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 font-host text-sm transition-colors ${
+                    className={`inline-flex items-center gap-2 rounded-[2px] border px-3.5 py-2 font-host text-sm transition-colors ${
                       isHovered
                         ? 'border-[#14181d]/30 bg-white text-[#14181d]'
                         : 'border-[#14181d]/12 text-[#14181d]/70 hover:border-[#14181d]/30 hover:text-[#14181d]'
                     }`}
                   >
                     <span
-                      className={`h-1.5 w-1.5 rounded-full ${isHovered ? 'bg-bla-lime' : 'bg-[#14181d]/20'}`}
+                      className={`h-1.5 w-1.5 ${isHovered ? 'bg-bla-lime' : 'bg-[#14181d]/25'}`}
                     />
                     {t(`pillars.marketing.items.${itemKey}.title`)}
                   </button>

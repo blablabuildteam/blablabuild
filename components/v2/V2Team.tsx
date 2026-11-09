@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
 import { LinkedinIcon } from '@/components/ui/icons/il-linkedin';
 import TeamMemberName from '@/components/TeamMemberName';
+import { ColumnGuides, CornerMarks, Counter, Mono, SectionHead } from './Instrument';
 
 interface Friend {
   id: string;
@@ -82,6 +83,7 @@ const FOUNDERS = [
 
 export default function V2Team() {
   const t = useTranslations('team');
+  const tNav = useTranslations('nav');
   const locale = useLocale();
   const lang = locale === 'en' ? 'en' : 'nl';
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -111,13 +113,21 @@ export default function V2Team() {
       id="over-ons"
       className="relative w-full overflow-hidden bg-[#f1ede4] text-[#14181d]"
     >
-      <div className="mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-24">
+      <ColumnGuides tone="light" />
+      <div className="relative mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-28">
+        <SectionHead
+          index="03"
+          label={tNav('team')}
+          meta={lang === 'en' ? '2 founders · 3 friends' : '2 founders · 3 friends'}
+          tone="light"
+        />
         <div className="grid grid-cols-12 gap-x-6 gap-y-6 md:gap-x-10">
           <div className="col-span-12 md:col-span-7">
-            <h2 className="font-host text-3xl font-light leading-[1.0] tracking-tight text-[#14181d] md:text-[3.5rem]">
+            <h2 className="font-host text-[2.4rem] font-light leading-[0.95] tracking-[-0.035em] text-[#14181d] md:text-[4.25rem]">
               {lang === 'en' ? 'Two founders. ' : 'Twee founders. '}
               <span className="font-medium text-[#14181d]">
-                {lang === 'en' ? '25+ years experience.' : '25+ jaar ervaring.'}
+                <Counter value={25} suffix="+" />
+                {lang === 'en' ? ' years experience.' : ' jaar ervaring.'}
               </span>
               <br />
               <span className="text-[#14181d]/70">{lang === 'en' ? 'One direct line.' : 'Eén directe lijn.'}</span>
@@ -153,15 +163,20 @@ export default function V2Team() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.65, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="flex h-full scroll-mt-28 flex-col rounded-2xl border border-[#14181d]/10 bg-white p-5 transition-colors hover:border-[#14181d]/20 md:p-6"
+              className="group/card relative flex h-full scroll-mt-28 flex-col border border-[#14181d]/12 bg-[#f8f6f0] p-5 transition-colors hover:border-[#14181d]/30 md:p-6"
             >
+              <CornerMarks tone="light" />
+              <div className="mb-4 flex items-center justify-between">
+                <Mono className="text-[#14181d]/45">{`F/${String(i + 1).padStart(2, '0')}`}</Mono>
+                <Mono className="text-[#14181d]/35">Founder</Mono>
+              </div>
               <div className="flex gap-4">
-                <div className="relative aspect-[4/5] w-24 shrink-0 overflow-hidden rounded-xl bg-[#14181d]/8 md:w-28">
+                <div className="relative aspect-[4/5] w-24 shrink-0 overflow-hidden rounded-[2px] bg-[#14181d]/8 md:w-28">
                   <Image
                     src={f.image}
                     alt={f.id === 'kevin' ? 'Kevin' : f.name}
                     fill
-                    className="object-cover object-top"
+                    className="object-cover object-top grayscale transition duration-500 group-hover/card:grayscale-0"
                     sizes="(max-width: 768px) 96px, 112px"
                   />
                 </div>
@@ -182,7 +197,7 @@ export default function V2Team() {
                             {f.name}
                           </h3>
                         )}
-                        <span className="font-host text-[13px] text-[#14181d]/45">
+                        <span className="font-mono text-[10.5px] uppercase tracking-[0.1em] text-[#14181d]/50">
                           {f.role}
                         </span>
                       </div>
@@ -193,7 +208,7 @@ export default function V2Team() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={f.linkedinLabel}
-                        className="grid h-8 w-8 place-items-center rounded-full border border-[#14181d]/12 text-[#14181d]/45 transition-colors hover:border-bla-lime/40 hover:bg-bla-lime hover:text-[#14181d]"
+                        className="grid h-8 w-8 place-items-center rounded-[2px] border border-[#14181d]/15 text-[#14181d]/45 transition-colors hover:border-bla-lime/40 hover:bg-bla-lime hover:text-[#14181d]"
                       >
                         <LinkedinIcon size={14} className="h-3.5 w-3.5" />
                       </a>
@@ -249,9 +264,7 @@ export default function V2Team() {
               </div>
 
               <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-[#14181d]/8 pt-4">
-                <span className="w-full font-host text-[13px] text-[#14181d]/45 sm:w-auto">
-                  {t('experienceWithBrands')}
-                </span>
+                <Mono className="w-full text-[#14181d]/45 sm:w-auto">{t('experienceWithBrands')}</Mono>
                 {f.brands.map((b) => (
                   <div key={b.alt} className="relative h-5 w-16 opacity-70 transition-opacity hover:opacity-100">
                     <Image src={b.src} alt={b.alt} fill className="object-contain object-left" />
@@ -263,7 +276,7 @@ export default function V2Team() {
         </div>
 
         {/* ── blablafriends ─────────────────────────────────────────────── */}
-        <div className="mt-16 border-t border-[#14181d]/8 pt-12 md:mt-20 md:pt-14">
+        <div className="mt-16 pt-4 md:mt-24">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-10">
             <div>
               <span className="font-host text-4xl tracking-tight text-[#14181d] md:text-5xl">
@@ -280,7 +293,7 @@ export default function V2Team() {
             </p>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid grid-cols-1 border-l border-t border-[#14181d]/12 sm:grid-cols-2 lg:grid-cols-3">
             {shuffledFriends.map((f, i) => (
               <motion.div
                 key={f.id}
@@ -288,16 +301,16 @@ export default function V2Team() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-60px' }}
                 transition={{ duration: 0.55, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="flex items-start gap-4 rounded-2xl border border-[#14181d]/8 bg-white/60 p-5 transition-colors hover:border-[#14181d]/18 hover:bg-white/90"
+                className="group/friend flex items-start gap-4 border-b border-r border-[#14181d]/12 p-5 transition-colors hover:bg-[#f8f6f0] md:p-6"
               >
                 {/* Avatar */}
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-[#14181d]/8">
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-[2px] bg-[#14181d]/8">
                   {f.image ? (
                     <Image
                       src={f.image}
                       alt={f.name}
                       fill
-                      className="object-cover object-top"
+                      className="object-cover object-top grayscale transition duration-500 group-hover/friend:grayscale-0"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center font-host text-lg font-medium text-[#14181d]/40">
@@ -311,7 +324,7 @@ export default function V2Team() {
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <p className="font-host text-[15px] font-medium leading-tight text-[#14181d]">{f.name}</p>
-                      <span className="mt-0.5 inline-block rounded-full bg-[#14181d]/6 px-2 py-0.5 font-host text-[12px] text-[#14181d]/50">
+                      <span className="mt-1.5 inline-block font-mono text-[10.5px] uppercase tracking-[0.1em] text-[#14181d]/50">
                         {lang === 'en' ? f.expertise.en : f.expertise.nl}
                       </span>
                     </div>
@@ -320,7 +333,7 @@ export default function V2Team() {
                         href={f.linkedin}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-[#14181d]/12 text-[#14181d]/40 transition-colors hover:border-bla-lime/40 hover:bg-bla-lime hover:text-[#14181d]"
+                        className="grid h-7 w-7 shrink-0 place-items-center rounded-[2px] border border-[#14181d]/15 text-[#14181d]/40 transition-colors hover:border-bla-lime/40 hover:bg-bla-lime hover:text-[#14181d]"
                       >
                         <LinkedinIcon size={13} className="h-3.5 w-3.5" />
                       </a>

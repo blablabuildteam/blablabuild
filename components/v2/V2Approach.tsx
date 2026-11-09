@@ -1,161 +1,265 @@
 'use client';
 
-import { useRef, type RefObject } from 'react';
-import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion';
+import { useRef, useState } from 'react';
+import {
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+  type MotionValue,
+} from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import { NoiseLayer } from './V2Atoms';
+import { ColumnGuides, Mono, Ruler, SectionHead, VoltDot } from './Instrument';
 
 // bla 1 (coffee) → bla 2 (plan) → build → run (optional follow-up)
 const STEPS = ['bla1', 'bla2', 'build', 'run'] as const;
-const RAIL_START = 0.18;
-const RAIL_END = 0.9;
+const EASE = [0.22, 1, 0.36, 1] as const;
 
-function ApproachStep({
+function Headline({ lang, t }: { lang: 'en' | 'nl'; t: ReturnType<typeof useTranslations<'approach'>> }) {
+  return (
+    <h2 className="font-host text-[2.4rem] font-light leading-[0.95] tracking-[-0.035em] md:text-[4.25rem]">
+      {lang === 'en' ? 'No agency ' : 'Geen agency '}
+      <span className="font-medium text-bla-lime">bullsh*t.</span>
+      <br />
+      <span className="text-white/80">{t('headline')}</span>
+    </h2>
+  );
+}
+
+/** One rail segment; fills while its step is the one in focus. */
+function RailSegment({
   index,
-  title,
-  description,
   progress,
+  active,
+  title,
   label,
-  railRef,
+  onSelect,
 }: {
   index: number;
-  title: string;
-  description: string;
   progress: MotionValue<number>;
+  active: boolean;
+  title: string;
   label: string;
-  railRef: RefObject<HTMLDivElement | null>;
+  onSelect: () => void;
 }) {
-  const dotRef = useRef<HTMLDivElement>(null);
-  // Copy still eases in around the step. The dot itself is measured
-  // against the rail, because column gaps sit the markers past 0/25/50/75%.
-  const dotAt = index / STEPS.length;
-  const lightStart = RAIL_START + Math.max(0, dotAt - 0.04) * (RAIL_END - RAIL_START);
-  const lightEnd = RAIL_START + Math.min(1, dotAt + 0.12) * (RAIL_END - RAIL_START);
-
-  const lit = useTransform(progress, [lightStart, lightEnd], [0, 1]);
-  const labelColor = useTransform(lit, [0, 1], ['rgba(255,255,255,0.18)', 'rgba(255,255,255,0.55)']);
-  const titleColor = useTransform(lit, [0, 1], ['rgba(255,255,255,0.16)', '#CEFF00']);
-  const titleShadow = useTransform(
-    lit,
-    [0, 1],
-    ['0 0 0px rgba(206,255,0,0)', '0 0 28px rgba(206,255,0,0.28)'],
-  );
-  const bodyColor = useTransform(lit, [0, 1], ['rgba(255,255,255,0.14)', 'rgba(255,255,255,0.82)']);
-  const dotScale = useTransform(progress, (value) => {
-    const railEl = railRef.current;
-    const dotEl = dotRef.current;
-    if (!railEl || !dotEl) return 0;
-    const railBox = railEl.getBoundingClientRect();
-    const dotBox = dotEl.getBoundingClientRect();
-    if (railBox.width <= 0 || dotBox.width <= 0) return 0;
-    const amount = Math.min(1, Math.max(0, (value - RAIL_START) / (RAIL_END - RAIL_START)));
-    const barX = railBox.left + amount * railBox.width;
-    // Empty until the line touches the dot, then full as it crosses.
-    return Math.min(1, Math.max(0, (barX - dotBox.left) / dotBox.width));
-  });
-
+  const fill = useTransform(progress, (p) => Math.min(1, Math.max(0, p * STEPS.length - index)));
   return (
-    <div className="relative pt-10">
-      <div
-        ref={dotRef}
-        className="absolute left-0 top-4 hidden h-3 w-3 -translate-y-1/2 overflow-hidden rounded-full border border-white/20 bg-[#0d1015] md:block"
-      >
-        <motion.div
-          style={{ scaleX: dotScale, originX: 0 }}
-          className="absolute inset-0 bg-bla-lime"
+    <button
+      type="button"
+      onClick={onSelect}
+      className="group relative flex flex-col items-start pt-4 text-left"
+    >
+      <span className="absolute inset-x-0 top-0 h-px bg-white/12" />
+      <motion.span style={{ scaleX: fill, originX: 0 }} className="absolute inset-x-0 top-0 h-[2px] -translate-y-px bg-bla-lime" />
+      <span className="flex items-center gap-2.5">
+        <span
+          aria-hidden
+          className={`h-[6px] w-[6px] transition-colors ${active ? 'bg-bla-lime' : 'bg-white/20 group-hover:bg-white/45'}`}
         />
-      </div>
-
-      <motion.div
-        style={{ color: labelColor }}
-        className="font-host text-sm text-white/45"
-      >
-        {label}
-      </motion.div>
-      <motion.h3
-        style={{ color: titleColor, textShadow: titleShadow }}
-        className="mt-3 font-host text-4xl font-light tracking-tight md:text-5xl"
+        <Mono className={active ? 'text-white/70' : 'text-white/35'}>{label}</Mono>
+      </span>
+      <span
+        className={`mt-2 font-host text-xl font-light tracking-tight transition-colors ${
+          active ? 'text-white' : 'text-white/35 group-hover:text-white/60'
+        }`}
       >
         {title}
-      </motion.h3>
-      <motion.p
-        style={{ color: bodyColor }}
-        className="mt-5 max-w-md font-host text-base font-light leading-relaxed md:text-[17px]"
-      >
-        {description}
-      </motion.p>
+      </span>
+    </button>
+  );
+}
+
+/** Desktop: the section pins while the four steps play through. */
+function PinnedSteps({
+  t,
+  lang,
+  tNav,
+}: {
+  t: ReturnType<typeof useTranslations<'approach'>>;
+  lang: 'en' | 'nl';
+  tNav: ReturnType<typeof useTranslations<'nav'>>;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
+  const [active, setActive] = useState(0);
+
+  useMotionValueEvent(scrollYProgress, 'change', (p) => {
+    const next = Math.min(STEPS.length - 1, Math.max(0, Math.floor(p * STEPS.length)));
+    setActive((cur) => (cur === next ? cur : next));
+  });
+
+  const labelFor = (i: number) =>
+    STEPS[i] === 'run' ? t('followUpLabel') : t('stepLabel', { n: i + 1 });
+
+  const goTo = (i: number) => {
+    const el = ref.current;
+    if (!el) return;
+    const travel = el.offsetHeight - window.innerHeight;
+    const top = el.getBoundingClientRect().top + window.scrollY + travel * ((i + 0.5) / STEPS.length);
+    window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
+  };
+
+  const step = STEPS[active];
+
+  return (
+    <div ref={ref} className="relative hidden h-[340vh] lg:block">
+      <div className="sticky top-0 flex h-[100svh] flex-col pt-16">
+        <div className="mx-auto flex w-full max-w-[1320px] flex-1 flex-col px-10 pb-10 pt-10">
+          <SectionHead
+            index="02"
+            label={tNav('approach')}
+            meta={`${String(active + 1).padStart(2, '0')} / ${String(STEPS.length).padStart(2, '0')}`}
+            className="!mb-8"
+          />
+
+          <div className="grid grid-cols-12 gap-x-10">
+            <div className="col-span-7">
+              <Headline lang={lang} t={t} />
+            </div>
+            <div className="col-span-5 flex items-end">
+              <p className="max-w-md font-host text-lg leading-relaxed text-white/65">{t('subheading')}</p>
+            </div>
+          </div>
+
+          <div className="grid flex-1 grid-cols-12 items-center gap-x-10">
+            {/* Odometer */}
+            <div className="col-span-5 flex items-end gap-6">
+              <div
+                aria-hidden
+                className="flex font-host text-[clamp(9rem,15vw,15rem)] font-light leading-[0.8] tracking-[-0.06em] text-white"
+              >
+                <span className="text-white/25">0</span>
+                <span className="relative inline-block h-[0.8em] overflow-hidden">
+                  <motion.span
+                    className="flex flex-col"
+                    animate={{ y: `${-active * 25}%` }}
+                    transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 140, damping: 22 }}
+                  >
+                    {STEPS.map((s, i) => (
+                      <span key={s} className={`block h-[1em] leading-[0.8em] ${i === STEPS.length - 1 ? 'text-white/70' : ''}`}>
+                        {i + 1}
+                      </span>
+                    ))}
+                  </motion.span>
+                </span>
+              </div>
+              <div className="mb-3 flex flex-col gap-2">
+                <VoltDot />
+                <Mono className="text-white/45">{labelFor(active)}</Mono>
+              </div>
+            </div>
+
+            {/* Active step */}
+            <div className="relative col-span-7 min-h-[16rem]">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={active}
+                  initial={reduce ? { opacity: 0 } : { opacity: 0, y: 28, clipPath: 'inset(0 0 100% 0)' }}
+                  animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)' }}
+                  exit={reduce ? { opacity: 0 } : { opacity: 0, y: -18 }}
+                  transition={{ duration: 0.45, ease: EASE }}
+                >
+                  <h3 className="font-host text-[clamp(4.5rem,8vw,7.5rem)] font-light leading-[0.9] tracking-[-0.045em] text-bla-lime">
+                    {t(`steps.${step}.title`)}
+                  </h3>
+                  <p className="mt-6 max-w-lg font-host text-xl font-light leading-relaxed text-white/80">
+                    {t(`steps.${step}.description`)}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Rail */}
+          <div className="grid grid-cols-4 gap-6">
+            {STEPS.map((s, i) => (
+              <RailSegment
+                key={s}
+                index={i}
+                progress={scrollYProgress}
+                active={i === active}
+                title={t(`steps.${s}.title`)}
+                label={labelFor(i)}
+                onSelect={() => goTo(i)}
+              />
+            ))}
+          </div>
+          <Ruler className="mt-5" draw={false} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Mobile and tablet: a plain list with a scroll-linked progress line. */
+function StackedSteps({
+  t,
+  lang,
+  tNav,
+}: {
+  t: ReturnType<typeof useTranslations<'approach'>>;
+  lang: 'en' | 'nl';
+  tNav: ReturnType<typeof useTranslations<'nav'>>;
+}) {
+  const listRef = useRef<HTMLOListElement>(null);
+  const { scrollYProgress } = useScroll({ target: listRef, offset: ['start 75%', 'end 60%'] });
+
+  return (
+    <div className="relative mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-24 lg:hidden">
+      <SectionHead index="02" label={tNav('approach')} meta={`04 ${lang === 'en' ? 'steps' : 'stappen'}`} />
+      <Headline lang={lang} t={t} />
+      <p className="mt-6 max-w-md font-host text-base leading-relaxed text-white/65 md:text-lg">{t('subheading')}</p>
+
+      <ol ref={listRef} className="relative mt-12 border-l border-white/12 pl-6 md:pl-10">
+        <motion.span
+          aria-hidden
+          style={{ scaleY: scrollYProgress, originY: 0 }}
+          className="absolute -left-px top-0 h-full w-[2px] bg-bla-lime"
+        />
+        {STEPS.map((s, i) => (
+          <motion.li
+            key={s}
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5, ease: EASE }}
+            className="relative border-b border-white/10 py-8 last:border-b-0"
+          >
+            <span aria-hidden className="absolute -left-[29px] top-10 h-[7px] w-[7px] bg-bla-lime md:-left-[45px]" />
+            <Mono className="text-white/45">
+              {String(i + 1).padStart(2, '0')} · {s === 'run' ? t('followUpLabel') : t('stepLabel', { n: i + 1 })}
+            </Mono>
+            <h3 className="mt-3 font-host text-5xl font-light tracking-[-0.04em] text-bla-lime md:text-6xl">
+              {t(`steps.${s}.title`)}
+            </h3>
+            <p className="mt-4 max-w-md font-host text-base font-light leading-relaxed text-white/80 md:text-[17px]">
+              {t(`steps.${s}.description`)}
+            </p>
+          </motion.li>
+        ))}
+      </ol>
     </div>
   );
 }
 
 export default function V2Approach() {
   const t = useTranslations('approach');
+  const tNav = useTranslations('nav');
   const locale = useLocale();
   const lang = locale === 'en' ? 'en' : 'nl';
-  const ref = useRef<HTMLElement | null>(null);
-  const railRef = useRef<HTMLDivElement | null>(null);
-  // Start the rail a bit later so it doesn't jump ahead
-  // when the section just touches the bottom of the viewport.
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 90%', 'end 20%'] });
-  const railProgress = useTransform(scrollYProgress, [RAIL_START, RAIL_END], ['0%', '100%']);
 
   return (
-    <section
-      id="aanpak"
-      ref={ref}
-      className="relative w-full overflow-hidden bg-[#0d1015] text-white"
-    >
-      <NoiseLayer opacity={0.18} />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(circle 700px at 90% 0%, rgba(206,255,0,0.08), transparent 60%), radial-gradient(circle 600px at 0% 100%, rgba(255,255,255,0.04), transparent 60%)',
-        }}
-      />
-
-      <div className="relative mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-24">
-        <div className="grid grid-cols-12 gap-x-6 gap-y-6 md:gap-x-10">
-          <div className="col-span-12 md:col-span-7">
-            <h2 className="font-host text-3xl font-light leading-[1.0] tracking-tight md:text-[3.75rem]">
-              {lang === 'en' ? 'No agency ' : 'Geen agency '}
-              <span className="font-medium text-bla-lime">{lang === 'en' ? 'bullsh*t.' : 'bullsh*t.'}</span>
-              <br />
-              <span className="text-white/85">{t('headline')}</span>
-            </h2>
-          </div>
-          <div className="col-span-12 md:col-span-5 md:pt-12">
-            <p className="max-w-md font-host text-base leading-relaxed text-white/75 md:text-lg">
-              {t('subheading')}
-            </p>
-          </div>
-        </div>
-
-        {/* Steps with scroll-driven progress rail */}
-        <div ref={railRef} className="relative mt-14 md:mt-20">
-          {/* Rail */}
-          <div className="pointer-events-none absolute left-0 right-0 top-4 hidden h-px bg-white/10 md:block" />
-          <motion.div
-            style={{ width: railProgress }}
-            className="pointer-events-none absolute left-0 top-4 hidden h-px bg-bla-lime md:block"
-          />
-
-          <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-4 md:gap-8">
-            {STEPS.map((step, i) => (
-              <ApproachStep
-                key={step}
-                index={i}
-                title={t(`steps.${step}.title`)}
-                description={t(`steps.${step}.description`)}
-                progress={scrollYProgress}
-                railRef={railRef}
-                label={step === 'run' ? t('followUpLabel') : t('stepLabel', { n: i + 1 })}
-              />
-            ))}
-          </div>
-        </div>
+    <section id="aanpak" className="relative w-full bg-[#0d1015] text-white">
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <NoiseLayer opacity={0.14} />
       </div>
+      <ColumnGuides />
+      <PinnedSteps t={t} lang={lang} tNav={tNav} />
+      <StackedSteps t={t} lang={lang} tNav={tNav} />
     </section>
   );
 }

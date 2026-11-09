@@ -1,12 +1,13 @@
 'use client';
 
-import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
 const HeroCanvasEffect = dynamic(() => import('./HeroCanvasEffect'), { ssr: false });
 import { useLocale, useTranslations } from 'next-intl';
 import { NoiseLayer } from './V2Atoms';
+import { Caret, ColumnGuides, CornerMarks, Crosshair, Mono, VoltDot } from './Instrument';
 import V2DirectHelp from './V2DirectHelp';
 import Image from 'next/image';
 import { smoothScrollToId } from '@/lib/utils';
@@ -62,11 +63,11 @@ function HeroTicker({ words }: { words: string[] }) {
       <div className="flex w-max items-center" style={{ animation: 'marquee-scroll 45s linear infinite' }}>
         {items.map((word, i) => (
           <span key={`${word}-${i}`} className="inline-flex shrink-0 items-center">
-            <span className="mx-4 font-host text-[11px] font-medium uppercase tracking-[0.16em] text-white/55">
+            <span className="mx-5 font-mono text-[11px] uppercase tracking-[0.14em] text-white/55">
               {word}
             </span>
-            <span aria-hidden className="select-none text-[11px] text-white/30">
-              ·
+            <span aria-hidden className="select-none font-mono text-[11px] text-bla-lime/70">
+              /
             </span>
           </span>
         ))}
@@ -115,28 +116,34 @@ function HeroHeadline({
   const isEn = locale === 'en';
 
   if (variant === 'punchy') {
+    // Each line is revealed in hard steps, like it is being typed, then the caret settles after "Build more."
+    const typed = (steps: number) => (t: number) => Math.floor(t * steps) / steps;
     return (
-      <h1 className="font-host font-light tracking-[-0.035em] text-white text-[clamp(2.4rem,6.4vw,5.6rem)] leading-[0.98]">
-        <span className="block overflow-hidden">
+      <h1 className="font-host font-light text-white text-[clamp(3rem,8.6vw,8rem)] leading-[0.9] tracking-[-0.045em]">
+        <motion.span
+          initial={{ clipPath: 'inset(-10% 100% -20% 0)' }}
+          animate={{ clipPath: 'inset(-10% 0% -20% 0)' }}
+          transition={{ duration: 0.55, ease: typed(10), delay: 0.15 }}
+          className="block"
+        >
+          Talk less.
+        </motion.span>
+        <motion.span
+          initial={{ clipPath: 'inset(-10% 100% -20% 0)' }}
+          animate={{ clipPath: 'inset(-10% 0% -20% 0)' }}
+          transition={{ duration: 0.6, ease: typed(11), delay: 0.8 }}
+          className="block whitespace-nowrap font-medium text-bla-lime"
+        >
+          Build more.
           <motion.span
-            initial={{ y: '110%', opacity: 0 }}
-            animate={{ y: '0%', opacity: 1 }}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.4, duration: 0 }}
             className="inline-block"
           >
-            Talk less.
+            <Caret />
           </motion.span>
-        </span>
-        <span className="block overflow-hidden">
-          <motion.span
-            initial={{ y: '110%', opacity: 0 }}
-            animate={{ y: '0%', opacity: 1 }}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.18 }}
-            className="inline-block font-medium text-bla-lime"
-          >
-            Build more.
-          </motion.span>
-        </span>
+        </motion.span>
       </h1>
     );
   }
@@ -184,8 +191,8 @@ function HeroSubcopy({
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.9, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
-        className="mt-7 max-w-lg space-y-1.5"
+        transition={{ duration: 0.9, delay: 1.25, ease: [0.22, 1, 0.36, 1] }}
+        className="mt-8 max-w-lg space-y-1.5 md:mt-10"
       >
         <p className="font-host text-lg leading-snug text-white/90 md:text-[1.35rem] md:leading-snug">
           {t('heroSub.line1')}
@@ -218,16 +225,78 @@ function HeroSubcopy({
   );
 }
 
+/** Live cursor position inside the hero, as a normalised readout. Fine pointers only. */
+function CursorReadout({ targetRef }: { targetRef: React.RefObject<HTMLElement | null> }) {
+  const xRef = useRef<HTMLSpanElement>(null);
+  const yRef = useRef<HTMLSpanElement>(null);
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    setEnabled(window.matchMedia('(pointer: fine)').matches);
+  }, []);
+
+  useEffect(() => {
+    if (!enabled) return;
+    let raf = 0;
+    let px = 0.5;
+    let py = 0.5;
+    const paint = () => {
+      raf = 0;
+      if (xRef.current) xRef.current.textContent = px.toFixed(3);
+      if (yRef.current) yRef.current.textContent = py.toFixed(3);
+    };
+    const onMove = (e: MouseEvent) => {
+      const el = targetRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      if (e.clientY < r.top || e.clientY > r.bottom) return;
+      px = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+      py = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+      if (!raf) raf = requestAnimationFrame(paint);
+    };
+    window.addEventListener('mousemove', onMove, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [enabled, targetRef]);
+
+  if (!enabled) return null;
+  return (
+    <Mono className="text-white/40">
+      X <span ref={xRef} className="inline-block w-[5ch] text-white/75">0.500</span>
+      <span className="mx-2 text-white/20">/</span>
+      Y <span ref={yRef} className="inline-block w-[5ch] text-white/75">0.500</span>
+    </Mono>
+  );
+}
+
 export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant }) {
   const locale = useLocale();
   const t = useTranslations('intro');
   const tHero = useTranslations('hero');
   const containerRef = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+  const [desktop, setDesktop] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const update = () => setDesktop(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'],
   });
-  const yBg = useTransform(scrollYProgress, [0, 1], [0, 140]);
+  // Depth on the way out: the dot field lags, the copy lifts, the panel lifts faster.
+  const yField = useTransform(scrollYProgress, [0, 1], [0, 240]);
+  const yCopy = useTransform(scrollYProgress, [0, 1], [0, -110]);
+  const yPanel = useTransform(scrollYProgress, [0, 1], [0, -190]);
+  const fadeOut = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+  const parallax = desktop && !reduce;
 
   const tickerWords = locale === 'en' ? TICKER_EN : TICKER_NL;
   const isEn = locale === 'en';
@@ -236,34 +305,60 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
     <section
       ref={containerRef}
       id="hero"
-      className="relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-[#0a0b0e] pt-24 md:h-[100svh] md:pt-28"
+      className="relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-[#0a0b0e] pt-14 md:pt-16 lg:h-[100svh] lg:min-h-[760px]"
     >
-      <motion.div style={{ y: yBg }} className="pointer-events-none absolute inset-0 -z-10">
-        <div
-          aria-hidden
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(ellipse 1100px 600px at 18% 0%, rgba(206,255,0,0.08), transparent 60%), radial-gradient(ellipse 800px 480px at 82% 100%, rgba(206,255,0,0.10), transparent 60%)',
-          }}
-        />
+      <motion.div
+        style={parallax ? { y: yField } : undefined}
+        className="pointer-events-none absolute inset-0"
+      >
+        <HeroCanvasEffect />
       </motion.div>
 
-      <HeroCanvasEffect />
+      <ColumnGuides />
+      <NoiseLayer opacity={0.14} />
 
-      <NoiseLayer opacity={0.18} />
+      {/* Viewport frame with registration crosses */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-8 bottom-[58px] top-[88px] hidden text-white/35 lg:block"
+      >
+        <Crosshair className="-left-1.5 -top-1.5" />
+        <Crosshair className="-right-1.5 -top-1.5" />
+        <Crosshair className="-bottom-1.5 -left-1.5" />
+        <Crosshair className="-bottom-1.5 -right-1.5" />
+      </div>
 
-      <div className="relative mx-auto flex w-full max-w-[1320px] flex-1 flex-col justify-center px-5 sm:px-8 md:px-10">
-        <div className="relative grid grid-cols-12 gap-x-4 gap-y-10 pb-12 pt-10 md:gap-y-14 md:pb-14 md:pt-16 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)] lg:gap-x-8">
-          <div className="col-span-12 lg:col-auto">
+      <div className="relative mx-auto flex w-full max-w-[1320px] flex-1 flex-col px-5 sm:px-8 md:px-10">
+        {/* Meta row */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="flex items-center justify-between gap-4 pt-6 md:pt-9"
+        >
+          <div className="flex items-center gap-3">
+            <VoltDot />
+            <Mono className="text-white/45">00</Mono>
+            <Mono className="text-white/75">
+              {isEn ? 'AI transformation & custom software' : 'AI-transformatie & maatwerk software'}
+            </Mono>
+          </div>
+          <CursorReadout targetRef={containerRef} />
+        </motion.div>
+
+        <div className="relative grid flex-1 grid-cols-12 items-center gap-x-4 gap-y-10 pb-12 pt-12 md:gap-y-14 md:pb-14 lg:grid-cols-[minmax(0,1.75fr)_minmax(0,1fr)] lg:gap-x-12 lg:pt-6">
+          <motion.div
+            style={parallax ? { y: yCopy, opacity: fadeOut } : undefined}
+            className="col-span-12 lg:col-auto"
+          >
             <HeroHeadline variant={variant} locale={locale} />
             <HeroSubcopy variant={variant} locale={locale} t={t} />
 
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-8 flex flex-wrap items-center gap-3"
+              transition={{ duration: 0.9, delay: 1.35, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-9 flex flex-wrap items-center gap-3"
             >
               <V2DirectHelp source="v2-hero" align="left" openUpOnDesktop direct />
               <a
@@ -272,18 +367,61 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
                   e.preventDefault();
                   smoothScrollToId('oplossingen');
                 }}
-                className="group inline-flex h-12 items-center gap-2 rounded-full border border-white/15 bg-[#0a0b0e]/80 px-5 text-sm font-medium text-white backdrop-blur-md transition-colors hover:border-white/40 hover:bg-[#0a0b0e]/90 md:h-[52px] md:bg-[#0a0b0e]/40 md:px-6 md:text-[15px] md:backdrop-blur-[6px] md:hover:bg-[#0a0b0e]/55"
+                className="group inline-flex h-12 items-center gap-3 rounded-[3px] border border-white/15 bg-[#0a0b0e]/70 px-5 text-sm font-medium text-white backdrop-blur-md transition-colors hover:border-white/45 md:h-[52px] md:px-6 md:text-[15px]"
               >
                 {isEn ? 'See what we do' : 'Bekijk wat we doen'}
+                <span aria-hidden className="font-mono text-xs text-white/45 transition-transform group-hover:translate-y-0.5">
+                  ↓
+                </span>
               </a>
             </motion.div>
 
+            {/* Routes, mobile and tablet */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-8 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:hidden"
+              transition={{ duration: 0.9, delay: 1.45, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-10 grid grid-cols-1 border-t border-white/10 sm:grid-cols-2 lg:hidden"
             >
+              {ROUTES.map((r, i) => (
+                <a
+                  key={r.key}
+                  href={`#${r.target}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    smoothScrollToId(r.target);
+                  }}
+                  className={`flex items-start gap-4 border-b border-white/10 bg-[#0a0b0e]/60 py-4 backdrop-blur-sm sm:px-4 ${
+                    i === 0 ? 'sm:border-r sm:pl-0' : ''
+                  }`}
+                >
+                  <Mono className="mt-1 text-bla-lime">{r.key.toUpperCase()}</Mono>
+                  <span className="flex flex-col">
+                    <span className="font-host text-[13px] text-white/50">{tHero(`routes.${r.key}.question`)}</span>
+                    <span className="mt-1 font-host text-lg font-light text-white">{tHero(`routes.${r.key}.title`)}</span>
+                  </span>
+                </a>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* Route panel, desktop */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 1.1 }}
+            className="col-span-12 hidden lg:col-auto lg:block"
+          >
+            <motion.div
+              style={parallax ? { y: yPanel } : undefined}
+              className="relative flex flex-col border border-white/12 bg-[#0a0b0e]/72 backdrop-blur-[6px]"
+            >
+              <CornerMarks />
+              <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
+                <Mono className="text-white/45">{isEn ? 'Where are you?' : 'Waar sta je?'}</Mono>
+                <Mono className="text-white/30">02</Mono>
+              </div>
+
               {ROUTES.map((r) => (
                 <a
                   key={r.key}
@@ -292,64 +430,38 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
                     e.preventDefault();
                     smoothScrollToId(r.target);
                   }}
-                  className="flex flex-col rounded-xl border border-white/10 bg-[#0a0b0e]/80 px-4 py-3 backdrop-blur-md transition-colors hover:border-bla-lime/40"
+                  className="group/route relative block border-b border-white/10 px-5 py-5 transition-colors hover:bg-white/[0.03]"
                 >
-                  <span className="font-host text-[12px] text-white/50">
-                    {tHero(`routes.${r.key}.question`)}
-                  </span>
-                  <span className="mt-1 font-host text-base font-light text-white">
-                    {tHero(`routes.${r.key}.title`)}
-                  </span>
+                  <span
+                    aria-hidden
+                    className="absolute inset-y-0 left-0 w-[2px] origin-top scale-y-0 bg-bla-lime transition-transform duration-300 group-hover/route:scale-y-100"
+                  />
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="font-host text-[13px] text-white/50">{tHero(`routes.${r.key}.question`)}</span>
+                    <Mono className="text-white/30 transition-colors group-hover/route:text-bla-lime">
+                      {r.key.toUpperCase()}
+                    </Mono>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between gap-3">
+                    <span className="font-host text-[1.55rem] font-light leading-tight text-white transition-colors group-hover/route:text-bla-lime">
+                      {tHero(`routes.${r.key}.title`)}
+                    </span>
+                    <span
+                      aria-hidden
+                      className="font-mono text-sm text-white/35 transition-all group-hover/route:translate-y-0.5 group-hover/route:text-bla-lime"
+                    >
+                      ↓
+                    </span>
+                  </div>
+                  <p className="mt-2 max-w-[34ch] font-host text-[14px] leading-[1.55] text-white/60 text-pretty">
+                    {tHero(`routes.${r.key}.description`)}
+                  </p>
                 </a>
               ))}
-            </motion.div>
-          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.55 }}
-            className="col-span-12 hidden lg:col-auto lg:block"
-          >
-            <div className="relative flex h-full min-h-[480px] flex-col rounded-2xl border border-white/10 bg-[#0a0b0e]/82 p-5 backdrop-blur-md md:min-h-[520px] md:bg-[#0a0b0e]/45 md:p-6 md:backdrop-blur-[6px]">
-              <div className="flex flex-1 flex-col gap-3">
-                {ROUTES.map((r) => (
-                  <a
-                    key={r.key}
-                    href={`#${r.target}`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      smoothScrollToId(r.target);
-                    }}
-                    className="group/route flex flex-1 flex-col rounded-xl border border-white/10 bg-white/[0.02] p-4 transition-colors hover:border-bla-lime/40 hover:bg-white/[0.04]"
-                  >
-                    <span className="font-host text-[13px] text-white/50">
-                      {tHero(`routes.${r.key}.question`)}
-                    </span>
-                    <div className="mt-2 flex items-center justify-between gap-3">
-                      <span className="font-host text-xl font-light leading-tight text-white transition-colors group-hover/route:text-bla-lime md:text-[1.4rem]">
-                        {tHero(`routes.${r.key}.title`)}
-                      </span>
-                      <svg
-                        className="h-4 w-4 shrink-0 text-white/35 transition-all group-hover/route:translate-y-0.5 group-hover/route:text-bla-lime"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        aria-hidden
-                      >
-                        <path d="M12 5v14M6 13l6 6 6-6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                    <p className="mt-2 font-host text-[13px] leading-relaxed text-white/60 text-pretty md:text-[14px] md:leading-[1.55]">
-                      {tHero(`routes.${r.key}.description`)}
-                    </p>
-                  </a>
-                ))}
-              </div>
-
-              <div className="mt-6 pt-5 border-t border-white/8">
-                <p className="mb-4 font-host text-[15px] text-white/50">Founders</p>
+              <div className="px-5 pb-5 pt-4">
                 <div className="flex items-center gap-4">
-                  <div className="flex shrink-0 -space-x-2.5">
+                  <div className="flex shrink-0 gap-1">
                     {[
                       { id: 'xennith', src: '/img/xennith-profile-v2.png', name: 'Xennith' },
                       { id: 'kevin', src: '/img/kevin-profile.png', name: 'Kevin' },
@@ -362,21 +474,26 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
                           e.preventDefault();
                           smoothScrollToId(`founder-${f.id}`);
                         }}
-                        className="group/avatar relative inline-block h-12 w-12 overflow-hidden rounded-full border-2 border-[#0a0b0e] ring-1 ring-white/15 transition-transform duration-200 hover:z-10 hover:scale-110 hover:ring-2 hover:ring-bla-lime focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bla-lime"
+                        className="group/avatar relative inline-block h-11 w-11 overflow-hidden rounded-[2px] ring-1 ring-white/15 transition-shadow hover:ring-bla-lime focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bla-lime"
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={f.src} alt="" className="h-full w-full object-cover object-top transition-transform duration-300 group-hover/avatar:scale-105" />
+                        <img
+                          src={f.src}
+                          alt=""
+                          className="h-full w-full object-cover object-top grayscale transition duration-300 group-hover/avatar:scale-105 group-hover/avatar:grayscale-0"
+                        />
                       </a>
                     ))}
                   </div>
                   <div className="min-w-0 leading-tight">
-                    <div className="truncate font-host text-[14px] text-white/90 md:text-[15px]">
+                    <Mono className="text-white/40">Founders</Mono>
+                    <div className="mt-1.5 truncate font-host text-[15px] text-white/90">
                       {[
                         { id: 'xennith', name: 'Xennith' },
                         { id: 'kevin', name: 'Kevin' },
                       ].map((f, i) => (
                         <span key={f.id}>
-                          {i > 0 && <span className="text-white/35"> · </span>}
+                          {i > 0 && <span className="text-white/30"> · </span>}
                           <a
                             href={`#founder-${f.id}`}
                             onClick={(e) => {
@@ -389,26 +506,35 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
                           </a>
                         </span>
                       ))}
-                    </div>
-                    <div className="mt-0.5 font-host text-[13px] text-bla-lime/85">
-                      {isEn ? '25+ years experience' : '25+ jaar ervaring'}
+                      <span className="ml-2 font-mono text-[11px] uppercase tracking-[0.1em] text-bla-lime/85">
+                        25+ {isEn ? 'yrs' : 'jaar'}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-5">
-                  <p className="mb-2 font-host text-[13px] text-white/40">
-                    {isEn ? 'Shipped for' : 'Gewerkt voor'}
-                  </p>
+                <div className="mt-5 border-t border-white/10 pt-4">
+                  <Mono className="mb-3 block text-white/35">{isEn ? 'Shipped for' : 'Gewerkt voor'}</Mono>
                   <BrandLogoTicker />
                 </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
+        </div>
+
+        <div aria-hidden className="hidden items-center gap-3 pb-5 lg:flex">
+          <Mono className="text-white/35">Scroll</Mono>
+          <span className="relative h-px w-16 overflow-hidden bg-white/15">
+            <motion.span
+              className="absolute inset-y-0 left-0 w-1/3 bg-bla-lime"
+              animate={reduce ? undefined : { x: ['-100%', '300%'] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: [0.65, 0, 0.35, 1] }}
+            />
+          </span>
         </div>
       </div>
 
-      <div className="relative overflow-hidden border-t border-white/8 bg-[#0a0b0e]/85 py-4 backdrop-blur-md md:bg-[#0a0b0e]/60 md:backdrop-blur-sm">
+      <div className="relative overflow-hidden border-t border-white/10 bg-[#0a0b0e]/85 py-4 backdrop-blur-md md:bg-[#0a0b0e]/60 md:backdrop-blur-sm">
         <HeroTicker words={tickerWords} />
       </div>
     </section>

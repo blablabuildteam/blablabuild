@@ -32,9 +32,27 @@ const config: Config = {
   			'bad-script': [
   				'Bad Script',
   				'cursive'
+  			],
+  			mono: [
+  				'var(--font-mono)',
+  				'ui-monospace',
+  				'SFMono-Regular',
+  				'Menlo',
+  				'monospace'
   			]
   		},
   		colors: {
+  			// Instrument palette: ink surfaces, paper surfaces, volt accent
+  			ink: {
+  				DEFAULT: '#0a0b0e',
+  				2: '#0d1015',
+  				3: '#14181d',
+  			},
+  			paper: {
+  				DEFAULT: '#f1ede4',
+  				2: '#f8f6f0',
+  			},
+  			volt: '#CEFF00',
   			// Core Brand Colors
   			bla: {
   				lime: 'var(--bla-lime)',

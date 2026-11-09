@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLocale } from 'next-intl';
-import { ChevronDown } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
+import { ColumnGuides, Mono, SectionHead } from './Instrument';
 
 interface ValueCard {
   id: string;
@@ -54,125 +54,123 @@ const VALUE_CARDS: ValueCard[] = [
   },
 ];
 
-function ValueCardBlock({
+function SpecRow({
   card,
   lang,
   index,
-  collapsible = false,
+  open,
+  onToggle,
 }: {
   card: ValueCard;
   lang: 'en' | 'nl';
   index: number;
-  collapsible?: boolean;
+  open: boolean;
+  onToggle: () => void;
 }) {
-  const [open, setOpen] = useState(false);
-
+  const panelId = `value-${card.id}`;
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
+    <motion.li
+      initial={{ opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.55, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-      className="flex flex-col rounded-2xl border border-[#14181d]/10 bg-[#f6f3ec] p-6 md:p-8"
+      transition={{ duration: 0.5, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+      className="border-b border-[#14181d]/12"
     >
-      {collapsible ? (
-        <button
-          type="button"
-          onClick={() => setOpen((s) => !s)}
-          aria-expanded={open}
-          className="relative w-full pr-7 text-left"
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        aria-controls={panelId}
+        className="group relative flex w-full items-center gap-5 overflow-hidden py-6 text-left md:gap-8 md:py-7"
+      >
+        <span
+          aria-hidden
+          className={`absolute inset-y-0 left-0 -z-0 bg-bla-lime transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            open ? 'w-[5px]' : 'w-0 group-hover:w-[5px]'
+          }`}
+        />
+        <Mono className={`relative w-10 shrink-0 pl-4 transition-colors md:w-14 ${open ? 'text-[#14181d]' : 'text-[#14181d]/40'}`}>
+          {String(index + 1).padStart(2, '0')}
+        </Mono>
+        <span className="relative flex-1 font-host text-xl font-light leading-snug tracking-[-0.015em] text-[#14181d] md:text-[1.9rem]">
+          {card.title[lang]}
+        </span>
+        <span
+          aria-hidden
+          className={`relative grid h-9 w-9 shrink-0 place-items-center rounded-[2px] border transition-colors ${
+            open ? 'border-[#14181d] bg-[#14181d] text-bla-lime' : 'border-[#14181d]/20 text-[#14181d]/60 group-hover:border-[#14181d]/50'
+          }`}
         >
-          <h3 className="truncate font-host text-[15px] font-medium leading-snug text-[#14181d] md:text-base">
-            {card.title[lang]}
-          </h3>
-          <span className="absolute -right-1 top-0 inline-flex h-7 w-7 items-center justify-center rounded-full border border-[#14181d]/15 text-[#14181d]/50">
-            <ChevronDown
-              className={`h-3.5 w-3.5 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
+          <span className="relative block h-3 w-3">
+            <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-current" />
+            <span
+              className={`absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-current transition-transform duration-300 ${
+                open ? 'scale-y-0' : 'scale-y-100'
+              }`}
             />
           </span>
-        </button>
-      ) : (
-        <h3 className="font-host text-lg font-medium leading-snug text-[#14181d] md:text-xl">
-          {card.title[lang]}
-        </h3>
-      )}
-
-      {collapsible ? (
-        <AnimatePresence initial={false}>
-          {open && (
-            <motion.p
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="overflow-hidden font-host text-sm leading-relaxed text-[#14181d]/70"
-            >
-              <span className="mt-4 block">{card.description[lang]}</span>
-            </motion.p>
-          )}
-        </AnimatePresence>
-      ) : (
-        <p className="mt-4 flex-1 font-host text-sm leading-relaxed text-[#14181d]/70 md:text-[15px] md:leading-relaxed">
-          {card.description[lang]}
-        </p>
-      )}
-    </motion.div>
+        </span>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            id={panelId}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <p className="max-w-2xl pb-7 pl-[3.75rem] font-host text-base leading-relaxed text-[#14181d]/70 md:pl-[5.5rem] md:text-[17px]">
+              {card.description[lang]}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.li>
   );
 }
 
 export default function V2Value() {
   const locale = useLocale();
+  const tNav = useTranslations('nav');
   const lang = locale === 'en' ? 'en' : 'nl';
-
-  const [businessFirst, directCollab, builtInWeeks, agencyStandards, tangibleRoi] = VALUE_CARDS;
+  const [openId, setOpenId] = useState<string | null>(VALUE_CARDS[0].id);
 
   return (
-    <section id="waarde" className="relative w-full overflow-hidden bg-white text-[#14181d]">
-      <div className="mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-24">
-        {/* Desktop: 3×2 grid matching slide layout */}
-        <div className="hidden gap-4 lg:grid lg:grid-cols-3 lg:items-end lg:gap-5">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col justify-center self-start pr-4"
-          >
-            <h2 className="font-host text-4xl font-medium leading-[1.05] tracking-tight text-[#14181d] xl:text-5xl">
-              {lang === 'en' ? 'Why blablabuild?' : 'Waarom blablabuild?'}
-            </h2>
-            <p className="mt-3 font-host text-lg text-[#14181d]/70 md:text-xl">
-              {lang === 'en' ? 'The Business Behind the Build' : 'De business achter de build'}
-            </p>
-          </motion.div>
-          <ValueCardBlock card={businessFirst} lang={lang} index={0} collapsible />
-          <ValueCardBlock card={directCollab} lang={lang} index={1} collapsible />
-          <ValueCardBlock card={tangibleRoi} lang={lang} index={2} collapsible />
-          <ValueCardBlock card={agencyStandards} lang={lang} index={3} collapsible />
-          <ValueCardBlock card={builtInWeeks} lang={lang} index={4} collapsible />
-        </div>
-
-        {/* Mobile / tablet: stacked */}
-        <div className="lg:hidden">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-8"
-          >
-            <h2 className="font-host text-3xl font-medium leading-[1.05] tracking-tight text-[#14181d] md:text-4xl">
-              {lang === 'en' ? 'Why blablabuild?' : 'Waarom blablabuild?'}
-            </h2>
-            <p className="mt-3 font-host text-base text-[#14181d]/70 md:text-lg">
-              {lang === 'en' ? 'The Business Behind the Build' : 'De business achter de build'}
-            </p>
-          </motion.div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {VALUE_CARDS.map((card, i) => (
-              <ValueCardBlock key={card.id} card={card} lang={lang} index={i} collapsible />
-            ))}
+    <section id="waarde" className="relative w-full bg-[#f8f6f0] text-[#14181d]">
+      <ColumnGuides tone="light" />
+      <div className="relative mx-auto w-full max-w-[1320px] px-5 py-16 sm:px-8 md:px-10 md:py-28">
+        <SectionHead
+          index="05"
+          label={tNav('value')}
+          meta={`${String(VALUE_CARDS.length).padStart(2, '0')} ${lang === 'en' ? 'principles' : 'principes'}`}
+          tone="light"
+        />
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-10">
+          <div className="lg:col-span-4">
+            <div className="lg:sticky lg:top-32">
+              <h2 className="font-host text-[2.4rem] font-light leading-[0.95] tracking-[-0.035em] text-[#14181d] md:text-[4.25rem]">
+                {lang === 'en' ? 'Why ' : 'Waarom '}
+                <span className="font-medium">blablabuild?</span>
+              </h2>
+              <p className="mt-5 font-host text-lg text-[#14181d]/60 md:text-xl">
+                {lang === 'en' ? 'The business behind the build.' : 'De business achter de build.'}
+              </p>
+            </div>
           </div>
+          <ol className="border-t border-[#14181d]/12 lg:col-span-8">
+            {VALUE_CARDS.map((card, i) => (
+              <SpecRow
+                key={card.id}
+                card={card}
+                lang={lang}
+                index={i}
+                open={openId === card.id}
+                onToggle={() => setOpenId((cur) => (cur === card.id ? null : card.id))}
+              />
+            ))}
+          </ol>
         </div>
       </div>
     </section>

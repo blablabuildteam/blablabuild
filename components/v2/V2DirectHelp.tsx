@@ -67,7 +67,7 @@ export default function V2DirectHelp({
   }, [open]);
 
   const baseBtn =
-    'group inline-flex items-center justify-center gap-2 rounded-full font-medium tracking-tight transition-all';
+    'group inline-flex items-center justify-center gap-2 rounded-[3px] font-medium tracking-tight transition-all duration-200';
   const sizeClasses =
     size === 'sm'
       ? 'h-10 px-4 text-sm'
@@ -210,7 +210,7 @@ export default function V2DirectHelp({
               transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
               className={[
                 // mobile: bottom sheet centered, vol bruikbare ruimte
-                'fixed inset-x-4 bottom-6 z-[70] origin-bottom rounded-2xl border border-white/10 bg-[#0e1014]/95 p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] backdrop-blur-xl',
+                'fixed inset-x-4 bottom-6 z-[70] origin-bottom rounded-[6px] border border-white/12 bg-[#0e1014]/95 p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] backdrop-blur-xl',
                 // desktop: anchored popover, vaste 360px maar nooit breder dan viewport - 2rem
                 openUpOnDesktop
                   ? 'md:absolute md:inset-x-auto md:bottom-full md:mb-2 md:w-[360px] md:max-w-[calc(100vw-2rem)] md:origin-bottom-left'
@@ -232,9 +232,9 @@ export default function V2DirectHelp({
                 rel="noopener noreferrer"
                 role="menuitem"
                 onClick={handleMeeting}
-                className="group/i flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-white/5"
+                className="group/i flex items-start gap-3 rounded-[4px] p-3 transition-colors hover:bg-white/5"
               >
-                <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-bla-lime">
+                <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-[3px] border border-white/10 bg-white/[0.04] text-bla-lime">
                   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M7 10h10M7 14h6M5 5h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z"
@@ -272,9 +272,9 @@ export default function V2DirectHelp({
                 type="button"
                 role="menuitem"
                 onClick={handleAiAdvice}
-                className="group/i flex w-full items-start gap-3 rounded-xl p-3 text-left transition-colors hover:bg-white/5"
+                className="group/i flex w-full items-start gap-3 rounded-[4px] p-3 text-left transition-colors hover:bg-white/5"
               >
-                <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full border border-bla-lime/30 bg-bla-lime/10 text-bla-lime">
+                <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-[3px] border border-bla-lime/30 bg-bla-lime/10 text-bla-lime">
                   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M12 3l1.7 4.6L18 9l-4.3 1.4L12 15l-1.7-4.6L6 9l4.3-1.4L12 3zM18 15l.9 2.4L21 18l-2.1.6L18 21l-.9-2.4L15 18l2.1-.6.9-2.4z"
@@ -290,7 +290,7 @@ export default function V2DirectHelp({
                     <span className="block whitespace-nowrap font-host text-[15px] font-medium text-white">
                       {locale === 'en' ? 'AI advice' : 'AI advies'}
                     </span>
-                    <span className="rounded-full border border-bla-lime/30 bg-bla-lime/10 px-1.5 py-px font-mono text-[9px] uppercase tracking-[0.2em] text-bla-lime">
+                    <span className="rounded-[2px] border border-bla-lime/30 bg-bla-lime/10 px-1.5 py-px font-mono text-[9px] uppercase tracking-[0.2em] text-bla-lime">
                       {locale === 'en' ? 'instant' : 'direct'}
                     </span>
                   </span>
@@ -322,9 +322,9 @@ export default function V2DirectHelp({
                     href={`mailto:${MAIL}`}
                     role="menuitem"
                     onClick={handleMail}
-                    className="group/i flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-white/5"
+                    className="group/i flex items-start gap-3 rounded-[4px] p-3 transition-colors hover:bg-white/5"
                   >
-                    <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-white/70">
+                    <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-[3px] border border-white/10 bg-white/[0.04] text-white/70">
                       <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none">
                         <path
                           d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm0 0l8 9 8-9"
