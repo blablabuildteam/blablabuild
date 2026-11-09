@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion, useInView } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import { ArrowUpRight } from 'lucide-react';
 import V2AIHorizons from './V2AIHorizons';
@@ -17,6 +17,16 @@ import {
 
 const STRATEGY_STEPS = ['scan', 'discovery', 'businessCase', 'roadmap'] as const;
 const ROW_START = ['md:row-start-3', 'md:row-start-4', 'md:row-start-5', 'md:row-start-6'] as const;
+const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
+
+function revealProps(delay = 0, distance = 16) {
+  return {
+    initial: { opacity: 0, y: distance },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, margin: '-60px' },
+    transition: { duration: 0.5, delay, ease: REVEAL_EASE },
+  };
+}
 
 const SOLUTION_ITEMS = [
   { key: 'agents', preview: 'agents' },
@@ -47,6 +57,10 @@ export default function V2Pillars() {
   const lang = locale === 'en' ? 'en' : 'nl';
   const preview = useCapabilityPreview();
   const [isMobile, setIsMobile] = useState(false);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  // The letters start fully clipped, so watching them never fires.
+  // The heading box stays in view and releases the reveal.
+  const headlineInView = useInView(headlineRef, { once: true, margin: '-60px' });
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)');
@@ -81,131 +95,167 @@ export default function V2Pillars() {
         <div id="ai-transformatie" className="scroll-mt-28">
           <div className="mb-10 flex flex-col gap-6 md:mb-14 md:flex-row md:items-center md:justify-between md:gap-10">
             <div className="max-w-3xl">
-              <h2 className="font-host text-3xl font-light leading-tight tracking-tight text-[#14181d] md:text-[3.5rem]">
-                {t('pillarsSection.headline')}
+              <h2
+                ref={headlineRef}
+                className="font-host text-3xl font-light leading-tight tracking-tight text-[#14181d] md:text-[3.5rem]"
+              >
+                <span className="block overflow-hidden">
+                  <motion.span
+                    initial={{ y: '110%', opacity: 0 }}
+                    animate={headlineInView ? { y: '0%', opacity: 1 } : { y: '110%', opacity: 0 }}
+                    transition={{ duration: 0.8, ease: REVEAL_EASE }}
+                    className="inline-block"
+                  >
+                    {t('pillarsSection.headline')}
+                  </motion.span>
+                </span>
               </h2>
-              <p className="mt-6 font-host text-base leading-relaxed text-[#14181d]/70 md:text-lg">
+              <motion.p
+                {...revealProps(0.08)}
+                className="mt-6 font-host text-base leading-relaxed text-[#14181d]/70 md:text-lg"
+              >
                 {t('pillarsSection.intro')}
-              </p>
+              </motion.p>
             </div>
-            <SpinningText className="mx-auto shrink-0 md:mx-0" />
+            <motion.div {...revealProps(0.12, 12)} className="mx-auto shrink-0 md:mx-0">
+              <SpinningText />
+            </motion.div>
           </div>
 
-          <div className="relative rounded-[20px] border border-[#14181d]/10 bg-white p-6 shadow-[0_30px_70px_-36px_rgba(20,24,29,0.45)] md:p-10">
+          <div className="relative rounded-[20px] border border-white/10 bg-[#1c1915] p-6 text-[#f1ede4] shadow-[0_40px_80px_-36px_rgba(28,25,21,0.65)] md:p-10">
             <BorderBeam radius={20} />
             <div className="relative grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:grid-rows-[auto_auto_repeat(4,auto)_auto] md:gap-x-6">
-            <p className="mb-2 hidden items-center gap-1.5 self-center justify-self-center whitespace-nowrap rounded-full border border-[#14181d]/10 bg-white px-3 py-1 font-host text-[12px] text-[#14181d]/60 md:col-start-2 md:row-start-2 md:mb-6 md:inline-flex">
+            <motion.p
+              {...revealProps(0.14, 8)}
+              className="mb-2 hidden items-center gap-1.5 self-center justify-self-center whitespace-nowrap rounded-full bg-bla-lime px-3 py-1 font-host text-[12px] font-medium text-[#1c1915] md:col-start-2 md:row-start-2 md:mb-6 md:inline-flex"
+            >
               {t('pillarsSection.offer.bridge')}
               <span aria-hidden>→</span>
-            </p>
+            </motion.p>
             <div
               aria-hidden
-              className="hidden w-px self-stretch justify-self-center bg-[#14181d]/10 md:col-start-2 md:row-span-4 md:row-start-3 md:block"
+              className="hidden w-px self-stretch justify-self-center bg-white/10 md:col-start-2 md:row-span-4 md:row-start-3 md:block"
             />
-            <p
+            <motion.p
+              {...revealProps(0)}
               id="ai-strategie"
-              className="scroll-mt-28 font-host text-[15px] text-[#14181d]/50 md:col-start-1 md:row-start-1"
+              className="scroll-mt-28 font-host text-[15px] text-[#f1ede4]/55 md:col-start-1 md:row-start-1"
             >
               {t('pillarsSection.offer.strategy.for')}
-            </p>
-            <h3 className="mt-1 pb-6 font-host text-[1.7rem] font-semibold leading-tight text-[#14181d] md:col-start-1 md:row-start-2 md:mt-0 md:text-[2rem]">
+            </motion.p>
+            <motion.h3
+              {...revealProps(0.05)}
+              className="mt-1 pb-6 font-host text-[1.7rem] font-semibold leading-tight text-[#f1ede4] md:col-start-1 md:row-start-2 md:mt-0 md:text-[2rem]"
+            >
               {t('pillarsSection.offer.strategy.title')}
-            </h3>
+            </motion.h3>
             {STRATEGY_STEPS.map((step, index) => (
-              <div
+              <motion.div
                 key={step}
-                className={`flex items-center gap-3 border-b border-[#14181d]/10 py-3.5 md:col-start-1 ${ROW_START[index]}`}
+                {...revealProps(0.1 + index * 0.05)}
+                className={`flex items-center gap-3 border-b border-white/10 py-3.5 md:col-start-1 ${ROW_START[index]}`}
               >
-                <span className="font-host text-[13px] tabular-nums text-[#14181d]/30">
+                <span className="font-host text-[13px] tabular-nums text-[#f1ede4]/55">
                   {String(index + 1).padStart(2, '0')}
                 </span>
-                <span className="font-host text-[15px] leading-snug text-[#14181d]/80 md:text-base">
+                <span className="font-host text-[15px] leading-snug text-[#f1ede4]/80 md:text-base">
                   {t(`pillarsSection.offer.strategy.steps.${step}`)}
                 </span>
-              </div>
+              </motion.div>
             ))}
-            <div className="md:col-start-1 md:row-start-7">
-              <p className="mt-4 font-host text-sm leading-relaxed text-[#14181d]/55">
+            <motion.div {...revealProps(0.32)} className="md:col-start-1 md:row-start-7">
+              <p className="mt-4 font-host text-sm leading-relaxed text-[#f1ede4]/60">
                 {t('pillarsSection.offer.strategy.principles')}
               </p>
-              <p className="mt-3 font-host text-sm text-[#14181d]/45 md:hidden">
+              <p className="mt-3 font-host text-sm text-[#f1ede4]/55 md:hidden">
                 {t('pillarsSection.offer.bridge')} →
               </p>
-            </div>
+            </motion.div>
 
-            <p
+            <motion.p
+              {...revealProps(0.04)}
               id="ai-maatwerk"
-              className="mt-12 scroll-mt-28 font-host text-[15px] text-[#14181d]/50 md:col-start-3 md:row-start-1 md:mt-0"
+              className="mt-12 scroll-mt-28 font-host text-[15px] text-[#f1ede4]/55 md:col-start-3 md:row-start-1 md:mt-0"
             >
               {t('pillarsSection.offer.solutions.for')}
-            </p>
-            <h3 className="mt-1 pb-6 font-host text-[1.7rem] font-semibold leading-tight text-[#14181d] md:col-start-3 md:row-start-2 md:mt-0 md:text-[2rem]">
+            </motion.p>
+            <motion.h3
+              {...revealProps(0.08)}
+              className="mt-1 pb-6 font-host text-[1.7rem] font-semibold leading-tight text-[#f1ede4] md:col-start-3 md:row-start-2 md:mt-0 md:text-[2rem]"
+            >
               {t('pillarsSection.offer.solutions.title')}
-            </h3>
+            </motion.h3>
             {SOLUTION_ITEMS.map((item, index) => {
               const previewId = item.preview as CapabilityPreviewId;
               const isHovered = preview.hoverId === previewId;
               return (
-                <button
+                <motion.button
                   key={item.key}
                   type="button"
+                  {...revealProps(0.1 + index * 0.05)}
                   {...bindPreview(previewId)}
-                  className={`flex items-center gap-3 border-b border-[#14181d]/10 py-3.5 text-left transition-colors hover:bg-[#14181d]/[0.03] md:col-start-3 ${ROW_START[index]} ${
-                    isHovered ? 'bg-[#14181d]/[0.03]' : ''
+                  className={`flex items-center gap-3 border-b border-white/10 py-3.5 text-left transition-colors hover:bg-white/[0.06] focus-visible:bg-white/[0.06] focus-visible:outline-none md:col-start-3 ${ROW_START[index]} ${
+                    isHovered ? 'bg-white/[0.06]' : ''
                   }`}
                 >
-                  <span className="font-host text-[13px] tabular-nums text-[#14181d]/30">
+                  <span className="font-host text-[13px] tabular-nums text-[#f1ede4]/55">
                     {String(index + 1).padStart(2, '0')}
                   </span>
                   <span
                     className={`flex-1 font-host text-[15px] leading-snug md:text-base ${
-                      isHovered ? 'font-medium text-[#14181d]' : 'text-[#14181d]/80'
+                      isHovered ? 'font-medium text-[#f1ede4]' : 'text-[#f1ede4]/80'
                     }`}
                   >
                     {t(`pillarsSection.offer.solutions.items.${item.key}`)}
                   </span>
                   <ArrowUpRight
-                    className={`h-3.5 w-3.5 shrink-0 ${isHovered ? 'text-bla-lime' : 'text-[#14181d]/25'}`}
+                    className={`h-3.5 w-3.5 shrink-0 ${isHovered ? 'text-bla-lime' : 'text-[#f1ede4]/40'}`}
                   />
-                </button>
+                </motion.button>
               );
             })}
             </div>
 
-            <div className="relative mt-10 border-t border-[#14181d]/10 pt-8 md:mt-12">
-              <h3 className="font-host text-xl font-light text-[#14181d] md:text-2xl">
+            <div className="relative mt-10 border-t border-white/10 pt-8 md:mt-12">
+              <motion.h3
+                {...revealProps(0)}
+                className="font-host text-xl font-light text-[#f1ede4] md:text-2xl"
+              >
                 {t('pillarsSection.offer.phasesTitle')}
-              </h3>
-              <p className="mt-2 font-host text-sm text-[#14181d]/45">
+              </motion.h3>
+              <motion.p
+                {...revealProps(0.06, 12)}
+                className="mt-2 font-host text-sm text-[#f1ede4]/55"
+              >
                 {t('pillarsSection.offer.phasesHint')}
-              </p>
+              </motion.p>
               <V2AIHorizons lang={lang} embedded strip />
             </div>
           </div>
         </div>
 
         {/* Still the work every digital agency does */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-50px' }}
-          transition={{ duration: 0.65, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-20 rounded-2xl border border-[#14181d]/10 bg-white/50 p-6 md:mt-28 md:p-8"
-        >
-          <h3 className="max-w-3xl font-host text-lg font-semibold leading-snug text-[#14181d] md:text-xl">
+        <div className="mt-20 rounded-2xl border border-[#14181d]/10 bg-white/50 p-6 md:mt-28 md:p-8">
+          <motion.h3
+            {...revealProps(0)}
+            className="max-w-3xl font-host text-lg font-semibold leading-snug text-[#14181d] md:text-xl"
+          >
             {t('pillarsSection.secondary.title')}
-          </h3>
-          <p className="mt-2 max-w-2xl font-host text-sm leading-relaxed text-[#14181d]/55 md:text-[15px]">
+          </motion.h3>
+          <motion.p
+            {...revealProps(0.06)}
+            className="mt-2 max-w-2xl font-host text-sm leading-relaxed text-[#14181d]/55 md:text-[15px]"
+          >
             {t('pillarsSection.secondary.description')}
-          </p>
+          </motion.p>
           <ul className="mt-5 flex flex-wrap gap-2">
-            {AGENCY_ITEMS.map((itemKey) => {
+            {AGENCY_ITEMS.map((itemKey, index) => {
               const previewId = PILLAR_ITEM_PREVIEW_MAP[itemKey] as
                 | CapabilityPreviewId
                 | undefined;
               const isHovered = !!previewId && preview.hoverId === previewId;
               return (
-                <li key={itemKey}>
+                <motion.li key={itemKey} {...revealProps(0.1 + index * 0.04, 10)}>
                   <button
                     type="button"
                     {...(previewId ? bindPreview(previewId) : {})}
@@ -220,11 +270,11 @@ export default function V2Pillars() {
                     />
                     {t(`pillars.marketing.items.${itemKey}.title`)}
                   </button>
-                </li>
+                </motion.li>
               );
             })}
           </ul>
-        </motion.div>
+        </div>
       </div>
 
       <AnimatePresence>

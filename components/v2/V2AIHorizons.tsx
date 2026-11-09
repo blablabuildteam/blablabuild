@@ -207,10 +207,14 @@ export default function V2AIHorizons({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+      {...(strip
+        ? {}
+        : {
+            initial: { opacity: 0, y: 24 },
+            whileInView: { opacity: 1, y: 0 },
+            viewport: { once: true, margin: '-80px' },
+            transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const },
+          })}
       className={embedded ? 'mt-6' : 'mt-10 border-t border-[#14181d]/10 pt-10 md:mt-14 md:pt-14'}
     >
       {embedded && !strip ? (
@@ -252,6 +256,34 @@ export default function V2AIHorizons({
         >
           {stages.map((stage, i) => {
             const isActive = i === activeStage && open;
+            const tileSurface = strip
+              ? isActive
+                ? 'border-bla-lime bg-[#2a2622] shadow-[0_18px_40px_-24px_rgba(0,0,0,0.55)]'
+                : 'border-white/10 bg-[#2a2622] hover:border-white/25'
+              : isActive
+                ? 'border-[#14181d] bg-white shadow-[0_18px_40px_-24px_rgba(20,24,29,0.35)]'
+                : 'border-[#14181d]/10 bg-white hover:border-[#14181d]/25';
+            const indexColor = strip
+              ? isActive
+                ? 'text-bla-lime'
+                : 'text-[#f1ede4]/55'
+              : isActive
+                ? 'text-[#14181d]'
+                : 'text-[#14181d]/30';
+            const titleColor = strip
+              ? isActive
+                ? 'text-[#f1ede4]'
+                : 'text-[#f1ede4]/70 group-hover:text-[#f1ede4]'
+              : isActive
+                ? 'text-[#14181d]'
+                : 'text-[#14181d]/55 group-hover:text-[#14181d]/85';
+            const actionColor = strip
+              ? isActive
+                ? 'text-[#f1ede4]/65'
+                : 'text-[#f1ede4]/45 group-hover:text-[#f1ede4]/60'
+              : isActive
+                ? 'text-[#14181d]/60'
+                : 'text-[#14181d]/40 group-hover:text-[#14181d]/50';
             const card = (
                 <div
                   role="button"
@@ -263,35 +295,23 @@ export default function V2AIHorizons({
                     event.preventDefault();
                     selectStage(i);
                   }}
-                  className={`group relative flex w-full min-h-0 cursor-pointer items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-[border-color,background-color,box-shadow,color] duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/20 md:flex-1 md:px-5 ${
-                    strip ? 'h-full' : ''
-                  } ${
-                    isActive
-                      ? 'border-[#14181d] bg-white shadow-[0_18px_40px_-24px_rgba(20,24,29,0.35)]'
-                      : strip
-                        ? 'border-[#14181d]/10 bg-[#f6f3ec] hover:border-[#14181d]/25'
-                        : 'border-[#14181d]/10 bg-white hover:border-[#14181d]/25'
-                  }`}
+                  className={`group relative flex w-full min-h-0 cursor-pointer items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-[border-color,background-color,box-shadow,color] duration-300 focus:outline-none focus-visible:ring-2 md:flex-1 md:px-5 ${
+                    strip ? 'h-full focus-visible:ring-bla-lime/50' : 'focus-visible:ring-[#14181d]/20'
+                  } ${tileSurface}`}
                 >
                   <span
-                    className={`mt-0.5 font-mono text-[10px] tracking-[0.2em] transition-colors duration-300 ${
-                      isActive ? 'text-[#14181d]' : 'text-[#14181d]/30'
-                    }`}
+                    className={`mt-0.5 font-mono text-[10px] tracking-[0.2em] transition-colors duration-300 ${indexColor}`}
                   >
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <div className="min-w-0 flex-1">
                     <div
-                      className={`font-host text-base font-medium transition-colors duration-300 ${
-                        isActive ? 'text-[#14181d]' : 'text-[#14181d]/55 group-hover:text-[#14181d]/85'
-                      }`}
+                      className={`font-host text-base font-medium transition-colors duration-300 ${titleColor}`}
                     >
                       {stage.title}
                     </div>
                     <div
-                      className={`mt-1 font-host text-xs leading-snug transition-colors duration-300 ${
-                        isActive ? 'text-[#14181d]/60' : 'text-[#14181d]/40 group-hover:text-[#14181d]/50'
-                      }`}
+                      className={`mt-1 font-host text-xs leading-snug transition-colors duration-300 ${actionColor}`}
                     >
                       {stage.action}
                     </div>
@@ -308,7 +328,11 @@ export default function V2AIHorizons({
                           ? lang === 'en' ? 'Play animation' : 'Animatie afspelen'
                           : lang === 'en' ? 'Pause animation' : 'Animatie pauzeren'
                       }
-                      className="relative mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center overflow-visible rounded-full border border-[#14181d] bg-[#14181d] text-bla-lime transition-transform duration-200 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/25"
+                      className={`relative mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center overflow-visible rounded-full border transition-transform duration-200 hover:scale-105 focus:outline-none focus-visible:ring-2 ${
+                        strip
+                          ? 'border-bla-lime bg-bla-lime text-[#1c1915] focus-visible:ring-bla-lime/40'
+                          : 'border-[#14181d] bg-[#14181d] text-bla-lime focus-visible:ring-[#14181d]/25'
+                      }`}
                     >
                       {!paused && (
                         <span className="pointer-events-none absolute left-1/2 top-1/2 h-[30px] w-[30px] -translate-x-1/2 -translate-y-1/2">
@@ -348,7 +372,11 @@ export default function V2AIHorizons({
                     </button>
                   ) : (
                     <span
-                      className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#14181d]/15 bg-[#14181d]/5 text-[#14181d]/35 opacity-100 transition-all duration-200 group-hover:border-[#14181d] group-hover:bg-[#14181d] group-hover:text-bla-lime group-focus-visible:border-[#14181d] group-focus-visible:bg-[#14181d] group-focus-visible:text-bla-lime"
+                      className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border opacity-100 transition-all duration-200 ${
+                        strip
+                          ? 'border-white/15 bg-white/5 text-[#f1ede4]/45 group-hover:border-bla-lime group-hover:bg-bla-lime group-hover:text-[#1c1915] group-focus-visible:border-bla-lime group-focus-visible:bg-bla-lime group-focus-visible:text-[#1c1915]'
+                          : 'border-[#14181d]/15 bg-[#14181d]/5 text-[#14181d]/35 group-hover:border-[#14181d] group-hover:bg-[#14181d] group-hover:text-bla-lime group-focus-visible:border-[#14181d] group-focus-visible:bg-[#14181d] group-focus-visible:text-bla-lime'
+                      }`}
                       aria-hidden
                     >
                       <Play className="h-2.5 w-2.5 fill-current" />
@@ -361,7 +389,19 @@ export default function V2AIHorizons({
             return (
               <Fragment key={stage.id}>
                 {strip ? (
-                  <CursorTilt className="relative z-0 h-full hover:z-10">{card}</CursorTilt>
+                  <motion.div
+                    initial={{ opacity: 0, y: 18 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-40px' }}
+                    transition={{
+                      duration: 0.45,
+                      delay: i * 0.05,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                    className="h-full"
+                  >
+                    <CursorTilt className="relative z-0 h-full hover:z-10">{card}</CursorTilt>
+                  </motion.div>
                 ) : (
                   card
                 )}
@@ -394,6 +434,7 @@ export default function V2AIHorizons({
             replayKey={replayKey}
             bootId={bootId}
             fill={false}
+            tone="ink"
           />
         )}
 
@@ -428,6 +469,7 @@ function HorizonVisual({
   replayKey = 0,
   bootId = 0,
   fill = true,
+  tone = 'default',
 }: {
   stage: number;
   lang: 'en' | 'nl';
@@ -435,6 +477,7 @@ function HorizonVisual({
   replayKey?: number;
   bootId?: number;
   fill?: boolean;
+  tone?: 'default' | 'ink';
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const inView = useInView(containerRef, { amount: 0.25, margin: '0px 0px -60px 0px' });
@@ -447,9 +490,9 @@ function HorizonVisual({
   return (
     <div
       ref={containerRef}
-      className={`relative flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-[#14181d]/20 bg-[#14181d] ${
-        fill ? 'md:h-full md:min-h-0' : ''
-      }`}
+      className={`relative flex min-h-[420px] flex-col overflow-hidden rounded-2xl border ${
+        tone === 'ink' ? 'border-white/10 bg-[#12100e]' : 'border-[#14181d]/20 bg-[#14181d]'
+      } ${fill ? 'md:h-full md:min-h-0' : ''}`}
     >
       <BootProgress key={bootId} bootId={bootId} edge="top" />
       <AnimatePresence mode="wait">
