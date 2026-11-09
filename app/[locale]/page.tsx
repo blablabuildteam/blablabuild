@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import V2Nav from '@/components/v2/V2Nav';
 import V2Hero from '@/components/v2/V2Hero';
 import V2Pillars from '@/components/v2/V2Pillars';
-import V2AITransformation from '@/components/v2/V2AITransformation';
 import V2Cases from '@/components/v2/V2Cases';
 import V2Approach from '@/components/v2/V2Approach';
 import V2Team from '@/components/v2/V2Team';
@@ -12,7 +11,7 @@ import V2Value from '@/components/v2/V2Value';
 import V2Footer from '@/components/v2/V2Footer';
 import V2ChatWidget from '@/components/v2/V2ChatWidget';
 
-const SECTION_IDS = ['oplossingen', 'aanpak', 'ai-transformatie', 'cases', 'over-ons', 'waarde'] as const;
+const SECTION_IDS = ['oplossingen', 'ai-transformatie', 'aanpak', 'cases', 'over-ons', 'waarde'] as const;
 
 export default function HomePage() {
   const [activeSection, setActiveSection] = useState<string>('');
@@ -67,7 +66,6 @@ export default function HomePage() {
       <V2Hero />
       <V2Pillars />
       <V2Approach />
-      <V2AITransformation />
       <V2Cases />
       <V2Team />
       <V2Value />

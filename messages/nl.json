@@ -44,13 +44,13 @@
     "routes": {
       "a": {
         "question": "Weet je niet waar te beginnen?",
-        "title": "AI-transformatie",
-        "description": "We zetten de koers uit: van eerste adoptie tot een organisatie waarin AI echt meedraait."
+        "title": "Strategie",
+        "description": "Een stappenplan tot een roadmap. Vanuit daar volgt vaak Maatwerk Software."
       },
       "b": {
         "question": "Zie je al een kans?",
-        "title": "Maatwerk software & AI-tools",
-        "description": "Je weet wat beter kan. Wij bouwen het, gekoppeld aan je bestaande systemen."
+        "title": "Maatwerk Software",
+        "description": "Agents, orchestratie, maatwerk en integraties. Je kunt hier ook direct starten."
       }
     },
     "yourChance": "Jouw kans",
@@ -75,20 +75,42 @@
     "description": "",
     "disclaimer": "We doen meer dan dit. Als we alles hadden opschreven, was dit je scroll-workout voor vandaag. Alles is bespreekbaar.",
     "pillarsSection": {
-      "headline": "Twee routes.",
-      "headlineAccent": "Eén doel: werk uit handen nemen.",
-      "intro": "Weet je nog niet waar je met AI moet beginnen? Dan starten we met transformatie. Zie je al een concrete kans? Dan bouwen we die. In beide gevallen begint het met koffie.",
+      "headline": "AI-transformatie",
+      "headlineAccent": "",
+      "intro": "Weet je nog niet waar te beginnen? Dan starten we met strategie. Zie je al een kans? Dan bouwen we direct Maatwerk Software. Je kunt beide kanten op.",
       "scope": "Staat je vraag er niet tussen? Alles is bespreekbaar.",
       "hint": "Hover voor een snelle preview — klik voor meer uitleg.",
       "hintMobile": "Tik op een onderwerp voor meer uitleg.",
-      "dataPoint": {
-        "label": "Voor beide routes",
-        "text": "Wij bouwen op jouw data: eerst de basis op orde, dan AI die er echt iets mee kan."
-      },
       "secondary": {
-        "eyebrow": "Wat we ook doen",
-        "title": "Web & groei",
-        "description": "Websites, apps en vindbaarheid — gebouwd op dezelfde data en systemen als de rest."
+        "eyebrow": "",
+        "title": "Het bureauwerk doen we er niet los naast.",
+        "description": "Merk, site, content, campagnes en vindbaarheid lopen via hetzelfde team en dezelfde systemen."
+      },
+      "offer": {
+        "bridge": "Leidt vaak tot",
+        "strategy": {
+          "for": "Voor wie nog niet weet waar te beginnen.",
+          "title": "Strategie",
+          "steps": {
+            "scan": "Procesanalyse & quick-win scan",
+            "discovery": "Discovery workshops",
+            "businessCase": "Business cases & ROI",
+            "roadmap": "AI Transformatie Roadmap"
+          },
+          "principles": "In elke stap: cultuur, data, proces, training."
+        },
+        "solutions": {
+          "for": "Voor wie al een kans ziet. Je kunt hier ook direct starten.",
+          "title": "Maatwerk Software",
+          "items": {
+            "agents": "AI-agents & automatisering",
+            "orchestration": "AI-orchestratie & multi-agent",
+            "bespoke": "Maatwerksystemen",
+            "integration": "Systeemintegraties"
+          }
+        },
+        "phasesTitle": "Waar een transformatie naartoe kan",
+        "phasesHint": "Klik een fase om hem af te spelen."
       }
     },
     "routes": {
@@ -97,7 +119,7 @@
         "question": "Weet je niet waar te beginnen?",
         "title": "AI-transformatie",
         "focus": "Wij zetten de koers uit — van eerste adoptie tot een verbonden, agentic organisatie — en zorgen dat je teams het zelf verder brengen.",
-        "cta": "Bekijk de vier fases",
+        "cta": "Plan een discovery sessie",
         "items": {
           "startingPoint": {
             "title": "Waar sta je nu?"
@@ -145,6 +167,22 @@
           "seoAeo": {
             "title": "SEO/AEO",
             "description": "Google én AI: we zorgen dat als iemand vraagt wie jij bent, het antwoord niet 'geen idee' is."
+          },
+          "content": {
+            "title": "Content",
+            "description": "Teksten, pagina's en campagnes die klinken als jullie, niet als een template."
+          },
+          "social": {
+            "title": "Social",
+            "description": "Kanalen, toon en ritme op één lijn met je merk en je site."
+          },
+          "email": {
+            "title": "E-mail",
+            "description": "Nieuwsbrieven en flows die mensen openen, en die aansluiten op wat je verder doet."
+          },
+          "conversion": {
+            "title": "Conversie",
+            "description": "Meer uit het verkeer dat je al hebt: duidelijkere pagina's, kortere paden, minder afhakers."
           }
         }
       },
@@ -254,14 +292,14 @@
   "approach": {
     "heading": "Geen agency {bullshit}, simpelweg resultaat",
     "bullshit": "bullsh*t",
-    "subheading": "Eerst praten, dan plannen, dan bouwen. Route A of B: dezelfde aanpak, zonder omwegen.",
+    "subheading": "Eerst praten, dan plannen, dan bouwen. Dezelfde aanpak, zonder omwegen.",
     "headline": "Resultaat zonder ruis.",
     "stepLabel": "Stap {n}",
     "followUpLabel": "Daarna",
     "steps": {
       "bla1": {
         "title": "bla 1",
-        "description": "Koffie met twee ervaren consultants. We horen waar het knelt en bepalen samen welke route past: AI-transformatie of maatwerk software & AI-tools."
+        "description": "Koffie met twee ervaren consultants. We horen waar het knelt en bepalen samen wat past: AI-transformatie of maatwerk software & AI-tools."
       },
       "bla2": {
         "title": "bla 2",
@@ -277,7 +315,7 @@
       },
       "build": {
         "title": "build",
-        "description": "We voeren route A of B uit. Direct aan de slag, met werkende resultaten binnen weken — geen lange trajecten."
+        "description": "We bouwen wat we hebben afgesproken. Direct aan de slag, met werkende resultaten binnen weken — geen lange trajecten."
       },
       "scale": {
         "title": "scale",

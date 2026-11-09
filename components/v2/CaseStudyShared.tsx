@@ -382,9 +382,21 @@ export function CaseStudyModal({
                 </div>
 
                 {active.detailImage && (
-                  <div className="relative mt-8 aspect-video overflow-hidden rounded-2xl">
-                    <Image src={active.detailImage} alt={`${active.client} detail`} fill className="object-cover" />
-                  </div>
+                  <figure className="mt-8">
+                    <div className="relative aspect-video overflow-hidden rounded-2xl">
+                      <Image
+                        src={active.detailImage}
+                        alt={active.detailCaption?.[lang] ?? `${active.client} detail`}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    {active.detailCaption && (
+                      <figcaption className="mt-2.5 font-host text-sm leading-relaxed text-white/45">
+                        {active.detailCaption[lang]}
+                      </figcaption>
+                    )}
+                  </figure>
                 )}
               </div>
             </div>

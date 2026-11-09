@@ -410,6 +410,85 @@ html {
   to { offset-distance: 100%; }
 }
 
+/* Border beam. Adapted from Magic UI (MIT). A ring mask; the light travels the rounded edge. */
+.mg-border-beam {
+  position: absolute;
+  /* Padding edge is 1px inside the card (its border). Shift by that border
+     and add it back so the beam's outer edge meets the card's outer edge.
+     left/right together get over-constrained with border-box + padding,
+     which left a white strip on the right of the traveling line. */
+  top: -1px;
+  right: auto;
+  bottom: auto;
+  left: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  z-index: 2;
+  box-sizing: border-box;
+  padding: 2px;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+  -webkit-mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+  mask-clip: content-box, border-box;
+  -webkit-mask-clip: content-box, border-box;
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+.mg-border-light {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  offset-anchor: 92% 50%;
+  offset-distance: 0%;
+  background: linear-gradient(to left, #ceff00 0%, #ceff00 42%, #9bc400 68%, transparent 100%);
+  animation: mg-border-trace 9s linear infinite;
+}
+
+.mg-border-light-late {
+  animation-delay: -4.5s;
+}
+
+[data-motion-example='border-beam'][data-running='false'] .mg-border-light {
+  animation-play-state: paused;
+}
+
+@keyframes mg-border-trace {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-motion-example='border-beam'] .mg-border-light {
+    animation: none;
+    offset-distance: 8%;
+  }
+
+  [data-motion-example='border-beam'] .mg-border-light-late {
+    offset-distance: 58%;
+  }
+}
+
+/* Spinning text — CSS lives here because React 18 escapes quotes inside an inline style tag. */
+@keyframes sf-spinning-text-turn {
+  to { transform: rotate(360deg); }
+}
+
+.sf-spinning-text-ring {
+  animation: sf-spinning-text-turn var(--sf-spin-duration, 28s) linear infinite;
+}
+
+.sf-spinning-text-ring[data-running='false'] {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-spinning-text-ring {
+    animation: none;
+  }
+}
+
 body::-webkit-scrollbar {
   display: none;
 }

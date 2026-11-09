@@ -44,13 +44,13 @@
     "routes": {
       "a": {
         "question": "Don't know where to start?",
-        "title": "AI transformation",
-        "description": "We chart the course: from first adoption to an organisation where AI really pulls its weight."
+        "title": "Strategy",
+        "description": "A step-by-step path to a roadmap. Custom software often follows from there."
       },
       "b": {
         "question": "Already see an opportunity?",
-        "title": "Custom software & AI tools",
-        "description": "You know what could work better. We build it, connected to your existing systems."
+        "title": "Custom software",
+        "description": "Agents, orchestration, bespoke systems and integrations. You can start here directly."
       }
     },
     "yourChance": "Your opportunity",
@@ -75,20 +75,42 @@
     "description": "",
     "disclaimer": "We do more than this. If we'd written everything down, this would be your scroll workout for the day. Everything is on the table.",
     "pillarsSection": {
-      "headline": "Two routes.",
-      "headlineAccent": "One goal: taking work off your plate.",
-      "intro": "Not sure where to start with AI yet? Then we start with transformation. Already see a concrete opportunity? Then we build it. Either way, it starts with coffee.",
+      "headline": "AI transformation",
+      "headlineAccent": "",
+      "intro": "Not sure where to start? We begin with strategy. Already see an opportunity? We build custom software straight away. You can start on either side.",
       "scope": "Don't see your question here? Everything's on the table.",
       "hint": "Hover for a quick preview — click for details.",
       "hintMobile": "Tap a topic for more detail.",
-      "dataPoint": {
-        "label": "For both routes",
-        "text": "We build on your data: first get the foundations right, then AI that can actually do something with it."
-      },
       "secondary": {
-        "eyebrow": "What we also do",
-        "title": "Web & growth",
-        "description": "Websites, apps and discoverability — built on the same data and systems as everything else."
+        "eyebrow": "",
+        "title": "We don't keep the agency work off to the side.",
+        "description": "Brand, site, content, campaigns and discoverability run through the same team and the same systems."
+      },
+      "offer": {
+        "bridge": "Often leads to",
+        "strategy": {
+          "for": "For teams that don't know where to start yet.",
+          "title": "Strategy",
+          "steps": {
+            "scan": "Process analysis & quick-win scan",
+            "discovery": "Discovery workshops",
+            "businessCase": "Business cases & ROI",
+            "roadmap": "AI transformation roadmap"
+          },
+          "principles": "In every step: culture, data, process, training."
+        },
+        "solutions": {
+          "for": "For teams that already see an opportunity. You can start here directly.",
+          "title": "Custom software",
+          "items": {
+            "agents": "AI agents & automation",
+            "orchestration": "AI orchestration & multi-agent",
+            "bespoke": "Bespoke systems",
+            "integration": "System integrations"
+          }
+        },
+        "phasesTitle": "Where a transformation can go",
+        "phasesHint": "Click a phase to play it."
       }
     },
     "routes": {
@@ -97,7 +119,7 @@
         "question": "Don't know where to start?",
         "title": "AI transformation",
         "focus": "We chart the course — from first adoption to a fully connected, agentic organisation — and enable your teams to drive it forward themselves.",
-        "cta": "See the four stages",
+        "cta": "Book a discovery session",
         "items": {
           "startingPoint": {
             "title": "Where do you stand today?"
@@ -145,6 +167,22 @@
           "seoAeo": {
             "title": "SEO/AEO",
             "description": "Google and AI: we make sure that when someone asks who you are, the answer isn't 'no idea'."
+          },
+          "content": {
+            "title": "Content",
+            "description": "Copy, pages and campaigns that sound like you, not like a template."
+          },
+          "social": {
+            "title": "Social",
+            "description": "Channels, tone and rhythm aligned with your brand and your site."
+          },
+          "email": {
+            "title": "Email",
+            "description": "Newsletters and flows people actually open, tied to the rest of what you do."
+          },
+          "conversion": {
+            "title": "Conversion",
+            "description": "More from the traffic you already have: clearer pages, shorter paths, fewer drop-offs."
           }
         }
       },
@@ -254,14 +292,14 @@
   "approach": {
     "heading": "No agency {bullshit}, simply results",
     "bullshit": "bullsh*t",
-    "subheading": "Talk first, then plan, then build. Route A or B: the same approach, no detours.",
+    "subheading": "Talk first, then plan, then build. The same approach, no detours.",
     "headline": "No noise, just results.",
     "stepLabel": "Step {n}",
     "followUpLabel": "After",
     "steps": {
       "bla1": {
         "title": "bla 1",
-        "description": "Coffee with two experienced consultants. We hear where things get stuck and decide together which route fits: AI transformation or custom software & AI tools."
+        "description": "Coffee with two experienced consultants. We hear where things get stuck and decide together what fits: AI transformation or custom software & AI tools."
       },
       "bla2": {
         "title": "bla 2",
@@ -277,7 +315,7 @@
       },
       "build": {
         "title": "build",
-        "description": "We execute route A or B. Straight to work, with working results within weeks — no long trajectories."
+        "description": "We build what we agreed. Straight to work, with working results within weeks — no long trajectories."
       },
       "scale": {
         "title": "scale",

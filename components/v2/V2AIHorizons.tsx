@@ -2,7 +2,8 @@
 
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
-import { BookOpen, ChevronRight, FileBarChart, FileSpreadsheet, FileType, Pause, Play, Sparkles, Upload } from 'lucide-react';
+import { BookOpen, FileBarChart, FileSpreadsheet, FileType, Pause, Play, Sparkles, Upload } from 'lucide-react';
+import { CursorTilt } from './CursorTilt';
 
 interface HorizonStage {
   id: string;
@@ -58,6 +59,12 @@ const STAGES_NL: HorizonStage[] = [
 
 interface V2AIHorizonsProps {
   lang: 'en' | 'nl';
+  /** Compact player for the offers band: phases on top, one stage underneath. */
+  embedded?: boolean;
+  /** Phases in a row, animation underneath. Used when the phases are not the lead. */
+  strip?: boolean;
+  /** Closed phase list matches the maatwerk card. */
+  listMinHeight?: number;
 }
 
 function LoadingDots({ size = 'md', paused = false }: { size?: 'sm' | 'md' | 'lg'; paused?: boolean }) {
@@ -127,11 +134,30 @@ function createPauseClock(
   return { wait, typeOut };
 }
 
-export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
+export default function V2AIHorizons({
+  lang,
+  embedded = false,
+  strip = false,
+  listMinHeight,
+}: V2AIHorizonsProps) {
   const [activeStage, setActiveStage] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [replayKey, setReplayKey] = useState(0);
+  const [open, setOpen] = useState(!embedded);
   const stages = lang === 'en' ? STAGES_EN : STAGES_NL;
   const activeStageData = stages[activeStage];
+
+  const selectStage = (index: number) => {
+    if (embedded && open && index === activeStage) {
+      setOpen(false);
+      setPaused(true);
+      return;
+    }
+    if (index === activeStage) setReplayKey((key) => key + 1);
+    setActiveStage(index);
+    setPaused(false);
+    setOpen(true);
+  };
 
   return (
     <motion.div
@@ -139,46 +165,66 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-      className="mt-10 border-t border-[#14181d]/10 pt-10 md:mt-14 md:pt-14"
+      className={embedded ? 'mt-6' : 'mt-10 border-t border-[#14181d]/10 pt-10 md:mt-14 md:pt-14'}
     >
-      <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
-        <h3 className="font-host text-xl font-light text-[#14181d] md:text-2xl">
-          {lang === 'en' ? 'The four stages of AI transformation' : 'De vier fases van AI-transformatie'}
-        </h3>
-        <p className="font-host text-sm text-[#14181d]/45">
-          {lang === 'en'
-            ? `Showing: ${activeStageData.title}`
-            : `Nu: ${activeStageData.title}`}
+      {embedded && !strip ? (
+        <p className="mb-3 font-host text-sm text-[#14181d]/45">
+          {lang === 'en' ? 'Click a phase to play it.' : 'Klik een fase om hem af te spelen.'}
         </p>
-      </div>
+      ) : strip ? null : (
+        <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
+          <h3 className="font-host text-xl font-light text-[#14181d] md:text-2xl">
+            {lang === 'en' ? 'The four stages of AI transformation' : 'De vier fases van AI-transformatie'}
+          </h3>
+          <p className="font-host text-sm text-[#14181d]/45">
+            {lang === 'en'
+              ? `Showing: ${activeStageData.title}`
+              : `Nu: ${activeStageData.title}`}
+          </p>
+        </div>
+      )}
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-5 md:items-stretch">
+      <div
+        className={
+          embedded
+            ? 'grid grid-cols-1 gap-3'
+            : 'grid grid-cols-1 gap-4 md:grid-cols-12 md:items-stretch md:gap-5'
+        }
+      >
         {/* Stages — stacked left, with inline visual on mobile */}
-        <div className="flex flex-col gap-2 md:col-span-4 lg:col-span-3">
+        <div
+          className={
+            strip
+              ? 'grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4'
+              : embedded
+                ? 'flex h-full flex-col gap-2'
+                : 'flex flex-col gap-2 md:col-span-4 lg:col-span-3'
+          }
+          style={
+            embedded && !strip && listMinHeight && !open ? { height: listMinHeight } : undefined
+          }
+        >
           {stages.map((stage, i) => {
-            const isActive = i === activeStage;
-            return (
-              <Fragment key={stage.id}>
+            const isActive = i === activeStage && open;
+            const card = (
                 <div
                   role="button"
                   tabIndex={0}
                   aria-pressed={isActive}
-                  onClick={() => {
-                    if (i === activeStage) return;
-                    setActiveStage(i);
-                    setPaused(false);
-                  }}
+                  onClick={() => selectStage(i)}
                   onKeyDown={(event) => {
                     if (event.key !== 'Enter' && event.key !== ' ') return;
                     event.preventDefault();
-                    if (i === activeStage) return;
-                    setActiveStage(i);
-                    setPaused(false);
+                    selectStage(i);
                   }}
-                  className={`group flex w-full cursor-pointer items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-[border-color,background-color,box-shadow,color] duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/20 md:flex-1 md:px-5 ${
+                  className={`group flex w-full min-h-0 cursor-pointer items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-[border-color,background-color,box-shadow,color] duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14181d]/20 md:flex-1 md:px-5 ${
+                    strip ? 'h-full' : ''
+                  } ${
                     isActive
                       ? 'border-[#14181d] bg-white shadow-[0_18px_40px_-24px_rgba(20,24,29,0.35)]'
-                      : 'border-[#14181d]/10 bg-white hover:border-[#14181d]/25'
+                      : strip
+                        ? 'border-[#14181d]/10 bg-[#f6f3ec] hover:border-[#14181d]/25'
+                        : 'border-[#14181d]/10 bg-white hover:border-[#14181d]/25'
                   }`}
                 >
                   <span
@@ -256,20 +302,34 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
                     </button>
                   ) : (
                     <span
-                      className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#14181d]/15 transition-colors duration-300 group-hover:border-[#14181d]/30"
+                      className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#14181d]/15 bg-[#14181d]/5 text-[#14181d]/35 opacity-100 transition-all duration-200 group-hover:border-[#14181d] group-hover:bg-[#14181d] group-hover:text-bla-lime group-focus-visible:border-[#14181d] group-focus-visible:bg-[#14181d] group-focus-visible:text-bla-lime"
                       aria-hidden
                     >
-                      <ChevronRight className="h-3.5 w-3.5 text-[#14181d]/30 transition-colors duration-300 group-hover:text-[#14181d]/50 md:hidden" />
-                      <span className="hidden h-1.5 w-1.5 rounded-full bg-[#14181d]/20 transition-colors duration-300 group-hover:bg-[#14181d]/40 md:block" />
+                      <Play className="h-2.5 w-2.5 fill-current" />
                     </span>
                   )}
                 </div>
+            );
 
-                {/* Mobile: visual appears directly under the active stage */}
-                {isActive && (
-                  <div className="md:hidden">
+            return (
+              <Fragment key={stage.id}>
+                {strip ? (
+                  <CursorTilt className="relative z-0 h-full hover:z-10">{card}</CursorTilt>
+                ) : (
+                  card
+                )}
+
+                {/* Embedded: hidden until a phase is clicked. Phone: under the active phase. */}
+                {isActive && !strip && (
+                  <div className={embedded ? '' : 'md:hidden'}>
                     <div className="pt-1 pb-2">
-                      <HorizonVisual stage={i} lang={lang} paused={paused} />
+                      <HorizonVisual
+                        stage={i}
+                        lang={lang}
+                        paused={paused}
+                        replayKey={replayKey}
+                        fill={!embedded}
+                      />
                     </div>
                   </div>
                 )}
@@ -278,7 +338,18 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
           })}
         </div>
 
-        {/* Desktop: visual panel (hidden on mobile — shown inline above) */}
+        {strip && open && (
+          <HorizonVisual
+            stage={activeStage}
+            lang={lang}
+            paused={paused}
+            replayKey={replayKey}
+            fill={false}
+          />
+        )}
+
+        {/* Standalone desktop panel. Embedded plays inline under the active phase. */}
+        {!embedded && (
         <div className="relative hidden min-h-[440px] md:col-span-8 md:block lg:col-span-9">
           <div className="md:absolute md:inset-0">
             <AnimatePresence mode="wait">
@@ -290,29 +361,44 @@ export default function V2AIHorizons({ lang }: V2AIHorizonsProps) {
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 className="h-full"
               >
-                <HorizonVisual stage={activeStage} lang={lang} paused={paused} />
+                <HorizonVisual stage={activeStage} lang={lang} paused={paused} replayKey={replayKey} />
               </motion.div>
             </AnimatePresence>
           </div>
         </div>
+        )}
       </div>
     </motion.div>
   );
 }
 
-function HorizonVisual({ stage, lang, paused }: { stage: number; lang: 'en' | 'nl'; paused: boolean }) {
+function HorizonVisual({
+  stage,
+  lang,
+  paused,
+  replayKey = 0,
+  fill = true,
+}: {
+  stage: number;
+  lang: 'en' | 'nl';
+  paused: boolean;
+  replayKey?: number;
+  fill?: boolean;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const inView = useInView(containerRef, { amount: 0.25, margin: '0px 0px -60px 0px' });
   const [playKey, setPlayKey] = useState(0);
 
   useEffect(() => {
     if (inView) setPlayKey((key) => key + 1);
-  }, [inView, stage]);
+  }, [inView, stage, replayKey]);
 
   return (
     <div
       ref={containerRef}
-      className="flex min-h-[440px] flex-col overflow-hidden rounded-2xl border border-[#14181d]/20 bg-[#14181d] md:h-full md:min-h-0"
+      className={`flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-[#14181d]/20 bg-[#14181d] ${
+        fill ? 'md:h-full md:min-h-0' : ''
+      }`}
     >
       <AnimatePresence mode="wait">
         <motion.div

@@ -133,50 +133,6 @@ const caseStudies: CaseStudy[] = [
       },
     },
   },
-  {
-    id: '3',
-    slug: 'stijl-herenmode',
-    frontCard: {
-      image: '/case_images/stijl1.png',
-      logo: '/logos/client-2.svg',
-      logoAlt: 'Stijl Herenmode',
-      badges: ['marketing'],
-    },
-    backCard: {
-      headerImage: '/case_images/stijl2.png',
-      additionalImages: ['/case_images/stijl3.png'],
-    },
-    content: {
-      nl: {
-        title: 'Van kostbare Shopify-afhankelijkheden naar een custom POS & betaalstack',
-        shortIntro: 'We herbouwden Stijl\'s POS en betaalflow door Mollie terminals direct te integreren, waardoor in-store betalingen, retouren en ruilingen buiten Shopify mogelijk werden—kosten verlagend en volledige controle over retail transacties herstellend.',
-        context: 'Stijl Herenmode opereert fysieke retail winkels en e-commerce, gebruikt Shopify als storefront terwijl ze afhankelijk zijn van POS en betaalflows voor dagelijkse in-store transacties.',
-        problem: 'Shopify\'s standaard setup blokkeert directe Mollie terminal integraties en forceert platformkosten, waardoor in-store betalingen, retouren en ruilingen onnodig duur en inflexibel zijn.',
-        whyItMatters: 'Hoge transactiekosten eroderen marges, terwijl beperkte controle over retouren en ruilingen frictie creëert voor personeel en klanten aan de toonbank.',
-        howWeSolved: 'Implementatie van een custom POS en betaalarchitectuur met directe Mollie terminal integratie, die kaartbetalingen, retouren en ruilingen mogelijk maakt buiten Shopify\'s checkout terwijl transacties en orderdata terug worden gesynchroniseerd naar het systeem voor rapportage en reconciliatie.',
-        successCriteria: [
-          'Lagere transactiekosten: Gereduceerde Shopify-gerelateerde kosten door in-store betalingen via Mollie terminals te routeren',
-          'Meer controle: Volledig eigenaarschap van betaal-, retour- en ruilflows',
-          'Snellere operaties: Soepelere in-store checkout en retouren zonder platform beperkingen',
-          'Business impact: Verbeterde marges en een flexibelere, toekomstbestendige retail betaalsetup',
-        ],
-      },
-      en: {
-        title: 'From Costly Shopify Dependencies to a Custom POS & Payment Stack',
-        shortIntro: 'We rebuilt Stijl\'s POS and payment flow by integrating Mollie terminals directly, enabling in-store payments, refunds, and exchanges outside Shopify—reducing fees and restoring full control over retail transactions.',
-        context: 'Stijl Herenmode operates physical retail stores and e-commerce, using Shopify as the storefront while relying on POS and payment flows for daily in-store transactions.',
-        problem: 'Shopify\'s default setup blocks direct Mollie terminal integrations and enforces platform fees, making in-store payments, refunds, and exchanges unnecessarily expensive and inflexible.',
-        whyItMatters: 'High transaction costs erode margins, while limited control over refunds and exchanges creates friction for staff and customers at the counter.',
-        howWeSolved: 'Implemented a custom POS and payment architecture with direct Mollie terminal integration, enabling card payments, refunds, and exchanges outside Shopify\'s checkout while synchronizing transactions and order data back into the system for reporting and reconciliation.',
-        successCriteria: [
-          'Lower transaction costs: Reduced Shopify-related fees by routing in-store payments through Mollie terminals',
-          'More control: Full ownership of payment, refund, and exchange flows',
-          'Faster operations: Smoother in-store checkout and returns without platform constraints',
-          'Business impact: Improved margins and a more flexible, future-proof retail payment setup',
-        ],
-      },
-    },
-  },
 ];
 
 const badgeLabels: Record<BadgeType, { nl: string; en: string }> = {

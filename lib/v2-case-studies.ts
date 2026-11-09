@@ -1,4 +1,4 @@
-export type CaseTag = 'marketing' | 'tooling' | 'data';
+export type CaseTag = 'marketing' | 'tooling' | 'data' | 'ai-strategy' | 'ai-tools';
 
 export interface CaseStudy {
   id: string;
@@ -15,15 +15,56 @@ export interface CaseStudy {
   problem: { nl: string; en: string };
   result: { nl: string; en: string };
   metrics: { value: string; label: { nl: string; en: string } }[];
+  detailCaption?: { nl: string; en: string };
 }
 
 export const TAG_LABEL: Record<CaseTag, { nl: string; en: string }> = {
   marketing: { nl: 'Marketing', en: 'Marketing' },
   tooling: { nl: 'Tooling', en: 'Tooling' },
   data: { nl: 'Data', en: 'Data' },
+  'ai-strategy': { nl: 'AI Strategie', en: 'AI Strategy' },
+  'ai-tools': { nl: 'AI Tools', en: 'AI Tools' },
 };
 
 export const CASE_STUDIES: CaseStudy[] = [
+  {
+    id: 'adsomnia-transformation',
+    client: 'Adsomnia',
+    logo: '/logos/Adsomnia.svg',
+    image: '/case_images/adsomnia-transformation.jpg',
+    detailImage: '/case_images/adsomnia-transformation.jpg',
+    tags: ['ai-strategy', 'ai-tools'],
+    metric: { value: 'All teams', label: { nl: 'op Claude', en: 'on Claude' } },
+    title: {
+      nl: 'Elk team op Claude. Eén roadmap uit hun eigen werk.',
+      en: 'Every team on Claude. One roadmap from their own work.',
+    },
+    intro: {
+      nl: 'Enablement zodat iedereen Claude in het eigen werk gebruikt, en een inspiratiesessie die pijnpunten per afdeling omzette in de roadmap die we nu op retainer bouwen.',
+      en: 'Enablement so everyone can use Claude in their own work, and an inspiration session that turned each department’s pain points into the roadmap we now build on retainer.',
+    },
+    context: {
+      nl: 'Adsomnia draait performance-desks voor media buying, affiliate, e-mail, finance, HR en pricing. De modellen stonden al in huis. Het dagelijkse werk leunde op handmatig trekken, en Claude zat bij de mensen die er zelf mee waren begonnen.',
+      en: 'Adsomnia runs performance desks across media buying, affiliate, email, finance, HR and pricing. The models were already in the building. Day-to-day work still leaned on manual pulls, and Claude sat with the people who had started on their own.',
+    },
+    problem: {
+      nl: 'Het moest tegelijk: iedereen vaardig genoeg om Claude in het eigen werk te gebruiken, en één volgorde van pijnpunten en kansen per afdeling.',
+      en: 'Both had to move together: every person fluent enough to use Claude in their own job, and one sequence of pain points and opportunities per department.',
+    },
+    result: {
+      nl: 'We hebben het als één transformatie gedraaid. Een on-site showcase nam elk team mee van copilot via analyst en agent naar ecosystem. Daarna bouwde elk team twee weken aan een eigen Claude-case en presenteerde dat huiswerk terug aan het bedrijf. Dezelfde sessie opende de discovery: afdelingen legden use cases op tafel, zagen ze landen op een impact/effort-matrix en pitchten wat bleef. Die zaal werd een geprioriteerde AI-roadmap. Een retainer draagt nu beide sporen — enablement tot de teams het zelf dragen, en productiesupport op de projecten die zij kozen.',
+      en: 'We ran it as one transformation. An on-site showcase walked every team from copilot through analyst and agent to ecosystem. Each team then spent two weeks building its own Claude case and presented that homework back to the company. The same session opened discovery: departments put use cases on the table, watched them land on an impact/effort matrix, and pitched what to keep. That room became a prioritised AI roadmap. A retainer now carries both tracks — enablement until the teams own it, and production support on the projects they chose.',
+    },
+    metrics: [
+      { value: 'All', label: { nl: 'teams op Claude', en: 'teams on Claude' } },
+      { value: '2 wks', label: { nl: 'bouwen en presenteren', en: 'build and present-back' } },
+      { value: 'Live', label: { nl: 'roadmap op retainer', en: 'roadmap on retainer' } },
+    ],
+    detailCaption: {
+      nl: 'Presentatie terug op kantoor: teams laten de Claude-cases zien die ze zelf bouwden.',
+      en: 'Present-back in the office: teams showing the Claude cases they built.',
+    },
+  },
   {
     id: 'spol',
     client: 'SPØL',
@@ -95,7 +136,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     logo: '/logos/Adsomnia.svg',
     image: '/case_images/adsomnia1.png',
     detailImage: '/case_images/adsomnia2.png',
-    tags: ['data', 'tooling'],
+    tags: ['ai-tools'],
     metric: { value: '>50%', label: { nl: 'snellere insights', en: 'faster insights' } },
     title: {
       nl: 'Talk-to-Data agent voor Everflow.',
@@ -157,43 +198,9 @@ export const CASE_STUDIES: CaseStudy[] = [
       { value: '↑', label: { nl: 'mobiele conversie', en: 'mobile conversion' } },
     ],
   },
-  {
-    id: 'stijl',
-    client: 'Stijl Herenmode',
-    logo: '/logos/client-2.svg',
-    image: '/case_images/stijl1.png',
-    detailImage: '/case_images/stijl2.png',
-    tags: ['tooling'],
-    metric: { value: '↓ fees', label: { nl: 'lagere kosten', en: 'lower fees' } },
-    title: {
-      nl: 'Custom POS — buiten Shopify om.',
-      en: 'Custom POS — outside Shopify.',
-    },
-    intro: {
-      nl: 'Mollie terminals direct geïntegreerd voor in-store betalingen, retouren en ruilingen.',
-      en: 'Mollie terminals integrated directly for in-store payments, refunds and exchanges.',
-    },
-    context: {
-      nl: 'Retailer met fysieke winkels en e-commerce, afhankelijk van Shopify voor dagelijkse transacties.',
-      en: 'Retailer with physical stores and e-commerce, dependent on Shopify for daily transactions.',
-    },
-    problem: {
-      nl: 'Shopify\'s standaard setup blokkeerde Mollie-integraties en forceerde dure platformkosten.',
-      en: 'Shopify\'s default setup blocked Mollie integrations and forced costly platform fees.',
-    },
-    result: {
-      nl: 'Custom POS met Mollie terminals, transacties terug-gesynchroniseerd voor rapportage en reconciliatie.',
-      en: 'Custom POS with Mollie terminals, transactions synced back for reporting and reconciliation.',
-    },
-    metrics: [
-      { value: '↓ fees', label: { nl: 'lagere kosten', en: 'lower fees' } },
-      { value: '100%', label: { nl: 'controle', en: 'control' } },
-      { value: '↑ flow', label: { nl: 'in-store snelheid', en: 'in-store speed' } },
-    ],
-  },
 ];
 
-export const HOME_FEATURED_CASE_IDS = ['adsomnia', 'comfortzzzone', 'stijl'] as const;
+export const HOME_FEATURED_CASE_IDS = ['adsomnia-transformation', 'comfortzzzone', 'adsomnia'] as const;
 
 export function getFeaturedCaseStudies(): CaseStudy[] {
   return HOME_FEATURED_CASE_IDS.map(

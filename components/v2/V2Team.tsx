@@ -127,14 +127,14 @@ export default function V2Team() {
             <p className="max-w-md font-host text-base leading-relaxed text-[#14181d]/75 md:text-lg">
               {lang === 'en' ? (
                 <>
-                  Senior generalists for both routes: AI transformation and custom software &amp; AI tools.{' '}
+                  Senior generalists for AI transformation and custom software &amp; AI tools.{' '}
                   <span className="text-[#14181d]">
                     Our background in web and commerce is why we know the data and systems layer underneath. Plus a network of specialists when the project demands it.
                   </span>
                 </>
               ) : (
                 <>
-                  Senior generalisten voor beide routes: AI-transformatie en maatwerk software &amp; AI-tools.{' '}
+                  Senior generalisten voor AI-transformatie en maatwerk software &amp; AI-tools.{' '}
                   <span className="text-[#14181d]">
                     Onze achtergrond in web en commerce is waarom we de data- en systeemlaag eronder kennen. Plus een netwerk van specialisten als het project erom vraagt.
                   </span>

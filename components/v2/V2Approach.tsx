@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion
 import { useTranslations, useLocale } from 'next-intl';
 import { NoiseLayer } from './V2Atoms';
 
-// bla 1 (coffee) → bla 2 (plan) → build (route A or B) → run (optional follow-up)
+// bla 1 (coffee) → bla 2 (plan) → build → run (optional follow-up)
 const STEPS = ['bla1', 'bla2', 'build', 'run'] as const;
 const RAIL_START = 0.18;
 const RAIL_END = 0.9;

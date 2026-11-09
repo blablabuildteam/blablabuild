@@ -76,8 +76,8 @@ function HeroTicker({ words }: { words: string[] }) {
 }
 
 const ROUTES = [
-  { key: 'a', letter: 'A', target: 'ai-transformatie' },
-  { key: 'b', letter: 'B', target: 'oplossingen' },
+  { key: 'a', target: 'ai-strategie' },
+  { key: 'b', target: 'ai-maatwerk' },
 ] as const;
 
 const TICKER_NL = [
@@ -295,7 +295,6 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
                   className="flex flex-col rounded-xl border border-white/10 bg-[#0a0b0e]/80 px-4 py-3 backdrop-blur-md transition-colors hover:border-bla-lime/40"
                 >
                   <span className="font-host text-[12px] text-white/50">
-                    <span className="mr-2 tabular-nums text-bla-lime/80">{r.letter}</span>
                     {tHero(`routes.${r.key}.question`)}
                   </span>
                   <span className="mt-1 font-host text-base font-light text-white">
@@ -313,9 +312,7 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
             className="col-span-12 hidden lg:col-span-4 lg:block lg:pl-6"
           >
             <div className="relative flex h-full min-h-[480px] flex-col rounded-2xl border border-white/10 bg-[#0a0b0e]/82 p-5 backdrop-blur-md md:min-h-[520px] md:bg-[#0a0b0e]/45 md:p-6 md:backdrop-blur-[6px]">
-              <p className="font-host text-[15px] text-white/50">{tHero('routesLabel')}</p>
-
-              <div className="mt-4 flex flex-1 flex-col gap-3">
+              <div className="flex flex-1 flex-col gap-3">
                 {ROUTES.map((r) => (
                   <a
                     key={r.key}
@@ -326,12 +323,9 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
                     }}
                     className="group/route flex flex-1 flex-col rounded-xl border border-white/10 bg-white/[0.02] p-4 transition-colors hover:border-bla-lime/40 hover:bg-white/[0.04]"
                   >
-                    <div className="flex items-baseline gap-3">
-                      <span className="font-host text-[13px] tabular-nums text-bla-lime/80">{r.letter}</span>
-                      <span className="font-host text-[13px] text-white/50">
-                        {tHero(`routes.${r.key}.question`)}
-                      </span>
-                    </div>
+                    <span className="font-host text-[13px] text-white/50">
+                      {tHero(`routes.${r.key}.question`)}
+                    </span>
                     <div className="mt-2 flex items-center justify-between gap-3">
                       <span className="font-host text-xl font-light leading-tight text-white transition-colors group-hover/route:text-bla-lime md:text-[1.4rem]">
                         {tHero(`routes.${r.key}.title`)}

@@ -17,7 +17,13 @@ export type CapabilityPreviewId =
   | 'prototype'
   | 'legacy'
   | 'dashboard'
-  | 'maturity';
+  | 'maturity'
+  | 'content'
+  | 'social'
+  | 'email'
+  | 'conversion'
+  | 'orchestration'
+  | 'integration';
 
 type Lang = 'en' | 'nl';
 
@@ -171,6 +177,72 @@ export const CAPABILITY_CONFIG: Record<CapabilityPreviewId, CapabilityConfig> = 
       en: 'Understand where you stand, what is feasible and what to prioritize — based on your actual stack, data and team.',
     },
   },
+  content: {
+    title: { nl: 'Content', en: 'Content' },
+    subtitle: {
+      nl: 'Teksten en pagina’s die klinken als jullie.',
+      en: 'Copy and pages that sound like you.',
+    },
+    description: {
+      nl: 'Teksten, pagina’s en campagnes die klinken als jullie, niet als een template.',
+      en: 'Copy, pages and campaigns that sound like you, not like a template.',
+    },
+  },
+  social: {
+    title: { nl: 'Social', en: 'Social' },
+    subtitle: {
+      nl: 'Kanalen en toon op één lijn met je merk.',
+      en: 'Channels and tone aligned with your brand.',
+    },
+    description: {
+      nl: 'Kanalen, toon en ritme op één lijn met je merk en je site.',
+      en: 'Channels, tone and rhythm aligned with your brand and your site.',
+    },
+  },
+  email: {
+    title: { nl: 'E-mail', en: 'Email' },
+    subtitle: {
+      nl: 'Nieuwsbrieven en flows die mensen openen.',
+      en: 'Newsletters and flows people actually open.',
+    },
+    description: {
+      nl: 'Nieuwsbrieven en flows die mensen openen, en die aansluiten op wat je verder doet.',
+      en: 'Newsletters and flows people actually open, tied to the rest of what you do.',
+    },
+  },
+  orchestration: {
+    title: { nl: 'AI-orchestratie & multi-agent', en: 'AI orchestration & multi-agent' },
+    subtitle: {
+      nl: 'Meerdere agents die samen een proces dragen.',
+      en: 'Several agents carrying one process together.',
+    },
+    description: {
+      nl: 'Agents die taken verdelen, systemen aansturen en het werk aan elkaar doorgeven.',
+      en: 'Agents that split the work, drive systems and hand tasks to each other.',
+    },
+  },
+  integration: {
+    title: { nl: 'Systeemintegraties', en: 'System integrations' },
+    subtitle: {
+      nl: 'AI gekoppeld aan de systemen die je al hebt.',
+      en: 'AI connected to the systems you already run.',
+    },
+    description: {
+      nl: 'CRM, ERP, data en interne tools in één stroom. Geen losse eilanden.',
+      en: 'CRM, ERP, data and internal tools in one flow. No separate islands.',
+    },
+  },
+  conversion: {
+    title: { nl: 'Conversie', en: 'Conversion' },
+    subtitle: {
+      nl: 'Meer uit het verkeer dat je al hebt.',
+      en: 'More from the traffic you already have.',
+    },
+    description: {
+      nl: 'Duidelijkere pagina’s, kortere paden, minder afhakers.',
+      en: 'Clearer pages, shorter paths, fewer drop-offs.',
+    },
+  },
 };
 
 export const TICKER_PREVIEW_MAP: Record<string, CapabilityPreviewId> = {
@@ -191,9 +263,17 @@ export const TICKER_PREVIEW_MAP: Record<string, CapabilityPreviewId> = {
 // Keys match intro.pillars.<group>.items.* — route B (tooling) and the secondary web strip.
 // Preview content for retired featured items (brand, ads, maturity, dashboard, talkData) stays in CAPABILITY_CONFIG.
 export const PILLAR_ITEM_PREVIEW_MAP: Record<string, CapabilityPreviewId> = {
+  brandDevelopment: 'brand',
   websitesApps: 'commerce',
+  content: 'content',
+  social: 'social',
+  adCampaigns: 'ads',
+  email: 'email',
   seoAeo: 'seo',
+  conversion: 'conversion',
   aiAgents: 'agents',
+  orchestration: 'orchestration',
+  systemIntegration: 'integration',
   bespokeSystems: 'bespoke',
   legacyReplacement: 'legacy',
   rapidPrototyping: 'prototype',
@@ -675,6 +755,28 @@ function GenericVisual({ id, lang }: { id: CapabilityPreviewId; lang: Lang }) {
               {lang === 'en' ? 'On-brand, every channel.' : 'On-brand, elk kanaal.'}
             </p>
           </div>
+        </div>
+      </PreviewShell>
+    );
+  }
+  if (
+    id === 'content' ||
+    id === 'social' ||
+    id === 'email' ||
+    id === 'conversion' ||
+    id === 'orchestration' ||
+    id === 'integration'
+  ) {
+    const label = CAPABILITY_CONFIG[id].title[lang];
+    return (
+      <PreviewShell>
+        <div className="flex flex-1 flex-col justify-center gap-2 p-4">
+          <p className="font-host text-[11px] uppercase tracking-[0.14em] text-bla-lime/80">{label}</p>
+          <div className="h-2 w-3/4 rounded bg-white/15" />
+          <div className="h-2 w-1/2 rounded bg-white/10" />
+          <p className="mt-1 font-host text-[11px] leading-relaxed text-white/60">
+            {CAPABILITY_CONFIG[id].subtitle[lang]}
+          </p>
         </div>
       </PreviewShell>
     );
