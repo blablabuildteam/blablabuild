@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, type RefObject } from 'react';
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import { NoiseLayer } from './V2Atoms';
@@ -16,14 +16,18 @@ function ApproachStep({
   description,
   progress,
   label,
+  railRef,
 }: {
   index: number;
   title: string;
   description: string;
   progress: MotionValue<number>;
   label: string;
+  railRef: RefObject<HTMLDivElement | null>;
 }) {
-  // Dots sit at the left of each equal column: 0%, 25%, 50%, 75%.
+  const dotRef = useRef<HTMLDivElement>(null);
+  // Copy still eases in around the step. The dot itself is measured
+  // against the rail, because column gaps sit the markers past 0/25/50/75%.
   const dotAt = index / STEPS.length;
   const lightStart = RAIL_START + Math.max(0, dotAt - 0.04) * (RAIL_END - RAIL_START);
   const lightEnd = RAIL_START + Math.min(1, dotAt + 0.12) * (RAIL_END - RAIL_START);
@@ -37,18 +41,28 @@ function ApproachStep({
     ['0 0 0px rgba(206,255,0,0)', '0 0 28px rgba(206,255,0,0.28)'],
   );
   const bodyColor = useTransform(lit, [0, 1], ['rgba(255,255,255,0.14)', 'rgba(255,255,255,0.82)']);
-  // Same 0–1 fraction as the rail width. The dot stays empty until the
-  // line reaches it, then fills as the line crosses the dot.
-  const rail = useTransform(progress, [RAIL_START, RAIL_END], [0, 1]);
-  const dotFill = useTransform(rail, [dotAt, Math.min(1, dotAt + 0.018)], [0, 1]);
-  const dotScale = useTransform(dotFill, [0, 1], [0, 1]);
+  const dotScale = useTransform(progress, (value) => {
+    const railEl = railRef.current;
+    const dotEl = dotRef.current;
+    if (!railEl || !dotEl) return 0;
+    const railBox = railEl.getBoundingClientRect();
+    const dotBox = dotEl.getBoundingClientRect();
+    if (railBox.width <= 0 || dotBox.width <= 0) return 0;
+    const amount = Math.min(1, Math.max(0, (value - RAIL_START) / (RAIL_END - RAIL_START)));
+    const barX = railBox.left + amount * railBox.width;
+    // Empty until the line touches the dot, then full as it crosses.
+    return Math.min(1, Math.max(0, (barX - dotBox.left) / dotBox.width));
+  });
 
   return (
     <div className="relative pt-10">
-      <div className="absolute left-0 top-4 hidden h-3 w-3 -translate-y-1/2 rounded-full border border-white/20 bg-[#0d1015] md:block">
+      <div
+        ref={dotRef}
+        className="absolute left-0 top-4 hidden h-3 w-3 -translate-y-1/2 overflow-hidden rounded-full border border-white/20 bg-[#0d1015] md:block"
+      >
         <motion.div
-          style={{ scale: dotScale }}
-          className="absolute inset-1 rounded-full bg-bla-lime"
+          style={{ scaleX: dotScale, originX: 0 }}
+          className="absolute inset-0 bg-bla-lime"
         />
       </div>
 
@@ -79,6 +93,7 @@ export default function V2Approach() {
   const locale = useLocale();
   const lang = locale === 'en' ? 'en' : 'nl';
   const ref = useRef<HTMLElement | null>(null);
+  const railRef = useRef<HTMLDivElement | null>(null);
   // Start the rail a bit later so it doesn't jump ahead
   // when the section just touches the bottom of the viewport.
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 90%', 'end 20%'] });
@@ -118,7 +133,7 @@ export default function V2Approach() {
         </div>
 
         {/* Steps with scroll-driven progress rail */}
-        <div className="relative mt-14 md:mt-20">
+        <div ref={railRef} className="relative mt-14 md:mt-20">
           {/* Rail */}
           <div className="pointer-events-none absolute left-0 right-0 top-4 hidden h-px bg-white/10 md:block" />
           <motion.div
@@ -134,6 +149,7 @@ export default function V2Approach() {
                 title={t(`steps.${step}.title`)}
                 description={t(`steps.${step}.description`)}
                 progress={scrollYProgress}
+                railRef={railRef}
                 label={step === 'run' ? t('followUpLabel') : t('stepLabel', { n: i + 1 })}
               />
             ))}

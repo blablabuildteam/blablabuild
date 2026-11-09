@@ -298,11 +298,11 @@
     "followUpLabel": "Daarna",
     "steps": {
       "bla1": {
-        "title": "bla 1",
+        "title": "bla",
         "description": "Koffie met twee ervaren consultants. We horen waar het knelt en bepalen samen wat past: AI-transformatie of maatwerk software & AI-tools."
       },
       "bla2": {
-        "title": "bla 2",
+        "title": "bla",
         "description": "Een plan van aanpak: wat we bouwen, in welke volgorde en waarom. Helder genoeg om op te beslissen."
       },
       "run": {

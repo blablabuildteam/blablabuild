@@ -298,11 +298,11 @@
     "followUpLabel": "After",
     "steps": {
       "bla1": {
-        "title": "bla 1",
+        "title": "bla",
         "description": "Coffee with two experienced consultants. We hear where things get stuck and decide together what fits: AI transformation or custom software & AI tools."
       },
       "bla2": {
-        "title": "bla 2",
+        "title": "bla",
         "description": "A plan of approach: what we build, in what order and why. Clear enough to decide on."
       },
       "run": {
