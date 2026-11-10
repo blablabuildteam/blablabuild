@@ -38,13 +38,18 @@ export default function V2Cases() {
               <span className="font-medium text-bla-lime">{lang === 'en' ? 'Real results.' : 'Echt resultaat.'}</span>
             </h2>
           </div>
-          <div className="flex flex-col items-start gap-4 md:items-end">
+          <div className="hidden flex-col items-end gap-4 md:flex">
             <CasesPageLink lang={lang} />
           </div>
         </div>
 
         <Parallax speed={36}>
-          <CaseSleeveStack cases={CASE_STUDIES} lang={lang} onOpen={setActive} />
+          <CaseSleeveStack
+            cases={CASE_STUDIES}
+            lang={lang}
+            onOpen={setActive}
+            mobileTrailing={<CasesPageLink lang={lang} />}
+          />
         </Parallax>
       </div>
 

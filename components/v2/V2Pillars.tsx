@@ -125,7 +125,7 @@ export default function V2Pillars() {
                 {t('pillarsSection.intro')}
               </motion.p>
             </div>
-            <motion.div {...revealProps(0.12, 12)} className="mx-auto shrink-0 md:mx-0">
+            <motion.div {...revealProps(0.12, 12)} className="mx-auto hidden shrink-0 md:mx-0 md:block">
               <StrategyScope />
             </motion.div>
           </div>

@@ -53,14 +53,21 @@ export default function V2Footer() {
                   ? '30 minutes, no slides, no fluff. Just a clear next step.'
                   : '30 minuten, geen slides, geen poespas. Wel een duidelijke volgende stap.'}
               </p>
-              <div className="flex flex-wrap gap-3">
-                <V2DirectHelp source="v2-footer" align="left" tone="light" openUpOnDesktop />
-                <a
-                  href={`mailto:${tCommon('email')}`}
-                  className="inline-flex h-12 items-center gap-2 rounded-[3px] border border-[#14181d]/25 px-5 text-sm font-medium text-[#14181d] transition-colors hover:border-[#14181d]/40 hover:bg-[#14181d]/5 md:h-[52px] md:px-6 md:text-[15px]"
-                >
-                  {tCommon('email')}
-                </a>
+              {/* Two equal-width contact buttons, with the seal to their right. */}
+              <div className="flex items-center gap-5">
+                <div className="flex min-w-0 max-w-[260px] flex-1 flex-col gap-3">
+                  <V2DirectHelp source="v2-footer" align="left" tone="light" openUpOnDesktop fullWidth />
+                  <a
+                    href={`mailto:${tCommon('email')}`}
+                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-[3px] border border-[#14181d]/25 px-4 text-sm font-medium text-[#14181d] transition-colors hover:border-[#14181d]/40 hover:bg-[#14181d]/5 md:h-[52px] md:text-[15px]"
+                  >
+                    {tCommon('email')}
+                  </a>
+                </div>
+                {/* The seal is 184px; it is scaled into a 120px box to sit beside the buttons. */}
+                <div className="relative h-[120px] w-[120px] shrink-0">
+                  <SpinningText inverted className="absolute left-0 top-0 origin-top-left scale-[0.652] text-[#14181d]/70" />
+                </div>
               </div>
             </div>
           </div>
@@ -69,8 +76,8 @@ export default function V2Footer() {
 
       {/* Wordmark moment — zelfde stijl als logo (geen italic) */}
       <div className="relative overflow-hidden border-b border-[#14181d]/10">
-        <div className="mx-auto flex w-full max-w-[1320px] flex-col items-end gap-6 px-5 py-12 sm:px-8 md:flex-row md:items-center md:justify-between md:gap-10 md:px-10 md:py-16">
-          <div className="w-full min-w-0">
+        <div className="mx-auto w-full max-w-[1320px] px-5 py-12 sm:px-8 md:px-10 md:py-16">
+          <div className="min-w-0">
             <div ref={markRef} className="overflow-hidden pb-[0.06em]">
               <motion.div
                 style={reduce ? undefined : { y: markY, letterSpacing: markTrack }}
@@ -87,7 +94,6 @@ export default function V2Footer() {
               {BUILD && <Mono className="text-[#14181d]/40 md:ml-4">build {BUILD}</Mono>}
             </div>
           </div>
-          <SpinningText inverted className="shrink-0 text-[#14181d]/70" />
         </div>
       </div>
 

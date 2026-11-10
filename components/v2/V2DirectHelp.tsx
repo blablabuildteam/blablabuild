@@ -225,7 +225,7 @@ export default function V2DirectHelp({
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className={`group inline-flex items-center justify-center gap-2.5 rounded-[3px] font-medium tracking-tight transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${sizeClasses} ${
+        className={`group inline-flex items-center justify-center gap-2.5 whitespace-nowrap rounded-[3px] font-medium tracking-tight transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${sizeClasses} ${
           fullWidth ? 'w-full' : ''
         } ${variantClasses[`${variant}-${tone}`]}`}
       >

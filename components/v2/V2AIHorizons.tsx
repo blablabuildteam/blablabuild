@@ -134,6 +134,19 @@ function createPauseClock(
   return { wait, typeOut };
 }
 
+/** True below Tailwind's sm breakpoint, where the phase strip is a single column. */
+function useIsPhone() {
+  const [phone, setPhone] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)');
+    const update = () => setPhone(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+  return phone;
+}
+
 function usePrefersReducedMotion() {
   const [reduced, setReduced] = useState<boolean | null>(null);
 
@@ -191,6 +204,8 @@ export default function V2AIHorizons({
   const [bootId, setBootId] = useState(0);
   const stages = lang === 'en' ? STAGES_EN : STAGES_NL;
   const activeStageData = stages[activeStage];
+  // Phones show the strip as one column, so the preview plays under the tapped phase.
+  const inlinePreview = useIsPhone();
 
   const selectStage = (index: number) => {
     if (embedded && open && index === activeStage) {
@@ -406,6 +421,20 @@ export default function V2AIHorizons({
                   card
                 )}
 
+                {isActive && strip && inlinePreview && (
+                  <div className="pb-2">
+                    <HorizonVisual
+                      stage={i}
+                      lang={lang}
+                      paused={paused}
+                      replayKey={replayKey}
+                      bootId={bootId}
+                      fill={false}
+                      tone="ink"
+                    />
+                  </div>
+                )}
+
                 {/* Embedded: hidden until a phase is clicked. Phone: under the active phase. */}
                 {isActive && !strip && (
                   <div className={embedded ? '' : 'md:hidden'}>
@@ -426,7 +455,7 @@ export default function V2AIHorizons({
           })}
         </div>
 
-        {strip && open && (
+        {strip && open && !inlinePreview && (
           <HorizonVisual
             stage={activeStage}
             lang={lang}
