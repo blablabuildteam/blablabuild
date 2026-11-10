@@ -134,11 +134,11 @@ function createPauseClock(
   return { wait, typeOut };
 }
 
-/** True below Tailwind's sm breakpoint, where the phase strip is a single column. */
-function useIsPhone() {
+/** True below Tailwind's lg breakpoint, where the phase journey runs vertically. */
+function useStackedJourney() {
   const [phone, setPhone] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 639px)');
+    const mq = window.matchMedia('(max-width: 1023px)');
     const update = () => setPhone(mq.matches);
     update();
     mq.addEventListener('change', update);
@@ -204,8 +204,8 @@ export default function V2AIHorizons({
   const [bootId, setBootId] = useState(0);
   const stages = lang === 'en' ? STAGES_EN : STAGES_NL;
   const activeStageData = stages[activeStage];
-  // Phones show the strip as one column, so the preview plays under the tapped phase.
-  const inlinePreview = useIsPhone();
+  // Below lg the journey is vertical, so the preview plays under the tapped phase.
+  const inlinePreview = useStackedJourney();
 
   const selectStage = (index: number) => {
     if (embedded && open && index === activeStage) {
@@ -260,7 +260,7 @@ export default function V2AIHorizons({
         <div
           className={
             strip
-              ? 'grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4'
+              ? 'relative grid grid-cols-1 gap-2 lg:grid-cols-4 lg:gap-3'
               : embedded
                 ? 'flex h-full flex-col gap-2'
                 : 'flex flex-col gap-2 md:col-span-4 lg:col-span-3'
@@ -269,6 +269,21 @@ export default function V2AIHorizons({
             embedded && !strip && listMinHeight && !open ? { height: listMinHeight } : undefined
           }
         >
+          {strip && (
+            /* Desktop: one full-width line across the phases; the volt fill grows to the active node.
+               Columns are equal with a 12px gap, so node i sits at i*(col+gap) + col/2. */
+            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-[14px] hidden h-[2px] -translate-y-1/2 lg:block">
+              <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-white/15" />
+              <span
+                className="absolute left-0 top-0 h-[2px] bg-bla-lime transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+                style={{
+                  width: open
+                    ? `calc(${activeStage} * ((100% - ${(stages.length - 1) * 12}px) / ${stages.length} + 12px) + (100% - ${(stages.length - 1) * 12}px) / ${stages.length * 2})`
+                    : '0%',
+                }}
+              />
+            </div>
+          )}
           {stages.map((stage, i) => {
             const isActive = i === activeStage && open;
             const tileSurface = strip
@@ -413,26 +428,23 @@ export default function V2AIHorizons({
                       delay: i * 0.05,
                       ease: [0.22, 1, 0.36, 1],
                     }}
-                    className="h-full"
+                    className="relative flex gap-3 lg:h-full lg:flex-col lg:gap-0"
                   >
-                    <CursorTilt className="relative z-0 h-full hover:z-10">{card}</CursorTilt>
+                    <JourneyRail
+                      last={i === stages.length - 1}
+                      reached={open && i <= activeStage}
+                      passed={open && i < activeStage}
+                      current={isActive}
+                    />
+                    <div className="flex min-w-0 flex-1 flex-col gap-2 lg:h-full">
+                      {card}
+                      {isActive && inlinePreview && (
+                        <StagePlayer stage={i} lang={lang} paused={paused} replayKey={replayKey} bootId={bootId} />
+                      )}
+                    </div>
                   </motion.div>
                 ) : (
                   card
-                )}
-
-                {isActive && strip && inlinePreview && (
-                  <div className="pb-2">
-                    <HorizonVisual
-                      stage={i}
-                      lang={lang}
-                      paused={paused}
-                      replayKey={replayKey}
-                      bootId={bootId}
-                      fill={false}
-                      tone="ink"
-                    />
-                  </div>
                 )}
 
                 {/* Embedded: hidden until a phase is clicked. Phone: under the active phase. */}
@@ -456,15 +468,7 @@ export default function V2AIHorizons({
         </div>
 
         {strip && open && !inlinePreview && (
-          <HorizonVisual
-            stage={activeStage}
-            lang={lang}
-            paused={paused}
-            replayKey={replayKey}
-            bootId={bootId}
-            fill={false}
-            tone="ink"
-          />
+          <StagePlayer stage={activeStage} lang={lang} paused={paused} replayKey={replayKey} bootId={bootId} />
         )}
 
         {/* Standalone desktop panel. Embedded plays inline under the active phase. */}
@@ -488,6 +492,180 @@ export default function V2AIHorizons({
         )}
       </div>
     </motion.div>
+  );
+}
+
+/**
+ * The line that ties the four phases into one route. Vertical beside the cards
+ * below lg; from lg the nodes sit on the strip's single full-width line (drawn by the strip).
+ */
+function JourneyRail({
+  last,
+  reached,
+  passed,
+  current,
+}: {
+  last: boolean;
+  reached: boolean;
+  passed: boolean;
+  current: boolean;
+}) {
+  return (
+    <div aria-hidden className="relative w-3 shrink-0 lg:h-7 lg:w-full">
+      {/* Phones and tablets: vertical, from this node down to the next one. */}
+      {!last && (
+        <span className="lg:hidden">
+          <span className="absolute left-1/2 top-[26px] -bottom-[28px] w-px -translate-x-1/2 bg-white/15" />
+          <span
+            className={`absolute left-1/2 top-[26px] -bottom-[28px] w-[2px] -translate-x-1/2 origin-top bg-bla-lime transition-transform duration-500 ${
+              passed ? 'scale-y-100' : 'scale-y-0'
+            }`}
+          />
+        </span>
+      )}
+
+      <span
+        className={`absolute left-1/2 top-[20px] h-[11px] w-[11px] -translate-x-1/2 border transition-[background-color,border-color,box-shadow] duration-300 lg:top-1/2 lg:-translate-y-1/2 ${
+          reached ? 'border-bla-lime bg-bla-lime' : 'border-white/30 bg-[#1c1915]'
+        } ${current ? 'shadow-[0_0_0_4px_rgba(206,255,0,0.18)]' : ''}`}
+      />
+    </div>
+  );
+}
+
+/* ── Impact per stage ──────────────────────────────────────────────────────
+ * Indicative ranges across the whole organisation once a stage is running.
+ * Estimates grounded in published research (Microsoft's M365 Copilot field
+ * experiment, BCG's "Widening AI Value Gap"), not guarantees. Each stage
+ * includes the gains of the ones before it.
+ */
+type Range = readonly [number, number];
+const IMPACT: readonly { time: Range; cost: Range; growth: Range }[] = [
+  { time: [10, 15], cost: [3, 5], growth: [1, 3] },
+  { time: [15, 25], cost: [5, 10], growth: [3, 6] },
+  { time: [25, 40], cost: [10, 20], growth: [5, 10] },
+  { time: [35, 50], cost: [20, 30], growth: [10, 15] },
+];
+const IMPACT_SCALE = 50; // every bar shares one 0–50% scale, so stages compare honestly
+
+const IMPACT_COPY = {
+  nl: {
+    title: 'Wat je kunt verwachten',
+    time: 'Tijdsbesparing',
+    cost: 'Kostenbesparing',
+    growth: 'Extra groei',
+    ghost: (n: string) => `Grijs = fase ${n}`,
+    note: 'Indicatieve bandbreedte over de hele organisatie, zodra deze fase draait. Op basis van onderzoek van o.a. Microsoft en BCG; het resultaat verschilt per organisatie.',
+  },
+  en: {
+    title: 'What to expect',
+    time: 'Time saved',
+    cost: 'Cost savings',
+    growth: 'Extra growth',
+    ghost: (n: string) => `Grey = stage ${n}`,
+    note: 'Indicative range across the whole organisation once this stage is running. Based on research by Microsoft and BCG, among others; results differ per organisation.',
+  },
+} as const;
+
+function ImpactBar({ range, prev, delay }: { range: Range; prev?: Range; delay: number }) {
+  const reduced = usePrefersReducedMotion();
+  const pct = (v: number) => `${(v / IMPACT_SCALE) * 100}%`;
+  return (
+    <div className="relative mt-3">
+      <div className="relative h-[6px] bg-white/[0.07]">
+        {prev && (
+          <span
+            aria-hidden
+            className="absolute inset-y-0 bg-white/20"
+            style={{ left: pct(prev[0]), width: pct(prev[1] - prev[0]) }}
+          />
+        )}
+        <motion.span
+          aria-hidden
+          className="absolute inset-y-0 bg-bla-lime"
+          initial={reduced ? false : { left: pct(prev ? prev[0] : 0), width: '0%' }}
+          animate={{ left: pct(range[0]), width: pct(range[1] - range[0]) }}
+          transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+        />
+      </div>
+      <div aria-hidden className="mt-1.5 flex justify-between font-mono text-[9px] tracking-[0.08em] text-[#f1ede4]/30">
+        {[0, 10, 20, 30, 40, 50].map((t) => (
+          <span key={t}>{t}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function StageImpact({ stage, lang }: { stage: number; lang: 'en' | 'nl' }) {
+  const copy = IMPACT_COPY[lang];
+  const now = IMPACT[stage];
+  const prev = stage > 0 ? IMPACT[stage - 1] : undefined;
+  const rows = [
+    { key: 'time', label: copy.time, range: now.time, prev: prev?.time },
+    { key: 'cost', label: copy.cost, range: now.cost, prev: prev?.cost },
+    { key: 'growth', label: copy.growth, range: now.growth, prev: prev?.growth },
+  ] as const;
+
+  return (
+    <div className="flex flex-col rounded-[4px] border border-white/10 bg-[#12100e] p-4 text-[#f1ede4] md:p-5">
+      <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
+        <span className="flex items-center gap-2.5">
+          <span aria-hidden className="h-[6px] w-[6px] bg-bla-lime" />
+          <span className="whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.14em] text-[#f1ede4]/70">{copy.title}</span>
+        </span>
+        <span className="hidden whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.14em] text-[#f1ede4]/35 sm:inline">
+          {String(stage + 1).padStart(2, '0')} / {String(IMPACT.length).padStart(2, '0')}
+        </span>
+      </div>
+
+      <dl className="grid flex-1 gap-5 pt-4 sm:grid-cols-3 lg:grid-cols-1 lg:content-start">
+        {rows.map((row, i) => (
+          <div key={row.key}>
+            <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#f1ede4]/55">{row.label}</dt>
+            <dd className="mt-1.5">
+              <span className="font-host text-[2rem] font-light leading-none tracking-[-0.03em] text-[#f1ede4]">
+                {row.range[0]}–{row.range[1]}
+                <span className="ml-0.5 text-[1.1rem] text-[#f1ede4]/55">%</span>
+              </span>
+              <ImpactBar range={row.range} prev={row.prev} delay={0.08 * i} />
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      <div className="mt-5 border-t border-white/10 pt-3">
+        {prev && (
+          <p className="mb-1.5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[#f1ede4]/45">
+            <span aria-hidden className="h-[6px] w-3 bg-white/20" />
+            {copy.ghost(String(stage).padStart(2, '0'))}
+          </p>
+        )}
+        <p className="font-host text-[12px] leading-snug text-[#f1ede4]/45">{copy.note}</p>
+      </div>
+    </div>
+  );
+}
+
+/** The strip's player: the animated preview with the expected impact beside it (lg) or under it. */
+function StagePlayer({
+  stage,
+  lang,
+  paused,
+  replayKey,
+  bootId,
+}: {
+  stage: number;
+  lang: 'en' | 'nl';
+  paused: boolean;
+  replayKey: number;
+  bootId: number;
+}) {
+  return (
+    <div className="grid min-w-0 grid-cols-1 gap-2 lg:grid-cols-[minmax(0,1fr)_320px] [&>*]:min-w-0">
+      <HorizonVisual stage={stage} lang={lang} paused={paused} replayKey={replayKey} bootId={bootId} fill={false} tone="ink" />
+      <StageImpact stage={stage} lang={lang} />
+    </div>
   );
 }
 
