@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useLocale } from 'next-intl';
 import V2Nav from '@/components/v2/V2Nav';
 import V2Footer from '@/components/v2/V2Footer';
-import V2ChatWidget from '@/components/v2/V2ChatWidget';
 import { NoiseLayer } from '@/components/v2/V2Atoms';
 import {
   CaseStudyCard,
@@ -60,7 +59,6 @@ export default function CasesPage() {
       </main>
 
       <V2Footer />
-      <V2ChatWidget />
       <CaseStudyModal active={active} lang={lang} onClose={() => setActive(null)} />
     </div>
   );

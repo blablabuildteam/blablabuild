@@ -507,7 +507,7 @@ export default function V2Hero({ variant = 'punchy' }: { variant?: V2HeroVariant
                         </span>
                       ))}
                       <span className="ml-2 font-mono text-[11px] uppercase tracking-[0.1em] text-bla-lime/85">
-                        25+ {isEn ? 'yrs' : 'jaar'}
+                        direct
                       </span>
                     </div>
                   </div>

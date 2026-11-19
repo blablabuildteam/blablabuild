@@ -6,7 +6,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
 import { LinkedinIcon } from '@/components/ui/icons/il-linkedin';
 import TeamMemberName from '@/components/TeamMemberName';
-import { ColumnGuides, CornerMarks, Counter, Mono, SectionHead } from './Instrument';
+import { ColumnGuides, CornerMarks, Mono, SectionHead } from './Instrument';
 
 interface Friend {
   id: string;
@@ -126,8 +126,7 @@ export default function V2Team() {
             <h2 className="font-host text-[2.4rem] font-light leading-[0.95] tracking-[-0.035em] text-[#14181d] md:text-[4.25rem]">
               {lang === 'en' ? 'Two founders. ' : 'Twee founders. '}
               <span className="font-medium text-[#14181d]">
-                <Counter value={25} suffix="+" />
-                {lang === 'en' ? ' years experience.' : ' jaar ervaring.'}
+                {lang === 'en' ? 'No middle layer.' : 'Geen tussenlaag.'}
               </span>
               <br />
               <span className="text-[#14181d]/70">{lang === 'en' ? 'One direct line.' : 'Eén directe lijn.'}</span>

@@ -9,7 +9,6 @@ import V2Approach from '@/components/v2/V2Approach';
 import V2Team from '@/components/v2/V2Team';
 import V2Value from '@/components/v2/V2Value';
 import V2Footer from '@/components/v2/V2Footer';
-import V2ChatWidget from '@/components/v2/V2ChatWidget';
 
 const SECTION_IDS = ['oplossingen', 'ai-transformatie', 'aanpak', 'over-ons', 'cases', 'waarde'] as const;
 
@@ -70,7 +69,6 @@ export default function HomePage() {
       <V2Cases />
       <V2Value />
       <V2Footer />
-      <V2ChatWidget />
     </div>
   );
 }

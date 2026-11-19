@@ -178,17 +178,6 @@ export default function V2DirectHelp({
     close();
   };
 
-  const onChat = () => {
-    close();
-    // Open the chat widget first; analytics must never block this.
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('openChatWidget', { detail: { source } }));
-      const opener = (window as Window & { openChatWidget?: () => void }).openChatWidget;
-      if (typeof opener === 'function') opener();
-    }
-    track('v2_help_ai_advice_clicked', { source });
-  };
-
   const onMail = () => {
     track('v2_help_mail_clicked', { source });
     close();
@@ -285,13 +274,6 @@ export default function V2DirectHelp({
                 />
                 <Route
                   index="02"
-                  title={t('chatAi')}
-                  sub={t('chatAiSub')}
-                  meta={t('metaChat')}
-                  onSelect={onChat}
-                />
-                <Route
-                  index="03"
                   title={t('mailUs')}
                   sub={MAIL}
                   meta={t('metaMail')}
